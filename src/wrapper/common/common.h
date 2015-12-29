@@ -37,15 +37,7 @@ extern CTWRAPPER_API Logger logger;
 #define LIBRARY_DIRECTORY ""
 #endif
 
-CTWRAPPER_API ENGINE *ENGINE_CTGOST_init();
-CTWRAPPER_API ENGINE *ENGINE_CTGOST_get_ptr();
-CTWRAPPER_API ENGINE *ENGINE_CAPI_init();
-CTWRAPPER_API ENGINE *ENGINE_CAPI_get_ptr();
-CTWRAPPER_API Handle<std::string> GetLibraryPath(std::string &name);
-//CTWRAPPER_API LPCWSTR CA2W(const char* cs, int len = -1);
-//Handle<std::string> CW2A(LPCWSTR text, int len = -1);
 Handle<std::string> ASN1_TIME_toString(ASN1_TIME* time);
-char *X509_NAME_onelineEx(X509_NAME *a, char *buf, int len);
 std::string X509_NAME_oneline_ex(X509_NAME *a);
 
 #endif  //!CMS_COMMON_H_INCLUDED

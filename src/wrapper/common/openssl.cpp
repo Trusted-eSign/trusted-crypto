@@ -2,8 +2,8 @@
 
 #include "openssl.h"
 
-void OpenSSL::run(){
-	//OpenSSL_add_all_digests();
+void OpenSSL::run()
+{
 	LOGGER_FN();
 
 	CRYPTO_malloc_debug_init();
@@ -13,13 +13,10 @@ void OpenSSL::run(){
 	ERR_load_crypto_strings();
 	LOGGER_OPENSSL(OpenSSL_add_all_algorithms);
 	OpenSSL_add_all_algorithms();
-	//OpenSSL_add_all_ciphers();
-	//ENGINE_load_dynamic();
+    /*
 	LOGGER_OPENSSL(ENGINE_load_builtin_engines);
 	ENGINE_load_builtin_engines();
-
-	//ENGINE_CTGOST_init();
-	//ENGINE_CAPI_init();
+    */
 }
 
 void OpenSSL::stop(){

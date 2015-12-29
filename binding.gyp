@@ -29,12 +29,12 @@
                                 "target_arch=='x64'",
                                 {
                                     "variables": {
-                                        "openssl_root%": "C:/OpenSSL-Win64"
+                                        "openssl_root%": "C:/Build-OpenSSL-VC-64"
                                     }
                                 },
                                 {
                                     "variables": {
-                                        "openssl_root%": "C:/Users/mks/Desktop/TrustedSSL/target/inst/Windows.x86.no-shared/opt/TrustedTLS-3"
+                                        "openssl_root%": "C:/Build-OpenSSL-VC-32"
                                     }
                                 }
                             ]
