@@ -1,0 +1,1 @@
+export var native = require("../build/Release/trusted.node");
