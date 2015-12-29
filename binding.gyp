@@ -34,7 +34,7 @@
                                 },
                                 {
                                     "variables": {
-                                        "openssl_root%": "C:/OpenSSL-Win32"
+                                        "openssl_root%": "C:/Users/mks/Desktop/TrustedSSL/target/inst/Windows.x86.no-shared/opt/TrustedTLS-3"
                                     }
                                 }
                             ]
@@ -44,17 +44,20 @@
                         ],
                         "include_dirs": [
                             "<(openssl_root)/include"
-                        ]
+                        ],
+                        "defines": ["CTWRAPPER_STATIC"]
                     },
                     {
                         "include_dirs": [
-                            "<!(node -e \"require('nan')\")",
                             "<(node_root_dir)/deps/openssl/openssl/include"
                         ]
                     }
                 ]
             ],
-            "cflags": [],
+            "include_dirs": [
+                "<!(node -e \"require('nan')\")"
+            ],
+            "cflags": [ ],
             "cflags_cc!": [
                 "-fno-rtti",
                 "-fno-exceptions"
