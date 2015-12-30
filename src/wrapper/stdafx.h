@@ -3,6 +3,7 @@
 //#include "targetver.h"
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
 #ifdef _WIN32                 //added 
@@ -23,6 +24,13 @@
 
 #define HCRYPT_NULL 0
 #endif                          //added
+
+#  define INT32_MAX __MAXINT__(int32_t)
+#  define UINT32_MAX __MAXUINT__(uint32_t)
+
+#  define __MAXUINT__(T) ((T) -1)
+#  define __MAXINT__(T) ((T) ((((T) 1) << ((sizeof(T) * CHAR_BIT) - 1)) ^ __MAXUINT__(T)))
+#  define __MININT__(T) (-__MAXINT__(T) - 1)
 
 #define X509_NAME_wincrypt X509_NAME
 #undef X509_NAME
