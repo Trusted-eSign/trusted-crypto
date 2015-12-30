@@ -276,3 +276,25 @@ long Certificate::version(){
 
 	return res;   
 }
+
+int Certificate::type(){
+    LOGGER_FN();
+    
+    LOGGER_OPENSSL(X509_certificate_type);
+    int res = X509_certificate_type(this->internal(), NULL);
+    if (!res)
+        THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_certificate_type");
+    
+    return res;
+}
+
+int Certificate::keyUsage(){
+    LOGGER_FN();
+    
+    LOGGER_OPENSSL(X509_check_purpose);
+    X509_check_purpose(this->internal(), -1, -1);
+    if (this->internal()->ex_flags & EXFLAG_KUSAGE)
+        return this->internal()->ex_kusage;
+    
+    return UINT32_MAX;
+}

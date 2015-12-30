@@ -33,6 +33,8 @@ public:
 	static NAN_METHOD(GetSerialNumber);
 	static NAN_METHOD(GetThumbprint);
 	static NAN_METHOD(GetVersion);
+    static NAN_METHOD(GetType);
+	static NAN_METHOD(GetKeyUsage);
 	static NAN_METHOD(Compare);
 
 	Handle<Certificate> data_;

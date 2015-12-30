@@ -57,6 +57,8 @@ describe('Certificate', function () {
 		console.log("serialNumber:",cert.serialNumber.toString('hex'));
 		console.log("thumbprint:",cert.thumbprint.toString('hex'));
 		console.log("version:",cert.version);
+		console.log("type:",cert.type);
+		console.log("keyUsage:",cert.keyUsage);
         
 	})
     
@@ -70,7 +72,7 @@ describe('Certificate', function () {
 		var c = trusted.Pki.Certificate.load("test/test-ru.crt");
 		console.log("scn:",c.subjectFriendlyName);
 		console.log("sn:",c.subjectName);
-        var n = c.subjectName;
+        //var n = c.subjectName;
 	})
 
 	it('export', function () {

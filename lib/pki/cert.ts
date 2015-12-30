@@ -16,6 +16,14 @@ export class Certificate extends BaseObject {
 	get serialNumber(): number {
 		return this.handle.getSerialNumber();
 	}
+    
+    get type(): number {
+		return this.handle.getType();
+	}
+    
+    get keyUsage(): number {
+		return this.handle.getKeyUsage();
+	}
 
 	get issuerFriendlyName(): string {
 		return this.handle.getIssuerFriendlyName();

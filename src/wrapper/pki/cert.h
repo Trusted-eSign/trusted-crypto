@@ -31,6 +31,8 @@ public:
 	Handle<std::string> subjectName();
 	Handle<std::string> issuerName();
 	Handle<std::string> serialNumber();
+    int type();
+    int keyUsage();
 	long version();
 
 	Handle<std::string> notAfter();

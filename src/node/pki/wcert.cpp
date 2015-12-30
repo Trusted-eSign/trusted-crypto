@@ -30,6 +30,8 @@ void WCertificate::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getSerialNumber", GetSerialNumber);
 	Nan::SetPrototypeMethod(tpl, "getThumbprint", GetThumbprint);
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
+    Nan::SetPrototypeMethod(tpl, "getType", GetType);
+    Nan::SetPrototypeMethod(tpl, "getKeyUsage", GetKeyUsage);
 	Nan::SetPrototypeMethod(tpl, "compare", Compare);
 
 	// Store the constructor in the target bindings.
@@ -331,6 +333,40 @@ NAN_METHOD(WCertificate::GetVersion)
 
 		info.GetReturnValue().Set(
 			Nan::New<v8::Number>(version)
+		);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::GetType)
+{
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		int type = _this->type();
+
+		info.GetReturnValue().Set(
+			Nan::New<v8::Number>(type)
+		);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::GetKeyUsage)
+{
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		int type = _this->keyUsage();
+
+		info.GetReturnValue().Set(
+			Nan::New<v8::Number>(type)
 		);
 		return;
 	}
