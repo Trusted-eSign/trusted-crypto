@@ -11,19 +11,19 @@
 
 //��������� �������� �������
 #ifdef _WIN32
-	#include <tchar.h>
-	#include <winsock2.h>
-	#include <windows.h>
-	#include <wincrypt.h>
+#include <tchar.h>
+#include <winsock2.h>
+#include <windows.h>
+#include <wincrypt.h>
 #else // !_WIN32
-	#ifdef __x86_64__
-		#define SIZEOF_VOID_P 8
-	#else // !__x86_64__
-		#define SIZEOF_VOID_P 4
-	#endif
+#ifdef __x86_64__
+#define SIZEOF_VOID_P 8
+#else // !__x86_64__
+#define SIZEOF_VOID_P 4
+#endif
 
-	#undef HAVE_CONFIG_H // CSP headers includes myconfig.h if HAVE_CONFIG_H is defined
-	//#include <cpcsp/WinCryptEx.h>
+#undef HAVE_CONFIG_H // CSP headers includes myconfig.h if HAVE_CONFIG_H is defined
+//#include <cpcsp/WinCryptEx.h>
 #endif // !_WIN32
 
 #define X509_NAME_wincrypt X509_NAME
