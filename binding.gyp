@@ -29,12 +29,12 @@
                                 "target_arch=='x64'",
                                 {
                                     "variables": {
-                                        "openssl_root%": "C:/Build-OpenSSL-VC-64"
+                                        "openssl_root%": "C:/openssl"
                                     }
                                 },
                                 {
                                     "variables": {
-                                        "openssl_root%": "C:/Build-OpenSSL-VC-32"
+                                        "openssl_root%": "C:/openssl"
                                     }
                                 }
                             ]
