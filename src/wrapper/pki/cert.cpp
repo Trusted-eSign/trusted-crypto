@@ -280,12 +280,10 @@ long Certificate::version(){
 int Certificate::type(){
     LOGGER_FN();
     
-    LOGGER_OPENSSL(X509_certificate_type);
-    int res = X509_certificate_type(this->internal(), NULL);
-    if (!res)
-        THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_certificate_type");
+    LOGGER_OPENSSL(X509_get_pubkey);
+    EVP_PKEY *pk = X509_get_pubkey(this->internal());
     
-    return res;
+    return pk->type;
 }
 
 int Certificate::keyUsage(){
