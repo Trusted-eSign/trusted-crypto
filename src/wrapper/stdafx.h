@@ -24,9 +24,12 @@
 
 #define HCRYPT_NULL 0
 #endif                          //added
-
+#ifndef INT32_MAX
 #  define INT32_MAX __MAXINT__(int32_t)
+#endif
+#ifndef UINT32_MAX
 #  define UINT32_MAX __MAXUINT__(uint32_t)
+#endif
 
 #  define __MAXUINT__(T) ((T) -1)
 #  define __MAXINT__(T) ((T) ((((T) 1) << ((sizeof(T) * CHAR_BIT) - 1)) ^ __MAXUINT__(T)))
