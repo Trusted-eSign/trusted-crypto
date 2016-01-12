@@ -30,13 +30,13 @@ void WCertificate::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getSerialNumber", GetSerialNumber);
 	Nan::SetPrototypeMethod(tpl, "getThumbprint", GetThumbprint);
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
-    Nan::SetPrototypeMethod(tpl, "getType", GetType);
-    Nan::SetPrototypeMethod(tpl, "getKeyUsage", GetKeyUsage);
+	Nan::SetPrototypeMethod(tpl, "getType", GetType);
+	Nan::SetPrototypeMethod(tpl, "getKeyUsage", GetKeyUsage);
 	Nan::SetPrototypeMethod(tpl, "compare", Compare);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
-	
+
 	exports->Set(Nan::New("Certificate").ToLocalChecked(), tpl->GetFunction());
 }
 
@@ -53,69 +53,52 @@ NAN_METHOD(WCertificate::New){
 	TRY_END();
 }
 
+/*
+ * filename: String
+ * format: number
+ */
 NAN_METHOD(WCertificate::Load){
 	try{
-		if (info[0]->IsUndefined()){
-			Nan::ThrowError("Parameter 1 is required");
-			return;
-		}
+		//filename
+		v8::String::Utf8Value v8Filename(info[0]->ToString());
+		char *filename = *v8Filename;
 
-		v8::Local<v8::String> str = info[0].As<v8::String>();
-		char *filename = copyBufferToUtf8String(str);
-		if (filename == NULL) {
-			Nan::ThrowError("Wrong filename");
-			return;
-		}
+		//format
+		int format = info[1]->ToNumber()->Int32Value();
 
-		std::string fname(filename);
-		free(filename);
-
-		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
+		UNWRAP_DATA(Certificate);
 
 		Handle<Bio> in = NULL;
 
-		try{
-			in = new Bio(BIO_TYPE_FILE, fname, "rb");
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("File not found");
-			return;
-		}
-
-		try{
-			obj->data_->read(in);
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("File has wrong data");
-			return;
-		}
-
+		in = new Bio(BIO_TYPE_FILE, filename, "rb");
+				
+		_this->read(in, DataFormat::get(format));
+		
 		info.GetReturnValue().Set(info.This());
 		return;
 	}
 	TRY_END();
 }
 
+/*
+ * in: Buffer
+ * format: DataFormat
+ */
 NAN_METHOD(WCertificate::Import){
 	try{
 		//get data from buffer
-		char* buf = node::Buffer::Data(info[0]);
+		char* buf = node::Buffer::Data(info[0]->ToObject());
 		size_t buflen = node::Buffer::Length(info[0]);
 		std::string buffer(buf, buflen);
 
-		//unwrap
-		WCertificate* v8This = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
-		Handle<Certificate> _this = v8This->data_;
+		//format
+		int format = info[1]->ToNumber()->Int32Value();
 
-		try{
-			Handle<Bio> in = new Bio(BIO_TYPE_MEM, buffer);
+		UNWRAP_DATA(Certificate);
 
-			_this->read(in);
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError(e->what());
-			return;
-		}
+		Handle<Bio> in = new Bio(BIO_TYPE_MEM, buffer);
+
+		_this->read(in, DataFormat::get(format));
 
 		info.GetReturnValue().Set(info.This());
 		return;
@@ -123,28 +106,23 @@ NAN_METHOD(WCertificate::Import){
 	TRY_END();
 }
 
+/*
+* filename: String
+* format: number
+*/
 NAN_METHOD(WCertificate::Save){
 	try{
-		if (info[0]->IsUndefined()){
-			Nan::ThrowError("Parameter 1 is required (filename)");
-			return;
-		}
+		//filename
+		v8::String::Utf8Value v8Filename(info[0]->ToString());
+		char *filename = *v8Filename;
 
-		v8::Local<v8::String> str = info[0].As<v8::String>();
-		char *filename = copyBufferToUtf8String(str);
-		if (filename == NULL) {
-			Nan::ThrowError("Wrong filename");
-			return;
-		}
+		//format
+		int format = info[1]->ToNumber()->Int32Value();
 
-		std::string fname(filename);
-		free(filename);
+		UNWRAP_DATA(Certificate);
 
-		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
-		Handle<Certificate> cert = obj->data_;
-
-		Handle<Bio> out = new Bio(BIO_TYPE_FILE, fname, "wb");
-		cert->write(out);
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
+		_this->write(out, DataFormat::get(format));
 		out->flush();
 
 		info.GetReturnValue().Set(info.This());
@@ -155,16 +133,19 @@ NAN_METHOD(WCertificate::Save){
 
 NAN_METHOD(WCertificate::Export){
 	try{
+		//format
+		int format = info[1]->ToNumber()->Int32Value();
+
 		UNWRAP_DATA(Certificate);
 
 		Handle<Bio> out = new Bio(BIO_TYPE_MEM, "");
-		_this->write(out);
+		_this->write(out, DataFormat::get(format));
 
 		Handle<std::string> buf = out->read();
 
 		info.GetReturnValue().Set(
-			stringToBuffer(buf)
-		);
+			Nan::New(buf->c_str(), buf->length()).ToLocalChecked()
+			);
 		return;
 	}
 	TRY_END();
@@ -174,7 +155,7 @@ NAN_METHOD(WCertificate::GetSubjectFriendlyName){
 	try{
 		UNWRAP_DATA(Certificate);
 
-		Handle<std::string> fname = _this->subjectFriendlyName();
+		Handle<std::string> fname = _this->getSubjectFriendlyName();
 
 		v8::Local<v8::String> v8FName = Nan::New<v8::String>(fname->c_str()).ToLocalChecked();
 
@@ -189,7 +170,7 @@ NAN_METHOD(WCertificate::GetIssuerFriendlyName){
 		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
 		Handle<Certificate> cert = obj->data_;
 
-		Handle<std::string> fname = cert->issuerFriendlyName();
+		Handle<std::string> fname = cert->getIssuerFriendlyName();
 
 		v8::Local<v8::String> v8FName = Nan::New<v8::String>(fname->c_str()).ToLocalChecked();
 
@@ -205,7 +186,7 @@ NAN_METHOD(WCertificate::GetSubjectName){
 		Handle<Certificate> cert = obj->data_;
 
 		Handle<std::string> name = NULL;
-		name = cert->subjectName();
+		name = cert->getSubjectName();
 
 		v8::Local<v8::String> v8Name = Nan::New<v8::String>(name->c_str()).ToLocalChecked();
 
@@ -222,7 +203,7 @@ NAN_METHOD(WCertificate::GetIssuerName){
 
 		Handle<std::string> name = NULL;
 
-		name = cert->issuerName();
+		name = cert->getIssuerName();
 
 		v8::Local<v8::String> v8Name = Nan::New<v8::String>(name->c_str()).ToLocalChecked();
 
@@ -240,7 +221,7 @@ NAN_METHOD(WCertificate::GetNotBefore)
 
 		Handle<std::string> time = NULL;
 
-		time = cert->notBefore();
+		time = cert->getNotBefore();
 
 		v8::Local<v8::String> v8Time = Nan::New<v8::String>(time->c_str()).ToLocalChecked();
 
@@ -258,7 +239,7 @@ NAN_METHOD(WCertificate::GetNotAfter)
 
 		Handle<std::string> time = NULL;
 
-		time = cert->notAfter();
+		time = cert->getNotAfter();
 
 		v8::Local<v8::String> v8Time = Nan::New<v8::String>(time->c_str()).ToLocalChecked();
 
@@ -275,11 +256,11 @@ NAN_METHOD(WCertificate::GetSerialNumber)
 	try{
 		UNWRAP_DATA(Certificate);
 
-		Handle<std::string> buf = _this->serialNumber();                
+		Handle<std::string> buf = _this->getSerialNumber();
 
 		info.GetReturnValue().Set(
 			stringToBuffer(buf)
-		);
+			);
 		return;
 	}
 	TRY_END();
@@ -292,12 +273,12 @@ NAN_METHOD(WCertificate::GetThumbprint)
 	try{
 		UNWRAP_DATA(Certificate);
 
-		Handle<std::string> buf = _this->thumbprint();
+		Handle<std::string> buf = _this->getThumbprint();
 
 		info.GetReturnValue().Set(
 			stringToBuffer(buf)
-		);
-        
+			);
+
 		return;
 	}
 	TRY_END();
@@ -329,11 +310,11 @@ NAN_METHOD(WCertificate::GetVersion)
 	try{
 		UNWRAP_DATA(Certificate);
 
-		long version = _this->version();
+		long version = _this->getVersion();
 
 		info.GetReturnValue().Set(
 			Nan::New<v8::Number>(version)
-		);
+			);
 		return;
 	}
 	TRY_END();
@@ -346,11 +327,11 @@ NAN_METHOD(WCertificate::GetType)
 	try{
 		UNWRAP_DATA(Certificate);
 
-		int type = _this->type();
+		int type = _this->getType();
 
 		info.GetReturnValue().Set(
 			Nan::New<v8::Number>(type)
-		);
+			);
 		return;
 	}
 	TRY_END();
@@ -363,11 +344,11 @@ NAN_METHOD(WCertificate::GetKeyUsage)
 	try{
 		UNWRAP_DATA(Certificate);
 
-		int type = _this->keyUsage();
+		int type = _this->getKeyUsage();
 
 		info.GetReturnValue().Set(
 			Nan::New<v8::Number>(type)
-		);
+			);
 		return;
 	}
 	TRY_END();

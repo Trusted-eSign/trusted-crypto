@@ -14,30 +14,34 @@ class CTWRAPPER_API Certificate;
 
 SSLOBJECT_free(X509, X509_free);
 
-class Certificate: public SSLObject<X509> {
+class Certificate : public SSLObject < X509 > {
 public:
+	//constructor
 	SSLOBJECT_new(Certificate, X509){}
 	SSLOBJECT_new_null(Certificate, X509, X509_new){}
 
-	void load(std::string filename);
-	void read(Handle<Bio> in);
-	void write(Handle<Bio> out);
-	Handle<Key> publicKey();
+	//properties
+	long getVersion();
+	Handle<std::string> getSerialNumber();
+	Handle<std::string> getNotBefore();
+	Handle<std::string> getNotAfter();
+	Handle<std::string> getIssuerFriendlyName();
+	Handle<std::string> getIssuerName();
+	Handle<std::string> getSubjectFriendlyName();
+	Handle<std::string> getSubjectName();
+	Handle<std::string> getThumbprint();
+	Handle<Key> getPublicKey();
+	int getType();
+	int getKeyUsage();
+
+	//Methods
+	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);
+	void write(Handle<Bio> out, DataFormat::DATA_FORMAT format);
 	Handle<Certificate> duplicate();
 	int compare(Handle<Certificate> cert);
+	bool equals(Handle<Certificate> cert);
+	Handle<std::string> hash(std::string algorithm);
 
-	Handle<std::string> subjectFriendlyName();
-	Handle<std::string> issuerFriendlyName();
-	Handle<std::string> subjectName();
-	Handle<std::string> issuerName();
-	Handle<std::string> serialNumber();
-    int type();
-    int keyUsage();
-	long version();
-
-	Handle<std::string> notAfter();
-	Handle<std::string> notBefore();
-    Handle<std::string> thumbprint();
 protected:
 	static Handle<std::string> GetCommonName(X509_NAME *a);
 };

@@ -2,33 +2,7 @@
 
 #include "cert.h"
 
-void Certificate::load(std::string filename) {
-	LOGGER_FN();
-
-	LOGGER_OPENSSL(BIO_new_file);
-	BIO* in = BIO_new_file(filename.c_str(), "rb");
-	if (in) {
-		//read PEM
-		LOGGER_OPENSSL(PEM_read_bio_X509);
-		X509 *cert = PEM_read_bio_X509(in, NULL, NULL, NULL);
-		if (!cert) {
-			//read DER
-			LOGGER_OPENSSL(BIO_seek);
-			BIO_seek(in, 0);
-			LOGGER_OPENSSL(d2i_X509_bio);
-			cert = d2i_X509_bio(in, NULL);
-		}
-
-		if (!cert) {
-			throw 1;
-		}
-		this->setData(cert);
-	}
-	LOGGER_OPENSSL(BIO_free);
-	BIO_free(in);
-}
-
-Handle<Key> Certificate::publicKey() {
+Handle<Key> Certificate::getPublicKey() {
 	LOGGER_FN();
 
 	if (!this->isEmpty()) {
@@ -52,55 +26,59 @@ Handle<Certificate> Certificate::duplicate(){
 	return new Certificate(cert);
 }
 
-void Certificate::read(Handle<Bio> in){
+void Certificate::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 	LOGGER_FN();
 
 	if (in.isEmpty())
 		THROW_EXCEPTION(0, Certificate, NULL, "Parameter %d cann't be NULL", 1);
-	//read PEM
+
 	X509 *cert = NULL;
- 
+
 	in->reset();
 
-	switch (in->type()){
-	case BIO_TYPE_FILE:
-		in->reset();
-		LOGGER_OPENSSL(PEM_read_bio_X509);
-		cert = PEM_read_bio_X509(in->internal(), NULL, NULL, NULL);
-		if (!cert) {
-			//read DER
-			in->reset();
-			LOGGER_OPENSSL(d2i_X509_bio);
-			cert = d2i_X509_bio(in->internal(), NULL);
-		}
-		break;
-	case BIO_TYPE_MEM:
+	switch (format){
+	case DataFormat::DER:
 		LOGGER_OPENSSL(d2i_X509_bio);
 		cert = d2i_X509_bio(in->internal(), NULL);
 		break;
+	case DataFormat::BASE64:
+		LOGGER_OPENSSL(PEM_read_bio_X509);
+		cert = PEM_read_bio_X509(in->internal(), NULL, NULL, NULL);
+		break;
 	default:
-		THROW_EXCEPTION(0, Certificate, NULL, "Unknown BIO type '%d'", in->type());
+		THROW_EXCEPTION(0, Certificate, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
 	}
 
 	if (!cert) {
-		THROW_EXCEPTION(0, Certificate, NULL, "Wrong data");
+		THROW_EXCEPTION(0, Certificate, NULL, "Can not read X509 data from BIO");
 	}
 
 	this->setData(cert);
 }
 
-void Certificate::write(Handle<Bio> out){
+void Certificate::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
 	LOGGER_FN();
 
 	if (out.isEmpty())
 		THROW_EXCEPTION(0, Certificate, NULL, "Parameter %d is NULL", 1);
 
-	LOGGER_OPENSSL(i2d_X509_bio);
-	if (i2d_X509_bio(out->internal(), this->internal())<=0)
-		THROW_EXCEPTION(0, Certificate, NULL, "i2d_X509_bio");
+	switch (format){
+	case DataFormat::DER:
+		LOGGER_OPENSSL(i2d_X509_bio);
+		if (i2d_X509_bio(out->internal(), this->internal()) < 1)
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "i2d_X509_bio", NULL);
+		break;
+	case DataFormat::BASE64:
+		LOGGER_OPENSSL(PEM_read_bio_X509);
+		if (PEM_write_bio_X509(out->internal(), this->internal()) < 1)
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "PEM_write_bio_X509", NULL);
+		break;
+	default:
+		THROW_EXCEPTION(0, Certificate, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
+	}
 }
 
-Handle<std::string> Certificate::subjectFriendlyName()
+Handle<std::string> Certificate::getSubjectFriendlyName()
 {
 	LOGGER_FN();
 
@@ -108,7 +86,7 @@ Handle<std::string> Certificate::subjectFriendlyName()
 	return GetCommonName(X509_get_subject_name(this->internal()));
 }
 
-Handle<std::string> Certificate::issuerFriendlyName()
+Handle<std::string> Certificate::getIssuerFriendlyName()
 {
 	LOGGER_FN();
 
@@ -151,7 +129,7 @@ Handle<std::string> Certificate::GetCommonName(X509_NAME *a){
 	return name;
 }
 
-Handle<std::string> Certificate::subjectName()
+Handle<std::string> Certificate::getSubjectName()
 {
 	LOGGER_FN();
 
@@ -162,16 +140,13 @@ Handle<std::string> Certificate::subjectName()
 
 	LOGGER_OPENSSL(X509_NAME_oneline_ex);
 	std::string str_name = X509_NAME_oneline_ex(name);
-	//if (!str_name)
-	//	THROW_EXCEPTION(0, Certificate, NULL, "X509_NAME_oneline_ex");
 
 	Handle<std::string> res = new std::string(str_name.c_str(), str_name.length());
-	//OPENSSL_free(str_name);
 
 	return res;
 }
 
-Handle<std::string> Certificate::issuerName()
+Handle<std::string> Certificate::getIssuerName()
 {
 	LOGGER_FN();
 
@@ -182,16 +157,13 @@ Handle<std::string> Certificate::issuerName()
 
 	LOGGER_OPENSSL(X509_NAME_oneline_ex);
 	std::string str_name = X509_NAME_oneline_ex(name);
-	//if (!str_name)
-	//	THROW_EXCEPTION(0, Certificate, NULL, "X509_NAME_oneline_ex");
 
 	Handle<std::string> res = new std::string(str_name.c_str(), str_name.length());
-	//OPENSSL_free(str_name);
 
 	return res;
 }
 
-Handle<std::string> Certificate::notAfter()
+Handle<std::string> Certificate::getNotAfter()
 {
 	LOGGER_FN();
 
@@ -207,7 +179,7 @@ Handle<std::string> Certificate::notAfter()
 	return out->read();
 }
 
-Handle<std::string> Certificate::notBefore()
+Handle<std::string> Certificate::getNotBefore()
 {
 	LOGGER_FN();
 
@@ -223,7 +195,7 @@ Handle<std::string> Certificate::notBefore()
 	return out->read();
 }
 
-Handle<std::string> Certificate::serialNumber()
+Handle<std::string> Certificate::getSerialNumber()
 {
 	LOGGER_FN();
 
@@ -234,7 +206,7 @@ Handle<std::string> Certificate::serialNumber()
 	int out_len = i2d_ASN1_INTEGER(sn, &out);
 
 	Handle<std::string> res = new std::string((char *)out, out_len);
-    
+
 	LOGGER_OPENSSL(OPENSSL_free);
 	OPENSSL_free(out);
 	return res;
@@ -249,50 +221,82 @@ int Certificate::compare(Handle<Certificate> cert){
 	return res;
 }
 
-Handle<std::string> Certificate::thumbprint()
+Handle<std::string> Certificate::getThumbprint()
 {
-    LOGGER_FN();
-    
-    LOGGER_OPENSSL(EVP_sha1);
-    const EVP_MD *md = EVP_sha1();
-    
-    unsigned char hash[20] = {0};
-     
-    LOGGER_OPENSSL(X509_digest);
-    if (!X509_digest(this->internal(), md, hash, NULL)){
-        THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_digest");
-    }
-    
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(EVP_sha1);
+	const EVP_MD *md = EVP_sha1();
+
+	unsigned char hash[20] = { 0 };
+
+	LOGGER_OPENSSL(X509_digest);
+	if (!X509_digest(this->internal(), md, hash, NULL)){
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_digest");
+	}
+
 	Handle<std::string> res = new std::string((char *)hash, 20);
-    
-    return res;
+
+	return res;
 }
 
-long Certificate::version(){
-    LOGGER_FN();
+long Certificate::getVersion(){
+	LOGGER_FN();
 
 	LOGGER_OPENSSL(X509_get_version);
 	long res = X509_get_version(this->internal());
 
-	return res;   
+	return res;
 }
 
-int Certificate::type(){
-    LOGGER_FN();
-    
-    LOGGER_OPENSSL(X509_get_pubkey);
-    EVP_PKEY *pk = X509_get_pubkey(this->internal());
-    
-    return pk->type;
+int Certificate::getType(){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_get_pubkey);
+	EVP_PKEY *pk = X509_get_pubkey(this->internal());
+	if (!pk)
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_get_pubkey", NULL);
+
+	return pk->type;
 }
 
-int Certificate::keyUsage(){
-    LOGGER_FN();
-    
-    LOGGER_OPENSSL(X509_check_purpose);
-    X509_check_purpose(this->internal(), -1, -1);
-    if (this->internal()->ex_flags & EXFLAG_KUSAGE)
-        return this->internal()->ex_kusage;
-    
-    return UINT32_MAX;
+int Certificate::getKeyUsage(){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_check_purpose);
+	X509_check_purpose(this->internal(), -1, -1);
+	if (this->internal()->ex_flags & EXFLAG_KUSAGE)
+		return this->internal()->ex_kusage;
+
+	return UINT32_MAX;
+}
+
+bool Certificate::equals(Handle<Certificate> cert){
+	LOGGER_FN();
+
+	Handle<std::string> cert1 = this->getThumbprint();
+	Handle<std::string> cert2 = cert->getThumbprint();
+
+	if (cert1->compare(*cert2) == 0){
+		return true;
+	}
+	return false;
+}
+
+Handle<std::string> Certificate::hash(std::string algorithm){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(EVP_sha1);
+	const EVP_MD *md = EVP_sha1();
+
+	unsigned char hash[20] = { 0 };
+
+	LOGGER_OPENSSL(X509_digest);
+	if (!X509_digest(this->internal(), md, hash, NULL)){
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_digest");
+	}
+
+	Handle<std::string> res = new std::string((char *)hash, 20);
+
+	return res;
 }
