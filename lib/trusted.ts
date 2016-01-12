@@ -1,9 +1,10 @@
-import * as cert from './pki/cert'
-import * as crl from './pki/crl'
+import * as dataFormat from "./data_format";
+import * as cert from "./pki/cert";
+import * as crl from "./pki/crl";
 
-var i = 1;
+export let DataFormat = dataFormat.DataFormat;
 
 export namespace Pki {
-	export var Certificate = cert.Certificate;
-	export var Crl = crl.Crl;
+    export let Certificate = cert.Certificate;
+    export let Crl = crl.Crl;
 }
