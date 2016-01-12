@@ -31,7 +31,6 @@ describe('Certificate', function () {
 	var cert;
 
 	it('init', function () {
-		console.log(trusted.Pki);
 		cert = new trusted.Pki.Certificate()
 		assert.equal(cert != null, true);
 	})
@@ -75,10 +74,25 @@ describe('Certificate', function () {
         //var n = c.subjectName;
 	})
 
-	it('export', function () {
+	it('export PEM', function () {
+		var buf = cert.export(trusted.DataFormat.PEM);
+		assert.equal(Buffer.isBuffer(buf), true);
+        assert.equal(buf.length > 0, true);
+		assert.equal(buf.toString().indexOf("-----BEGIN CERTIFICATE-----") === -1, false);
+	})
+    
+    it('export Default', function () {
 		var buf = cert.export();
 		assert.equal(Buffer.isBuffer(buf), true);
-		console.log("Export", buf.toString('hex'));
+        assert.equal(buf.length > 0, true);
+		assert.equal(buf.toString().indexOf("-----BEGIN CERTIFICATE-----") === -1, true);
+	})
+    
+    it('export DER', function () {
+		var buf = cert.export(trusted.DataFormat.DER);
+		assert.equal(Buffer.isBuffer(buf), true);
+        assert.equal(buf.length > 0, true);
+		assert.equal(buf.toString().indexOf("-----BEGIN CERTIFICATE-----") === -1, true);
 	})
 
 });
