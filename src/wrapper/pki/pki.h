@@ -17,10 +17,8 @@ public:
 		switch (value){
 		case DataFormat::DER:
 			return DataFormat::DER;
-			break;
 		case DataFormat::BASE64:
 			return DataFormat::BASE64;
-			break;
 		default:
 			THROW_EXCEPTION(0, DataFormat, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, value);
 		}
