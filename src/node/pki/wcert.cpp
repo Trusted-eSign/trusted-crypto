@@ -151,7 +151,7 @@ NAN_METHOD(WCertificate::Export) {
 
 	try {
 		LOGGER_ARG("format")
-		int format = info[1]->ToNumber()->Int32Value();
+		int format = info[0]->ToNumber()->Int32Value();
 
 		UNWRAP_DATA(Certificate);
 
@@ -161,7 +161,7 @@ NAN_METHOD(WCertificate::Export) {
 		Handle<std::string> buf = out->read();
 
 		info.GetReturnValue().Set(
-			Nan::New(buf->c_str(), buf->length()).ToLocalChecked()
+			stringToBuffer(buf)
 			);
 		return;
 	}
