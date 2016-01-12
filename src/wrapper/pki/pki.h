@@ -18,8 +18,8 @@ public:
 		case DataFormat::DER:
 			return DataFormat::DER;
 			break;
-		case DataFormat::Base64:
-			return DataFormat::Base64;
+		case DataFormat::BASE64:
+			return DataFormat::BASE64;
 			break;
 		default:
 			THROW_EXCEPTION(0, DataFormat, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, value);
@@ -33,8 +33,8 @@ public:
 #include "attr.h"
 #include "attr_vals.h"
 #include "attrs.h"
-#include "cert.h"
 */
+#include "cert.h"
 #include "crl.h"
 /*
 #include "certs.h"

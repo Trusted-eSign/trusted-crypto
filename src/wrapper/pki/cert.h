@@ -40,7 +40,8 @@ public:
 	Handle<Certificate> duplicate();
 	int compare(Handle<Certificate> cert);
 	bool equals(Handle<Certificate> cert);
-	Handle<std::string> hash(std::string algorithm);
+	Handle<std::string> hash(Handle<std::string> algorithm);
+	Handle<std::string> hash(const EVP_MD *md);
 
 protected:
 	static Handle<std::string> GetCommonName(X509_NAME *a);

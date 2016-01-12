@@ -1,88 +1,99 @@
-import {native} from '../native'
-import {BaseObject} from "../object"
+import {native} from "../native";
+import {BaseObject} from "../object";
+import {DataFormat} from "../data_format";
+
+const DEFAULT_DATA_FORMAT = DataFormat.DER;
 
 export class Certificate extends BaseObject {
 
-	constructor() {
-		super();
+    constructor() {
+        super();
 
-		this.handle = new native.PKI.Certificate();
-	}
-
-	get version(): number {
-		return this.handle.getVersion();
-	}
-    
-	get serialNumber(): number {
-		return this.handle.getSerialNumber();
-	}
-    
-    get type(): number {
-		return this.handle.getType();
-	}
-    
-    get keyUsage(): number {
-		return this.handle.getKeyUsage();
-	}
-
-	get issuerFriendlyName(): string {
-		return this.handle.getIssuerFriendlyName();
-	}
-
-	get issuerName(): string {
-		return this.handle.getIssuerName();
-	}
-
-	get subjectFriendlyName(): string {
-		return this.handle.getSubjectFriendlyName();
-	}
-
-	get subjectName(): string {
-		return this.handle.getSubjectName();
-	}
-
-	get notBefore() {
-		return new Date(this.handle.getNotBefore());
-	}
-
-	get notAfter() {
-		return new Date(this.handle.getNotAfter());
-	}
-    
-    get thumbprint(){
-        return this.handle.getThumbprint();
+        this.handle = new native.PKI.Certificate();
     }
 
-	compare(cert: Certificate) {
-		return this.handle.compare(cert.handle);
-	}
+    get version(): number {
+        return this.handle.getVersion();
+    }
 
-	load(filename: string) {
-		this.handle.load(filename);
-	}
-    
-    static load(filename: string): Certificate {
+    get serialNumber(): string {
+        return this.handle.getSerialNumber().toString("hex");
+    }
+
+    get type(): number {
+        return this.handle.getType();
+    }
+
+    get keyUsage(): number {
+        return this.handle.getKeyUsage();
+    }
+
+    get issuerFriendlyName(): string {
+        return this.handle.getIssuerFriendlyName();
+    }
+
+    get issuerName(): string {
+        return this.handle.getIssuerName();
+    }
+
+    get subjectFriendlyName(): string {
+        return this.handle.getSubjectFriendlyName();
+    }
+
+    get subjectName(): string {
+        return this.handle.getSubjectName();
+    }
+
+    get notBefore(): Date {
+        return new Date(this.handle.getNotBefore());
+    }
+
+    get notAfter(): Date {
+        return new Date(this.handle.getNotAfter());
+    }
+
+    get thumbprint(): string {
+        return this.handle.getThumbprint().toString("hex");
+    }
+
+    compare(cert: Certificate): number {
+        return this.handle.compare(cert.handle);
+    }
+
+    equals(cert: Certificate): boolean {
+        return this.handle.equals(cert.handle);
+    }
+
+    hash(algorithm: string) {
+        return this.handle.hash(algorithm);
+    }
+
+    load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT) {
+        this.handle.load(filename);
+    }
+
+    static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
         let cert = new Certificate();
-		cert.handle.load(filename);
+        cert.handle.load(filename, format);
         return cert;
-	}
+    }
 
-	import(buffer: Buffer) {
-		this.handle.import(buffer);
-	}
-    
-    static import(buffer: Buffer): Certificate {
+    import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT) {
+        this.handle.import(buffer, format);
+    }
+
+    static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
         let cert = new Certificate();
-		cert.handle.import(buffer);
+        cert.handle.import(buffer, format);
         return cert;
-	}
+    }
 
-	export() {
-		return this.handle.export();
-	}
+    export(format: DataFormat = DEFAULT_DATA_FORMAT) {
+        return this.handle.export(format);
+    }
 
-	save(filename: string) {
-		this.handle.save(filename);
-	}
+    save(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT) {
+        this.handle.save(filename, format);
+    }
 
 }

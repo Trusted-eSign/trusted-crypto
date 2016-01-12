@@ -225,19 +225,7 @@ Handle<std::string> Certificate::getThumbprint()
 {
 	LOGGER_FN();
 
-	LOGGER_OPENSSL(EVP_sha1);
-	const EVP_MD *md = EVP_sha1();
-
-	unsigned char hash[20] = { 0 };
-
-	LOGGER_OPENSSL(X509_digest);
-	if (!X509_digest(this->internal(), md, hash, NULL)){
-		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_digest");
-	}
-
-	Handle<std::string> res = new std::string((char *)hash, 20);
-
-	return res;
+	return this->hash(EVP_sha1());
 }
 
 long Certificate::getVersion(){
@@ -283,20 +271,30 @@ bool Certificate::equals(Handle<Certificate> cert){
 	return false;
 }
 
-Handle<std::string> Certificate::hash(std::string algorithm){
+Handle<std::string> Certificate::hash(Handle<std::string> algorithm){
 	LOGGER_FN();
 
-	LOGGER_OPENSSL(EVP_sha1);
-	const EVP_MD *md = EVP_sha1();
+	LOGGER_OPENSSL(EVP_get_digestbyname);
+	const EVP_MD *md = EVP_get_digestbyname(algorithm->c_str());
+	if (!md) {
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "EVP_get_digestbyname");
+	}
 
-	unsigned char hash[20] = { 0 };
+	return this->hash(md);
+}
+
+Handle<std::string> Certificate::hash(const EVP_MD *md) {
+	LOGGER_FN();
+
+	unsigned char hash[EVP_MAX_MD_SIZE] = { 0 };
+	unsigned int hashlen = 0;
 
 	LOGGER_OPENSSL(X509_digest);
-	if (!X509_digest(this->internal(), md, hash, NULL)){
+	if (!X509_digest(this->internal(), md, hash, &hashlen)) {
 		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_digest");
 	}
 
-	Handle<std::string> res = new std::string((char *)hash, 20);
+	Handle<std::string> res = new std::string((char *)hash, hashlen);
 
 	return res;
 }

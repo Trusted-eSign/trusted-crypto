@@ -18,12 +18,7 @@ public:
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
 	
-	static NAN_METHOD(Load);
-	static NAN_METHOD(Import);
-
-	static NAN_METHOD(Save);
-	static NAN_METHOD(Export);
-
+	//Properties
 	static NAN_METHOD(GetSubjectFriendlyName);
 	static NAN_METHOD(GetIssuerFriendlyName);
 	static NAN_METHOD(GetIssuerName);
@@ -35,7 +30,16 @@ public:
 	static NAN_METHOD(GetVersion);
     static NAN_METHOD(GetType);
 	static NAN_METHOD(GetKeyUsage);
+
+	//Methods
+	static NAN_METHOD(Load);
+	static NAN_METHOD(Import);
+	static NAN_METHOD(Save);
+	static NAN_METHOD(Export);
 	static NAN_METHOD(Compare);
+	static NAN_METHOD(Equals);
+	static NAN_METHOD(Duplicate);
+	static NAN_METHOD(Hash);
 
 	Handle<Certificate> data_;
 	

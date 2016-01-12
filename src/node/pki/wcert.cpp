@@ -6,7 +6,9 @@
 #include "wcert.h"
 #include "wkey.h"
 
-void WCertificate::Init(v8::Handle<v8::Object> exports){
+void WCertificate::Init(v8::Handle<v8::Object> exports) {
+	METHOD_BEGIN();
+
 	v8::Local<v8::String> className = Nan::New("Certificate").ToLocalChecked();
 
 	// Basic instance setup
@@ -14,12 +16,6 @@ void WCertificate::Init(v8::Handle<v8::Object> exports){
 
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
-
-	Nan::SetPrototypeMethod(tpl, "load", Load);
-	Nan::SetPrototypeMethod(tpl, "import", Import);
-
-	Nan::SetPrototypeMethod(tpl, "save", Save);
-	Nan::SetPrototypeMethod(tpl, "export", Export);
 
 	Nan::SetPrototypeMethod(tpl, "getSubjectFriendlyName", GetSubjectFriendlyName);
 	Nan::SetPrototypeMethod(tpl, "getIssuerFriendlyName", GetIssuerFriendlyName);
@@ -32,7 +28,15 @@ void WCertificate::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
 	Nan::SetPrototypeMethod(tpl, "getType", GetType);
 	Nan::SetPrototypeMethod(tpl, "getKeyUsage", GetKeyUsage);
+
+	Nan::SetPrototypeMethod(tpl, "load", Load);
+	Nan::SetPrototypeMethod(tpl, "import", Import);
+	Nan::SetPrototypeMethod(tpl, "save", Save);
+	Nan::SetPrototypeMethod(tpl, "export", Export);
 	Nan::SetPrototypeMethod(tpl, "compare", Compare);
+	Nan::SetPrototypeMethod(tpl, "equals", Equals);
+	Nan::SetPrototypeMethod(tpl, "duplicate", Duplicate);
+	Nan::SetPrototypeMethod(tpl, "hash", Hash);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -40,8 +44,10 @@ void WCertificate::Init(v8::Handle<v8::Object> exports){
 	exports->Set(Nan::New("Certificate").ToLocalChecked(), tpl->GetFunction());
 }
 
-NAN_METHOD(WCertificate::New){
-	try{
+NAN_METHOD(WCertificate::New) {
+	METHOD_BEGIN();
+
+	try {
 		WCertificate *obj = new WCertificate();
 		obj->data_ = new Certificate();
 
@@ -55,15 +61,17 @@ NAN_METHOD(WCertificate::New){
 
 /*
  * filename: String
- * format: number
+ * format: DataFormat
  */
-NAN_METHOD(WCertificate::Load){
-	try{
-		//filename
+NAN_METHOD(WCertificate::Load) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("filename");
 		v8::String::Utf8Value v8Filename(info[0]->ToString());
 		char *filename = *v8Filename;
 
-		//format
+		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
 		UNWRAP_DATA(Certificate);
@@ -71,9 +79,9 @@ NAN_METHOD(WCertificate::Load){
 		Handle<Bio> in = NULL;
 
 		in = new Bio(BIO_TYPE_FILE, filename, "rb");
-				
+
 		_this->read(in, DataFormat::get(format));
-		
+
 		info.GetReturnValue().Set(info.This());
 		return;
 	}
@@ -81,17 +89,19 @@ NAN_METHOD(WCertificate::Load){
 }
 
 /*
- * in: Buffer
+ * data: Buffer
  * format: DataFormat
  */
-NAN_METHOD(WCertificate::Import){
-	try{
-		//get data from buffer
+NAN_METHOD(WCertificate::Import) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("data");
 		char* buf = node::Buffer::Data(info[0]->ToObject());
 		size_t buflen = node::Buffer::Length(info[0]);
 		std::string buffer(buf, buflen);
 
-		//format
+		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
 		UNWRAP_DATA(Certificate);
@@ -108,15 +118,17 @@ NAN_METHOD(WCertificate::Import){
 
 /*
 * filename: String
-* format: number
+* format: DataFormat
 */
-NAN_METHOD(WCertificate::Save){
-	try{
-		//filename
+NAN_METHOD(WCertificate::Save) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("filename");
 		v8::String::Utf8Value v8Filename(info[0]->ToString());
 		char *filename = *v8Filename;
 
-		//format
+		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
 		UNWRAP_DATA(Certificate);
@@ -131,9 +143,14 @@ NAN_METHOD(WCertificate::Save){
 	TRY_END();
 }
 
-NAN_METHOD(WCertificate::Export){
-	try{
-		//format
+/*
+ * format: DataFormat
+ */
+NAN_METHOD(WCertificate::Export) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("format")
 		int format = info[1]->ToNumber()->Int32Value();
 
 		UNWRAP_DATA(Certificate);
@@ -151,8 +168,10 @@ NAN_METHOD(WCertificate::Export){
 	TRY_END();
 }
 
-NAN_METHOD(WCertificate::GetSubjectFriendlyName){
-	try{
+NAN_METHOD(WCertificate::GetSubjectFriendlyName) {
+	METHOD_BEGIN();
+
+	try {
 		UNWRAP_DATA(Certificate);
 
 		Handle<std::string> fname = _this->getSubjectFriendlyName();
@@ -165,12 +184,13 @@ NAN_METHOD(WCertificate::GetSubjectFriendlyName){
 	TRY_END();
 }
 
-NAN_METHOD(WCertificate::GetIssuerFriendlyName){
-	try{
-		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
-		Handle<Certificate> cert = obj->data_;
+NAN_METHOD(WCertificate::GetIssuerFriendlyName) {
+	METHOD_BEGIN();
 
-		Handle<std::string> fname = cert->getIssuerFriendlyName();
+	try {
+		UNWRAP_DATA(Certificate);
+
+		Handle<std::string> fname = _this->getIssuerFriendlyName();
 
 		v8::Local<v8::String> v8FName = Nan::New<v8::String>(fname->c_str()).ToLocalChecked();
 
@@ -180,13 +200,13 @@ NAN_METHOD(WCertificate::GetIssuerFriendlyName){
 	TRY_END();
 }
 
-NAN_METHOD(WCertificate::GetSubjectName){
-	try{
-		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
-		Handle<Certificate> cert = obj->data_;
+NAN_METHOD(WCertificate::GetSubjectName) {
+	METHOD_BEGIN();
 
-		Handle<std::string> name = NULL;
-		name = cert->getSubjectName();
+	try {
+		UNWRAP_DATA(Certificate);
+
+		Handle<std::string> name = _this->getSubjectName();
 
 		v8::Local<v8::String> v8Name = Nan::New<v8::String>(name->c_str()).ToLocalChecked();
 
@@ -196,14 +216,13 @@ NAN_METHOD(WCertificate::GetSubjectName){
 	TRY_END();
 }
 
-NAN_METHOD(WCertificate::GetIssuerName){
-	try{
-		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
-		Handle<Certificate> cert = obj->data_;
+NAN_METHOD(WCertificate::GetIssuerName) {
+	METHOD_BEGIN();
 
-		Handle<std::string> name = NULL;
+	try {
+		UNWRAP_DATA(Certificate);
 
-		name = cert->getIssuerName();
+		Handle<std::string> name = _this->getIssuerName();
 
 		v8::Local<v8::String> v8Name = Nan::New<v8::String>(name->c_str()).ToLocalChecked();
 
@@ -215,13 +234,12 @@ NAN_METHOD(WCertificate::GetIssuerName){
 
 NAN_METHOD(WCertificate::GetNotBefore)
 {
-	try{
-		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
-		Handle<Certificate> cert = obj->data_;
+	METHOD_BEGIN();
 
-		Handle<std::string> time = NULL;
+	try {
+		UNWRAP_DATA(Certificate);
 
-		time = cert->getNotBefore();
+		Handle<std::string> time = _this->getNotBefore();
 
 		v8::Local<v8::String> v8Time = Nan::New<v8::String>(time->c_str()).ToLocalChecked();
 
@@ -233,13 +251,12 @@ NAN_METHOD(WCertificate::GetNotBefore)
 
 NAN_METHOD(WCertificate::GetNotAfter)
 {
-	try{
-		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info.This(), 0);
-		Handle<Certificate> cert = obj->data_;
+	METHOD_BEGIN();
 
-		Handle<std::string> time = NULL;
+	try {
+		UNWRAP_DATA(Certificate);
 
-		time = cert->getNotAfter();
+		Handle<std::string> time = _this->getNotAfter();
 
 		v8::Local<v8::String> v8Time = Nan::New<v8::String>(time->c_str()).ToLocalChecked();
 
@@ -253,7 +270,7 @@ NAN_METHOD(WCertificate::GetSerialNumber)
 {
 	METHOD_BEGIN();
 
-	try{
+	try {
 		UNWRAP_DATA(Certificate);
 
 		Handle<std::string> buf = _this->getSerialNumber();
@@ -270,7 +287,7 @@ NAN_METHOD(WCertificate::GetThumbprint)
 {
 	METHOD_BEGIN();
 
-	try{
+	try {
 		UNWRAP_DATA(Certificate);
 
 		Handle<std::string> buf = _this->getThumbprint();
@@ -284,12 +301,16 @@ NAN_METHOD(WCertificate::GetThumbprint)
 	TRY_END();
 }
 
-NAN_METHOD(WCertificate::Compare){
+/*
+* certificate: Certificate
+*/
+NAN_METHOD(WCertificate::Compare) {
 	METHOD_BEGIN();
 
-	try{
+	try {
 		UNWRAP_DATA(Certificate);
 
+		LOGGER_ARG("certificate")
 		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info[0]->ToObject(), 0);
 		Handle<Certificate> cert = obj->data_;
 
@@ -303,11 +324,34 @@ NAN_METHOD(WCertificate::Compare){
 	TRY_END();
 }
 
+/*
+ * certificate: Certificate
+ */
+NAN_METHOD(WCertificate::Equals) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("certificate")
+		WCertificate* obj = (WCertificate*)Nan::GetInternalFieldPointer(info[0]->ToObject(), 0);
+		Handle<Certificate> cert = obj->data_;
+
+		bool res = _this->equals(cert);
+
+		info.GetReturnValue().Set(
+			Nan::New<v8::Boolean>(res)
+			);
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WCertificate::GetVersion)
 {
 	METHOD_BEGIN();
 
-	try{
+	try {
 		UNWRAP_DATA(Certificate);
 
 		long version = _this->getVersion();
@@ -324,7 +368,7 @@ NAN_METHOD(WCertificate::GetType)
 {
 	METHOD_BEGIN();
 
-	try{
+	try {
 		UNWRAP_DATA(Certificate);
 
 		int type = _this->getType();
@@ -341,14 +385,58 @@ NAN_METHOD(WCertificate::GetKeyUsage)
 {
 	METHOD_BEGIN();
 
-	try{
+	try {
 		UNWRAP_DATA(Certificate);
 
 		int type = _this->getKeyUsage();
 
-		info.GetReturnValue().Set(
-			Nan::New<v8::Number>(type)
-			);
+		info.GetReturnValue().Set(Nan::New<v8::Number>(type));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::Duplicate)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		Handle<Certificate> cert = _this->duplicate();
+
+		LOGGER_INFO("Create new instance of JS Certificate");
+		v8::Local<v8::Object> v8CertificateClass = Nan::New<v8::Object>();
+		WCertificate::Init(v8CertificateClass);
+		v8::Local<v8::Object> v8Certificate = v8CertificateClass->CallAsConstructor(0, NULL)->ToObject();
+
+		LOGGER_INFO("Set internal data for JS Certificate");
+		WCertificate* wcert = (WCertificate*)Nan::GetInternalFieldPointer(v8Certificate, 0);
+		wcert->data_ = cert;
+
+		info.GetReturnValue().Set(v8Certificate);
+		return;
+	}
+	TRY_END();
+}
+
+/*
+ * algorithm: String
+ */
+NAN_METHOD(WCertificate::Hash)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("algorithm")
+		v8::String::Utf8Value v8Alg(info[0]->ToString());
+		char *alg = *v8Alg;
+
+		Handle<std::string> hash = _this->hash(new std::string(alg));
+		
+		info.GetReturnValue().Set(stringToBuffer(hash));
 		return;
 	}
 	TRY_END();
