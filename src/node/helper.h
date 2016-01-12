@@ -3,6 +3,8 @@
 
 #include <v8.h>
 
+#define LOGGER_ARG(name) LOGGER_INFO("Param: %s", name)
+
 /**
 * Schedule an "allocation failed" exception. This (tries) to allocate
 * as well, which very well could (probably will) fail too, but it's the
