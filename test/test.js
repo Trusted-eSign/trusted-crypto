@@ -94,5 +94,27 @@ describe('Certificate', function () {
         assert.equal(buf.length > 0, true);
 		assert.equal(buf.toString().indexOf("-----BEGIN CERTIFICATE-----") === -1, true);
 	})
+    
+    it("duplicate", function(){
+        var cert1 = trusted.Pki.Certificate.load("test/test.crt");
+        var cert2 = cert1.duplicate();
+        assert.equal(cert1.thumbprint === cert2.thumbprint, true, "Certificates are not equals");
+    })
+    
+    it("equals", function(){
+        var cert1 = trusted.Pki.Certificate.load("test/test.crt");
+        var cert2 = trusted.Pki.Certificate.load("test/test-ru.crt");
+        var cert3 = trusted.Pki.Certificate.load("test/test.crt");
+        assert.equal(cert1.equals(cert2), false, "Certificates are equals");
+        assert.equal(cert1.equals(cert3), true, "Certificates are not equals");
+    })
+    
+    it("compare", function(){
+        var cert1 = trusted.Pki.Certificate.load("test/test.crt");
+        var cert2 = trusted.Pki.Certificate.load("test/test-ru.crt");
+        assert.equal(cert1.compare(cert2), 1, "Wrong compare");
+        assert.equal(cert2.compare(cert1), -1, "Wrong compare");
+        assert.equal(cert1.compare(cert1), 0, "Wrong compare");
+    })
 
 });

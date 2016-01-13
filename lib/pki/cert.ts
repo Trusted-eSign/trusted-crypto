@@ -57,7 +57,12 @@ export class Certificate extends BaseObject {
     }
 
     compare(cert: Certificate): number {
-        return this.handle.compare(cert.handle);
+        let cmp = this.handle.compare(cert.handle);
+        if (cmp < 0)
+            return -1;
+        if (cmp > 0)
+            return 1;
+        return 0;
     }
 
     equals(cert: Certificate): boolean {
@@ -66,6 +71,12 @@ export class Certificate extends BaseObject {
 
     hash(algorithm: string) {
         return this.handle.hash(algorithm);
+    }
+    
+    duplicate(): Certificate{
+        let cert = new Certificate();
+        cert.handle = this.handle.duplicate();
+        return cert;
     }
 
     load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT) {

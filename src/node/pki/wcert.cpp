@@ -408,7 +408,7 @@ NAN_METHOD(WCertificate::Duplicate)
 		LOGGER_INFO("Create new instance of JS Certificate");
 		v8::Local<v8::Object> v8CertificateClass = Nan::New<v8::Object>();
 		WCertificate::Init(v8CertificateClass);
-		v8::Local<v8::Object> v8Certificate = v8CertificateClass->CallAsConstructor(0, NULL)->ToObject();
+		v8::Local<v8::Object> v8Certificate = Nan::Get(v8CertificateClass, Nan::New("Certificate").ToLocalChecked()).ToLocalChecked()->ToObject()->CallAsConstructor(0, NULL)->ToObject();
 
 		LOGGER_INFO("Set internal data for JS Certificate");
 		WCertificate* wcert = (WCertificate*)Nan::GetInternalFieldPointer(v8Certificate, 0);
