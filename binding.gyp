@@ -18,7 +18,9 @@
                 "src/wrapper/common/openssl.cpp",
                 "src/wrapper/common/prov.cpp",
                 "src/wrapper/pki/crl.cpp",
-                "src/wrapper/pki/cert.cpp"
+                "src/wrapper/pki/cert.cpp",
+                "src/wrapper/pki/alg.cpp",
+                "src/wrapper/pki/oid.cpp"
             ],
             "conditions": [
                 [

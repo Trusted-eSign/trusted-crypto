@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <string.h> //��������� ��� ���������� strlen and memcpy
+#include "../stdafx.h"
 #include "alg.h"
 
 Algorithm::Algorithm(const char* alg_name)
@@ -7,6 +6,7 @@ Algorithm::Algorithm(const char* alg_name)
 	LOGGER_FN();
 	try{
 		init(alg_name);
+
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Algorithm, e, "Can not init Algorithm");
@@ -20,12 +20,9 @@ Algorithm::Algorithm(Handle<OID> alg_oid)
 	if (alg_oid.isEmpty())
 		THROW_EXCEPTION(0, Algorithm, NULL, "Parameter %d can not be NULL", 1);
 
-	LOGGER_OPENSSL(OBJ_nid2sn);
-	const char *sn = OBJ_nid2sn(alg_oid->toNID());
-	if (!sn)
-		THROW_EXCEPTION(0, Algorithm, NULL, "OBJ_nid2sn");
 	try{
-		init(sn);
+		Handle<std::string> sn = alg_oid->getShortName();
+		init(sn->c_str());
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Algorithm, e, "Can not init Algorithm");
@@ -37,17 +34,17 @@ Handle<Algorithm> Algorithm::duplicate() {
 
 	LOGGER_OPENSSL(X509_ALGOR_dup);
 	X509_ALGOR *_alg = X509_ALGOR_dup(this->internal());
-	if (!_alg) THROW_EXCEPTION(0, Algorithm, NULL, "OpensSSL:duplicate");
+	if (!_alg) THROW_OPENSSL_EXCEPTION(0, Algorithm, NULL, "X509_ALGOR_dup");
 	return new Algorithm(_alg);
 }
 
-Handle<OID> Algorithm::typeId() {
+Handle<OID> Algorithm::getTypeId() {
 	LOGGER_FN();
 
 	return new OID(this->internal()->algorithm, this->handle());
 }
 
-Handle<std::string> Algorithm::name() {
+Handle<std::string> Algorithm::getName() {
 	LOGGER_FN();
 
 
@@ -85,9 +82,18 @@ bool Algorithm::isDigest(){
 	LOGGER_FN();
 
 	LOGGER_OPENSSL(EVP_get_digestbynid);
-	const EVP_MD *md = EVP_get_digestbynid(this->typeId()->toNID());
+	const EVP_MD *md = EVP_get_digestbynid(this->getTypeId()->toNid());
 	if (md){
 		return true;
 	}
 	return false;
+}
+
+int Algorithm::compare(Handle<Algorithm> alg){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_ALGOR_cmp);
+	int res = X509_ALGOR_cmp(this->internal(), alg->internal());
+
+	return res;
 }

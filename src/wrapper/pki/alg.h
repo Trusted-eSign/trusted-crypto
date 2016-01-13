@@ -12,18 +12,21 @@ class CTWRAPPER_API Algorithm;
 
 SSLOBJECT_free(X509_ALGOR, X509_ALGOR_free)
 
-class Algorithm: public SSLObject<X509_ALGOR> {
+class Algorithm : public SSLObject < X509_ALGOR > {
 public:
+	//Constructor
 	SSLOBJECT_new(Algorithm, X509_ALGOR){}
 	SSLOBJECT_new_null(Algorithm, X509_ALGOR, X509_ALGOR_new){}
 	Algorithm(const char* alg_name);
 	Algorithm(Handle<OID> alg_oid);
 
-	Handle<OID> typeId();
+	//Properties
+	Handle<OID> getTypeId();
+	Handle<std::string> getName();
 
+	//Methods
 	Handle<Algorithm> duplicate();
-	Handle<std::string> name();
-
+	int compare(Handle<Algorithm> alg);
 	bool isDigest();
 
 protected:
