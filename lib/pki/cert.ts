@@ -69,8 +69,8 @@ export class Certificate extends BaseObject {
         return this.handle.equals(cert.handle);
     }
 
-    hash(algorithm: string) {
-        return this.handle.hash(algorithm);
+    hash(algorithm: string = "sha1"):String {
+        return this.handle.hash(algorithm).toString("hex");
     }
     
     duplicate(): Certificate{

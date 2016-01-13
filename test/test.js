@@ -116,5 +116,20 @@ describe('Certificate', function () {
         assert.equal(cert2.compare(cert1), -1, "Wrong compare");
         assert.equal(cert1.compare(cert1), 0, "Wrong compare");
     })
+    
+    it("hash", function(){
+        var cert1 = trusted.Pki.Certificate.load("test/test.crt");
+        
+        var hash1 = cert1.hash();
+        var hash2 = cert1.hash("sha1");
+        var hash3 = cert1.hash("sha256");
+        
+        assert.equal(hash1.length, 40, "Длина хеш SHA1 должна быть 20");
+        assert.equal(hash2.length, 40, "Длина хеш SHA1 должна быть 20");
+        assert.equal(hash3.length, 64, "Длина хеш SHA1 должна быть 32");
+        
+        assert.equal(hash1 === hash2, true, "Значения хеш не совпадают");
+        
+    })
 
 });
