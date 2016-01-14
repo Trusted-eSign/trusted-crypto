@@ -42,7 +42,7 @@ Handle<std::string> OID::getLongName(){
 	const char *buf;
 	LOGGER_OPENSSL(OBJ_nid2ln);
 	buf = OBJ_nid2ln(this->toNid());
-	if (buf)
+	if (!buf)
 		THROW_OPENSSL_EXCEPTION(0, Algorithm, NULL, "OBJ_nid2ln");
 	std::string *res = new std::string(buf);
 	return res;
@@ -54,7 +54,7 @@ Handle<std::string> OID::getShortName(){
 	const char *buf;
 	LOGGER_OPENSSL(OBJ_nid2sn);
 	buf = OBJ_nid2sn(this->toNid());
-	if (buf)
+	if (!buf)
 		THROW_OPENSSL_EXCEPTION(0, Algorithm, NULL, "OBJ_nid2sn");
 	std::string *res = new std::string(buf);
 	return res;
