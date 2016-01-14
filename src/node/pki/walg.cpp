@@ -29,12 +29,25 @@ void WAlgorithm::Init(v8::Handle<v8::Object> exports){
 }
 
 NAN_METHOD(WAlgorithm::New){
-	WAlgorithm *obj = new WAlgorithm();
-	obj->data_ = new Algorithm();
+	METHOD_BEGIN();
 
-	obj->Wrap(info.This());
+	try{
+		WAlgorithm *obj = new WAlgorithm();
+		obj->data_ = new Algorithm();
 
-	info.GetReturnValue().Set(info.This());
+		if (!info[0]->IsUndefined()){
+			LOGGER_INFO("Create Algorithm from String");
+			v8::String::Utf8Value v8AlgName(info[0]->ToString());
+
+			obj->data_ = new Algorithm(*v8AlgName);
+		}
+
+		obj->Wrap(info.This());
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END()
 }
 
 NAN_METHOD(WAlgorithm::GetTypeId){
