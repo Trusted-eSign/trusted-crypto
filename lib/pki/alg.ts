@@ -30,6 +30,10 @@ export class Algorithm extends BaseObject {
             return -1;
         return 0;
     }
+    
+    equals(alg: Algorithm): boolean {
+        return this.compare(alg) === 0;
+    }
 
     duplicate(): Algorithm {
         let walg = this.handle.duplicate();
