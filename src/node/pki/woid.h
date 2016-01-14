@@ -9,6 +9,8 @@
 #include <nan.h>
 #include "../helper.h"
 
+#define CLASS_NAME_OID "OID"
+
 class WOID: public node::ObjectWrap
 {
 public:

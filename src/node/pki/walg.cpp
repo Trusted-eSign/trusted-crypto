@@ -78,24 +78,6 @@ NAN_METHOD(WAlgorithm::GetName){
 	TRY_END();
 }
 
-NAN_METHOD(WAlgorithm::GetName){
-	METHOD_BEGIN();
-
-	try{
-		UNWRAP_DATA(Algorithm);
-
-		Handle<std::string> name = _this->getName();
-
-		v8::Local<v8::String> v8Name = Nan::New(name->c_str()).ToLocalChecked();
-
-		info.GetReturnValue().Set(
-			v8Name
-			);
-		return;
-	}
-	TRY_END();
-}
-
 NAN_METHOD(WAlgorithm::Duplicate){
 	METHOD_BEGIN();
 
