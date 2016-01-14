@@ -23,12 +23,25 @@ void WOID::Init(v8::Handle<v8::Object> exports){
 }
 
 NAN_METHOD(WOID::New){
-	WOID *obj = new WOID();
-	obj->data_ = new OID();
+	METHOD_BEGIN();
+	try{
+		WOID *obj = new WOID();
 
-	obj->Wrap(info.This());
+		obj->data_ = new OID();
 
-	info.GetReturnValue().Set(info.This());
+		LOGGER_INFO("Get Oid value");
+		if (!info[0]->IsUndefined()){
+			LOGGER_INFO("Create new Oid from String");
+			v8::String::Utf8Value v8OidString(info[0]->ToString());
+			obj->data_ = new OID(*v8OidString);
+		}
+
+		obj->Wrap(info.This());
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
 }
 
 NAN_METHOD(WOID::GetLongName){
