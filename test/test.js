@@ -138,13 +138,30 @@ describe('OID', function () {
     it("create", function () {
         var oid = new trusted.Pki.Oid("2.5.4.3");
         assert.equal(oid.value, "2.5.4.3");
-        assert.equal(oid.longName, "commonName");        
-        assert.equal(oid.shortName, "CN");        
+        assert.equal(oid.longName, "commonName");
+        assert.equal(oid.shortName, "CN");
     })
-    
+
     it("create with error", function () {
-        assert.throws(function(){
-            new trusted.Pki.Oid("2.5.4.3_error");    
-        });                
+        assert.throws(function () {
+            new trusted.Pki.Oid("2.5.4.3_error");
+        });
+    })
+})
+
+describe('Algorithm', function () {
+    it("create", function () {
+        var alg = new trusted.Pki.Algorithm("SHA");
+        assert.equal(alg.typeId.shortName, "SHA");
+        assert.equal(alg.name, "sha");
+        assert.equal(alg.duplicate().name, "sha");
+        assert.equal(alg.compare(new trusted.Pki.Algorithm("SHA256")), -1);
+        assert.equal(alg.isDigest(), true);
+    })
+
+    it("create with error", function () {
+        assert.throws(function () {
+            new trusted.Pki.Algorithm("SHA123_error")
+        });
     })
 })

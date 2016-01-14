@@ -3,10 +3,16 @@ import {BaseObject} from "../object";
 
 export class Oid extends BaseObject {
     
-    constructor(oid: string){
+    constructor(handle: Object);
+    constructor(oid: string);
+    constructor(param: any){
         super();
-        
-        this.handle = new native.PKI.OID(oid);
+        if (typeof(param) === "string")
+            this.handle = new native.PKI.OID(param);
+        else if(typeof(param) === "object")
+            this.handle = param;
+        else
+            throw new TypeError("Oid::constructor: Wrong input param");
     }
     
     get value(): string{
