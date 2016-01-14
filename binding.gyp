@@ -10,6 +10,8 @@
                 "src/node/utils/wrap.cpp",
                 "src/node/pki/wcrl.cpp",
                 "src/node/pki/wcert.cpp",
+                "src/node/pki/woid.cpp",
+                "src/node/pki/walg.cpp",
                 "src/wrapper/stdafx.cpp",
                 "src/wrapper/common/bio.cpp",
                 "src/wrapper/common/common.cpp",
