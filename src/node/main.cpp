@@ -13,6 +13,8 @@
 #include "pki/wcrl.h"
 #include "pki/woid.h"
 #include "pki/walg.h"
+#include "certstore/wcertstore.h"
+#include "certstore/wprovider_system.h"
 
 #include <node_object_wrap.h>
 
@@ -37,6 +39,9 @@ void init(v8::Handle<v8::Object> target) {
 	WCRL::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
 	WOID::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
     WAlgorithm::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
+	WKey::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
+	WCertStore::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
+	WProviderSystem::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
 
 	//target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
 	//WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());
