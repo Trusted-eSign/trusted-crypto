@@ -27,7 +27,7 @@
 				"src/wrapper/pki/key.cpp",
                 "src/wrapper/certstore/certstore.cpp",
                 "src/wrapper/certstore/provider_system.cpp",
-                "src/wrapper/certstore/provider_tcl.cpp"
+				"src/wrapper/certstore/provider_tcl.cpp",
                 "src/wrapper/pki/alg.cpp",
                 "src/wrapper/pki/oid.cpp"
             ],
