@@ -5,6 +5,7 @@ import {Oid} from "./oid";
 export class Algorithm extends BaseObject {
 
     constructor();
+    constructor(name: string);
     constructor(name?: string) {
         super();
 
@@ -20,19 +21,6 @@ export class Algorithm extends BaseObject {
 
     get typeId(): Oid {
         return new Oid(this.handle.getTypeId());
-    }
-
-    compare(alg: Algorithm): number {
-        var cmp = this.handle.compare(alg.handle);
-        if (cmp > 0)
-            return 1;
-        if (cmp < 0)
-            return -1;
-        return 0;
-    }
-    
-    equals(alg: Algorithm): boolean {
-        return this.compare(alg) === 0;
     }
 
     duplicate(): Algorithm {
