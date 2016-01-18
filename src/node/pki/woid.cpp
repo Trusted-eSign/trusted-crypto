@@ -1,5 +1,4 @@
 #include "../stdafx.h"
-#include "../helper.h"
 
 #include "woid.h"
 

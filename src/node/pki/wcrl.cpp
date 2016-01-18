@@ -1,11 +1,6 @@
 #include "../stdafx.h"
 
-#include <node_buffer.h>
-//#include <string_bytes.h>
-
 #include "wcrl.h"
-//#include "wcert.h"
-#include "../helper.h"
 
 void WCRL::Init(v8::Handle<v8::Object> exports){
 	v8::Local<v8::String> className = Nan::New("CRL").ToLocalChecked();

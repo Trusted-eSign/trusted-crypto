@@ -1,8 +1,8 @@
 #include "../stdafx.h"
 #include "../helper.h"
 
-#include "walg.h"
 #include "woid.h"
+#include "walg.h"
 
 void WAlgorithm::Init(v8::Handle<v8::Object> exports){
 	v8::Local<v8::String> className = Nan::New(CLASS_NAME_ALGORITHM).ToLocalChecked();
@@ -19,7 +19,6 @@ void WAlgorithm::Init(v8::Handle<v8::Object> exports){
 
 	// Methods
 	Nan::SetPrototypeMethod(tpl, "duplicate", Duplicate);
-	Nan::SetPrototypeMethod(tpl, "compare", Compare);
 	Nan::SetPrototypeMethod(tpl, "isDigest", IsDigest);
 	
 	// Store the constructor in the target bindings.
@@ -110,29 +109,6 @@ NAN_METHOD(WAlgorithm::Duplicate){
 
 		info.GetReturnValue().Set(
 			v8Algorithm
-			);
-		return;
-	}
-	TRY_END();
-}
-
-/*
- * alg: Algorithm
- */
-NAN_METHOD(WAlgorithm::Compare){
-	METHOD_BEGIN();
-
-	try{
-		UNWRAP_DATA(Algorithm);
-
-		LOGGER_INFO("v8Algorithm -> Algorithm");
-		v8::Local<v8::Object> v8Algorithm = info[0]->ToObject();
-		WAlgorithm* walg = (WAlgorithm*)Nan::GetInternalFieldPointer(v8Algorithm, 0);
-
-		int cmp = _this->compare(walg->data_);
-
-		info.GetReturnValue().Set(
-			Nan::New<v8::Number>(cmp)
 			);
 		return;
 	}

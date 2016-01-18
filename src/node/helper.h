@@ -1,7 +1,8 @@
 #ifndef NW_HELPER_H_INCLUDED
 #define NW_HELPER_H_INCLUDED
 
-#include <v8.h>
+#include <nan.h>
+
 #include "../wrapper/common/common.h"
 
 #define LOGGER_ARG(name) LOGGER_INFO("Param: %s", name)

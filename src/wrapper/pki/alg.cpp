@@ -88,12 +88,3 @@ bool Algorithm::isDigest(){
 	}
 	return false;
 }
-
-int Algorithm::compare(Handle<Algorithm> alg){
-	LOGGER_FN();
-
-	LOGGER_OPENSSL(X509_ALGOR_cmp);
-	int res = X509_ALGOR_cmp(this->internal(), alg->internal());
-
-	return res;
-}

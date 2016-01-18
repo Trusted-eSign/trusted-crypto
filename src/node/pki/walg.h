@@ -3,9 +3,6 @@
 
 #include "../../wrapper/pki/alg.h"
 
-#include <node.h>
-#include <v8.h>
-#include <node_object_wrap.h>
 #include <nan.h>
 #include "../helper.h"
 
@@ -26,7 +23,6 @@ public:
 
 	// Methods
 	static NAN_METHOD(Duplicate);
-	static NAN_METHOD(Compare);
 	static NAN_METHOD(IsDigest);
 
 	Handle<Algorithm> data_;

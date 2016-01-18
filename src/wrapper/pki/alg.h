@@ -26,7 +26,6 @@ public:
 
 	//Methods
 	Handle<Algorithm> duplicate();
-	int compare(Handle<Algorithm> alg);
 	bool isDigest();
 
 protected:

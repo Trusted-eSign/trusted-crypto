@@ -1,9 +1,6 @@
 #ifndef UTIL_WRAPPER_INCLUDED
 #define  UTIL_WRAPPER_INCLUDED
 
-#include <node.h>
-#include <v8.h>
-#include <node_object_wrap.h>
 #include <nan.h>
 #include "../../wrapper/common/common.h"
 #include "../helper.h"
