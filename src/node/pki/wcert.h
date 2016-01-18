@@ -3,9 +3,6 @@
 
 #include "../../wrapper/pki/cert.h"
 
-#include <node.h>
-#include <v8.h>
-#include <node_object_wrap.h>
 #include <nan.h>
 #include "../helper.h"
 

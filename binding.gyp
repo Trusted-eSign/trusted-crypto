@@ -13,6 +13,8 @@
 				"src/node/pki/wkey.cpp",
                 "src/node/certstore/wcertstore.cpp",
 				"src/node/certstore/wprovider_system.cpp",
+                "src/node/pki/woid.cpp",
+                "src/node/pki/walg.cpp",
                 "src/wrapper/stdafx.cpp",
                 "src/wrapper/common/bio.cpp",
                 "src/wrapper/common/common.cpp",
@@ -26,6 +28,8 @@
                 "src/wrapper/certstore/certstore.cpp",
                 "src/wrapper/certstore/provider_system.cpp",
                 "src/wrapper/certstore/provider_tcl.cpp"
+                "src/wrapper/pki/alg.cpp",
+                "src/wrapper/pki/oid.cpp"
             ],
             "conditions": [
                 [
@@ -54,7 +58,12 @@
                             "<(openssl_root)/include",
 							 "C:/Users/mks/Desktop/jsoncpp-master/include"
                         ],
-                        "defines": ["CTWRAPPER_STATIC"]
+                        "defines": [ "CTWRAPPER_STATIC" ],
+                        "msbuild_settings": {
+                            "Link": {
+                                "ImageHasSafeExceptionHandlers": "false"
+                            }
+                        }
                     },
                     {
                         "include_dirs": [
