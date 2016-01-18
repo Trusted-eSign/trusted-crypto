@@ -155,7 +155,6 @@ describe('Algorithm', function () {
         assert.equal(alg.typeId.shortName, "SHA");
         assert.equal(alg.name, "sha");
         assert.equal(alg.duplicate().name, "sha");
-        assert.equal(alg.compare(new trusted.Pki.Algorithm("SHA256")), -1);
         assert.equal(alg.isDigest(), true);
     })
 
