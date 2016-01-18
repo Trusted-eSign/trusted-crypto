@@ -11,9 +11,9 @@ describe('CertStore', function () {
 		assert.equal(certstore != null, true);
 	})
 
-   /* it('newJson', function () {
+    it('newJson', function () {
 		certstore.newJson(DEFAULT_CERTSTORE_PATH);
-    });*/
+    });
 });
 
 describe('Key', function () {
