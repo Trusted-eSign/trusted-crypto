@@ -29,7 +29,10 @@
                 "src/wrapper/certstore/provider_system.cpp",
 				"src/wrapper/certstore/provider_tcl.cpp",
                 "src/wrapper/pki/alg.cpp",
-                "src/wrapper/pki/oid.cpp"
+                "src/wrapper/pki/oid.cpp",
+				"src/jsoncpp/json_reader.cpp",
+				"src/jsoncpp/json_value.cpp",
+				"src/jsoncpp/json_writer.cpp"
             ],
             "conditions": [
                 [
@@ -51,12 +54,10 @@
                             ]
                         ],
                         "libraries": [
-                            "-l<(openssl_root)/lib/libeay32.lib",
-							"C:\Users\mks\Desktop\jsoncpp-master\makefiles\msvc2010\Debug\lib_json.lib"
+                            "-l<(openssl_root)/lib/libeay32.lib"
                         ],
                         "include_dirs": [
-                            "<(openssl_root)/include",
-							 "C:/Users/mks/Desktop/jsoncpp-master/include"
+                            "<(openssl_root)/include"
                         ],
                         "defines": [ "CTWRAPPER_STATIC" ],
                         "msbuild_settings": {
