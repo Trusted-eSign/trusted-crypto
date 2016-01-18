@@ -10,6 +10,9 @@
                 "src/node/utils/wrap.cpp",
                 "src/node/pki/wcrl.cpp",
                 "src/node/pki/wcert.cpp",
+				"src/node/pki/wkey.cpp",
+                "src/node/certstore/wcertstore.cpp",
+				"src/node/certstore/wprovider_system.cpp",
                 "src/wrapper/stdafx.cpp",
                 "src/wrapper/common/bio.cpp",
                 "src/wrapper/common/common.cpp",
@@ -18,7 +21,11 @@
                 "src/wrapper/common/openssl.cpp",
                 "src/wrapper/common/prov.cpp",
                 "src/wrapper/pki/crl.cpp",
-                "src/wrapper/pki/cert.cpp"
+                "src/wrapper/pki/cert.cpp",
+				"src/wrapper/pki/key.cpp",
+                "src/wrapper/certstore/certstore.cpp",
+                "src/wrapper/certstore/provider_system.cpp",
+                "src/wrapper/certstore/provider_tcl.cpp"
             ],
             "conditions": [
                 [
@@ -40,10 +47,12 @@
                             ]
                         ],
                         "libraries": [
-                            "-l<(openssl_root)/lib/libeay32.lib"
+                            "-l<(openssl_root)/lib/libeay32.lib",
+							"C:\Users\mks\Desktop\jsoncpp-master\makefiles\msvc2010\Debug\lib_json.lib"
                         ],
                         "include_dirs": [
-                            "<(openssl_root)/include"
+                            "<(openssl_root)/include",
+							 "C:/Users/mks/Desktop/jsoncpp-master/include"
                         ],
                         "defines": ["CTWRAPPER_STATIC"]
                     },

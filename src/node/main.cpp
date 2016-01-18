@@ -13,14 +13,15 @@
 #include "pki/wkey.h"
 #include "pki/wcert.h"
 #include "pki/wcrl.h"
-
+#include "certstore/wcertstore.h"
+#include "certstore/wprovider_system.h"
 
 
 #include <node_object_wrap.h>
 
 void init(v8::Handle<v8::Object> target) {
 	//logger.start("/tmp/trustedtls/node.log", -1); // -1 = all levels bits
-	//logger.start("logger.txt", LoggerLevel::All );
+	logger.start("logger.txt", LoggerLevel::All );
 
 	// On Windows, we can't use Node's OpenSSL, so we link
 	// to a standalone OpenSSL library. Therefore, we need
@@ -37,7 +38,9 @@ void init(v8::Handle<v8::Object> target) {
 	//WKey::Init(target->Get(NanNew<v8::String>("PKI"))->ToObject());
 	WCertificate::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
 	WCRL::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
-
+	WCertStore::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
+	WProviderSystem::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
+	WKey::Init(target->Get(Nan::New("PKI").ToLocalChecked())->ToObject());
 	//target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
 	//WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());
 	
