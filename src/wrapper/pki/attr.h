@@ -20,18 +20,19 @@ public:
 	SSLOBJECT_new_null(Attribute, X509_ATTRIBUTE, X509_ATTRIBUTE_new){}
 	Attribute(Handle<OID> oid, int asnType);
 	Attribute(const std::string& oid, int asnType);
-
+	
+	//-----Methods------
 	Handle<Attribute> duplicate();
-	Handle<std::string> toString();
+	Handle<std::string> write();
 
 protected:
 	//-----Properties-----
 public:
-	int asnType(); //get
-	void asnType(int val); //set
-	Handle<OID> typeId();
-	void typeId(Handle<OID> &oid);
-	void typeId(std::string oid);
+	int getAsnType(); //get
+	void setAsnType(int val); //set
+	Handle<OID> getTypeId();
+	void setTypeId(Handle<OID> &oid);
+	void setTypeId(std::string oid);
 	Handle<AttributeValueCollection> values();
 	Handle<std::string> values(int index);
 

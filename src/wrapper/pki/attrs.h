@@ -19,14 +19,14 @@ public:
 	SSLOBJECT_new_null(AttributeCollection, stack_st_X509_ATTRIBUTE, sk_X509_ATTRIBUTE_new_null){}
 	AttributeCollection(stack_st_X509_ATTRIBUTE** data, Handle<SObject> parent = NULL);
 
-	void push(Handle<Attribute> attr); //void push(Handle<Attribute> &attr);
+	void push(Handle<Attribute> attr);
 	void pop();
+	int length();
 	Handle<Attribute> items(int index);
 	Handle<Attribute> items(Handle<OID> oid);
 	Handle<Attribute> items(const std::string &txtOID); 
 	Handle<Attribute> items(const char* oid);
 	Handle<AttributeCollection> duplicate();
-	int length();
 
 protected:
 

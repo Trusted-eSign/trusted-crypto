@@ -10,23 +10,23 @@ class CTWRAPPER_API AttributeValueCollection;
 
 class AttributeValueCollection {
 public:
-	AttributeValueCollection(Attribute *data);
+	AttributeValueCollection(Handle<Attribute>data);
 	~AttributeValueCollection();
 
-	void push(std::string val);
+	void push(std::string &val);
 	void push(void *val);
 	void set(int index, std::string val);
 	void set(int index, void *val);
 	void pop();
 	void removeAt(int index);
-	std::string items(int index);
+	Handle<std::string> items(int index);
 protected:
 	void init();
 	//-----Properties-----
 public:
 	int length(); //get
 protected:
-	Attribute *data_;
+	Handle<Attribute> data_;
 	STACK_OF(ASN1_TYPE) *set_;
 };
 

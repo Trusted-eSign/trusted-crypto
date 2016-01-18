@@ -2,8 +2,12 @@
 
 #include "woid.h"
 
+const char* WOID::className = "OID";
+
 void WOID::Init(v8::Handle<v8::Object> exports){
-	v8::Local<v8::String> className = Nan::New(CLASS_NAME_OID).ToLocalChecked();
+	LOGGER_FN();
+
+	v8::Local<v8::String> className = Nan::New(WOID::className).ToLocalChecked();
 
 	// Basic instance setup
 	v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
@@ -18,7 +22,7 @@ void WOID::Init(v8::Handle<v8::Object> exports){
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 
-	exports->Set(Nan::New(CLASS_NAME_OID).ToLocalChecked(), tpl->GetFunction());
+	exports->Set(Nan::New(WOID::className).ToLocalChecked(), tpl->GetFunction());
 }
 
 NAN_METHOD(WOID::New){

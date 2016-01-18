@@ -12,6 +12,9 @@
                 "src/node/pki/wcert.cpp",
                 "src/node/pki/woid.cpp",
                 "src/node/pki/walg.cpp",
+                "src/node/pki/wattr.cpp",
+                "src/node/pki/wattrs.cpp",
+                "src/node/pki/wattr_vals.cpp",
                 "src/wrapper/stdafx.cpp",
                 "src/wrapper/common/bio.cpp",
                 "src/wrapper/common/common.cpp",
@@ -22,7 +25,10 @@
                 "src/wrapper/pki/crl.cpp",
                 "src/wrapper/pki/cert.cpp",
                 "src/wrapper/pki/alg.cpp",
-                "src/wrapper/pki/oid.cpp"
+                "src/wrapper/pki/oid.cpp",
+                "src/wrapper/pki/attr.cpp",
+                "src/wrapper/pki/attr_vals.cpp",
+                "src/wrapper/pki/attrs.cpp"
             ],
             "conditions": [
                 [

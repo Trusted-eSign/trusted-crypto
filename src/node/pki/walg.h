@@ -6,13 +6,13 @@
 #include <nan.h>
 #include "../helper.h"
 
-#define CLASS_NAME_ALGORITHM "Algorithm"
-
-class WAlgorithm : public node::ObjectWrap
+WRAP_CLASS(Algorithm)
 {
 public:
 	WAlgorithm(){};
 	~WAlgorithm(){};
+
+	WRAP_NEW_INSTANCE(Algorithm);
 
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
