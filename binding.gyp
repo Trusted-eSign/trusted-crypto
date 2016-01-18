@@ -30,9 +30,7 @@
 				"src/wrapper/certstore/provider_tcl.cpp",
                 "src/wrapper/pki/alg.cpp",
                 "src/wrapper/pki/oid.cpp",
-				"src/jsoncpp/json_reader.cpp",
-				"src/jsoncpp/json_value.cpp",
-				"src/jsoncpp/json_writer.cpp"
+				"src/jsoncpp/jsoncpp.cpp"
             ],
             "conditions": [
                 [
@@ -54,7 +52,9 @@
                             ]
                         ],
                         "libraries": [
-                            "-l<(openssl_root)/lib/libeay32.lib"
+                            "-l<(openssl_root)/lib/libeay32.lib",
+							"cryptnet.lib",
+							"crypt32.lib"
                         ],
                         "include_dirs": [
                             "<(openssl_root)/include"
