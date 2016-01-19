@@ -90,7 +90,7 @@ void ProviderSystem::fillingJsonFromSystemStore(string *pvdURI){
 			std::wstring wstemp = std::wstring(dirInCertStore.begin(), dirInCertStore.end());
 			LPCWSTR wdirectory = wstemp.c_str();
 			LOGGER_TRACE("StringCchCopy");
-			StringCchCopy(szDir, MAX_PATH, wdirectory);
+			StringCchCopy(szDir, MAX_PATH, (LPCSTR)wdirectory);
 
 			LOGGER_TRACE("StringCchCat");
 			StringCchCat(szDir, MAX_PATH, TEXT("\\*"));
@@ -98,14 +98,16 @@ void ProviderSystem::fillingJsonFromSystemStore(string *pvdURI){
 			LOGGER_TRACE("FindFirstFile");
 			if ( (dir = FindFirstFile(szDir, &file_data)) == INVALID_HANDLE_VALUE ){
 				LOGGER_TRACE("CreateDirectory");
-				if ( !CreateDirectory(wdirectory, NULL) ){
+				if (!CreateDirectory((LPCSTR)wdirectory, NULL)){
 					continue;
 				}
 				continue;
 			}
 
 			do {
-				wstring file_name = file_data.cFileName;
+				//wstring file_name = file_data.cFileName;
+				string str(file_data.cFileName);
+				wstring file_name(str.begin(), str.end());
 				string full_file_name = dirInCertStore + "\\" + string(file_name.begin(), file_name.end());
 				const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
@@ -1283,7 +1285,7 @@ int ProviderSystem::cert_store_get_crl(CERT_STORE *cert_store, X509_CRL **crl, X
 		LPWSTR pszUrl = (LPWSTR)calloc(1, nStringSize);
 		swprintf(pszUrl, nStringSize, L"%S", crlURL);
 
-		if ( !CryptRetrieveObjectByUrl(pszUrl, NULL, CRYPT_DONT_CACHE_RESULT, 6000, (LPVOID *)&pCrl, NULL, NULL, NULL, NULL) ){
+		if (!CryptRetrieveObjectByUrl((LPCSTR)pszUrl, NULL, CRYPT_DONT_CACHE_RESULT, 6000, (LPVOID *)&pCrl, NULL, NULL, NULL, NULL)){
 			THROW_EXCEPTION(0, ProviderSystem, NULL, "CryptRetrieveObjectByUrl 'Unable  retrieves CRL object by a URL'");
 		}
 
