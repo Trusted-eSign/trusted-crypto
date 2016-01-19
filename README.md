@@ -18,13 +18,13 @@ Trusted crypto library
 > node-gyp configure build
 ```
 
-## Сборка TypeScrypt
+## Сборка TypeScript
 
 ```
 > tsc
 ```
 
-# Запуска автоматических тестов
+# Запуск автоматических тестов
 
 ```
 > mocha
