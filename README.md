@@ -29,3 +29,7 @@ Trusted crypto library
 ```
 > mocha
 ```
+
+## Полезные ссылки
+
+- [Обновление NodeJS на Linux](https://davidwalsh.name/upgrade-nodejs)
