@@ -36,7 +36,7 @@ int AttributeValueCollection::length() {
 void AttributeValueCollection::push(std::string &val) {
 	LOGGER_FN();
 
-	const unsigned char* _val = (const unsigned char*) val.c_str();
+	const unsigned char* _val = (const unsigned char*)val.c_str();
 	LOGGER_OPENSSL(d2i_ASN1_TYPE);
 	ASN1_TYPE *t = d2i_ASN1_TYPE(NULL, &_val, val.length());
 	if (t->type != this->data_->getAsnType())
@@ -75,17 +75,17 @@ Handle<std::string> AttributeValueCollection::items(int index) {
 	ASN1_TYPE *_type = sk_ASN1_TYPE_value(this->set_, index);
 	if (!_type)
 		THROW_EXCEPTION(0, AttributeValueCollection, NULL, "OPENSSL:sk_ASN1_TYPE_value");
-	
+
 	LOGGER_OPENSSL(i2d_ASN1_TYPE);
 	int len = i2d_ASN1_TYPE(_type, NULL);
 	unsigned char *out = NULL;
-	
+
 	LOGGER_OPENSSL(i2d_ASN1_TYPE);
 	i2d_ASN1_TYPE(_type, &out);
 
-	Handle<std::string> res = new std::string((char *) out, len);
-	
-	return res; 
+	Handle<std::string> res = new std::string((char *)out, len);
+
+	return res;
 }
 
 void AttributeValueCollection::set(int index, std::string val){
@@ -94,7 +94,7 @@ void AttributeValueCollection::set(int index, std::string val){
 	const unsigned char* _val = (const unsigned char*)val.c_str();
 	LOGGER_OPENSSL(d2i_ASN1_TYPE);
 	ASN1_TYPE *t = d2i_ASN1_TYPE(NULL, &_val, val.length());
-	
+
 	if (!sk_ASN1_TYPE_set(this->set_, index, t)){
 		THROW_EXCEPTION(0, AttributeValueCollection, NULL, "sk_ASN1_TYPE_set");
 	}
@@ -105,7 +105,7 @@ void AttributeValueCollection::set(int index, void *val){
 
 	LOGGER_OPENSSL(ASN1_TYPE_new);
 	ASN1_TYPE *_type = ASN1_TYPE_new();
-	
+
 	LOGGER_OPENSSL(sk_ASN1_TYPE_set);
 	if (!sk_ASN1_TYPE_set(this->set_, index, _type))
 		THROW_EXCEPTION(0, AttributeValueCollection, NULL, "sk_ASN1_TYPE_set");

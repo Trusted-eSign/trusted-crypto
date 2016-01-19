@@ -128,7 +128,7 @@ NAN_METHOD(WAttribute::SetTypeId){
 		UNWRAP_DATA(Attribute);
 
 		LOGGER_ARG("oid");
-		v8::String::Utf8Value v8OidValue (info[0]->ToString());
+		v8::String::Utf8Value v8OidValue(info[0]->ToString());
 		std::string oidValue(*v8OidValue);
 
 		Handle<OID> oid = new OID(oidValue);
@@ -145,7 +145,7 @@ NAN_METHOD(WAttribute::Values){
 		UNWRAP_DATA(Attribute);
 
 		v8::Local<v8::Object> v8Obj = WAttributeValueCollection::NewInstance(info.This());
-				
+
 		info.GetReturnValue().Set(v8Obj);
 		return;
 	}

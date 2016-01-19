@@ -7,7 +7,7 @@
 #include "../utils/wrap.h"
 #include "../helper.h"
 
-class WAttribute: public Wrapper<Attribute>{
+class WAttribute : public Wrapper < Attribute > {
 public:
 	WAttribute(){};
 	~WAttribute(){};

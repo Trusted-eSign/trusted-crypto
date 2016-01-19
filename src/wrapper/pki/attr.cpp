@@ -8,7 +8,7 @@ Attribute::Attribute(Handle<OID> oid, int asnType)
 	LOGGER_FN();
 
 	LOGGER_OPENSSL(X509_ATTRIBUTE_create_by_txt);
-	X509_ATTRIBUTE *attr =  X509_ATTRIBUTE_create_by_txt(NULL, oid->toString()->c_str(), 0, NULL, -1);
+	X509_ATTRIBUTE *attr = X509_ATTRIBUTE_create_by_txt(NULL, oid->toString()->c_str(), 0, NULL, -1);
 	if (!attr)
 		THROW_EXCEPTION(0, Attribute, NULL, "X509_ATTRIBUTE_create_by_txt");
 	this->setData(attr);
@@ -29,7 +29,7 @@ Attribute::Attribute(const std::string& oid, int asnType)
 }
 
 /*
- * 
+ *
  */
 Handle<std::string> Attribute::write() {
 	LOGGER_FN();

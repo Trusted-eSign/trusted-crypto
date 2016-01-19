@@ -26,12 +26,12 @@ void init(v8::Handle<v8::Object> target) {
 	// On Windows, we can't use Node's OpenSSL, so we link
 	// to a standalone OpenSSL library. Therefore, we need
 	// to initialize OpenSSL separately.
-	
+
 	//TODO: Do I need to free these?
 	//I'm not sure where to call ERR_free_strings() and EVP_cleanup()
 
 	//LOGGER_TRACE("OpenSSL init");
-	
+
 	OpenSSL::run();
 
 	v8::Local<v8::Object> Pki = Nan::New<v8::Object>();
@@ -40,7 +40,7 @@ void init(v8::Handle<v8::Object> target) {
 	WCertificate::Init(Pki);
 	WCRL::Init(Pki);
 	WOID::Init(Pki);
-    WAlgorithm::Init(Pki);
+	WAlgorithm::Init(Pki);
 	WAttribute::Init(Pki);
 	WKey::Init(Pki);
 	WCertStore::Init(Pki);
@@ -48,7 +48,7 @@ void init(v8::Handle<v8::Object> target) {
 
 	//target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
 	//WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());
-	
+
 
 	//logger.start("log-node.txt", LoggerLevel::Debug);
 }

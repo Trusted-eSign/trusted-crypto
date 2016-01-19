@@ -30,7 +30,7 @@ void WAttributeValueCollection::Init(v8::Handle<v8::Object> exports){
 }
 
 /*
- * algorithm: Algorithm 
+ * algorithm: Algorithm
  */
 NAN_METHOD(WAttributeValueCollection::New){
 	LOGGER_FN();
@@ -140,7 +140,7 @@ v8::Local<v8::Object> WAttributeValueCollection::NewInstance(v8::Local<v8::Objec
 	v8::Local<v8::Object> v8Module = Nan::New<v8::Object>();
 	WAttributeValueCollection::Init(v8Module);
 
-	v8::Local<v8::Value> v8Values[] = {attribute};
+	v8::Local<v8::Value> v8Values[] = { attribute };
 
 	v8::Local<v8::Object> v8Object = Nan::Get(v8Module, Nan::New(WAttributeValueCollection::className)
 		.ToLocalChecked()).ToLocalChecked()->ToObject()->CallAsConstructor(1, v8Values)->ToObject();
