@@ -12,6 +12,8 @@ public:
 	WAttributeValueCollection(){};
 	~WAttributeValueCollection(){};
 
+	static const char* className;
+
 	static v8::Local<v8::Object> NewInstance(v8::Local<v8::Object> attribute);
 
 	static void Init(v8::Handle<v8::Object>);

@@ -17,6 +17,7 @@
                 "src/node/certstore/wprovider_system.cpp",
                 "src/node/pki/woid.cpp",
                 "src/node/pki/walg.cpp",
+                "src/node/cms/wsigned_data.cpp",
                 "src/wrapper/stdafx.cpp",
                 "src/wrapper/common/bio.cpp",
                 "src/wrapper/common/common.cpp",
@@ -39,6 +40,7 @@
                 "src/wrapper/pki/oid.cpp",
                 "src/wrapper/cms/cert_id.cpp",
                 "src/wrapper/cms/signer.cpp",
+                "src/wrapper/cms/signers.cpp",
                 "src/wrapper/cms/signer_attrs.cpp",
                 "src/wrapper/cms/signed_data.cpp",
                 "src/jsoncpp/jsoncpp.cpp"

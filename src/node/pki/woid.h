@@ -13,6 +13,8 @@ public:
 	WOID(){};
 	~WOID(){};
 
+	static const char* className;
+
 	WRAP_NEW_INSTANCE(OID);
 
 	static void Init(v8::Handle<v8::Object>);

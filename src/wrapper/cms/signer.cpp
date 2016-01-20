@@ -26,11 +26,11 @@ Handle<Certificate> Signer::getCertificate(){
 
 Handle<std::string> Signer::getSignature(){
 	LOGGER_FN();
-
 	
-#ifndef CMS_SignerInfo_get0_signature
 	THROW_EXCEPTION(0, Signer, NULL, "Mehtod is not implemented for current version of OpenSSL");
-#else
+
+	/*
+
 	// Метод поддерживается начиная с версии OpenSSL v1.0.2
 	LOGGER_OPENSSL("CMS_SignerInfo_get0_signature");
 	ASN1_OCTET_STRING *sign = CMS_SignerInfo_get0_signature(this->internal());
@@ -41,7 +41,8 @@ Handle<std::string> Signer::getSignature(){
 	char *buf = reinterpret_cast<char*>(sign->data);
 
 	return new std::string(buf, sign->length);
-#endif
+
+	*/
 }
 
 Handle<SignerAttributeCollection> Signer::signedAttributes(){

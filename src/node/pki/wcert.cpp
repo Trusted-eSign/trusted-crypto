@@ -3,10 +3,12 @@
 #include "wcert.h"
 #include "wkey.h"
 
+const char* WCertificate::className = "Certificate";
+
 void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	METHOD_BEGIN();
 
-	v8::Local<v8::String> className = Nan::New("Certificate").ToLocalChecked();
+	v8::Local<v8::String> className = Nan::New(WCertificate::className).ToLocalChecked();
 
 	// Basic instance setup
 	v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
@@ -38,7 +40,7 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 
-	exports->Set(Nan::New("Certificate").ToLocalChecked(), tpl->GetFunction());
+	exports->Set(Nan::New(WCertificate::className).ToLocalChecked(), tpl->GetFunction());
 }
 
 NAN_METHOD(WCertificate::New) {
