@@ -12,13 +12,13 @@ class CTWRAPPER_API CertificateCollection;
 
 SSLOBJECT_free(stack_st_X509, sk_X509_free)
 
-class CertificateCollection: public SSLObject<stack_st_X509> {
+class CertificateCollection : public SSLObject < stack_st_X509 > {
 public:
 	SSLOBJECT_new(CertificateCollection, stack_st_X509){}
 	SSLOBJECT_new_null(CertificateCollection, stack_st_X509, sk_X509_new_null){}
 
 	//methods
-	void push(Handle<Certificate>&);
+	void push(Handle<Certificate> cert);
 	int length();
 	Handle<Certificate> items(int index);
 };

@@ -26,6 +26,7 @@
                 "src/wrapper/common/prov.cpp",
                 "src/wrapper/pki/crl.cpp",
                 "src/wrapper/pki/cert.cpp",
+                "src/wrapper/pki/certs.cpp",
                 "src/wrapper/pki/key.cpp",
                 "src/wrapper/certstore/certstore.cpp",
                 "src/wrapper/certstore/provider_system.cpp",
