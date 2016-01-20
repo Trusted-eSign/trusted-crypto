@@ -1,9 +1,11 @@
 #ifndef CMS_CERT_ID_H_INCLUDED
 #define CMS_CERT_ID_H_INCLUDED
 
-#include "common.h"
+#include "../common/common.h"
 
 class CTWRAPPER_API CertificateId;
+
+#include "common.h"
 
 class CertificateId {
 public:

@@ -33,6 +33,7 @@ public:
 #include "attr_vals.h"
 #include "attrs.h"
 #include "cert.h"
+#include "certs.h"
 #include "crl.h"
 /*
 #include "certs.h"

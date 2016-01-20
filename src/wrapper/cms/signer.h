@@ -3,8 +3,6 @@
 
 #include "common.h"
 
-class CTWRAPPER_API Signer;
-
 class Signer : public SSLObject < CMS_SignerInfo > {
 public:
 	//Constructor

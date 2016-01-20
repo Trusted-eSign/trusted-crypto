@@ -45,7 +45,7 @@ public:
 	}
 };
 
-#define WRAP_CLASS(type, className)											\
+#define WRAP_CLASS(type)											\
 	class W##type : public Wrapper<type>
 
 #define WRAP_NEW_INSTANCE(className)										\

@@ -49,10 +49,10 @@ Handle<Attribute> SignerAttributeCollection::items(int index, int location){
 	return res;
 }
 
-Handle<Attribute> SignerAttributeCollection::items(int index, int location){
+Handle<Attribute> SignerAttributeCollection::items(int index){
 	LOGGER_FN();
 
-	return this->items(index);
+	return this->items(index, 0);
 }
 
 Handle<Attribute> SignerAttributeCollection::items(Handle<OID> oid, int location){
@@ -72,7 +72,7 @@ Handle<Attribute> SignerAttributeCollection::items(Handle<OID> oid, int location
 	return this->items(index, location);
 }
 
-Handle<Attribute> SignerAttributeCollection::items(Handle<OID> oid, int location){
+Handle<Attribute> SignerAttributeCollection::items(Handle<OID> oid){
 	LOGGER_FN();
 
 	return this->items(oid, 0);

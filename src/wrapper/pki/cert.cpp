@@ -78,6 +78,8 @@ void Certificate::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
 	}
 }
 
+#include <openssl/cms.h>
+
 Handle<std::string> Certificate::getSubjectFriendlyName()
 {
 	LOGGER_FN();

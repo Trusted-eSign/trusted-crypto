@@ -3,10 +3,6 @@
 
 #include "common.h"
 
-#include "signer.h"
-
-class CTWRAPPER_API SignerAttributeCollection;
-
 class SignerAttributeCollection {
 public:
 	//Constructor
