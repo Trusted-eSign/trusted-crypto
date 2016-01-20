@@ -25,13 +25,13 @@ public:
 	}
 };
 
-/*
+
+#include "x509_name.h"
 #include "alg.h"
 #include "algs.h"
 #include "attr.h"
 #include "attr_vals.h"
 #include "attrs.h"
-*/
 #include "cert.h"
 #include "crl.h"
 /*

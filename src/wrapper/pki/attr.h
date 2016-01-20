@@ -12,7 +12,7 @@ class CTWRAPPER_API Attribute;
 #include "oid.h"
 #include "attr_vals.h"
 
-SSLOBJECT_free(X509_ATTRIBUTE, X509_ATTRIBUTE_free)
+SSLOBJECT_free(X509_ATTRIBUTE, X509_ATTRIBUTE_free);
 
 class Attribute: public SSLObject<X509_ATTRIBUTE> {
 public:
