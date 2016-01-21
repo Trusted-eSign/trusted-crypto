@@ -1,5 +1,5 @@
 #ifndef CMS_W_SIGNED_DATA_H_INCLUDED
-#define  CMS_W_SIGNED_DATA_H_INCLUDED
+#define CMS_W_SIGNED_DATA_H_INCLUDED
 
 #include "../../wrapper/cms/common.h"
 
@@ -25,6 +25,9 @@ public:
 	static NAN_METHOD(Import);
 	static NAN_METHOD(GetCertificates);
 	static NAN_METHOD(GetSigners);
+
+	// Methods
+	static NAN_METHOD(IsDetached);
 };
 
 #endif //!CMS_W_SIGNED_DATA_H_INCLUDED

@@ -1,7 +1,8 @@
 #include "../stdafx.h"
 
-#include "wsigned_data.h"
 #include "../pki/wcert.h"
+#include "wsigner.h"
+#include "wsigned_data.h"
 
 const char* WSignedData::className = "SignedData";
 
@@ -20,6 +21,7 @@ void WSignedData::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "import", Import);
 	Nan::SetPrototypeMethod(tpl, "getCertificates", GetCertificates);
 	Nan::SetPrototypeMethod(tpl, "getSigners", GetSigners);
+	Nan::SetPrototypeMethod(tpl, "isDetached", IsDetached);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -110,7 +112,9 @@ NAN_METHOD(WSignedData::GetSigners) {
 		Handle<SignerCollection> signers = _this->signers();
 
 		for (int i = 0; i < signers->length(); i++){
-			v8Signers->Set(i, Nan::New<v8::Object>());
+			Handle<Signer> signer = signers->items(i);
+			v8::Local<v8::Object> v8Signer = WSigner::NewInstance(signer);
+			v8Signers->Set(i, v8Signer);
 		}
 
 		info.GetReturnValue().Set(v8Signers);
@@ -134,6 +138,20 @@ NAN_METHOD(WSignedData::GetCertificates) {
 		}
 
 		info.GetReturnValue().Set(v8Certificates);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSignedData::IsDetached) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		v8::Local<v8::Boolean> v8Detached = Nan::New<v8::Boolean>(_this->isDetached());
+
+		info.GetReturnValue().Set(v8Detached);
 		return;
 	}
 	TRY_END();

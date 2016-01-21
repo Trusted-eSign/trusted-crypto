@@ -76,6 +76,7 @@ void SignedData::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 	}
 
 	if (!ci) {
+		puts(OpenSSL::printErrors()->c_str());
 		THROW_EXCEPTION(0, SignedData, NULL, "Can not read CMS signed data from BIO");
 	}
 

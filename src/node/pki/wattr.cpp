@@ -111,16 +111,16 @@ NAN_METHOD(WAttribute::GetTypeId){
 
 		Handle<OID> oid = _this->getTypeId();
 
-		WOID::NewInstance(oid);
+		v8::Local<v8::Object> v8Oid = WOID::NewInstance(oid);
 
-		info.GetReturnValue().SetNull();
+		info.GetReturnValue().Set(v8Oid);
 		return;
 	}
 	TRY_END();
 }
 
 /*
- * oid: string
+ * oid: Oid
  */
 NAN_METHOD(WAttribute::SetTypeId){
 	LOGGER_FN();
@@ -128,11 +128,9 @@ NAN_METHOD(WAttribute::SetTypeId){
 		UNWRAP_DATA(Attribute);
 
 		LOGGER_ARG("oid");
-		v8::String::Utf8Value v8OidValue(info[0]->ToString());
-		std::string oidValue(*v8OidValue);
+		WOID *woid = Wrapper::Unwrap<WOID>(info[0]->ToObject());
 
-		Handle<OID> oid = new OID(oidValue);
-		_this->setTypeId(oid);
+		_this->setTypeId(woid->data_);
 
 		return;
 	}

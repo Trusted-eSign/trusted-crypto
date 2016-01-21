@@ -1,6 +1,8 @@
 import {native} from "../native";
 import {BaseObject} from "../object";
 import {DataFormat} from "../data_format";
+import {Signer} from "./signer";
+import {Certificate} from "../pki/cert";
 
 const DEFAULT_DATA_FORMAT = DataFormat.DER;
 
@@ -14,13 +16,43 @@ export class SignedData extends BaseObject {
 
         this.handle = new native.CMS.SignedData();
     }
-    
-    get certificates(): Array<any>{
-        return this.handle.getCertificates();
+
+    isDetached(): boolean {
+        return this.handle.isDetached();
     }
-    
-    get signers(): Array<any>{
-        return this.handle.getSigners();
+
+    certificates(index: number): Buffer;
+    certificates(): Array<Certificate>;
+    certificates(index?: number): any {
+        let certs = this.handle.getCertificates();
+        // certs.items = function(index: number): Certificate { return this[index]; }
+        for (let i in certs) {
+            let cert = new Certificate();
+            cert.handle = certs[i];
+            certs[i] = cert;
+        }
+        if (index === undefined) {
+            return certs;
+        }
+        else {
+            return certs[index];
+        }
+    }
+
+    signers(index: number): Buffer;
+    signers(): Array<Signer>;
+    signers(index?: number): any {
+        let signers = this.handle.getSigners();
+        // signers.items = function(index: number): Signer { return this[index]; }
+        for (let i in signers) {
+            signers[i] = new Signer(signers[i]);
+        }
+        if (index === undefined) {
+            return signers;
+        }
+        else {
+            return signers[index];
+        }
     }
 
     /**
@@ -29,7 +61,7 @@ export class SignedData extends BaseObject {
      * @param format Формат данных. Опционально. По умолчанию DER
      */
     load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
-        this.handle.load(filename);
+        this.handle.load(filename, format);
     }
 
     /**

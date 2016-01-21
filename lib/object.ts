@@ -1,3 +1,10 @@
 export class BaseObject{
-	protected handle: any;
+	public handle: any;
+    
+    static nativeCreate(handle: any): BaseObject{
+        let obj = new this();
+        obj.handle = handle;
+        
+        return obj;
+    }
 }
