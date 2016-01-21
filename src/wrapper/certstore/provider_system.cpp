@@ -50,10 +50,10 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 	class dirent *ent;
 	class stat st;
 
-	dir = opendir(directory);
+	dir = opendir(pvdURI);
 	while ((ent = readdir(dir)) != NULL) {
 		const string file_name = ent->d_name;
-		const string full_file_name = directory + "/" + file_name;
+		const string full_file_name = pvdURI +  file_name;
 
 		if (file_name[0] == '.')
 			continue;
@@ -65,8 +65,6 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 
 		if (is_directory)
 			continue;
-
-		out.push_back(full_file_name);
 }
 	closedir(dir);
 #endif
@@ -178,7 +176,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 
 		if ( cert ){
 			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON((string)(pvdURI) + "\\" + "cash_cert_store.json", std::ifstream::binary);
+			std::ifstream fileJSON(*pvdURI + "\\cash_cert_store.json", std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
@@ -246,7 +244,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 
 		if ( xReq ){
 			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON((string)(pvdURI) + "\\" + "cash_cert_store.json", std::ifstream::binary);
+			std::ifstream fileJSON(*pvdURI + "\\cash_cert_store.json", std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
@@ -297,7 +295,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 
 		if ( crl ){
 			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON((string)(pvdURI) + "\\" + "cash_cert_store.json", std::ifstream::binary);
+			std::ifstream fileJSON(*pvdURI + "\\cash_cert_store.json", std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
