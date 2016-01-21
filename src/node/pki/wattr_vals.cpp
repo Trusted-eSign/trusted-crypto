@@ -117,8 +117,6 @@ NAN_METHOD(WAttributeValueCollection::Items){
 	TRY_END();
 }
 
-
-
 NAN_METHOD(WAttributeValueCollection::Length){
 	METHOD_BEGIN();
 

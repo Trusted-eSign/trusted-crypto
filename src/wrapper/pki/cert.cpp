@@ -69,7 +69,7 @@ void Certificate::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
 			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "i2d_X509_bio", NULL);
 		break;
 	case DataFormat::BASE64:
-		LOGGER_OPENSSL(PEM_read_bio_X509);
+		LOGGER_OPENSSL(PEM_write_bio_X509);
 		if (PEM_write_bio_X509(out->internal(), this->internal()) < 1)
 			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "PEM_write_bio_X509", NULL);
 		break;

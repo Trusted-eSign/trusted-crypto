@@ -3,10 +3,13 @@
 
 #include "common.h"
 
+static void CMS_SignerInfo_free_ex(void *si){};
+
 class Signer : public SSLObject < CMS_SignerInfo > {
 public:
 	//Constructor
-	//Has no constructor
+	Signer(CMS_SignerInfo *data, Handle<SObject> parent)
+		: SSLObject<CMS_SignerInfo>(data, &CMS_SignerInfo_free_ex, parent){}
 
 	//Properties
 	void setCertificate(Handle<Certificate> cert);

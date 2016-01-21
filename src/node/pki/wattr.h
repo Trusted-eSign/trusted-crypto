@@ -12,6 +12,8 @@ public:
 	WAttribute(){};
 	~WAttribute(){};
 
+	static const char* className;
+
 	WRAP_NEW_INSTANCE(Attribute);
 
 	static void Init(v8::Handle<v8::Object>);

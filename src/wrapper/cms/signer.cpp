@@ -5,6 +5,11 @@
 void Signer::setCertificate(Handle<Certificate> cert){
 	LOGGER_FN();
 
+	LOGGER_OPENSSL("CMS_SignerInfo_cert_cmp");
+	if (CMS_SignerInfo_cert_cmp(this->internal(), cert->internal()) != 0){
+		THROW_EXCEPTION(0, Signer, NULL, "Certificate has differents with Signer certificate id");
+	}
+
 	LOGGER_OPENSSL("CMS_SignerInfo_set1_signer_cert");
 	CMS_SignerInfo_set1_signer_cert(this->internal(), cert->internal());
 }
@@ -26,11 +31,8 @@ Handle<Certificate> Signer::getCertificate(){
 
 Handle<std::string> Signer::getSignature(){
 	LOGGER_FN();
-
 	
-#ifndef CMS_SignerInfo_get0_signature
-	THROW_EXCEPTION(0, Signer, NULL, "Mehtod is not implemented for current version of OpenSSL");
-#else
+#if OPENSSL_VERSION_NUMBER > 0x1000200fL
 	// Метод поддерживается начиная с версии OpenSSL v1.0.2
 	LOGGER_OPENSSL("CMS_SignerInfo_get0_signature");
 	ASN1_OCTET_STRING *sign = CMS_SignerInfo_get0_signature(this->internal());
@@ -41,7 +43,9 @@ Handle<std::string> Signer::getSignature(){
 	char *buf = reinterpret_cast<char*>(sign->data);
 
 	return new std::string(buf, sign->length);
-#endif
+#else
+	THROW_EXCEPTION(0, Signer, NULL, "Mehtod is not implemented for current version of OpenSSL");
+#endif 
 }
 
 Handle<SignerAttributeCollection> Signer::signedAttributes(){

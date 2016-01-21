@@ -9,7 +9,6 @@ template<typename T>
 class Wrapper : public node::ObjectWrap{
 protected:
 	typedef T childData;
-	static const char *className;
 public:
 	Handle<T> data_;
 

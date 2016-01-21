@@ -4,13 +4,18 @@
 #include "../../wrapper/pki/cert.h"
 
 #include <nan.h>
+#include "../utils/wrap.h"
 #include "../helper.h"
 
-class WCertificate : public node::ObjectWrap
+class WCertificate : public Wrapper<Certificate>
 {
 public:
 	WCertificate(){};
 	~WCertificate(){};
+
+	static const char* className;
+
+	WRAP_NEW_INSTANCE(Certificate);
 
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
@@ -37,13 +42,6 @@ public:
 	static NAN_METHOD(Equals);
 	static NAN_METHOD(Duplicate);
 	static NAN_METHOD(Hash);
-
-	Handle<Certificate> data_;
-	
-	static inline Nan::Persistent<v8::Function> & constructor() {
-		static Nan::Persistent<v8::Function> my_constructor;
-		return my_constructor;
-	}
 };
 
 #endif //PKI_WCERT_H_INCLUDED

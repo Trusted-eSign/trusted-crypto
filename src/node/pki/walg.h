@@ -12,6 +12,8 @@ public:
 	WAlgorithm(){};
 	~WAlgorithm(){};
 
+	static const char* className;
+
 	WRAP_NEW_INSTANCE(Algorithm);
 
 	static void Init(v8::Handle<v8::Object>);
