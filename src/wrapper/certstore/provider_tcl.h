@@ -42,7 +42,7 @@ class ProviderTCL : public CertStoreProvider{
 		string getValueFromXML(string base_line, string token_start, string token_end);
 		string getSignatureFromXML(string base_line, string token_start, string token_end);
 		string delimeterCertString(char* cert_string);
-		void readTCLfile(string file_path, CERT_STORE* cert_store, TCL_CURRENT_INFO* tcl_infos);
+		void readTCLfile(const char file_path, CERT_STORE* cert_store, TCL_CURRENT_INFO* tcl_infos);
 		void putCertificateToStack(STACK_OF(X509)* X509STACK, char* cert_data);
 };
 

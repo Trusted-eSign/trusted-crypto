@@ -1,9 +1,7 @@
 #pragma once
+
 #include "../common/common.h"
 #include "../../jsoncpp/json/json.h"
-#include <windows.h>
-#include <tchar.h> 
-#include <strsafe.h>
 #include <stdio.h>
 #include <string>
 #include <openssl/pem.h>
@@ -11,8 +9,19 @@
 #include <openssl/pkcs12.h>
 #include <openssl/x509v3.h>
 #include <openssl/x509.h>
-#include <Objbase.h>
-//#include <atlconv.h>
+#include <openssl/e_os2.h>
+
+#if defined(OPENSSL_SYS_WINDOWS) 
+	#include <windows.h>
+	#include <tchar.h> 
+	#include <strsafe.h>
+#endif
+#if defined(OPENSSL_SYS_UNIX) 
+	#include <dirent.h>
+	#include <sys/stat.h>
+	#include <uuid/uuid.h>
+#endif
+
 #include "certstore.h"
 using namespace std;
 
@@ -131,9 +140,8 @@ public:
 	int cert_store_cert_crl(CERT_STORE *cert_store, X509_CRL *crl, X509 *x);
 	int cert_store_check_revocation(CERT_STORE *cert_store, X509 *x);
 
-	void fillingJsonFromSystemStore(string *pvdURI);
-	void newJSON(string *pvdURI);
-	void addValueToJSON(string *pvdURI, BIO *bioFile, string *full_file_name);
+	void fillingJsonFromSystemStore(const char *pvdURI);
+	void addValueToJSON(const char *pvdURI, BIO *bioFile, string *full_file_name);
 	string readInputJsonFile(const char *path);
 	int parseJsonAndFillingCacheStore(string *input);
 

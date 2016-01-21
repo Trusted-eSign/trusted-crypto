@@ -32,7 +32,7 @@ class CertStore {
 		void CERT_STORE_FREE(CertStoreProvider* store_provider); //Освобождение (удаление) хранилища
 		void CERT_STORE_CLEANUP(CertStoreProvider* store_provider); //Очистка содержимого хранилища
 
-		void newJSON(string *pvdURI);
+		void newJSON(const char *pvdURI);
 	public:
 		CertStore();
 		~CertStore(){};

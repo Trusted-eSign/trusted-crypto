@@ -62,7 +62,7 @@ NAN_METHOD(WCertStore::newJson){
 		UNWRAP_DATA(CertStore);
 
 		try{
-			_this->newJSON(&fname);
+			_this->newJSON(fname.c_str());
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError("Error create new json");

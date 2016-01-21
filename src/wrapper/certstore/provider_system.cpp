@@ -1,7 +1,9 @@
 #include "../stdafx.h"
 #include "provider_system.h"
 
-#include <atlconv.h>
+#if defined(OPENSSL_SYS_WINDOWS) 
+	#include <atlconv.h>
+#endif
 
 ProviderSystem::ProviderSystem(string pvdURI){
 	LOGGER_FN();
@@ -42,8 +44,8 @@ ProviderSystem::ProviderSystem(){
 	providerType = "pvdSystem";
 };
 
-void ProviderSystem::fillingJsonFromSystemStore(string *pvdURI){
-#ifdef UNIX
+void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
+#if defined(OPENSSL_SYS_UNIX) 
 	DIR *dir;
 	class dirent *ent;
 	class stat st;
@@ -67,7 +69,8 @@ void ProviderSystem::fillingJsonFromSystemStore(string *pvdURI){
 		out.push_back(full_file_name);
 }
 	closedir(dir);
-#else
+#endif
+#if defined(OPENSSL_SYS_WINDOWS) 
 	LOGGER_FN();
 
 	try{
@@ -86,7 +89,7 @@ void ProviderSystem::fillingJsonFromSystemStore(string *pvdURI){
 		};
 
 		for (int i = 0, c = sizeof(listCertStore) / sizeof(*listCertStore); i < c; i++){
-			string dirInCertStore = (string)((*pvdURI).c_str()) + "\\" + listCertStore[i].c_str();
+			string dirInCertStore = (string)pvdURI + "\\" + listCertStore[i].c_str();
 			std::wstring wstemp = std::wstring(dirInCertStore.begin(), dirInCertStore.end());
 			LPCWSTR wdirectory = wstemp.c_str();
 			LOGGER_TRACE("StringCchCopy");
@@ -139,7 +142,7 @@ void ProviderSystem::fillingJsonFromSystemStore(string *pvdURI){
 #endif
 }
 
-void ProviderSystem::addValueToJSON(string *pvdURI, BIO *bioFile, string *full_file_name){
+void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *full_file_name){
 	LOGGER_FN();
 
 	try{
@@ -175,7 +178,7 @@ void ProviderSystem::addValueToJSON(string *pvdURI, BIO *bioFile, string *full_f
 
 		if ( cert ){
 			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON((string)(*pvdURI).c_str() + "\\" + "cash_cert_store.json", std::ifstream::binary);
+			std::ifstream fileJSON((string)(pvdURI) + "\\" + "cash_cert_store.json", std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
@@ -191,9 +194,9 @@ void ProviderSystem::addValueToJSON(string *pvdURI, BIO *bioFile, string *full_f
 
 			lastindex = (*full_file_name).find_last_of(".");
 			key_file_name = (*full_file_name).substr(0, lastindex) + ".key";
-			LOGGER_OPENSSL(BIO_new);
+			LOGGER_OPENSSL("BIO_new");
 			bioKeyFile = BIO_new(BIO_s_file());
-			LOGGER_OPENSSL(BIO_read_filename);
+			LOGGER_OPENSSL("BIO_read_filename");
 			if ( BIO_read_filename(bioKeyFile, key_file_name.c_str() ) > 0){
 				jsnBuf["PKey"] = "T";
 				jsnPKIobj["X509"] = jsnBuf;
@@ -211,7 +214,7 @@ void ProviderSystem::addValueToJSON(string *pvdURI, BIO *bioFile, string *full_f
 			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
-			cashStore.open((string)(*pvdURI).c_str() + "\\" + "cash_cert_store.json");
+			cashStore.open(*pvdURI + "\\cash_cert_store.json");
 
 			Json::StyledWriter styledWriter;
 			cashStore << styledWriter.write(jsnRoot);
@@ -243,7 +246,7 @@ void ProviderSystem::addValueToJSON(string *pvdURI, BIO *bioFile, string *full_f
 
 		if ( xReq ){
 			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON((string)(*pvdURI).c_str() + "\\" + "cash_cert_store.json", std::ifstream::binary);
+			std::ifstream fileJSON((string)(pvdURI) + "\\" + "cash_cert_store.json", std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
@@ -263,7 +266,7 @@ void ProviderSystem::addValueToJSON(string *pvdURI, BIO *bioFile, string *full_f
 			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
-			cashStore.open((string)(*pvdURI).c_str() + "\\" + "cash_cert_store.json");
+			cashStore.open(*pvdURI + "\\cash_cert_store.json");
 
 			Json::StyledWriter styledWriter;
 			cashStore << styledWriter.write(jsnRoot);
@@ -294,7 +297,7 @@ void ProviderSystem::addValueToJSON(string *pvdURI, BIO *bioFile, string *full_f
 
 		if ( crl ){
 			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON((string)(*pvdURI).c_str() + "\\" + "cash_cert_store.json", std::ifstream::binary);
+			std::ifstream fileJSON((string)(pvdURI) + "\\" + "cash_cert_store.json", std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
@@ -314,7 +317,7 @@ void ProviderSystem::addValueToJSON(string *pvdURI, BIO *bioFile, string *full_f
 			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
-			cashStore.open((string)(*pvdURI).c_str() + "\\" + "cash_cert_store.json");
+			cashStore.open(*pvdURI + "\\cash_cert_store.json");
 
 			Json::StyledWriter styledWriter;
 			cashStore << styledWriter.write(jsnRoot);
@@ -579,29 +582,40 @@ X509_CRL * ProviderSystem::getCRLFromURI(string *strFormatPKIObject, string *str
 string ProviderSystem::generateGuidStr(){
 	LOGGER_FN();
 
-	USES_CONVERSION;
-
-	string strGuid = "";
-
 	try{
-		OLECHAR* bstrGuid;
-		GUID guid = {};
+		#if defined(OPENSSL_SYS_WINDOWS)
+			USES_CONVERSION;
 
-		if ( S_OK != CoCreateGuid(&guid) ){
-			THROW_EXCEPTION(0, ProviderSystem, NULL, "CoCreateGuid");
-		}
-		if ( S_OK != StringFromCLSID(guid, &bstrGuid) ){
-			THROW_EXCEPTION(0, ProviderSystem, NULL, "StringFromCLSID");
-		}
-		string strGuidTemp(OLE2A(bstrGuid));
-		strGuid = strGuidTemp;
-		CoTaskMemFree(bstrGuid);
+			string strGuid = "";
+
+			OLECHAR* bstrGuid;
+			GUID guid = {};
+
+			if ( S_OK != CoCreateGuid(&guid) ){
+				THROW_EXCEPTION(0, ProviderSystem, NULL, "CoCreateGuid");
+			}
+			if ( S_OK != StringFromCLSID(guid, &bstrGuid) ){
+				THROW_EXCEPTION(0, ProviderSystem, NULL, "StringFromCLSID");
+			}
+			string strGuidTemp(OLE2A(bstrGuid));
+			strGuid = strGuidTemp;
+			CoTaskMemFree(bstrGuid);
+
+			return strGuid;
+		#endif
+
+		#if defined(OPENSSL_SYS_UNIX) 
+			uuid_t uuid;
+			uuid_generate_random(uuid);
+			char s[37];
+			uuid_unparse(uuid, s);
+
+			return s;
+		#endif		
 	}
 	catch (Handle<Exception> e){
 		return "";
 	}
-
-	return strGuid;
 }
 
 int ProviderSystem::cert_store_key_new(CERT_STORE *cert_store, FORMAT_SIG *type){
@@ -1271,48 +1285,19 @@ int ProviderSystem::cert_store_get_crl(CERT_STORE *cert_store, X509_CRL **crl, X
 	LOGGER_FN();
 
 	try{
-		PCCRL_CONTEXT pcrlContext = NULL;
-		LPVOID*  pCrl;
 		const char *crlURL = NULL;
-		int nStringSize;
 
 		crlURL = getCRLDistPoint(x);
 		if ( !crlURL ){
 			THROW_EXCEPTION(0, ProviderSystem, NULL, "getCRLDistPoint 'Unable get CRL dist point'");
 		}
 
-		nStringSize = (strlen(crlURL) + 1) * 2;
-		LPWSTR pszUrl = (LPWSTR)calloc(1, nStringSize);
-		swprintf(pszUrl, nStringSize, L"%S", crlURL);
+		////////////////////////
+		//UNSUPPORTED FUNCTION//
+		////////////////////////
 
-		if (!CryptRetrieveObjectByUrl((LPCSTR)pszUrl, NULL, CRYPT_DONT_CACHE_RESULT, 6000, (LPVOID *)&pCrl, NULL, NULL, NULL, NULL)){
-			THROW_EXCEPTION(0, ProviderSystem, NULL, "CryptRetrieveObjectByUrl 'Unable  retrieves CRL object by a URL'");
-		}
+		THROW_EXCEPTION(0, ProviderSystem, NULL, "Need js function for get CRL from URL");
 
-		if (NULL == (pcrlContext = CertCreateCRLContext(
-														X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
-														(const BYTE*)(*PCRYPT_BLOB_ARRAY(pCrl)).rgBlob->pbData,
-														(DWORD)(*PCRYPT_BLOB_ARRAY(pCrl)).rgBlob->cbData
-									)
-					)
-			)
-		{
-			THROW_EXCEPTION(0, ProviderSystem, NULL, "CertCreateCRLContext 'Unable creates CRL context from an encoded CRL'");
-		}
-
-		LOGGER_OPENSSL(d2i_X509_CRL);
-		*crl = d2i_X509_CRL(NULL, (const unsigned char **)&pcrlContext->pbCrlEncoded, pcrlContext->cbCrlEncoded);
-		if ( !crl ){
-			THROW_OPENSSL_EXCEPTION(0, ProviderSystem, NULL, "d2i_X509_CRL 'Unable decode CRL'");
-		}
-
-		if ( !cert_store_add_crl(cert_store, *crl) ){
-			THROW_EXCEPTION(0, ProviderSystem, NULL, "cert_store_add_crl");
-		}
-
-		if ( !writeX509CRLToFile(cert_store, *crl) ){
-			THROW_EXCEPTION(0, ProviderSystem, NULL, "writeX509CRLToFile");
-		}
 	}
 	catch (Handle<Exception> e){
 		return 0;

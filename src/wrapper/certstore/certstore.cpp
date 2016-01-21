@@ -45,7 +45,7 @@ void CertStore::CERT_STORE_NEW(char* pvdType, string pvdURI){
 	}
 }
 
-void CertStore::newJSON(string *pvdURI){
+void CertStore::newJSON(const char *pvdURI){
 	LOGGER_FN();
 
 	try{
@@ -54,7 +54,7 @@ void CertStore::newJSON(string *pvdURI){
 		Json::Value minParameters;
 
 		minParameters["StoreType"] = "pvdSystem";
-		minParameters["StoreURI"] = (*pvdURI).c_str();
+		minParameters["StoreURI"] = pvdURI;
 		minParameters["PKIobject"] = arrayPKIobject;
 		root["StoreSystem"] = minParameters;
 		minParameters.clear();

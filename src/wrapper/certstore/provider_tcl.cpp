@@ -20,7 +20,7 @@ ProviderTCL::ProviderTCL(string pvdURI){
 	if (providerURI.empty()){
 		THROW_EXCEPTION(0, ProviderTCL, NULL, "Dont not send parameters");
 	}else{
-		readTCLfile(providerURI, &cert_store_tcl, &tcl_infos);
+		readTCLfile(*providerURI.c_str(), &cert_store_tcl, &tcl_infos);
 	}
 }
 
@@ -63,7 +63,7 @@ string ProviderTCL::delimeterCertString(char* cert_string){
 	return result;
 }
 
-void ProviderTCL::readTCLfile(string file_path, CERT_STORE* cert_store, TCL_CURRENT_INFO* tcl_infos){
+void ProviderTCL::readTCLfile(const char file_path, CERT_STORE* cert_store, TCL_CURRENT_INFO* tcl_infos){
 	//TCL_CURRENT_INFO tcl_infos;
 	tcl_infos->x509_certificates.clear();
 	tcl_infos->version_tcl = 0;
@@ -88,7 +88,7 @@ void ProviderTCL::readTCLfile(string file_path, CERT_STORE* cert_store, TCL_CURR
 	string signature_token_end("</Signature>");
 
 	int range_start = 10;
-	ifstream if_fFile(file_path, ios_base::in);
+	ifstream if_fFile(&file_path, ios_base::in);
 	if (if_fFile.is_open()){
 		try{
 			while (!if_fFile.eof()){

@@ -80,7 +80,7 @@ NAN_METHOD(WProviderSystem::fillingJsonFromSystemStore){
 		UNWRAP_DATA(ProviderSystem);
 
 		try{
-			_this->fillingJsonFromSystemStore(&fname);
+			_this->fillingJsonFromSystemStore(fname.c_str());
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError("Error filling json");
