@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 
 #include "../pki/wcert.h"
+#include "../pki/wkey.h"
 #include "wsigner.h"
 #include "wsigned_data.h"
 
@@ -19,9 +20,13 @@ void WSignedData::Init(v8::Handle<v8::Object> exports){
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
+	Nan::SetPrototypeMethod(tpl, "save", Save);
+	Nan::SetPrototypeMethod(tpl, "export", Export);
 	Nan::SetPrototypeMethod(tpl, "getCertificates", GetCertificates);
 	Nan::SetPrototypeMethod(tpl, "getSigners", GetSigners);
 	Nan::SetPrototypeMethod(tpl, "isDetached", IsDetached);
+	Nan::SetPrototypeMethod(tpl, "createSigner", CreateSigner);
+	Nan::SetPrototypeMethod(tpl, "addCertificate", AddCertificate);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -101,6 +106,58 @@ NAN_METHOD(WSignedData::Import) {
 	TRY_END();
 }
 
+/*
+* filename: String
+* format: DataFormat
+*/
+NAN_METHOD(WSignedData::Save) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("filename");
+		v8::String::Utf8Value v8Filename(info[0]->ToString());
+		char *filename = *v8Filename;
+
+		LOGGER_ARG("format");
+		int format = info[1]->ToNumber()->Int32Value();
+
+		UNWRAP_DATA(Certificate);
+
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
+		_this->write(out, DataFormat::get(format));
+		out->flush();
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+/*
+* format: DataFormat
+*/
+NAN_METHOD(WSignedData::Export) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("format")
+			int format = info[0]->ToNumber()->Int32Value();
+
+		UNWRAP_DATA(Certificate);
+
+		Handle<Bio> out = new Bio(BIO_TYPE_MEM, "");
+		_this->write(out, DataFormat::get(format));
+
+		Handle<std::string> buf = out->read();
+
+		info.GetReturnValue().Set(
+			stringToBuffer(buf)
+			);
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WSignedData::GetSigners) {
 	METHOD_BEGIN();
 
@@ -129,9 +186,9 @@ NAN_METHOD(WSignedData::GetCertificates) {
 	try {
 		UNWRAP_DATA(SignedData);
 
-		v8::Local<v8::Array> v8Certificates= Nan::New<v8::Array>();
+		v8::Local<v8::Array> v8Certificates = Nan::New<v8::Array>();
 
-		Handle<CertificateCollection> certs= _this->certificates();
+		Handle<CertificateCollection> certs = _this->certificates();
 
 		for (int i = 0; i < certs->length(); i++){
 			v8Certificates->Set(i, WCertificate::NewInstance(certs->items(i)));
@@ -152,6 +209,63 @@ NAN_METHOD(WSignedData::IsDetached) {
 		v8::Local<v8::Boolean> v8Detached = Nan::New<v8::Boolean>(_this->isDetached());
 
 		info.GetReturnValue().Set(v8Detached);
+		return;
+	}
+	TRY_END();
+}
+
+/*
+ * certificate: Certificate
+ * privateKey: Key
+ * digestName: string
+ * [flags: number]
+ */
+NAN_METHOD(WSignedData::CreateSigner) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		LOGGER_ARG("certificate");
+		WCertificate *wCert = Wrapper::Unwrap<WCertificate>(info[0]->ToObject());
+
+		LOGGER_ARG("privateKey");
+		WKey *wKey = Wrapper::Unwrap<WKey>(info[1]->ToObject());
+
+		LOGGER_ARG("digestName");
+		v8::String::Utf8Value v8DigestName(info[2]->ToString());
+		Handle<std::string> digestName = new std::string(*v8DigestName);
+
+		int flags = 0;
+		if (!info[3]->IsUndefined()){
+			LOGGER_ARG("flags");
+			flags = info[3]->ToNumber()->Uint32Value();
+		}
+
+		Handle<Signer> signer = _this->createSigner(wCert->data_, wKey->data_, digestName, flags);
+
+		v8::Local<v8::Object> v8Signer = WSigner::NewInstance(signer);
+
+		info.GetReturnValue().Set(v8Signer);
+		return;
+	}
+	TRY_END();
+}
+
+/* 
+ * certificate: Certificate
+ */
+NAN_METHOD(WSignedData::AddCertificate) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		LOGGER_ARG("certificate");
+		WCertificate *wCert = Wrapper::Unwrap<WCertificate>(info[0]->ToObject());
+
+		_this->addCertificate(wCert->data_);
+		
 		return;
 	}
 	TRY_END();

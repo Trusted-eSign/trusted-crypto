@@ -136,7 +136,7 @@ export class Certificate extends BaseObject {
      * @param format Формат данных. Опционально. По умолчанию DER
      */
     load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
-        this.handle.load(filename);
+        this.handle.load(filename, format);
     }
 
     /**

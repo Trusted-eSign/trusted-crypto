@@ -23,8 +23,12 @@ public:
 	// Properties
 	static NAN_METHOD(Load);
 	static NAN_METHOD(Import);
+	static NAN_METHOD(Save);
+	static NAN_METHOD(Export);
 	static NAN_METHOD(GetCertificates);
 	static NAN_METHOD(GetSigners);
+	static NAN_METHOD(CreateSigner);
+	static NAN_METHOD(AddCertificate);
 
 	// Methods
 	static NAN_METHOD(IsDetached);

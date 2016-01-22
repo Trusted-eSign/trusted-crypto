@@ -468,7 +468,7 @@ int Key::keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format,
 }
 
 int Key::keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, int keySize, std::string password){
-	LOGGER_FN();
+	LOGGER_FN();	
 
 	int ok = 0;
 

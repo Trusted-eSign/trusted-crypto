@@ -1,5 +1,6 @@
 var assert = require('assert');
 var trusted = require("../index.js")
+var fs = require("fs");
 
 describe('CRL', function () {
     var crl;
@@ -162,5 +163,25 @@ describe('Algorithm', function () {
         assert.throws(function () {
             new trusted.Pki.Algorithm("SHA123_error")
         });
+    })
+})
+
+describe('SignedData', function () {
+    it("load", function () {
+        var cms = new trusted.Cms.SignedData();
+        cms.load("test/test02.txt.sig");
+        
+        var signers = cms.signers;
+        for (var i in signers){
+            var signer = signers[i];
+            console.log(signer.digestAlgorithm.name);
+        }
+        
+        var certs = cms.certificates;
+        for (var i in certs){
+            var cert = certs[i];
+            console.log(cert.subjectName);
+        }
+        console.log("isDetached:", cms.isDetached());
     })
 })

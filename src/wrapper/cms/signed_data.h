@@ -8,13 +8,18 @@ SSLOBJECT_free(CMS_ContentInfo, CMS_ContentInfo_free);
 class SignedData : public SSLObject < CMS_ContentInfo > {
 public:
 	//Constructor
-	//Has no constructor
-	SSLOBJECT_new(SignedData, CMS_ContentInfo){}
+	SSLOBJECT_new(SignedData, CMS_ContentInfo){
+		if (CMS_SignedData_init(this->internal()) < 1){
+			THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_SignedData_init");
+		}
+	}
 	SSLOBJECT_new_null(SignedData, CMS_ContentInfo, CMS_ContentInfo_new){}
 
-	//Properties
+	// Properties
+	void setContent(Handle<Bio> value);
+	Handle<Bio> getContent();
 
-	//Methods
+	// Methods
 	Handle<CertificateCollection> certificates();
 	Handle<Certificate> certificates(int index);
 	Handle<SignerCollection> signers();
@@ -22,7 +27,16 @@ public:
 	bool isDetached();
 	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);
 	void write(Handle<Bio> out, DataFormat::DATA_FORMAT format);
+	void addCertificate(Handle<Certificate> cert);
+	bool verify(Handle<CertificateCollection> certs, int flags);
+	
+	static Handle<SignedData> sign(Handle<Certificate> cert, Handle<Key> pkey, Handle<CertificateCollection> certs, Handle<Bio> content, unsigned int flags); // Подписывает данные и формирует новый CMS пакет
+	void sign();
 
+	Handle<Signer> createSigner(Handle<Certificate> cert, Handle<Key> pkey, Handle<std::string> digestname, unsigned int flags);
+
+protected:
+	Handle<Bio> content;
 };
 
 #endif  //!CMS_SIGNED_DATA_H_INCLUDED

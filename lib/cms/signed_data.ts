@@ -3,6 +3,7 @@ import {BaseObject} from "../object";
 import {DataFormat} from "../data_format";
 import {Signer} from "./signer";
 import {Certificate} from "../pki/cert";
+import {Key} from "../pki/key";
 
 const DEFAULT_DATA_FORMAT = DataFormat.DER;
 
@@ -93,6 +94,28 @@ export class SignedData extends BaseObject {
         let cms = new SignedData();
         cms.handle.import(buffer, format);
         return cms;
+    }
+    
+     /**
+     * сохранение подписи в память
+     * @param format Формат данных. Опционально. По умолчанию DER
+     */
+    export(format: DataFormat = DEFAULT_DATA_FORMAT): Buffer {
+        return this.handle.export(format);
+    }
+
+    /**
+     * сохранение подписи в файл
+     * @param filename Путь к файлу
+     * @param format Формат данных. Опционально. По умолчанию DER
+     */
+    save(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+        this.handle.save(filename, format);
+    }
+    
+    createSigner(cert: Certificate, key: Key, digestName: string, flags?: number): Signer{
+        var nsigner = this.handle.createSigner(cert.handle, key.handle, digestName, flags);
+        return new Signer(nsigner);
     }
 
 }
