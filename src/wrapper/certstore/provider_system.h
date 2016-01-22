@@ -141,7 +141,7 @@ public:
 	int cert_store_check_revocation(CERT_STORE *cert_store, X509 *x);
 
 	void fillingJsonFromSystemStore(const char *pvdURI);
-	void addValueToJSON(const char *pvdURI, BIO *bioFile, string *full_file_name);
+	void addValueToJSON(const char *pvdURI, BIO *bioFile, const char *full_file_name);
 	string readInputJsonFile(const char *path);
 	int parseJsonAndFillingCacheStore(string *input);
 

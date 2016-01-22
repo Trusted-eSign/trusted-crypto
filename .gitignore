@@ -6,3 +6,4 @@ test/CertStore/cash_cert_store.json
 test/CertStore/MY/privkey.key
 test/CertStore/MY/privkey_s.key
 test/CertStore/MY/pubkey_s.key
+logger.txt
