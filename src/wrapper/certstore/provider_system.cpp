@@ -51,33 +51,40 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 	class stat st;
 	BIO *bioFile;
 
-	dir = opendir(pvdURI);
-	while ((ent = readdir(dir)) != NULL) {
-		const string file_name = ent->d_name;
-		const string full_file_name = pvdURI +  file_name;
+	string listCertStore[] = {
+		"MY",
+		"OTHERS",
+		"TRUST",
+		"CRL"
+	};
 
-		if (file_name[0] == '.')
-			continue;
+	for (int i = 0, c = sizeof(listCertStore) / sizeof(*listCertStore); i < c; i++){
+		string dirInCertStore = (string)pvdURI + CROSSPLATFORM_SLASH + listCertStore[i].c_str();
+		dir = opendir(dirInCertStore.c_str());
+		while ((ent = readdir(dir)) != NULL) {
+			const string file_name = ent->d_name;
+			const string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH +   file_name;
 
-		if (stat(full_file_name.c_str(), &st) == -1)
-			continue;
+			if (file_name[0] == '.')
+				continue;
 
-		const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+			const bool is_directory = (st.st_mode & S_IFDIR) != 0;
 
-		if (is_directory)
-			continue;
+			if (is_directory)
+				continue;
 
-		LOGGER_OPENSSL(BIO_new);
-		bioFile = BIO_new(BIO_s_file());
-		LOGGER_OPENSSL(BIO_read_filename);
-		if (BIO_read_filename(bioFile, full_file_name.c_str()) > 0){
-			LOGGER_TRACE("addValueToJSON");
-			addValueToJSON(pvdURI, bioFile, &full_file_name);
+			LOGGER_OPENSSL(BIO_new);
+			bioFile = BIO_new(BIO_s_file());
+			LOGGER_OPENSSL(BIO_read_filename);
+			if (BIO_read_filename(bioFile, full_file_name.c_str()) > 0){
+				LOGGER_TRACE("addValueToJSON");
+				addValueToJSON(pvdURI, bioFile, full_file_name.c_str());
+			}
+			LOGGER_OPENSSL(BIO_free);
+			BIO_free(bioFile);
 		}
-		LOGGER_OPENSSL(BIO_free);
-		BIO_free(bioFile);
+		closedir(dir);
 }
-	closedir(dir);
 #endif
 #if defined(OPENSSL_SYS_WINDOWS) 
 	LOGGER_FN();
@@ -196,7 +203,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 			}
 
 			jsnBuf["PKIObjectType"] = "X509";
-			jsnBuf["UriPKIObject"] = *full_file_name;
+			jsnBuf["UriPKIObject"] = full_file_name;
 
 			strTrust = (((string)full_file_name).substr(0, ((string)full_file_name).find_last_of(CROSSPLATFORM_SLASH)));
 			strTrust = strTrust.substr(strTrust.find_last_of(CROSSPLATFORM_SLASH) + 1, strTrust.length());
