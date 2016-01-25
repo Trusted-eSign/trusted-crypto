@@ -10,6 +10,10 @@ describe('CertStore', function () {
 		certstore = new trusted.Pki.CertStore()
 		assert.equal(certstore != null, true);
 	})
+	
+	it('CERT_STORE_NEW', function () {
+		certstore.CERT_STORE_NEW("pvdSystem", DEFAULT_CERTSTORE_PATH);
+    });
 
     it('newJson', function () {
 		certstore.newJson(DEFAULT_CERTSTORE_PATH);

@@ -18,6 +18,7 @@ public:
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
 	
+	static NAN_METHOD(CERT_STORE_NEW);
 	static NAN_METHOD(newJson);
 
 	Handle<CertStore> data_;
