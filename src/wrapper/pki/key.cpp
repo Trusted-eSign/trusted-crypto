@@ -82,10 +82,10 @@ int Key::privkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format, std
 		this->setData(key);
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not load private key from memory");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::privkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format, std::string password) {
@@ -120,10 +120,10 @@ int Key::privkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format, std::string pa
 		this->setData(key);
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not load private key from BIO");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::pubkeyLoad(std::string filename, DataFormat::DATA_FORMAT format) {
@@ -155,10 +155,10 @@ int Key::pubkeyLoad(std::string filename, DataFormat::DATA_FORMAT format) {
 		this->setData(key);
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not load pubkey key from file");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::pubkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format) {
@@ -190,10 +190,10 @@ int Key::pubkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format) {
 		this->setData(key);
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not load pubkey key from memory");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::pubkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format) {
@@ -225,16 +225,16 @@ int Key::pubkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format) {
 		this->setData(key);
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not load pubkey key from BIO");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, int keySize, std::string password){
 	LOGGER_FN();
 
-	int ok = 0;
+	int ok = 1;
 
 	RSA *rsa = NULL;
 	BIGNUM *bn = NULL;
@@ -324,7 +324,7 @@ int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, i
 		}
 	}
 	catch (Handle<Exception> e){
-		ok = -1;
+		THROW_EXCEPTION(0, Key, e, "Can not keypair generate and save to file");
 	}
 
 	if (bp_private){
@@ -353,7 +353,7 @@ int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, i
 int Key::keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format, int keySize, std::string password){
 	LOGGER_FN();
 
-	int ok = 0;
+	int ok = 1;
 
 	RSA *rsa = NULL;
 	BIGNUM *bn = NULL;
@@ -443,7 +443,7 @@ int Key::keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format,
 		}
 	}
 	catch (Handle<Exception> e){
-		ok = -1;
+		THROW_EXCEPTION(0, Key, e, "Can not keypair generate and save to memory");
 	}
 
 	if (bp_private){
@@ -472,7 +472,7 @@ int Key::keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format,
 int Key::keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, int keySize, std::string password){
 	LOGGER_FN();	
 
-	int ok = 0;
+	int ok = 1;
 
 	RSA *rsa = NULL;
 	BIGNUM *bn = NULL;
@@ -559,7 +559,7 @@ int Key::keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, int
 		}
 	}
 	catch (Handle<Exception> e){
-		ok = -1;
+		THROW_EXCEPTION(0, Key, e, "Can not keypair generate and save to BIO");
 	}
 
 	if (rsa){
@@ -624,10 +624,10 @@ int Key::privkeySave(std::string filename, DataFormat::DATA_FORMAT format, std::
 		}
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not save private key to file");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::privkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format, std::string password) {
@@ -672,10 +672,10 @@ int Key::privkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format, std::st
 		}
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not save private key to BIO");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::privkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password) {
@@ -718,10 +718,10 @@ int Key::privkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format, std
 		}
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not save private key to memory");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::pubkeySave(std::string filename, DataFormat::DATA_FORMAT format) {
@@ -750,10 +750,10 @@ int Key::pubkeySave(std::string filename, DataFormat::DATA_FORMAT format) {
 		}
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not save pubkey key to file");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::pubkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format) {
@@ -781,10 +781,10 @@ int Key::pubkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format) {
 		}
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not save pubkey key to BIO");
 	}
 
-	return 0;
+	return 1;
 }
 
 int Key::pubkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format) {
@@ -811,10 +811,10 @@ int Key::pubkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format) {
 		}
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not save pubkey key to memory");
 	}
 
-	return 0;
+	return 1;
 }
 
 bool Key::compare(Handle<Key> &key) {

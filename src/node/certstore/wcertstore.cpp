@@ -16,6 +16,7 @@ void WCertStore::Init(v8::Handle<v8::Object> exports){
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
+	Nan::SetPrototypeMethod(tpl, "CERT_STORE_NEW", CERT_STORE_NEW);
 	Nan::SetPrototypeMethod(tpl, "newJson", newJson);
 
 	// Store the constructor in the target bindings.
@@ -33,6 +34,55 @@ NAN_METHOD(WCertStore::New){
 
 		obj->Wrap(info.This());
 
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertStore::CERT_STORE_NEW){
+	METHOD_BEGIN();
+
+	try{
+		if (info[0]->IsUndefined()){
+			Nan::ThrowError("Parameter 1 is required");
+			return;
+		}
+
+		v8::String::Utf8Value v8Str(info[0]->ToString());
+		char *pvdType = *v8Str;
+
+		if (pvdType == NULL) {
+			Nan::ThrowError("Wrong provider type");
+			return;
+		}
+
+		UNWRAP_DATA(CertStore);
+
+		LOGGER_ARG("pvdURI");
+		if (info[1]->IsUndefined()){
+			try{
+				_this->CERT_STORE_NEW(pvdType);
+			}
+			catch (Handle<Exception> e){
+				Nan::ThrowError("Error create new cert store");
+				return;
+			}
+		}
+		else{
+			v8::String::Utf8Value v8URI(info[1]->ToString());
+			char *pvdURI = *v8URI;
+			std::string strPvdURI(pvdURI);
+
+			try{
+				_this->CERT_STORE_NEW(pvdType, strPvdURI);
+			}
+			catch (Handle<Exception> e){
+				Nan::ThrowError("Error create new cert store");
+				return;
+			}
+		}
+	
 		info.GetReturnValue().Set(info.This());
 		return;
 	}
