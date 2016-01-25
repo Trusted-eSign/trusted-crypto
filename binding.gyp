@@ -67,9 +67,7 @@
                             ]
                         ],
                         "libraries": [
-                            "-l<(openssl_root)/lib/libeay32.lib",
-							"cryptnet.lib",
-							"crypt32.lib"
+                            "-l<(openssl_root)/lib/libeay32.lib"
                         ],
                         "include_dirs": [
                             "<(openssl_root)/include"
