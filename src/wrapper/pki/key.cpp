@@ -42,10 +42,10 @@ int Key::privkeyLoad(std::string filename, DataFormat::DATA_FORMAT format, std::
 		this->setData(key);
 	}
 	catch (Handle<Exception> e){
-		return -1;
+		THROW_EXCEPTION(0, Key, e, "Can not load private key");
 	}
 	
-	return 0;
+	return 1;
 }
 
 int Key::privkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password) {
