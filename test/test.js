@@ -218,6 +218,6 @@ describe('CertificateCollection', function () {
         certs.push(trusted.Pki.Certificate.load("test/test.crt"));
         assert.equal(certs.length, 1);
         var cert = certs.items(0);
-        assert.equal(cert.version);  
+        assert.equal(cert.version, 2);  
     })
 })
