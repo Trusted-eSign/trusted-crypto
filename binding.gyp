@@ -10,6 +10,7 @@
                 "src/node/utils/wrap.cpp",
                 "src/node/pki/wcrl.cpp",
                 "src/node/pki/wcert.cpp",
+                "src/node/pki/wcerts.cpp",
                 "src/node/pki/wattr.cpp",
                 "src/node/pki/wattr_vals.cpp",
                 "src/node/pki/wkey.cpp",

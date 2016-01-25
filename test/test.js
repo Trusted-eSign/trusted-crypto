@@ -185,3 +185,39 @@ describe('SignedData', function () {
         console.log("isDetached:", cms.isDetached());
     })
 })
+
+describe('CertificateCollection', function () {    
+    it("push", function () {
+        var certs = new trusted.Pki.CertificateCollection();
+        
+        assert.equal(certs.length, 0);
+        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        assert.equal(certs.length, 1);
+        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        assert.equal(certs.length, 2);
+    })
+    
+    it("remove", function () {
+        var certs = new trusted.Pki.CertificateCollection();
+        
+        assert.equal(certs.length, 0);
+        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        assert.equal(certs.length, 1);
+        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        assert.equal(certs.length, 2);
+        certs.pop();
+        assert.equal(certs.length, 1);
+        certs.removeAt(0);
+        assert.equal(certs.length, 0);
+    })
+    
+    it("items", function () {
+        var certs = new trusted.Pki.CertificateCollection();
+        
+        assert.equal(certs.length, 0);
+        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        assert.equal(certs.length, 1);
+        var cert = certs.items(0);
+        assert.equal(cert.version);  
+    })
+})

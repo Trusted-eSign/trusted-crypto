@@ -40,3 +40,17 @@ Handle<Certificate> CertificateCollection::items(int index) {
 
 	return new Certificate(cert, this->handle());
 }
+
+void CertificateCollection::pop(){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL("sk_X509_value");
+	sk_X509_pop(this->internal());	
+}
+
+void CertificateCollection::removeAt(int index){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL("sk_X509_delete");
+	sk_X509_delete(this->internal(), index);
+}

@@ -19,6 +19,8 @@ public:
 
 	//methods
 	void push(Handle<Certificate> cert);
+	void pop();
+	void removeAt(int index);
 	int length();
 	Handle<Certificate> items(int index);
 };

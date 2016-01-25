@@ -10,6 +10,7 @@
 
 #include "pki/wkey.h"
 #include "pki/wcert.h"
+#include "pki/wcerts.h"
 #include "pki/wcrl.h"
 #include "pki/woid.h"
 #include "pki/walg.h"
@@ -40,6 +41,7 @@ void init(v8::Handle<v8::Object> target) {
 
 	target->Set(Nan::New("PKI").ToLocalChecked(), Pki);
 	WCertificate::Init(Pki);
+	WCertificateCollection::Init(Pki);
 	WCRL::Init(Pki);
 	WOID::Init(Pki);
 	WAlgorithm::Init(Pki);
