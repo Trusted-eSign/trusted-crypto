@@ -60,7 +60,8 @@ void CertStore::newJSON(const char *pvdURI){
 		minParameters.clear();
 
 		std::ofstream cashStore;
-		cashStore.open(*pvdURI + "\\cash_cert_store.json");
+		string strJsonPath = ((string)(pvdURI)+ CROSSPLATFORM_SLASH + "cash_cert_store.json");
+		cashStore.open(strJsonPath.c_str());
 
 		Json::StyledWriter styledWriter;
 		cashStore << styledWriter.write(root);

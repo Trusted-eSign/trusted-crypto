@@ -24,7 +24,7 @@ ProviderSystem::ProviderSystem(string pvdURI){
 			LOGGER_OPENSSL(sk_X509_URI_new_null);
 			cert_store_system.cert_pkey = sk_X509_URI_new_null();
 
-			string patchJSON = (providerURI + "\\" + "cash_cert_store.json").c_str();
+			string patchJSON = (providerURI + CROSSPLATFORM_SLASH + "cash_cert_store.json").c_str();
 			string strJSON = readInputJsonFile(patchJSON.c_str());
 			if ( strJSON.empty() ){
 				THROW_EXCEPTION(0, ProviderSystem, NULL, "Json str empty");
@@ -49,24 +49,42 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 	DIR *dir;
 	class dirent *ent;
 	class stat st;
+	BIO *bioFile;
 
-	dir = opendir(pvdURI);
-	while ((ent = readdir(dir)) != NULL) {
-		const string file_name = ent->d_name;
-		const string full_file_name = pvdURI +  file_name;
+	string listCertStore[] = {
+		"MY",
+		"OTHERS",
+		"TRUST",
+		"CRL"
+	};
 
-		if (file_name[0] == '.')
-			continue;
+	for (int i = 0, c = sizeof(listCertStore) / sizeof(*listCertStore); i < c; i++){
+		string dirInCertStore = (string)pvdURI + CROSSPLATFORM_SLASH + listCertStore[i].c_str();
+		dir = opendir(dirInCertStore.c_str());
+		while ((ent = readdir(dir)) != NULL) {
+			const string file_name = ent->d_name;
+			const string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH +   file_name;
 
-		if (stat(full_file_name.c_str(), &st) == -1)
-			continue;
+			if (file_name[0] == '.')
+				continue;
 
-		const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+			const bool is_directory = (st.st_mode & S_IFDIR) != 0;
 
-		if (is_directory)
-			continue;
-}
-	closedir(dir);
+			if (is_directory)
+				continue;
+
+			LOGGER_OPENSSL(BIO_new);
+			bioFile = BIO_new(BIO_s_file());
+			LOGGER_OPENSSL(BIO_read_filename);
+			if (BIO_read_filename(bioFile, full_file_name.c_str()) > 0){
+				LOGGER_TRACE("addValueToJSON");
+				addValueToJSON(pvdURI, bioFile, full_file_name.c_str());
+			}
+			LOGGER_OPENSSL(BIO_free);
+			BIO_free(bioFile);
+		}
+		closedir(dir);
+	}
 #endif
 #if defined(OPENSSL_SYS_WINDOWS) 
 	LOGGER_FN();
@@ -87,29 +105,18 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 		};
 
 		for (int i = 0, c = sizeof(listCertStore) / sizeof(*listCertStore); i < c; i++){
-			string dirInCertStore = (string)pvdURI + "\\" + listCertStore[i].c_str();
-			std::wstring wstemp = std::wstring(dirInCertStore.begin(), dirInCertStore.end());
-			LPCWSTR wdirectory = wstemp.c_str();
-			LOGGER_TRACE("StringCchCopy");
-			StringCchCopy(szDir, MAX_PATH, (LPCSTR)wdirectory);
-
-			LOGGER_TRACE("StringCchCat");
-			StringCchCat(szDir, MAX_PATH, TEXT("\\*"));
-
+			string dirInCertStore = (string)pvdURI + CROSSPLATFORM_SLASH + listCertStore[i].c_str();
+			string tempdirInCertStore = "";
+			tempdirInCertStore = dirInCertStore + "\\*";
 			LOGGER_TRACE("FindFirstFile");
-			if ( (dir = FindFirstFile(szDir, &file_data)) == INVALID_HANDLE_VALUE ){
-				LOGGER_TRACE("CreateDirectory");
-				if (!CreateDirectory((LPCSTR)wdirectory, NULL)){
-					continue;
-				}
+			if ((dir = FindFirstFile(tempdirInCertStore.c_str(), &file_data)) == INVALID_HANDLE_VALUE){
 				continue;
 			}
 
 			do {
-				//wstring file_name = file_data.cFileName;
-				string str(file_data.cFileName);
+				string str = file_data.cFileName;
 				wstring file_name(str.begin(), str.end());
-				string full_file_name = dirInCertStore + "\\" + string(file_name.begin(), file_name.end());
+				string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH + string(file_name.begin(), file_name.end());
 				const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
 				if (file_name[0] == '.')
@@ -123,7 +130,7 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 				LOGGER_OPENSSL(BIO_read_filename);
 				if (BIO_read_filename(bioFile, full_file_name.c_str()) > 0){
 					LOGGER_TRACE("addValueToJSON");
-					addValueToJSON(pvdURI, bioFile, &full_file_name);
+					addValueToJSON(pvdURI, bioFile, full_file_name.c_str());
 				}
 				LOGGER_OPENSSL(BIO_free);
 				BIO_free(bioFile);
@@ -140,7 +147,7 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 #endif
 }
 
-void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *full_file_name){
+void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char *full_file_name){
 	LOGGER_FN();
 
 	try{
@@ -156,6 +163,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 		Json::Value jsnBuf, jsnPKIobj, jsnPkey;
 		Json::Reader jsnReader;
 
+		string strJsonPath = (string)pvdURI + CROSSPLATFORM_SLASH + "cash_cert_store.json";
 
 		LOGGER_OPENSSL(BIO_seek);
 		BIO_seek(bioFile, 0);
@@ -175,8 +183,8 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 		}
 
 		if ( cert ){
-			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON(*pvdURI + "\\cash_cert_store.json", std::ifstream::binary);
+			LOGGER_TRACE("ifstream");			
+			std::ifstream fileJSON(strJsonPath.c_str(), std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
@@ -184,14 +192,14 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 			}
 
 			jsnBuf["PKIObjectType"] = "X509";
-			jsnBuf["UriPKIObject"] = *full_file_name;
+			jsnBuf["UriPKIObject"] = full_file_name;
 
-			strTrust = ((*full_file_name).substr(0, (*full_file_name).find_last_of("\\")));
-			strTrust = strTrust.substr(strTrust.find_last_of("\\") + 1, strTrust.length());
+			strTrust = (((string)full_file_name).substr(0, ((string)full_file_name).find_last_of(CROSSPLATFORM_SLASH)));
+			strTrust = strTrust.substr(strTrust.find_last_of(CROSSPLATFORM_SLASH) + 1, strTrust.length());
 			jsnBuf["TRUST"] = strTrust;
 
-			lastindex = (*full_file_name).find_last_of(".");
-			key_file_name = (*full_file_name).substr(0, lastindex) + ".key";
+			lastindex = ((string)full_file_name).find_last_of(".");
+			key_file_name = ((string)full_file_name).substr(0, lastindex) + ".key";
 			LOGGER_OPENSSL("BIO_new");
 			bioKeyFile = BIO_new(BIO_s_file());
 			LOGGER_OPENSSL("BIO_read_filename");
@@ -212,7 +220,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
-			cashStore.open(*pvdURI + "\\cash_cert_store.json");
+			cashStore.open(strJsonPath.c_str());
 
 			Json::StyledWriter styledWriter;
 			cashStore << styledWriter.write(jsnRoot);
@@ -244,7 +252,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 
 		if ( xReq ){
 			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON(*pvdURI + "\\cash_cert_store.json", std::ifstream::binary);
+			std::ifstream fileJSON(strJsonPath.c_str(), std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
@@ -252,10 +260,10 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 			}
 
 			jsnBuf["PKIObjectType"] = "X509_REQ";
-			jsnBuf["UriPKIObject"] = *full_file_name;
+			jsnBuf["UriPKIObject"] = full_file_name;
 
-			strTrust = ((*full_file_name).substr(0, (*full_file_name).find_last_of("\\")));
-			strTrust = strTrust.substr(strTrust.find_last_of("\\") + 1, strTrust.length());
+			strTrust = (((string)full_file_name).substr(0, ((string)full_file_name).find_last_of(CROSSPLATFORM_SLASH)));
+			strTrust = strTrust.substr(strTrust.find_last_of(CROSSPLATFORM_SLASH) + 1, strTrust.length());
 			jsnBuf["TRUST"] = strTrust;
 
 			jsnPKIobj["X509_REQ"] = jsnBuf;
@@ -264,7 +272,8 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
-			cashStore.open(*pvdURI + "\\cash_cert_store.json");
+			string strJsonPath = ((string)(pvdURI)+CROSSPLATFORM_SLASH + "cash_cert_store.json");
+			cashStore.open(strJsonPath.c_str());
 
 			Json::StyledWriter styledWriter;
 			cashStore << styledWriter.write(jsnRoot);
@@ -295,7 +304,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 
 		if ( crl ){
 			LOGGER_TRACE("ifstream");
-			std::ifstream fileJSON(*pvdURI + "\\cash_cert_store.json", std::ifstream::binary);
+			std::ifstream fileJSON(strJsonPath.c_str(), std::ifstream::binary);
 			LOGGER_TRACE("Json::Reader::parse");
 			bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 			if (!parsingSuccessful){
@@ -303,10 +312,10 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 			}
 
 			jsnBuf["PKIObjectType"] = "CRL";
-			jsnBuf["UriPKIObject"] = *full_file_name;
+			jsnBuf["UriPKIObject"] = full_file_name;
 
-			strTrust = ((*full_file_name).substr(0, (*full_file_name).find_last_of("\\")));
-			strTrust = strTrust.substr(strTrust.find_last_of("\\") + 1, strTrust.length());
+			strTrust = (((string)full_file_name).substr(0, ((string)full_file_name).find_last_of(CROSSPLATFORM_SLASH)));
+			strTrust = strTrust.substr(strTrust.find_last_of(CROSSPLATFORM_SLASH) + 1, strTrust.length());
 			jsnBuf["TRUST"] = strTrust;
 
 			jsnPKIobj["CRL"] = jsnBuf;
@@ -315,7 +324,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, string *fu
 			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
-			cashStore.open(*pvdURI + "\\cash_cert_store.json");
+			cashStore.open(strJsonPath.c_str());
 
 			Json::StyledWriter styledWriter;
 			cashStore << styledWriter.write(jsnRoot);
@@ -629,8 +638,8 @@ int ProviderSystem::cert_store_key_new(CERT_STORE *cert_store, FORMAT_SIG *type)
 	try{
 		ENGINE *en = NULL;
 		int num = 1024;
-		string dirInCertStore = (string)(providerURI.c_str()) + "\\" + "MY";
-		string full_file_name = dirInCertStore + "\\" + generateGuidStr() + ".pem";
+		string dirInCertStore = (string)(providerURI.c_str()) + CROSSPLATFORM_SLASH + "MY";
+		string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH + generateGuidStr() + ".pem";
 
 		LOGGER_OPENSSL(RSA_new_method);
 		rsa = RSA_new_method(en);
@@ -723,8 +732,8 @@ int ProviderSystem::cert_store_key_new(CERT_STORE *cert_store, FORMAT_SIG *type,
 	try{
 		ENGINE *en = NULL;
 		int num = 2048;
-		string dirInCertStore = (string)(providerURI.c_str()) + "\\" + "MY";
-		string full_file_name = dirInCertStore + "\\" + generateGuidStr() + ".pem";
+		string dirInCertStore = (string)(providerURI.c_str()) + CROSSPLATFORM_SLASH + "MY";
+		string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH + generateGuidStr() + ".pem";
 
 		LOGGER_OPENSSL(RSA_new_method);
 		rsa = RSA_new_method(en);
@@ -857,8 +866,8 @@ int ProviderSystem::writeEVPkeyToFile(CERT_STORE *cert_store, EVP_PKEY * pkey)
 
 	try{
 		BIO *outFile;
-		string dirInCertStore = (string)(providerURI.c_str()) + "\\" + "MY";
-		string full_file_name = dirInCertStore + "\\" + generateGuidStr() + ".pem";
+		string dirInCertStore = (string)(providerURI.c_str()) + CROSSPLATFORM_SLASH + "MY";
+		string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH + generateGuidStr() + ".pem";
 
 		LOGGER_OPENSSL(BIO_new_file);
 		outFile = BIO_new_file(full_file_name.c_str(), "wb");
@@ -964,8 +973,8 @@ int ProviderSystem::writeX509ToFile(CERT_STORE *cert_store, X509 * x509)
 
 	try{
 		BIO *outFile;
-		string dirInCertStore = (string)(providerURI.c_str()) + "\\" + "MY";
-		string full_file_name = dirInCertStore + "\\" + generateGuidStr() + ".pem";
+		string dirInCertStore = (string)(providerURI.c_str()) + CROSSPLATFORM_SLASH + "MY";
+		string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH + generateGuidStr() + ".pem";
 
 		LOGGER_OPENSSL(BIO_new_file);
 		outFile = BIO_new_file(full_file_name.c_str(), "wb");
@@ -1035,8 +1044,8 @@ int ProviderSystem::writeX509ReqToFile(CERT_STORE *cert_store, X509_REQ * xreq){
 
 	try{
 		BIO *outFile;
-		string dirInCertStore = (string)(providerURI.c_str()) + "\\" + "MY";
-		string full_file_name = dirInCertStore + "\\" + generateGuidStr() + ".pem";
+		string dirInCertStore = (string)(providerURI.c_str()) + CROSSPLATFORM_SLASH + "MY";
+		string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH + generateGuidStr() + ".pem";
 
 		LOGGER_OPENSSL(BIO_new_file);
 		outFile = BIO_new_file(full_file_name.c_str(), "wb");
@@ -1359,8 +1368,8 @@ int ProviderSystem::writeX509CRLToFile(CERT_STORE *cert_store, X509_CRL *xcrl){
 
 	try{
 		BIO *outFile;
-		string dirInCertStore = (string)(providerURI.c_str()) + "\\" + "CRL";
-		string full_file_name = dirInCertStore + "\\" + generateGuidStr() + ".crl";
+		string dirInCertStore = (string)(providerURI.c_str()) + CROSSPLATFORM_SLASH + "CRL";
+		string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH + generateGuidStr() + ".crl";
 
 		LOGGER_OPENSSL(BIO_new_file);
 		outFile = BIO_new_file(full_file_name.c_str(), "wb");

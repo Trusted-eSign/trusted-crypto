@@ -20,7 +20,6 @@ public:
 
 	static NAN_METHOD(fillingJsonFromSystemStore);
 	static NAN_METHOD(readJson);
-	static NAN_METHOD(testRead);
 
 	Handle<ProviderSystem> data_;
 	

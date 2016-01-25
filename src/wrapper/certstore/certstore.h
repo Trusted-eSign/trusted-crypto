@@ -3,6 +3,14 @@
 //#include <openssl/cryptlib.h>
 #include "../common/common.h"
 #include <string.h>
+
+#if defined(OPENSSL_SYS_WINDOWS) 
+	#define CROSSPLATFORM_SLASH       "\\"
+#endif
+#if defined(OPENSSL_SYS_UNIX) 
+	#define CROSSPLATFORM_SLASH       "/"
+#endif
+
 using namespace std;
 
 class CTWRAPPER_API CertStore;
