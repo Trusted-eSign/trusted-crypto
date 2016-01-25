@@ -18,8 +18,4 @@ describe('ProviderSystem', function () {
 	it('readJson', function () {
 		console.log("JSON:",providersystem.readJson(DEFAULT_CERTSTORE_PATH + "/cash_cert_store.json"));
     });
-	
-	it('testRead', function () {
-		console.log("TestRead:",providersystem.testRead());
-    });
 });
