@@ -18,7 +18,6 @@ void WProviderSystem::Init(v8::Handle<v8::Object> exports){
 
 	Nan::SetPrototypeMethod(tpl, "fillingJsonFromSystemStore", fillingJsonFromSystemStore);
 	Nan::SetPrototypeMethod(tpl, "readJson", readJson);
-	Nan::SetPrototypeMethod(tpl, "testRead", testRead);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -115,20 +114,6 @@ NAN_METHOD(WProviderSystem::readJson){
 		v8::Local<v8::String> v8Name = Nan::New<v8::String>(strJson).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8Name);
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WProviderSystem::testRead){
-	METHOD_BEGIN();
-
-	try{
-		UNWRAP_DATA(ProviderSystem);
-
-		printf("CRLs num in stack: %d \n", sk_X509_CRL_num(_this->cert_store_system.crls));
-		printf("Certs num in stack: %d \n", sk_X509_URI_num(_this->cert_store_system.cert_pkey));
-		printf("CSR num in stack: %d \n", sk_X509_REQ_num(_this->cert_store_system.request));
 		return;
 	}
 	TRY_END();

@@ -84,7 +84,7 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 			BIO_free(bioFile);
 		}
 		closedir(dir);
-}
+	}
 #endif
 #if defined(OPENSSL_SYS_WINDOWS) 
 	LOGGER_FN();
@@ -106,26 +106,15 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 
 		for (int i = 0, c = sizeof(listCertStore) / sizeof(*listCertStore); i < c; i++){
 			string dirInCertStore = (string)pvdURI + CROSSPLATFORM_SLASH + listCertStore[i].c_str();
-			std::wstring wstemp = std::wstring(dirInCertStore.begin(), dirInCertStore.end());
-			LPCWSTR wdirectory = wstemp.c_str();
-			LOGGER_TRACE("StringCchCopy");
-			StringCchCopy(szDir, MAX_PATH, (LPCSTR)wdirectory);
-
-			LOGGER_TRACE("StringCchCat");
-			StringCchCat(szDir, MAX_PATH, TEXT("\\*"));
-
+			string tempdirInCertStore = "";
+			tempdirInCertStore = dirInCertStore + "\\*";
 			LOGGER_TRACE("FindFirstFile");
-			if ( (dir = FindFirstFile(szDir, &file_data)) == INVALID_HANDLE_VALUE ){
-				LOGGER_TRACE("CreateDirectory");
-				if (!CreateDirectory((LPCSTR)wdirectory, NULL)){
-					continue;
-				}
+			if ((dir = FindFirstFile(tempdirInCertStore.c_str(), &file_data)) == INVALID_HANDLE_VALUE){
 				continue;
 			}
 
 			do {
-				//wstring file_name = file_data.cFileName;
-				string str(file_data.cFileName);
+				string str = file_data.cFileName;
 				wstring file_name(str.begin(), str.end());
 				string full_file_name = dirInCertStore + CROSSPLATFORM_SLASH + string(file_name.begin(), file_name.end());
 				const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
@@ -271,7 +260,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 			}
 
 			jsnBuf["PKIObjectType"] = "X509_REQ";
-			jsnBuf["UriPKIObject"] = *full_file_name;
+			jsnBuf["UriPKIObject"] = full_file_name;
 
 			strTrust = (((string)full_file_name).substr(0, ((string)full_file_name).find_last_of(CROSSPLATFORM_SLASH)));
 			strTrust = strTrust.substr(strTrust.find_last_of(CROSSPLATFORM_SLASH) + 1, strTrust.length());
@@ -323,7 +312,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 			}
 
 			jsnBuf["PKIObjectType"] = "CRL";
-			jsnBuf["UriPKIObject"] = *full_file_name;
+			jsnBuf["UriPKIObject"] = full_file_name;
 
 			strTrust = (((string)full_file_name).substr(0, ((string)full_file_name).find_last_of(CROSSPLATFORM_SLASH)));
 			strTrust = strTrust.substr(strTrust.find_last_of(CROSSPLATFORM_SLASH) + 1, strTrust.length());

@@ -16,8 +16,4 @@ export class ProviderSystem extends BaseObject{
     readJson(filename: string): string {
 		return this.handle.readJson(filename);
 	}
-    
-    testRead(filename: string): string {
-		return this.handle.testRead(filename);
-	}
 }
