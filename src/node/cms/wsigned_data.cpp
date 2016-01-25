@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 
 #include "../pki/wcert.h"
+#include "../pki/wcerts.h"
 #include "../pki/wkey.h"
 #include "wsigner.h"
 #include "wsigned_data.h"
@@ -18,6 +19,9 @@ void WSignedData::Init(v8::Handle<v8::Object> exports){
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
+	Nan::SetPrototypeMethod(tpl, "getContent", GetContent);
+	Nan::SetPrototypeMethod(tpl, "setContent", SetContent);
+
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
 	Nan::SetPrototypeMethod(tpl, "save", Save);
@@ -27,6 +31,8 @@ void WSignedData::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "isDetached", IsDetached);
 	Nan::SetPrototypeMethod(tpl, "createSigner", CreateSigner);
 	Nan::SetPrototypeMethod(tpl, "addCertificate", AddCertificate);
+	Nan::SetPrototypeMethod(tpl, "verify", Verify);
+	Nan::SetPrototypeMethod(tpl, "sign", Sign);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -121,7 +127,7 @@ NAN_METHOD(WSignedData::Save) {
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
-		UNWRAP_DATA(Certificate);
+		UNWRAP_DATA(SignedData);
 
 		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
 		_this->write(out, DataFormat::get(format));
@@ -143,7 +149,7 @@ NAN_METHOD(WSignedData::Export) {
 		LOGGER_ARG("format")
 			int format = info[0]->ToNumber()->Int32Value();
 
-		UNWRAP_DATA(Certificate);
+		UNWRAP_DATA(SignedData);
 
 		Handle<Bio> out = new Bio(BIO_TYPE_MEM, "");
 		_this->write(out, DataFormat::get(format));
@@ -252,7 +258,7 @@ NAN_METHOD(WSignedData::CreateSigner) {
 	TRY_END();
 }
 
-/* 
+/*
  * certificate: Certificate
  */
 NAN_METHOD(WSignedData::AddCertificate) {
@@ -265,7 +271,91 @@ NAN_METHOD(WSignedData::AddCertificate) {
 		WCertificate *wCert = Wrapper::Unwrap<WCertificate>(info[0]->ToObject());
 
 		_this->addCertificate(wCert->data_);
-		
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSignedData::GetContent) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		Handle<std::string> buf = _this->getContent()->read();
+
+		info.GetReturnValue().Set(stringToBuffer(buf));
+		return;
+	}
+	TRY_END();
+}
+
+/*
+ * data: string | buffer
+ */
+NAN_METHOD(WSignedData::SetContent) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		Handle<Bio> buffer;
+
+		if (info[0]->IsString()){
+			LOGGER_INFO("Set content from file");
+			v8::String::Utf8Value v8Filename(info[0]->ToString());
+
+			BIO *pBuffer = BIO_new_file(*v8Filename, "r");
+			if (!pBuffer){
+				Nan::ThrowError("File not found");
+				return;
+			}
+
+			buffer = new Bio(pBuffer);
+
+		}
+		else{
+			LOGGER_INFO("Set content from buffer");
+			v8::Local<v8::Object> v8Buffer = info[0]->ToObject();
+
+			BIO *pBuffer = BIO_new_mem_buf(node::Buffer::Data(v8Buffer), node::Buffer::Length(v8Buffer));
+			buffer = new Bio(pBuffer);
+		}
+
+		_this->setContent(buffer);
+
+		return;
+	}
+	TRY_END();
+}
+
+/*
+ * certs: CertificateCollection
+ */
+NAN_METHOD(WSignedData::Verify) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		WCertificateCollection *wcerts = WCertificateCollection::Unwrap<WCertificateCollection>(info[0]->ToObject());
+
+		bool res = _this->verify(wcerts->data_, 0);
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSignedData::Sign) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		_this->sign();
 		return;
 	}
 	TRY_END();

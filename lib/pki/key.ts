@@ -24,6 +24,12 @@ export class Key extends BaseObject{
 		return this.handle.keypairGenerateBIO(format, keySize, password);
 	}
     
+    static privkeyLoad(filename: string, format: DataFormat, password: string) {
+        var key = new Key();
+		key.privkeyLoad.apply(key, arguments);
+        return key;
+	}
+    
     privkeyLoad(filename: string, format: DataFormat, password: string) {
 		return this.handle.privkeyLoad(filename, format, password);
 	}

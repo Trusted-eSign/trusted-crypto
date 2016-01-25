@@ -154,7 +154,7 @@ NAN_METHOD(WKey::keypairGenerateBIO){
 	try{
 		std::string data;
 		Handle<Bio> out = NULL;
-		
+
 		out = new Bio(BIO_TYPE_MEM, data, "w+");
 
 		LOGGER_ARG("format");
@@ -184,10 +184,14 @@ NAN_METHOD(WKey::keypairGenerateBIO){
 	TRY_END();
 }
 
+/*
+ * filename: string
+ */
 NAN_METHOD(WKey::privkeyLoad){
 	METHOD_BEGIN();
 
 	try{
+		LOGGER_ARG("filename");
 		if (info[0]->IsUndefined()){
 			Nan::ThrowError("Parameter 1 is required");
 			return;
@@ -212,14 +216,7 @@ NAN_METHOD(WKey::privkeyLoad){
 
 		UNWRAP_DATA(Key);
 
-		try{
-			_this->privkeyLoad(fname, DataFormat::get(format), password);
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("Error load key");
-			return;
-		}
-
+		_this->privkeyLoad(fname, DataFormat::get(format), password);
 
 		info.GetReturnValue().Set(info.This());
 		return;

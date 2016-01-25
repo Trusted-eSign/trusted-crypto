@@ -2,6 +2,8 @@
 
 #include "signed_data.h"
 
+IMPLEMENT_PEM_write(CMS, CMS_ContentInfo, PEM_STRING_CMS, CMS_ContentInfo)
+
 Handle<CertificateCollection> SignedData::certificates(){
 	LOGGER_FN();
 
@@ -44,7 +46,7 @@ Handle<Signer> SignedData::signers(int index){
 bool SignedData::isDetached(){
 	LOGGER_FN();
 
-	LOGGER_OPENSSL(CMS_is_detached);
+	LOGGER_OPENSSL("CMS_is_detached");
 	int res = CMS_is_detached(this->internal());
 
 	if (res == -1){
@@ -66,6 +68,15 @@ void SignedData::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 	case DataFormat::DER:
 		LOGGER_OPENSSL("d2i_CMS_bio");
 		ci = d2i_CMS_bio(in->internal(), NULL);
+
+		if (ci && !CMS_is_detached(ci)){
+			LOGGER_INFO("Get content from DER file");
+
+			ASN1_OCTET_STRING *asn = (*CMS_get0_content(ci));
+			Handle<Bio> content = new Bio(BIO_new_mem_buf(asn->data, asn->length));
+
+			this->setContent(content);
+		}
 		break;
 	case DataFormat::BASE64:
 	{
@@ -92,21 +103,39 @@ void SignedData::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
 	if (out.isEmpty())
 		THROW_EXCEPTION(0, SignedData, NULL, "Parameter %d is NULL", 1);
 
+	CMS_set_detached(this->internal(), 0);
+
+	int flags = CMS_STREAM | CMS_PARTIAL; // | CMS_DETACHED;
+
+	// CMS_set_detached(this->internal(), 0);
+	// this->sign();
+
 	switch (format){
 	case DataFormat::DER:
-		LOGGER_OPENSSL("i2d_X509_bio");
-		//TODO: i2d_CMS_bio_stream
-		if (i2d_CMS_bio(out->internal(), this->internal()) < 1)
-			THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "i2d_X509_bio", NULL);
+		if (flags & CMS_DETACHED){
+			LOGGER_OPENSSL("i2d_CMS_bio");
+			if (i2d_CMS_bio(out->internal(), this->internal()) < 1)
+				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "i2d_CMS_bio", NULL);
+		}
+		else{
+			LOGGER_OPENSSL("i2d_CMS_bio_stream");
+			if (i2d_CMS_bio_stream(out->internal(), this->internal(), this->content->internal(), flags) < 1)
+				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "i2d_CMS_bio_stream", NULL);
+		}
 		break;
 	case DataFormat::BASE64:
-		THROW_EXCEPTION(0, SignedData, NULL, "Method is not implemented yet");
-		/*
-		LOGGER_OPENSSL(PEM_read_bio_X509);
-		if (PEM_write_bio_CMS_stream(out->internal(), this->internal()) < 1)
-		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "PEM_write_bio_X509", NULL);
+		if (flags & CMS_DETACHED){
+			LOGGER_OPENSSL("PEM_write_bio_CMS");
+			if (PEM_write_bio_CMS(out->internal(), this->internal()) < 1)
+				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "PEM_write_bio_CMS", NULL);
+		}
+		else{
+			LOGGER_OPENSSL("PEM_write_bio_CMS_stream");
+			if (PEM_write_bio_CMS_stream(out->internal(), this->internal(), this->content->internal(), flags) < 1)
+				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "PEM_write_bio_CMS_stream", NULL);
+		}
 		break;
-		*/
+
 	default:
 		THROW_EXCEPTION(0, SignedData, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
 	}
@@ -120,10 +149,13 @@ Handle<Signer> SignedData::createSigner(Handle<Certificate> cert, Handle<Key> pk
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown digest name '%s'", digestname->c_str());
 	}
 
+	LOGGER_OPENSSL("CMS_add1_signer");
 	CMS_SignerInfo *signer = CMS_add1_signer(this->internal(), cert->internal(), pkey->internal(), md, flags);
 	if (!signer){
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_add1_signer");
 	}
+
+	return new Signer(signer, this->handle());
 }
 
 void SignedData::addCertificate(Handle<Certificate> cert){
@@ -154,9 +186,16 @@ Handle<Bio> SignedData::getContent(){
 bool SignedData::verify(Handle<CertificateCollection> certs, int flags){
 	LOGGER_FN();
 
+	flags |= CMS_NO_SIGNER_CERT_VERIFY;
+
+	stack_st_X509 *pCerts = NULL;
+	if (!certs.isEmpty()){
+		pCerts = certs->internal();
+	}
+
 	LOGGER_OPENSSL("CMS_verify");
-	int res = CMS_verify(this->internal(), certs->internal(), NULL, this->content->internal(), NULL, flags);
-	if (res == -1){
+	int res = CMS_verify(this->internal(), pCerts, NULL, this->content->internal(), NULL, flags);
+	if (!res){
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_verify");
 	}
 
@@ -176,7 +215,7 @@ Handle<SignedData> SignedData::sign(Handle<Certificate> cert, Handle<Key> pkey, 
 }
 
 void SignedData::sign(){
-	int flags = 0;
+	int flags = CMS_STREAM;
 
 	LOGGER_OPENSSL("CMS_final");
 	if (CMS_final(this->internal(), this->content->internal(), NULL, flags) < 1){

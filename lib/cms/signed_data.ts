@@ -3,9 +3,20 @@ import {BaseObject} from "../object";
 import {DataFormat} from "../data_format";
 import {Signer} from "./signer";
 import {Certificate} from "../pki/cert";
+import {CertificateCollection} from "../pki/certs";
 import {Key} from "../pki/key";
 
 const DEFAULT_DATA_FORMAT = DataFormat.DER;
+
+export enum SignedDataContentType {
+    url,
+    buffer
+}
+
+export interface ISignedDataContent {
+    type: SignedDataContentType;
+    data: string | Buffer;
+}
 
 /**
  * Представление `CMS SignedData`
@@ -16,6 +27,32 @@ export class SignedData extends BaseObject {
         super();
 
         this.handle = new native.CMS.SignedData();
+    }
+
+    private content_: ISignedDataContent = null;
+
+    get content(): ISignedDataContent {
+        if (!this.content_ && !this.isDetached()) {
+            // Извлечь содержимое из подписи
+            let buf: Buffer = this.handle.getContent();
+            this.content_ = {
+                type: SignedDataContentType.buffer,
+                data: buf
+            }
+        }
+        return this.content_;
+    }
+
+    set content(v: ISignedDataContent) {
+        let data;
+        if (v.type === SignedDataContentType.url) {
+            data = v.data.toString();
+        }
+        else {
+            data = new Buffer(<any>v.data);
+        }
+        this.handle.setContent(data)
+        this.content_ = v;
     }
 
     isDetached(): boolean {
@@ -96,10 +133,10 @@ export class SignedData extends BaseObject {
         return cms;
     }
     
-     /**
-     * сохранение подписи в память
-     * @param format Формат данных. Опционально. По умолчанию DER
-     */
+    /**
+    * сохранение подписи в память
+    * @param format Формат данных. Опционально. По умолчанию DER
+    */
     export(format: DataFormat = DEFAULT_DATA_FORMAT): Buffer {
         return this.handle.export(format);
     }
@@ -112,10 +149,28 @@ export class SignedData extends BaseObject {
     save(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.save(filename, format);
     }
-    
-    createSigner(cert: Certificate, key: Key, digestName: string, flags?: number): Signer{
+
+    createSigner(cert: Certificate, key: Key, digestName: string, flags?: number): Signer {
         var nsigner = this.handle.createSigner(cert.handle, key.handle, digestName, flags);
         return new Signer(nsigner);
     }
+    
+    /**
+     * Проверяет подпись
+     * @param certs Коллекция дополнительных сертификатов
+     */
+    verify(certs?: CertificateCollection): boolean {
+        let certs_ = certs;
+        if (!certs) {
+            certs_ = new CertificateCollection();
+        }
+        return this.handle.verify(certs_.handle);
+    }
 
+    /**
+     * Создает подпись
+     */
+    sign(): void {
+        this.handle.sign();
+    }
 }

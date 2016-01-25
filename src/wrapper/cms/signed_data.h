@@ -13,7 +13,12 @@ public:
 			THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_SignedData_init");
 		}
 	}
-	SSLOBJECT_new_null(SignedData, CMS_ContentInfo, CMS_ContentInfo_new){}
+	SSLOBJECT_new_null(SignedData, CMS_ContentInfo, CMS_ContentInfo_new){
+		LOGGER_FN();
+
+		LOGGER_OPENSSL("CMS_SignedData_init");
+		CMS_SignedData_init(this->internal());
+	}
 
 	// Properties
 	void setContent(Handle<Bio> value);
@@ -29,7 +34,7 @@ public:
 	void write(Handle<Bio> out, DataFormat::DATA_FORMAT format);
 	void addCertificate(Handle<Certificate> cert);
 	bool verify(Handle<CertificateCollection> certs, int flags);
-	
+
 	static Handle<SignedData> sign(Handle<Certificate> cert, Handle<Key> pkey, Handle<CertificateCollection> certs, Handle<Bio> content, unsigned int flags); // Подписывает данные и формирует новый CMS пакет
 	void sign();
 
