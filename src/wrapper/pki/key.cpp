@@ -25,18 +25,20 @@ int Key::privkeyLoad(std::string filename, DataFormat::DATA_FORMAT format, std::
 		switch (format){
 		case DataFormat::DER:
 			LOGGER_OPENSSL(d2i_PKCS8PrivateKey_bio);
-			key = d2i_PKCS8PrivateKey_bio(in->internal(), NULL, 0, (void *)pass);
+			key = d2i_PKCS8PrivateKey_bio(in->internal(), NULL, 0, NULL);//(void *)pass);
+			if (!key) {
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "d2i_PKCS8PrivateKey_bio");
+			}
 			break;
 		case DataFormat::BASE64:
 			LOGGER_OPENSSL(PEM_read_bio_PrivateKey);
-			key = PEM_read_bio_PrivateKey(in->internal(), NULL, 0, (void *)pass);
+			key = PEM_read_bio_PrivateKey(in->internal(), NULL, 0, NULL);//(void *)pass);
+			if (!key) {
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "PEM_read_bio_PrivateKey");
+			}
 			break;
 		default:
 			THROW_EXCEPTION(0, Key, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
-		}
-
-		if (!key) {
-			THROW_EXCEPTION(0, Key, NULL, "Can not read EVP_PKEY data from file");
 		}
 
 		this->setData(key);
