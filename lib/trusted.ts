@@ -13,7 +13,7 @@ import * as signed_data from "./cms/signed_data";
 
 export let DataFormat = dataFormat.DataFormat;
 
-export namespace Pki {
+export namespace pki {
     export let Certificate = cert.Certificate;
     export let CertificateCollection = certs.CertificateCollection;
     export let Crl = crl.Crl;
@@ -24,7 +24,7 @@ export namespace Pki {
     export let Algorithm = alg.Algorithm;
 }
 
-export namespace Cms {
+export namespace cms {
     export let SignedData = signed_data.SignedData;
     export let SignedDataContentType = signed_data.SignedDataContentType;
 }

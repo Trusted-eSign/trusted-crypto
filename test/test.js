@@ -6,7 +6,7 @@ describe('CRL', function () {
     var crl;
 
     it('init', function () {
-        crl = new trusted.Pki.Crl()
+        crl = new trusted.pki.Crl()
         assert.equal(crl != null, true);
     })
 
@@ -32,7 +32,7 @@ describe('Certificate', function () {
     var cert;
 
     it('init', function () {
-        cert = new trusted.Pki.Certificate()
+        cert = new trusted.pki.Certificate()
         assert.equal(cert != null, true);
     })
 
@@ -69,7 +69,7 @@ describe('Certificate', function () {
 		assert.equal(typeof (cert.lastUpdate), "object", "Bad lastUpdate value")
 		assert.equal(typeof (cert.nextUpdate), "object", "Bad nextUpdate value")
         */
-        var c = trusted.Pki.Certificate.load("test/test-ru.crt");
+        var c = trusted.pki.Certificate.load("test/test-ru.crt");
         console.log("scn:", c.subjectFriendlyName);
         console.log("sn:", c.subjectName);
         //var n = c.subjectName;
@@ -97,29 +97,29 @@ describe('Certificate', function () {
     })
 
     it("duplicate", function () {
-        var cert1 = trusted.Pki.Certificate.load("test/test.crt");
+        var cert1 = trusted.pki.Certificate.load("test/test.crt");
         var cert2 = cert1.duplicate();
         assert.equal(cert1.thumbprint === cert2.thumbprint, true, "Certificates are not equals");
     })
 
     it("equals", function () {
-        var cert1 = trusted.Pki.Certificate.load("test/test.crt");
-        var cert2 = trusted.Pki.Certificate.load("test/test-ru.crt");
-        var cert3 = trusted.Pki.Certificate.load("test/test.crt");
+        var cert1 = trusted.pki.Certificate.load("test/test.crt");
+        var cert2 = trusted.pki.Certificate.load("test/test-ru.crt");
+        var cert3 = trusted.pki.Certificate.load("test/test.crt");
         assert.equal(cert1.equals(cert2), false, "Certificates are equals");
         assert.equal(cert1.equals(cert3), true, "Certificates are not equals");
     })
 
     it("compare", function () {
-        var cert1 = trusted.Pki.Certificate.load("test/test.crt");
-        var cert2 = trusted.Pki.Certificate.load("test/test-ru.crt");
+        var cert1 = trusted.pki.Certificate.load("test/test.crt");
+        var cert2 = trusted.pki.Certificate.load("test/test-ru.crt");
         assert.equal(cert1.compare(cert2), 1, "Wrong compare");
         assert.equal(cert2.compare(cert1), -1, "Wrong compare");
         assert.equal(cert1.compare(cert1), 0, "Wrong compare");
     })
 
     it("hash", function () {
-        var cert1 = trusted.Pki.Certificate.load("test/test.crt");
+        var cert1 = trusted.pki.Certificate.load("test/test.crt");
 
         var hash1 = cert1.hash();
         var hash2 = cert1.hash("sha1");
@@ -137,7 +137,7 @@ describe('Certificate', function () {
 
 describe('OID', function () {
     it("create", function () {
-        var oid = new trusted.Pki.Oid("2.5.4.3");
+        var oid = new trusted.pki.Oid("2.5.4.3");
         assert.equal(oid.value, "2.5.4.3");
         assert.equal(oid.longName, "commonName");
         assert.equal(oid.shortName, "CN");
@@ -145,14 +145,14 @@ describe('OID', function () {
 
     it("create with error", function () {
         assert.throws(function () {
-            new trusted.Pki.Oid("2.5.4.3_error");
+            new trusted.pki.Oid("2.5.4.3_error");
         });
     })
 })
 
 describe('Algorithm', function () {
     it("create", function () {
-        var alg = new trusted.Pki.Algorithm("SHA");
+        var alg = new trusted.pki.Algorithm("SHA");
         assert.equal(alg.typeId.shortName, "SHA");
         assert.equal(alg.name, "sha");
         assert.equal(alg.duplicate().name, "sha");
@@ -161,14 +161,14 @@ describe('Algorithm', function () {
 
     it("create with error", function () {
         assert.throws(function () {
-            new trusted.Pki.Algorithm("SHA123_error")
+            new trusted.pki.Algorithm("SHA123_error")
         });
     })
 })
 
 describe('SignedData', function () {
     it("load", function () {
-        var cms = new trusted.Cms.SignedData();
+        var cms = new trusted.cms.SignedData();
         cms.load("test/test02.txt.sig");
         
         var signers = cms.signers;
@@ -188,22 +188,22 @@ describe('SignedData', function () {
 
 describe('CertificateCollection', function () {    
     it("push", function () {
-        var certs = new trusted.Pki.CertificateCollection();
+        var certs = new trusted.pki.CertificateCollection();
         
         assert.equal(certs.length, 0);
-        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        certs.push(trusted.pki.Certificate.load("test/test.crt"));
         assert.equal(certs.length, 1);
-        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        certs.push(trusted.pki.Certificate.load("test/test.crt"));
         assert.equal(certs.length, 2);
     })
     
     it("remove", function () {
-        var certs = new trusted.Pki.CertificateCollection();
+        var certs = new trusted.pki.CertificateCollection();
         
         assert.equal(certs.length, 0);
-        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        certs.push(trusted.pki.Certificate.load("test/test.crt"));
         assert.equal(certs.length, 1);
-        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        certs.push(trusted.pki.Certificate.load("test/test.crt"));
         assert.equal(certs.length, 2);
         certs.pop();
         assert.equal(certs.length, 1);
@@ -212,10 +212,10 @@ describe('CertificateCollection', function () {
     })
     
     it("items", function () {
-        var certs = new trusted.Pki.CertificateCollection();
+        var certs = new trusted.pki.CertificateCollection();
         
         assert.equal(certs.length, 0);
-        certs.push(trusted.Pki.Certificate.load("test/test.crt"));
+        certs.push(trusted.pki.Certificate.load("test/test.crt"));
         assert.equal(certs.length, 1);
         var cert = certs.items(0);
         assert.equal(cert.version, 2);  

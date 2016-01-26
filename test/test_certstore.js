@@ -7,7 +7,7 @@ describe('CertStore', function () {
 	var certstore;
 
 	it('init', function () {
-		certstore = new trusted.Pki.CertStore()
+		certstore = new trusted.pki.CertStore()
 		assert.equal(certstore != null, true);
 	})
 	
@@ -24,7 +24,7 @@ describe('Key', function () {
 	var key;
 
 	it('init', function () {
-		key = new trusted.Pki.Key()
+		key = new trusted.pki.Key()
 		assert.equal(key != null, true);
 	})
 
