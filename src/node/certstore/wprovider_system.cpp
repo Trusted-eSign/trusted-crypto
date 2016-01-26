@@ -43,7 +43,6 @@ NAN_METHOD(WProviderSystem::New){
 		}
 
 		std::string fname(filename);
-		//free(filename);
 
 		WProviderSystem *obj = new WProviderSystem();
 		obj->data_ = new ProviderSystem(fname);

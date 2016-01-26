@@ -11,12 +11,30 @@ describe('CertStore', function () {
 		assert.equal(certstore != null, true);
 	})
 	
-	it('CERT_STORE_NEW', function () {
-		certstore.CERT_STORE_NEW("pvdSystem", DEFAULT_CERTSTORE_PATH);
+	it('addCertStore', function () {
+		certstore.addCertStore("pvdSystem", DEFAULT_CERTSTORE_PATH);
     });
 
-    it('newJson', function () {
-		certstore.newJson(DEFAULT_CERTSTORE_PATH);
+    it('createCache', function () {
+		certstore.createCache("test/CertStore/cash_cert_store.json");
+    });
+	
+	it('addCacheSection', function () {
+		certstore.addCacheSection("test/CertStore/cash_cert_store.json", "pvdSystem");
+    });
+	
+	it('params before delete system provider', function () {
+        console.log("listCertStore:", certstore.listCertStore);
+		console.log("prvSystem load:", certstore.getPrvTypePresent("pvdSystem"));
+    });
+	
+	it('removeCertStore', function () {
+		certstore.removeCertStore("pvdSystem");
+    });
+	
+	it('params after delete system provider', function () {
+        console.log("listCertStore:", certstore.listCertStore);
+		console.log("prvSystem load:", certstore.getPrvTypePresent("pvdSystem"));
     });
 });
 
@@ -29,30 +47,30 @@ describe('Key', function () {
 	})
 
     it('keypairGenerate', function () {
-		key.keypairGenerate(DEFAULT_CERTSTORE_PATH+"/MY/privkey.key", 1, 1024, "1234");
+		key.keypairGenerate(DEFAULT_CERTSTORE_PATH+"/MY/privkey.key", 1, 1024, "");
     });
 	
 	it('keypairGenerateMemory', function () {
-		key.keypairGenerateMemory(1, 1024, "1234");
+		key.keypairGenerateMemory(1, 1024, "");
     });
 	
 	it('keypairGenerateBIO', function () {
-		key.keypairGenerateBIO(1, 1024, "1234");
+		key.keypairGenerateBIO(1, 1024, "");
     });
 	
 	it('privkeyLoad', function () {
-		key.privkeyLoad(DEFAULT_CERTSTORE_PATH+"/MY/privkey.key", 1, "1234");
+		key.privkeyLoad(DEFAULT_CERTSTORE_PATH+"/MY/privkey.key", 1, "");
     });
 	
 	it('privkeySave', function () {
-		key.privkeySave(DEFAULT_CERTSTORE_PATH+"/MY/privkey_s.key", 1, "1234");
-    });
-	
-	it('pubkeyLoad', function () {
-		key.pubkeyLoad(DEFAULT_CERTSTORE_PATH+"/MY/pubkey.key", 1);
+		key.privkeySave(DEFAULT_CERTSTORE_PATH+"/MY/privkey_s.key", 1, "");
     });
 	
 	it('pubkeySave', function () {
 		key.pubkeySave(DEFAULT_CERTSTORE_PATH+"/MY/pubkey_s.key", 1);
+    });
+	
+	it('pubkeyLoad', function () {
+		key.pubkeyLoad(DEFAULT_CERTSTORE_PATH+"/MY/pubkey_s.key", 1);
     });
 });

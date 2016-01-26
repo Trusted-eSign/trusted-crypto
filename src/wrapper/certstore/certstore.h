@@ -1,3 +1,6 @@
+//#ifndef CMS_PKI_KEY_H_INCLUDED
+//#define  CMS_PKI_KEY_H_INCLUDED
+
 #pragma once
 #include <openssl/x509.h>
 //#include <openssl/cryptlib.h>
@@ -26,6 +29,9 @@ class CertStoreProvider {
 public:
 	CertStoreProvider(){};
 	~CertStoreProvider(){};
+public:
+	string pvdType;
+	string getPvdType();
 };
 
 class Certificate;
@@ -35,13 +41,22 @@ class CertStore {
 	public:
 		vector<CertStoreProvider*> cache_providers;
 	public:
-		void CERT_STORE_NEW(char* pvdType); //Создание нового хранилища сертификатов
-		void CERT_STORE_NEW(char* pvdType, string pvdURI); //Создание нового хранилища сертификатов
-		void CERT_STORE_FREE(CertStoreProvider* store_provider); //Освобождение (удаление) хранилища
-		void CERT_STORE_CLEANUP(CertStoreProvider* store_provider); //Очистка содержимого хранилища
+		void addCertStore(const char* pvdType);
+		void addCertStore(const char* pvdType, const char* pvdURI);
 
-		void newJSON(const char *pvdURI);
+		void removeCertStore(const char* pvdType);
+
+		void createCache(const char* cacheURI);
+		void addCacheSection(const char* cacheURI, const char* pvdType);
+
+		Handle<std::string> getCertStore();
+		bool getPrvTypePresent(const char* pvdType);
+		
 	public:
 		CertStore();
+		CertStore(const char* pvdType);
+		CertStore(const char* pvdType, const char* pvdURI);
 		~CertStore(){};
 };
+
+//#endif //  comment this --->   CMS_PKI_KEY_H_INCLUDED

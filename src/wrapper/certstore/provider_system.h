@@ -108,7 +108,6 @@ struct X509_URI_st {
 
 class ProviderSystem : public CertStoreProvider{
 public:
-	string providerType; //Параметры инициализации хранилища
 	string providerURI; //Параметры инициализации хранилища
 
 	struct CERT_STORE { //Структура для описания хранилища

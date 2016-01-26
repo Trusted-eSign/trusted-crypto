@@ -16,8 +16,13 @@ void WCertStore::Init(v8::Handle<v8::Object> exports){
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
-	Nan::SetPrototypeMethod(tpl, "CERT_STORE_NEW", CERT_STORE_NEW);
-	Nan::SetPrototypeMethod(tpl, "newJson", newJson);
+	Nan::SetPrototypeMethod(tpl, "addCertStore", addCertStore);
+	Nan::SetPrototypeMethod(tpl, "removeCertStore", removeCertStore);
+	Nan::SetPrototypeMethod(tpl, "createCache", createCache);
+	Nan::SetPrototypeMethod(tpl, "addCacheSection", addCacheSection);
+
+	Nan::SetPrototypeMethod(tpl, "getCertStore", getCertStore);
+	Nan::SetPrototypeMethod(tpl, "getPrvTypePresent", getPrvTypePresent);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -40,7 +45,7 @@ NAN_METHOD(WCertStore::New){
 	TRY_END();
 }
 
-NAN_METHOD(WCertStore::CERT_STORE_NEW){
+NAN_METHOD(WCertStore::addCertStore){
 	METHOD_BEGIN();
 
 	try{
@@ -62,7 +67,7 @@ NAN_METHOD(WCertStore::CERT_STORE_NEW){
 		LOGGER_ARG("pvdURI");
 		if (info[1]->IsUndefined()){
 			try{
-				_this->CERT_STORE_NEW(pvdType);
+				_this->addCertStore(pvdType);
 			}
 			catch (Handle<Exception> e){
 				Nan::ThrowError("Error create new cert store");
@@ -72,10 +77,9 @@ NAN_METHOD(WCertStore::CERT_STORE_NEW){
 		else{
 			v8::String::Utf8Value v8URI(info[1]->ToString());
 			char *pvdURI = *v8URI;
-			std::string strPvdURI(pvdURI);
 
 			try{
-				_this->CERT_STORE_NEW(pvdType, strPvdURI);
+				_this->addCertStore(pvdType, pvdURI);
 			}
 			catch (Handle<Exception> e){
 				Nan::ThrowError("Error create new cert store");
@@ -89,7 +93,36 @@ NAN_METHOD(WCertStore::CERT_STORE_NEW){
 	TRY_END();
 }
 
-NAN_METHOD(WCertStore::newJson){
+NAN_METHOD(WCertStore::removeCertStore){
+	METHOD_BEGIN();
+
+	try{
+		if (info[0]->IsUndefined()){
+			Nan::ThrowError("Parameter 1 is required");
+			return;
+		}
+
+		LOGGER_ARG("pvdType");
+		v8::String::Utf8Value v8pvdType(info[0]->ToString());
+		char *pvdType = *v8pvdType;
+
+		UNWRAP_DATA(CertStore);
+
+		try{
+			_this->removeCertStore(pvdType);
+		}
+		catch (Handle<Exception> e){
+			Nan::ThrowError("Error remove provider");
+			return;
+		}
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertStore::createCache){
 	METHOD_BEGIN();
 
 	try{
@@ -107,12 +140,11 @@ NAN_METHOD(WCertStore::newJson){
 		}
 
 		std::string fname(filename);
-		//free(filename);
 
 		UNWRAP_DATA(CertStore);
 
 		try{
-			_this->newJSON(fname.c_str());
+			_this->createCache(fname.c_str());
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError("Error create new json");
@@ -121,6 +153,90 @@ NAN_METHOD(WCertStore::newJson){
 		
 
 		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertStore::addCacheSection){
+	METHOD_BEGIN();
+
+	try{
+		if (info[0]->IsUndefined()){
+			Nan::ThrowError("Parameter 1 is required");
+			return;
+		}
+		if (info[1]->IsUndefined()){
+			Nan::ThrowError("Parameter 2 is required");
+			return;
+		}
+
+		LOGGER_ARG("cacheURI");
+		v8::String::Utf8Value v8Str(info[0]->ToString());
+		char *cacheURI = *v8Str;
+
+		LOGGER_ARG("pvdType");
+		v8::String::Utf8Value v8pvdType(info[1]->ToString());
+		char *pvdType = *v8pvdType;
+
+		UNWRAP_DATA(CertStore);
+
+		try{
+			_this->addCacheSection(cacheURI, pvdType);
+		}
+		catch (Handle<Exception> e){
+			Nan::ThrowError("Error add cache section");
+			return;
+		}
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertStore::getCertStore) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertStore);
+
+		try{
+			Handle<std::string> strCertStore = _this->getCertStore();
+			
+			v8::Local<v8::String> v8CertStore = Nan::New<v8::String>(strCertStore->c_str()).ToLocalChecked();
+			
+			info.GetReturnValue().Set(v8CertStore);
+			return;
+		}
+		catch (Handle<Exception> e){
+			Nan::ThrowError("Can not get list cert store");
+			return;
+		}		
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertStore::getPrvTypePresent) {
+	METHOD_BEGIN();
+
+	try {		
+		if (info[0]->IsUndefined()){
+			Nan::ThrowError("Parameter 1 is required");
+			return;
+		}
+
+		LOGGER_ARG("pvdType");
+		v8::String::Utf8Value v8pvdType(info[0]->ToString());
+		char *pvdType = *v8pvdType;
+
+		UNWRAP_DATA(CertStore);
+
+		bool res = _this->getPrvTypePresent(pvdType);
+
+		info.GetReturnValue().Set(
+			Nan::New<v8::Boolean>(res)
+			);
 		return;
 	}
 	TRY_END();

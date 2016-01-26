@@ -7,7 +7,7 @@ describe('ProviderSystem', function () {
 	var providersystem;
 
 	it('init', function () {
-		providersystem = new trusted.Pki.ProviderSystem(DEFAULT_CERTSTORE_PATH)
+		providersystem = new trusted.pki.ProviderSystem(DEFAULT_CERTSTORE_PATH)
 		assert.equal(providersystem != null, true);
 	})
 

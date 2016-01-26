@@ -9,7 +9,7 @@ ProviderSystem::ProviderSystem(string pvdURI){
 	LOGGER_FN();
 
 	try{
-		providerType = "pvdSystem";
+		pvdType = "pvdSystem";
 		providerURI = pvdURI;
 		if (providerURI.empty()){
 			THROW_EXCEPTION(0, ProviderSystem, NULL, "Dont send parameters");
@@ -41,7 +41,7 @@ ProviderSystem::ProviderSystem(string pvdURI){
 }
 
 ProviderSystem::ProviderSystem(){
-	providerType = "pvdSystem";
+	pvdType = "pvdSystem";
 };
 
 void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
@@ -210,14 +210,15 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 				jsnPkey["PKIObjectType"] = "PrivKey";
 				jsnPkey["TRUST"] = strTrust;
 				jsnPkey["UriPKIObject"] = key_file_name;
-				jsnRoot["StoreSystem"]["PKIobject"].append(jsnPkey);
+				jsnRoot[pvdType]["PKIobject"].append(jsnPkey);
 			}
 			else{
 				jsnBuf["PKey"] = "F";
 				jsnPKIobj["X509"] = jsnBuf;
 			}
 			LOGGER_TRACE("Json::Value:append");
-			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
+			jsnRoot[pvdType]["PKIobject"].append(jsnBuf);
+			jsnRoot[pvdType]["StoreURI"] = pvdURI;
 
 			std::ofstream cashStore;
 			cashStore.open(strJsonPath.c_str());
@@ -269,7 +270,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 			jsnPKIobj["X509_REQ"] = jsnBuf;
 
 			LOGGER_TRACE("Json::Value:append");
-			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
+			jsnRoot[pvdType]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
 			string strJsonPath = ((string)(pvdURI)+CROSSPLATFORM_SLASH + "cash_cert_store.json");
@@ -321,7 +322,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 			jsnPKIobj["CRL"] = jsnBuf;
 
 			LOGGER_TRACE("Json::Value:append");
-			jsnRoot["StoreSystem"]["PKIobject"].append(jsnBuf);
+			jsnRoot[pvdType]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
 			cashStore.open(strJsonPath.c_str());
