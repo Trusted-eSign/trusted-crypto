@@ -60,21 +60,13 @@ export class SignedData extends BaseObject {
     }
 
     certificates(index: number): Buffer;
-    certificates(): Array<Certificate>;
+    certificates(): CertificateCollection;
     certificates(index?: number): any {
-        let certs = this.handle.getCertificates();
-        // certs.items = function(index: number): Certificate { return this[index]; }
-        for (let i in certs) {
-            let cert = new Certificate();
-            cert.handle = certs[i];
-            certs[i] = cert;
+        let certs = <CertificateCollection> CertificateCollection.nativeCreate(this.handle.getCertificates());
+        if (index !== undefined){
+            return certs.items(index);
         }
-        if (index === undefined) {
-            return certs;
-        }
-        else {
-            return certs[index];
-        }
+        return certs;
     }
 
     signers(index: number): Buffer;
