@@ -17,15 +17,18 @@ public:
 
 	static NAN_METHOD(Load);
 	static NAN_METHOD(Import);
-
 	static NAN_METHOD(Save);
 	static NAN_METHOD(Export);
+	static NAN_METHOD(Equals);
+	static NAN_METHOD(Duplicate);
+	static NAN_METHOD(Hash);
 
 	static NAN_METHOD(GetVersion);
 	static NAN_METHOD(GetIssuerName);
 	static NAN_METHOD(GetLastUpdate);
 	static NAN_METHOD(GetNextUpdate);
 	static NAN_METHOD(GetCertificate);
+	static NAN_METHOD(GetThumbprint);
 
 	Handle<CRL> data_;
 	

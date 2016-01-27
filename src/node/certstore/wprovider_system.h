@@ -18,7 +18,7 @@ public:
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
 
-	static NAN_METHOD(fillingJsonFromSystemStore);
+	static NAN_METHOD(fillingCache);
 	static NAN_METHOD(readJson);
 
 	Handle<ProviderSystem> data_;

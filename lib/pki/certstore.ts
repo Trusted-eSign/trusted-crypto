@@ -8,12 +8,28 @@ export class CertStore extends BaseObject{
 		
 		this.handle = new native.PKI.CertStore();
 	}
-    
-    CERT_STORE_NEW(pvdType: string, pvdURI: string){
-        return this.handle.CERT_STORE_NEW(pvdType, pvdURI);
+       
+    addCertStore(pvdType: string, pvdURI: string){
+        return this.handle.addCertStore(pvdType, pvdURI);
     }
     
-    newJson(filename: string) {
-		return this.handle.newJson(filename);
+   removeCertStore(pvdType: string){
+        return this.handle.removeCertStore(pvdType);
+    }
+    
+    createCache(cacheURI: string) {
+		return this.handle.createCache(cacheURI);
 	}
+    
+    addCacheSection(cacheURI: string, pvdType: string) {
+		return this.handle.addCacheSection(cacheURI, pvdType);
+	}
+    
+    get listCertStore(): string {
+        return this.handle.getCertStore();
+    }
+    
+    getPrvTypePresent(pvdType: string): boolean {
+        return this.handle.getPrvTypePresent(pvdType);
+    }
 }

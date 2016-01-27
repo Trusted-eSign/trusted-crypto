@@ -7,12 +7,12 @@ describe('ProviderSystem', function () {
 	var providersystem;
 
 	it('init', function () {
-		providersystem = new trusted.Pki.ProviderSystem(DEFAULT_CERTSTORE_PATH)
+		providersystem = new trusted.pki.ProviderSystem(DEFAULT_CERTSTORE_PATH)
 		assert.equal(providersystem != null, true);
 	})
 
-   it('fillingJsonFromSystemStore', function () {
-		providersystem.fillingJsonFromSystemStore(DEFAULT_CERTSTORE_PATH);
+   it('fillingCache', function () {
+		providersystem.fillingCache("test/CertStore/cash_cert_store.json", DEFAULT_CERTSTORE_PATH);
     });
 	
 	it('readJson', function () {

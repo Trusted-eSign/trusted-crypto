@@ -22,14 +22,19 @@ public:
 	SSLOBJECT_new(CRL, X509_CRL){}
 	SSLOBJECT_new_null(CRL, X509_CRL, X509_CRL_new){}
 
+	//Methods
 	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);
 	void write(Handle<Bio> out, DataFormat::DATA_FORMAT format);
+	int equals(Handle<CRL> crl);
 	Handle<CRL> duplicate();
+	Handle<std::string> hash(const EVP_MD *md);
+	Handle<std::string> hash(Handle<std::string> algorithm);
 
 	//Handle<RevokedCertificate> getCertificate(Handle<Certificate> cert);
 	//Handle<RevokedCertificate> getCertificate(Handle<std::string> serial);
 	
 	//Properties
+	Handle<std::string> getThumbprint();
 public:
 	int version();
 	Handle<std::string> issuerName();

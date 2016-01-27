@@ -15,6 +15,26 @@ enum KeyType {
 	KT_PUBLIC //добавлено KT_ во всех 3-х случах
 };
 
+class PublicExponent
+{
+public:
+	enum Public_Exponent {
+		peRSA_3,
+		peRSA_F4
+	};
+
+	static PublicExponent::Public_Exponent get(int value){
+		switch (value){
+		case PublicExponent::peRSA_3:
+			return PublicExponent::peRSA_3;
+		case PublicExponent::peRSA_F4:
+			return PublicExponent::peRSA_F4;
+		default:
+			THROW_EXCEPTION(0, PublicExponent, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, value);
+		}
+	}
+};
+
 SSLOBJECT_free(EVP_PKEY, EVP_PKEY_free)
 
 class Key: public SSLObject<EVP_PKEY>{
@@ -40,9 +60,9 @@ public:
 	int pubkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format); //чтение приватного ключа из памяти
 	int pubkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format); //чтение приватного ключа из BIO(OpenSSL)
 
-	int keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, int keySize, std::string password); //генерация ключей в файл
-	int keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format, int keySize, std::string password); //генерация ключей в память
-	int keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, int keySize, std::string password); //генерация ключей в BIO(OpenSSL)
+	int keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password); //генерация ключей в файл
+	int keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password); //генерация ключей в память
+	int keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password); //генерация ключей в BIO(OpenSSL)
 
 	int privkeySave(std::string filename, DataFormat::DATA_FORMAT format, std::string password); //сохранение приватного ключа в файл
 	int privkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password); //сохранение приватного ключа в файл

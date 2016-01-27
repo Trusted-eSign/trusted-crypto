@@ -9,8 +9,8 @@ export class ProviderSystem extends BaseObject{
 		this.handle = new native.PKI.ProviderSystem(filename);
 	}
     
-    fillingJsonFromSystemStore(filename: string) {
-		return this.handle.fillingJsonFromSystemStore(filename);
+    fillingCache(cacheURI: string, pvdURI: string) {
+		return this.handle.fillingCache(cacheURI, pvdURI);
 	}
 	
     readJson(filename: string): string {

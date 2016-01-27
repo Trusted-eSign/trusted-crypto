@@ -25,7 +25,35 @@ describe('CRL', function () {
         var buf = crl.export();
         assert.equal(Buffer.isBuffer(buf), true);
     })
+	
+	it("duplicate", function () {
+        var crl1 = trusted.pki.Crl.load("test/test.crl");
+        var crl2 = crl1.duplicate();
+		assert.equal(crl1.thumbprint === crl2.thumbprint, true, "CRL are not equals");
+    })
+	
+	it("equals", function () {
+        var crl1 = trusted.pki.Crl.load("test/CertStore/CRL/ThawteCSG2.crl");
+        var crl2 = trusted.pki.Crl.load("test/CertStore/CRL/ThawtePCA.crl");
+        assert.equal(crl1.equals(crl1), 0, "CRL are equals");
+		assert.equal(crl1.equals(crl2), -1, "CRL are not equals");
+    })
+	
+	it("hash", function () {
+        var crl1 = trusted.pki.Crl.load("test/test.crl");
 
+        var hash1 = crl1.hash();
+        var hash2 = crl1.hash("sha1");
+        var hash3 = crl1.hash("sha256");
+
+        assert.equal(hash1.length, 40, "Длина хеш SHA1 должна быть 20");
+        assert.equal(hash2.length, 40, "Длина хеш SHA1 должна быть 20");
+        assert.equal(hash3.length, 64, "Длина хеш SHA1 должна быть 32");
+
+        assert.equal(hash1 === hash2, true, "Значения хеш не совпадают");
+
+    })
+	
 });
 
 describe('Certificate', function () {
