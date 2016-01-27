@@ -1,4 +1,4 @@
-import {native} from "../native";
+import * as native from "../native";
 import {BaseObject} from "../object";
 import {DataFormat} from "../data_format";
 
