@@ -24,6 +24,10 @@ export class Crl extends BaseObject{
 	get nextUpdate(){
 		return new Date(this.handle.getNextUpdate());
 	}
+    
+    get thumbprint(): string {
+        return this.handle.getThumbprint().toString("hex");
+    }
 	
 	load(filename: string){
 		this.handle.load(filename);
@@ -52,5 +56,20 @@ export class Crl extends BaseObject{
 	save(filename: string){
 		this.handle.save(filename);
 	}
+    
+         
+    equals(crl: Crl): boolean {
+        return this.handle.equals(crl.handle);
+    }
+    
+     hash(algorithm: string = "sha1"): String {
+        return this.handle.hash(algorithm).toString("hex");
+    }
+    
+     duplicate(): Crl {
+        let crl = new Crl();
+        crl.handle = this.handle.duplicate();
+        return crl;
+    }
 	
 }

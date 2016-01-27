@@ -13,15 +13,18 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
-
 	Nan::SetPrototypeMethod(tpl, "save", Save);
 	Nan::SetPrototypeMethod(tpl, "export", Export);
+	Nan::SetPrototypeMethod(tpl, "equals", Equals);
+	Nan::SetPrototypeMethod(tpl, "duplicate", Duplicate);
+	Nan::SetPrototypeMethod(tpl, "hash", Hash);
 
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
 	Nan::SetPrototypeMethod(tpl, "getIssuerName", GetIssuerName);
 	Nan::SetPrototypeMethod(tpl, "getLastUpdate", GetLastUpdate);
 	Nan::SetPrototypeMethod(tpl, "getNextUpdate", GetNextUpdate);
 	Nan::SetPrototypeMethod(tpl, "getCertificate", GetCertificate);
+	Nan::SetPrototypeMethod(tpl, "getThumbprint", GetThumbprint);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -254,6 +257,87 @@ NAN_METHOD(WCRL::Export)
 		info.GetReturnValue().Set(
 			stringToBuffer(buf)
 		);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::Equals) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		LOGGER_ARG("CRL")
+		WCRL* obj = (WCRL*)Nan::GetInternalFieldPointer(info[0]->ToObject(), 0);
+		Handle<CRL> crl = obj->data_;
+
+		int res = _this->equals(crl);
+
+		info.GetReturnValue().Set(
+			Nan::New<v8::Integer>(res)
+			);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::Duplicate)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<CRL> crl = _this->duplicate();
+
+		LOGGER_INFO("Create new instance of JS CRL");
+		v8::Local<v8::Object> v8CrlClass = Nan::New<v8::Object>();
+		WCRL::Init(v8CrlClass);
+		v8::Local<v8::Object> v8CRL = Nan::Get(v8CrlClass, Nan::New("CRL").ToLocalChecked()).ToLocalChecked()->ToObject()->CallAsConstructor(0, NULL)->ToObject();
+
+		LOGGER_INFO("Set internal data for JS CRL");
+		WCRL* wcrl = (WCRL*)Nan::GetInternalFieldPointer(v8CRL, 0);
+		wcrl->data_ = crl;
+
+		info.GetReturnValue().Set(v8CRL);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetThumbprint)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> buf = _this->getThumbprint();
+
+		info.GetReturnValue().Set(
+			stringToBuffer(buf)
+			);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::Hash)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		LOGGER_ARG("algorithm")
+			v8::String::Utf8Value v8Alg(info[0]->ToString());
+		char *alg = *v8Alg;
+
+		Handle<std::string> hash = _this->hash(new std::string(alg));
+
+		info.GetReturnValue().Set(stringToBuffer(hash));
 		return;
 	}
 	TRY_END();
