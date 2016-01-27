@@ -47,30 +47,30 @@ describe('Key', function () {
 	})
 
     it('keypairGenerate', function () {
-		key.keypairGenerate(DEFAULT_CERTSTORE_PATH+"/MY/privkey.key", 1, 1024, "");
+		key.keypairGenerate(DEFAULT_CERTSTORE_PATH+"/MY/privkey.key", trusted.DataFormat.PEM, trusted.PublicExponent.RSA_F4, 1024, "");
     });
 	
 	it('keypairGenerateMemory', function () {
-		key.keypairGenerateMemory(1, 1024, "");
+		key.keypairGenerateMemory(trusted.DataFormat.PEM, trusted.PublicExponent.RSA_F4, 1024, "");
     });
 	
 	it('keypairGenerateBIO', function () {
-		key.keypairGenerateBIO(1, 1024, "");
+		key.keypairGenerateBIO(trusted.DataFormat.PEM, trusted.PublicExponent.RSA_F4, 1024, "");
     });
 	
 	it('privkeyLoad', function () {
-		key.privkeyLoad(DEFAULT_CERTSTORE_PATH+"/MY/privkey.key", 1, "");
+		key.privkeyLoad(DEFAULT_CERTSTORE_PATH+"/MY/privkey.key", trusted.DataFormat.PEM, "");
     });
 	
 	it('privkeySave', function () {
-		key.privkeySave(DEFAULT_CERTSTORE_PATH+"/MY/privkey_s.key", 1, "");
+		key.privkeySave(DEFAULT_CERTSTORE_PATH+"/MY/privkey_s.key", trusted.DataFormat.PEM, "");
     });
 	
 	it('pubkeySave', function () {
-		key.pubkeySave(DEFAULT_CERTSTORE_PATH+"/MY/pubkey_s.key", 1);
+		key.pubkeySave(DEFAULT_CERTSTORE_PATH+"/MY/pubkey_s.key", trusted.DataFormat.PEM);
     });
 	
 	it('pubkeyLoad', function () {
-		key.pubkeyLoad(DEFAULT_CERTSTORE_PATH+"/MY/pubkey_s.key", 1);
+		key.pubkeyLoad(DEFAULT_CERTSTORE_PATH+"/MY/pubkey_s.key", trusted.DataFormat.PEM);
     });
 });

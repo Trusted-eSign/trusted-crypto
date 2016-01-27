@@ -231,7 +231,7 @@ int Key::pubkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format) {
 	return 1;
 }
 
-int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, int keySize, std::string password){
+int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password){
 	LOGGER_FN();
 
 	int ok = 1;
@@ -261,11 +261,23 @@ int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, i
 		if (!evpkey){
 			THROW_EXCEPTION(0, Key, NULL, "EVP_PKEY_new");
 		}
-
-		LOGGER_OPENSSL(BN_set_word);
-		if (!BN_set_word(bn, RSA_F4)){
-			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_F4 to BIGNUM'");
-		}
+	
+		switch (pubEx){
+		case PublicExponent::peRSA_3:
+			LOGGER_OPENSSL(BN_set_word);
+			if (!BN_set_word(bn, RSA_3)){
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_3 to BIGNUM'");
+			}
+			break;
+		case PublicExponent::peRSA_F4:
+			LOGGER_OPENSSL(BN_set_word);
+			if (!BN_set_word(bn, RSA_F4)){
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_F4 to BIGNUM'");
+			}
+			break;
+		default:
+			THROW_EXCEPTION(0, Key, NULL, "Unknown public exponent");
+		}	
 		
 		if (keySize == NULL){
 			keySize = 1024;
@@ -350,7 +362,7 @@ int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, i
 	return ok;
 }
 
-int Key::keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format, int keySize, std::string password){
+int Key::keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password){
 	LOGGER_FN();
 
 	int ok = 1;
@@ -381,9 +393,21 @@ int Key::keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format,
 			THROW_EXCEPTION(0, Key, NULL, "EVP_PKEY_new");
 		}
 
-		LOGGER_OPENSSL(BN_set_word);
-		if (!BN_set_word(bn, RSA_F4)){
-			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_F4 to BIGNUM'");
+		switch (pubEx){
+		case PublicExponent::peRSA_3:
+			LOGGER_OPENSSL(BN_set_word);
+			if (!BN_set_word(bn, RSA_3)){
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_3 to BIGNUM'");
+			}
+			break;
+		case PublicExponent::peRSA_F4:
+			LOGGER_OPENSSL(BN_set_word);
+			if (!BN_set_word(bn, RSA_F4)){
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_F4 to BIGNUM'");
+			}
+			break;
+		default:
+			THROW_EXCEPTION(0, Key, NULL, "Unknown public exponent");
 		}
 
 		if (keySize == NULL){
@@ -469,7 +493,7 @@ int Key::keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format,
 	return ok;
 }
 
-int Key::keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, int keySize, std::string password){
+int Key::keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password){
 	LOGGER_FN();	
 
 	int ok = 1;
@@ -503,9 +527,21 @@ int Key::keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, int
 			THROW_EXCEPTION(0, Key, NULL, "EVP_PKEY_new");
 		}
 
-		LOGGER_OPENSSL(BN_set_word);
-		if (!BN_set_word(bn, RSA_F4)){
-			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_F4 to BIGNUM'");
+		switch (pubEx){
+		case PublicExponent::peRSA_3:
+			LOGGER_OPENSSL(BN_set_word);
+			if (!BN_set_word(bn, RSA_3)){
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_3 to BIGNUM'");
+			}
+			break;
+		case PublicExponent::peRSA_F4:
+			LOGGER_OPENSSL(BN_set_word);
+			if (!BN_set_word(bn, RSA_F4)){
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_F4 to BIGNUM'");
+			}
+			break;
+		default:
+			THROW_EXCEPTION(0, Key, NULL, "Unknown public exponent");
 		}
 
 		if (keySize == NULL){

@@ -78,7 +78,7 @@ void CertStoreProvider::fillingCache(const char* cacheURI, const char* pvdURI){
 			LOGGER_OPENSSL(BIO_read_filename);
 			if (BIO_read_filename(bioFile, full_file_name.c_str()) > 0){
 				LOGGER_TRACE("addValueToJSON");
-				addValueToJSON(pvdURI, bioFile, full_file_name.c_str());
+				ProviderSystem::addValueToJSON(pvdURI, cacheURI,  bioFile, full_file_name.c_str());
 			}
 			LOGGER_OPENSSL(BIO_free);
 			BIO_free(bioFile);

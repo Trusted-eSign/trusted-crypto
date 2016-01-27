@@ -1,4 +1,5 @@
 import * as dataFormat from "./data_format";
+import * as publicExponent from "./public_exponent";
 import * as cert from "./pki/cert";
 import * as certs from "./pki/certs";
 import * as crl from "./pki/crl";
@@ -12,6 +13,7 @@ import * as signed_data from "./cms/signed_data";
 
 
 export let DataFormat = dataFormat.DataFormat;
+export let PublicExponent = publicExponent.PublicExponent;
 
 export namespace pki {
     export let Certificate = cert.Certificate;

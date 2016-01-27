@@ -91,17 +91,20 @@ NAN_METHOD(WKey::keypairGenerate){
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
+		LOGGER_ARG("pubExp");
+		int pubExp = info[2]->ToNumber()->Int32Value();
+
 		LOGGER_ARG("keySize");
-		int keySize = info[2]->ToNumber()->Int32Value();
+		int keySize = info[3]->ToNumber()->Int32Value();
 
 		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[3]->ToString());
+		v8::String::Utf8Value v8Pass(info[4]->ToString());
 		char *password = *v8Pass;
 
 		UNWRAP_DATA(Key);
 
 		try{
-			_this->keypairGenerate(fname, DataFormat::get(format), keySize, password);
+			_this->keypairGenerate(fname, DataFormat::get(format), PublicExponent::get(pubExp), keySize, password);
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError("Error create new key");
@@ -124,17 +127,20 @@ NAN_METHOD(WKey::keypairGenerateMemory){
 		LOGGER_ARG("format");
 		int format = info[0]->ToNumber()->Int32Value();
 
+		LOGGER_ARG("pubExp");
+		int pubExp = info[1]->ToNumber()->Int32Value();
+
 		LOGGER_ARG("keySize");
-		int keySize = info[1]->ToNumber()->Int32Value();
+		int keySize = info[2]->ToNumber()->Int32Value();
 
 		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[2]->ToString());
+		v8::String::Utf8Value v8Pass(info[3]->ToString());
 		char *password = *v8Pass;
 
 		UNWRAP_DATA(Key);
 
 		try{
-			_this->keypairGenerateMemory(data, DataFormat::get(format), keySize, password);
+			_this->keypairGenerateMemory(data, DataFormat::get(format), PublicExponent::get(pubExp), keySize, password);
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError("Error create new key");
@@ -160,17 +166,20 @@ NAN_METHOD(WKey::keypairGenerateBIO){
 		LOGGER_ARG("format");
 		int format = info[0]->ToNumber()->Int32Value();
 
+		LOGGER_ARG("pubExp");
+		int pubExp = info[1]->ToNumber()->Int32Value();
+
 		LOGGER_ARG("keySize");
-		int keySize = info[1]->ToNumber()->Int32Value();
+		int keySize = info[2]->ToNumber()->Int32Value();
 
 		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[2]->ToString());
+		v8::String::Utf8Value v8Pass(info[3]->ToString());
 		char *password = *v8Pass;
 
 		UNWRAP_DATA(Key);
 
 		try{
-			_this->keypairGenerateBIO(out, DataFormat::get(format), keySize, password);
+			_this->keypairGenerateBIO(out, DataFormat::get(format), PublicExponent::get(pubExp), keySize, password);
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError("Error create new key");
