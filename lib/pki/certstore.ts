@@ -1,11 +1,16 @@
-import {native} from '../native'
-import {BaseObject} from "../object"
+import * as native from "../native";
+import * as object from "../object";
 
-export class CertStore extends BaseObject{
+export class CertStore extends object.BaseObject<native.PKI.CertStore>{
 	
-	constructor(){
-		super();	
-		
+	constructor();
+	constructor(handle: native.PKI.CertStore);
+	constructor(param?){
+		super();
+        
+        if (param instanceof native.PKI.CertStore){
+            this.handle = param;
+        }	
 		this.handle = new native.PKI.CertStore();
 	}
        

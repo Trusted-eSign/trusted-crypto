@@ -1,5 +1,5 @@
-import {native} from "../native";
-import {BaseObject} from "../object";
+import * as native from "../native";
+import * as object from "../object";
 import {DataFormat} from "../data_format";
 import {Algorithm} from "../pki/alg";
 import {Attribute} from "../pki/attr";
@@ -9,16 +9,16 @@ import {SignerAttributeCollection} from "./signer_attrs";
 /**
  * Представление `CMS SignerInfo`
  */
-export class Signer extends BaseObject {
+export class Signer extends object.BaseObject<native.CMS.Signer> {
 
-    constructor(nativeSigner: any) {
+    constructor(handle: native.CMS.Signer) {
         super();
 
-        this.handle = nativeSigner;
+        this.handle = handle;
     }
 
     get certificate(): Certificate {
-        return <Certificate>Certificate.nativeCreate(this.handle.getCertificate());
+        return new Certificate(this.handle.getCertificate());
     }
 
     set certificate(val: Certificate) {
@@ -26,8 +26,7 @@ export class Signer extends BaseObject {
     }
 
     get digestAlgorithm(): Algorithm {
-        let alg = new Algorithm();
-        alg.handle = this.handle.getDigestAlgorithm();
+        let alg = new Algorithm(this.handle.getDigestAlgorithm());
         return alg;
     }
 
@@ -35,7 +34,7 @@ export class Signer extends BaseObject {
     signedAttributes(index: number): Attribute;
     signedAttributes(index?: number): any {
         //get collection
-        let attrs = <SignerAttributeCollection>SignerAttributeCollection.nativeCreate(this.handle.getSignedAttributes());
+        let attrs = new SignerAttributeCollection(this.handle.getSignedAttributes());
 
         if (index === undefined) {
             // return collection
@@ -51,7 +50,7 @@ export class Signer extends BaseObject {
     unsignedAttributes(index: number): Attribute;
     unsignedAttributes(index?: number): any {
         //get collection
-        let attrs = <SignerAttributeCollection>SignerAttributeCollection.nativeCreate(this.handle.getUnsignedAttributes());
+        let attrs = new SignerAttributeCollection(this.handle.getUnsignedAttributes());
 
         if (index === undefined) {
             // return collection

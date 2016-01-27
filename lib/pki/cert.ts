@@ -1,5 +1,5 @@
 import * as native from "../native";
-import {BaseObject} from "../object";
+import * as object from "../object";
 import {DataFormat} from "../data_format";
 
 const DEFAULT_DATA_FORMAT = DataFormat.DER;
@@ -7,12 +7,18 @@ const DEFAULT_DATA_FORMAT = DataFormat.DER;
 /**
  * Представление `X509` сертификата
  */
-export class Certificate extends BaseObject {
+export class Certificate extends object.BaseObject<native.PKI.Certificate> {
 
-    constructor() {
+    constructor();
+    constructor(handle: native.PKI.Certificate);
+    constructor(param?) {
         super();
-
-        this.handle = new native.PKI.Certificate();
+        if (param instanceof native.PKI.Certificate){
+            this.handle = param;
+        }
+        else{
+            this.handle = new native.PKI.Certificate();
+        }
     }
     
     /**

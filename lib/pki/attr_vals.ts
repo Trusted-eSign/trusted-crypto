@@ -1,19 +1,25 @@
-import {native} from "../native";
+import * as native from "../native";
+import * as object from "../object";
 import * as Collection from "../core/collection";
-import {BaseObject} from "../object";
 
-export class AttributeValueCollection extends BaseObject implements Collection.ICollectionWrite {
+export class AttributeValueCollection extends object.BaseObject<native.PKI.AttributeValueCollection> implements Collection.ICollectionWrite {
+    
+    constructor(handle: native.PKI.AttributeValueCollection){
+        super();
+        
+        this.handle = handle;
+    }
 
     get length(): number {
         return this.handle.length();
     }
 
     push(val: Buffer) {
-        this.handle.push(val.toString("binary"));
+        this.handle.push(val);
     }
 
     pop() {
-        this.handle.pup();
+        this.handle.pop();
     }
 
     removeAt(index: number) {

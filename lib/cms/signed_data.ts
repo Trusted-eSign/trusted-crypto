@@ -1,5 +1,5 @@
-import {native} from "../native";
-import {BaseObject} from "../object";
+import * as native from "../native";
+import * as object from "../object";
 import {DataFormat} from "../data_format";
 import {Signer} from "./signer";
 import {Certificate} from "../pki/cert";
@@ -21,7 +21,7 @@ export interface ISignedDataContent {
 /**
  * Представление `CMS SignedData`
  */
-export class SignedData extends BaseObject {
+export class SignedData extends object.BaseObject<native.CMS.SignedData> {
 
     constructor() {
         super();
@@ -62,7 +62,7 @@ export class SignedData extends BaseObject {
     certificates(index: number): Buffer;
     certificates(): CertificateCollection;
     certificates(index?: number): any {
-        let certs = <CertificateCollection> CertificateCollection.nativeCreate(this.handle.getCertificates());
+        let certs: CertificateCollection = new CertificateCollection(this.handle.getCertificates());
         if (index !== undefined){
             return certs.items(index);
         }
@@ -142,9 +142,9 @@ export class SignedData extends BaseObject {
         this.handle.save(filename, format);
     }
 
-    createSigner(cert: Certificate, key: Key, digestName: string, flags?: number): Signer {
-        var nsigner = this.handle.createSigner(cert.handle, key.handle, digestName, flags);
-        return new Signer(nsigner);
+    createSigner(cert: Certificate, key: Key, digestName: string): Signer {
+        var signer: Signer = new Signer(this.handle.createSigner(cert.handle, key.handle, digestName));
+        return signer;
     }
     
     /**

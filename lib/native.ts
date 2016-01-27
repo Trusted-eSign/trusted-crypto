@@ -1,12 +1,13 @@
-let native = require("../build/Debug/trusted.node");
+let native = require("../build/Release/trusted.node");
 
 import {DataFormat} from "./data_format";
+import {PublicExponent} from "./public_exponent";
 
 export namespace PKI {
     export declare class Key {
-        keypairGenerate(filename: string, format: DataFormat, keySize: number, password: string);
-        keypairGenerateMemory(format: DataFormat, keySize: number, password: string);
-        keypairGenerateBIO(format: DataFormat, keySize: number, password: string);
+        keypairGenerate(filename: string, format: DataFormat, pubExp: PublicExponent, keySize: number, password: string);
+        keypairGenerateMemory(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string);
+        keypairGenerateBIO(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string);
         privkeyLoad(filename: string, format: DataFormat, password: string);
         privkeyLoadMemory(filename: string, format: DataFormat, password: string);
         pubkeyLoad(filename: string, format: DataFormat);
@@ -96,17 +97,25 @@ export namespace PKI {
         getIssuerName(): string;
         getLastUpdate(): string;
         getNextUpdate(): string;
-        getCertificate(): Certificate
+        getCertificate(): Certificate;
+        getThumbprint(): Buffer;
+        equals(crl: CRL): boolean;
+        hash(digestName: string): Buffer;
+        duplicate(): CRL;
     }
 
     export declare class CertStore {
-        CERT_STORE_NEW(pvdType: string, pvdURI: string): void;
-        newJson(filename: string): void;
+        addCertStore(pvdType: string, pvdURI: string): void;
+        removeCertStore(pvdType: string): void;
+        createCache(cacheURI: string): void;
+        addCacheSection(cacheURI: string, pvdType: string): void;
+        getCertStore(): string;
+        getPrvTypePresent(pvdType: string): boolean;
     }
 
     export declare class ProviderSystem {
         constructor(filename: string);
-        fillingJsonFromSystemStore(filename: string): void;
+        fillingCache(cacheURI: string, pvdURI: string): void;
         readJson(filename: string): string;
     }
 }
@@ -140,14 +149,14 @@ export namespace CMS {
         setCertificate(cert: PKI.Certificate): void;
         getCertificate(): PKI.Certificate;
         getSignature(): Buffer;
-        getSignatureAlgorithm(): Algorithm;
-        getDigestAlgorithm(): Algorithm;
+        getSignatureAlgorithm(): PKI.Algorithm;
+        getDigestAlgorithm(): PKI.Algorithm;
         getSignedAttributes(): SignerAttributeCollection;
         getUnsignedAttributes(): SignerAttributeCollection;
     }
 
     export declare class SignerAttributeCollection {
-        lenght(): number;
+        length(): number;
         push(attr: PKI.Attribute): void;
         removeAt(index: number): void;
         items(index: number): PKI.Attribute;
