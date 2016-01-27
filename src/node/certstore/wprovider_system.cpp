@@ -16,7 +16,7 @@ void WProviderSystem::Init(v8::Handle<v8::Object> exports){
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
-	Nan::SetPrototypeMethod(tpl, "fillingJsonFromSystemStore", fillingJsonFromSystemStore);
+	Nan::SetPrototypeMethod(tpl, "fillingCache", fillingCache);
 	Nan::SetPrototypeMethod(tpl, "readJson", readJson);
 
 	// Store the constructor in the target bindings.
@@ -55,7 +55,7 @@ NAN_METHOD(WProviderSystem::New){
 	TRY_END();
 }
 
-NAN_METHOD(WProviderSystem::fillingJsonFromSystemStore){
+NAN_METHOD(WProviderSystem::fillingCache){
 	METHOD_BEGIN();
 
 	try{
@@ -63,22 +63,23 @@ NAN_METHOD(WProviderSystem::fillingJsonFromSystemStore){
 			Nan::ThrowError("Parameter 1 is required");
 			return;
 		}
-
-		v8::String::Utf8Value v8Str(info[0]->ToString());
-		char *filename = *v8Str;
-
-		if (filename == NULL) {
-			Nan::ThrowError("Wrong filename");
+		if (info[1]->IsUndefined()){
+			Nan::ThrowError("Parameter 2 is required");
 			return;
 		}
 
-		std::string fname(filename);
-		//free(filename);
+		LOGGER_ARG("cacheURI");
+		v8::String::Utf8Value v8cacheURI(info[0]->ToString());
+		char *cacheURI = *v8cacheURI;
+
+		LOGGER_ARG("pvdURI");
+		v8::String::Utf8Value v8pvdURI(info[1]->ToString());
+		char *pvdURI = *v8pvdURI;
 
 		UNWRAP_DATA(ProviderSystem);
 
 		try{
-			_this->fillingJsonFromSystemStore(fname.c_str());
+			_this->fillingCache(cacheURI, pvdURI);
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError("Error filling json");

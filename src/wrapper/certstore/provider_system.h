@@ -139,8 +139,7 @@ public:
 	int cert_store_cert_crl(CERT_STORE *cert_store, X509_CRL *crl, X509 *x);
 	int cert_store_check_revocation(CERT_STORE *cert_store, X509 *x);
 
-	void fillingJsonFromSystemStore(const char *pvdURI);
-	void addValueToJSON(const char *pvdURI, BIO *bioFile, const char *full_file_name);
+	static void addValueToJSON(const char *pvdURI, const char* cacheURI, BIO *bioFile, const char *full_file_name);
 	string readInputJsonFile(const char *path);
 	int parseJsonAndFillingCacheStore(string *input);
 

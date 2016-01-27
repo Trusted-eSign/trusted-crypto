@@ -44,7 +44,7 @@ ProviderSystem::ProviderSystem(){
 	pvdType = "pvdSystem";
 };
 
-void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
+void CertStoreProvider::fillingCache(const char* cacheURI, const char* pvdURI){
 #if defined(OPENSSL_SYS_UNIX) 
 	DIR *dir;
 	class dirent *ent;
@@ -130,7 +130,7 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 				LOGGER_OPENSSL(BIO_read_filename);
 				if (BIO_read_filename(bioFile, full_file_name.c_str()) > 0){
 					LOGGER_TRACE("addValueToJSON");
-					addValueToJSON(pvdURI, bioFile, full_file_name.c_str());
+					ProviderSystem::addValueToJSON(pvdURI, cacheURI,  bioFile, full_file_name.c_str());
 				}
 				LOGGER_OPENSSL(BIO_free);
 				BIO_free(bioFile);
@@ -147,7 +147,7 @@ void ProviderSystem::fillingJsonFromSystemStore(const char *pvdURI){
 #endif
 }
 
-void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char *full_file_name){
+void ProviderSystem::addValueToJSON(const char *pvdURI, const char* cacheURI, BIO *bioFile, const char *full_file_name){
 	LOGGER_FN();
 
 	try{
@@ -163,7 +163,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 		Json::Value jsnBuf, jsnPKIobj, jsnPkey;
 		Json::Reader jsnReader;
 
-		string strJsonPath = (string)pvdURI + CROSSPLATFORM_SLASH + "cash_cert_store.json";
+		string strJsonPath = (string)cacheURI;
 
 		LOGGER_OPENSSL(BIO_seek);
 		BIO_seek(bioFile, 0);
@@ -210,15 +210,15 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 				jsnPkey["PKIObjectType"] = "PrivKey";
 				jsnPkey["TRUST"] = strTrust;
 				jsnPkey["UriPKIObject"] = key_file_name;
-				jsnRoot[pvdType]["PKIobject"].append(jsnPkey);
+				jsnRoot["pvdSystem"]["PKIobject"].append(jsnPkey);
 			}
 			else{
 				jsnBuf["PKey"] = "F";
 				jsnPKIobj["X509"] = jsnBuf;
 			}
 			LOGGER_TRACE("Json::Value:append");
-			jsnRoot[pvdType]["PKIobject"].append(jsnBuf);
-			jsnRoot[pvdType]["StoreURI"] = pvdURI;
+			jsnRoot["pvdSystem"]["PKIobject"].append(jsnBuf);
+			jsnRoot["pvdSystem"]["StoreURI"] = pvdURI;
 
 			std::ofstream cashStore;
 			cashStore.open(strJsonPath.c_str());
@@ -270,10 +270,9 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 			jsnPKIobj["X509_REQ"] = jsnBuf;
 
 			LOGGER_TRACE("Json::Value:append");
-			jsnRoot[pvdType]["PKIobject"].append(jsnBuf);
+			jsnRoot["pvdSystem"]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
-			string strJsonPath = ((string)(pvdURI)+CROSSPLATFORM_SLASH + "cash_cert_store.json");
 			cashStore.open(strJsonPath.c_str());
 
 			Json::StyledWriter styledWriter;
@@ -322,7 +321,7 @@ void ProviderSystem::addValueToJSON(const char *pvdURI, BIO *bioFile, const char
 			jsnPKIobj["CRL"] = jsnBuf;
 
 			LOGGER_TRACE("Json::Value:append");
-			jsnRoot[pvdType]["PKIobject"].append(jsnBuf);
+			jsnRoot["pvdSystem"]["PKIobject"].append(jsnBuf);
 
 			std::ofstream cashStore;
 			cashStore.open(strJsonPath.c_str());

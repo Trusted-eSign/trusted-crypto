@@ -31,7 +31,14 @@ public:
 	~CertStoreProvider(){};
 public:
 	string pvdType;
+	string pvdURI;
+
 	string getPvdType();
+
+	void fillingCache(const char* cacheURI, const char* pvdURI);
+	void fillingCache(const char* pvdURI);
+	void reloadCertStoreByCache(const char* cacheURI, const char* pvdType);
+	void reloadCertStoreByCache(const char* cacheURI);
 };
 
 class Certificate;

@@ -11,8 +11,8 @@ describe('ProviderSystem', function () {
 		assert.equal(providersystem != null, true);
 	})
 
-   it('fillingJsonFromSystemStore', function () {
-		providersystem.fillingJsonFromSystemStore(DEFAULT_CERTSTORE_PATH);
+   it('fillingCache', function () {
+		providersystem.fillingCache("test/CertStore/cash_cert_store.json", DEFAULT_CERTSTORE_PATH);
     });
 	
 	it('readJson', function () {
