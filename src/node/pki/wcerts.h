@@ -7,11 +7,13 @@
 #include "../utils/wrap.h"
 #include "../helper.h"
 
-class WCertificateCollection : public Wrapper<CertificateCollection>
+class WCertificateCollection : public Wrapper < CertificateCollection >
 {
 public:
 	WCertificateCollection(){};
 	~WCertificateCollection(){};
+
+	WRAP_NEW_INSTANCE(CertificateCollection);
 
 	static const char* className;
 

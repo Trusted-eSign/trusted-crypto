@@ -25,6 +25,9 @@ void WOID::Init(v8::Handle<v8::Object> exports){
 	exports->Set(Nan::New(WOID::className).ToLocalChecked(), tpl->GetFunction());
 }
 
+/*
+ * [value: string]
+ */
 NAN_METHOD(WOID::New){
 	METHOD_BEGIN();
 	try{

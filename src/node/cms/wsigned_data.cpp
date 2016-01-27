@@ -4,6 +4,7 @@
 #include "../pki/wcerts.h"
 #include "../pki/wkey.h"
 #include "wsigner.h"
+#include "wsigners.h"
 #include "wsigned_data.h"
 
 const char* WSignedData::className = "SignedData";
@@ -21,6 +22,8 @@ void WSignedData::Init(v8::Handle<v8::Object> exports){
 
 	Nan::SetPrototypeMethod(tpl, "getContent", GetContent);
 	Nan::SetPrototypeMethod(tpl, "setContent", SetContent);
+	Nan::SetPrototypeMethod(tpl, "getFlags", GetFlags);
+	Nan::SetPrototypeMethod(tpl, "setFlags", SetFlags);
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
@@ -146,8 +149,8 @@ NAN_METHOD(WSignedData::Export) {
 	METHOD_BEGIN();
 
 	try {
-		LOGGER_ARG("format")
-			int format = info[0]->ToNumber()->Int32Value();
+		LOGGER_ARG("format");
+		int format = info[0]->ToNumber()->Int32Value();
 
 		UNWRAP_DATA(SignedData);
 
@@ -170,15 +173,9 @@ NAN_METHOD(WSignedData::GetSigners) {
 	try {
 		UNWRAP_DATA(SignedData);
 
-		v8::Local<v8::Array> v8Signers = Nan::New<v8::Array>();
-
 		Handle<SignerCollection> signers = _this->signers();
 
-		for (int i = 0; i < signers->length(); i++){
-			Handle<Signer> signer = signers->items(i);
-			v8::Local<v8::Object> v8Signer = WSigner::NewInstance(signer);
-			v8Signers->Set(i, v8Signer);
-		}
+		v8::Local<v8::Object> v8Signers= WSignerCollection::NewInstance(signers);
 
 		info.GetReturnValue().Set(v8Signers);
 		return;
@@ -192,13 +189,9 @@ NAN_METHOD(WSignedData::GetCertificates) {
 	try {
 		UNWRAP_DATA(SignedData);
 
-		v8::Local<v8::Array> v8Certificates = Nan::New<v8::Array>();
-
 		Handle<CertificateCollection> certs = _this->certificates();
 
-		for (int i = 0; i < certs->length(); i++){
-			v8Certificates->Set(i, WCertificate::NewInstance(certs->items(i)));
-		}
+		v8::Local<v8::Object> v8Certificates = WCertificateCollection::NewInstance(certs);
 
 		info.GetReturnValue().Set(v8Certificates);
 		return;
@@ -224,7 +217,6 @@ NAN_METHOD(WSignedData::IsDetached) {
  * certificate: Certificate
  * privateKey: Key
  * digestName: string
- * [flags: number]
  */
 NAN_METHOD(WSignedData::CreateSigner) {
 	METHOD_BEGIN();
@@ -242,13 +234,7 @@ NAN_METHOD(WSignedData::CreateSigner) {
 		v8::String::Utf8Value v8DigestName(info[2]->ToString());
 		Handle<std::string> digestName = new std::string(*v8DigestName);
 
-		int flags = 0;
-		if (!info[3]->IsUndefined()){
-			LOGGER_ARG("flags");
-			flags = info[3]->ToNumber()->Uint32Value();
-		}
-
-		Handle<Signer> signer = _this->createSigner(wCert->data_, wKey->data_, digestName, flags);
+		Handle<Signer> signer = _this->createSigner(wCert->data_, wKey->data_, digestName);
 
 		v8::Local<v8::Object> v8Signer = WSigner::NewInstance(signer);
 
@@ -284,6 +270,7 @@ NAN_METHOD(WSignedData::GetContent) {
 		UNWRAP_DATA(SignedData);
 
 		Handle<std::string> buf = _this->getContent()->read();
+		_this->getContent()->reset();
 
 		info.GetReturnValue().Set(stringToBuffer(buf));
 		return;
@@ -341,7 +328,7 @@ NAN_METHOD(WSignedData::Verify) {
 
 		WCertificateCollection *wcerts = WCertificateCollection::Unwrap<WCertificateCollection>(info[0]->ToObject());
 
-		bool res = _this->verify(wcerts->data_, 0);
+		bool res = _this->verify(wcerts->data_);
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
@@ -354,8 +341,36 @@ NAN_METHOD(WSignedData::Sign) {
 
 	try {
 		UNWRAP_DATA(SignedData);
-
+		
 		_this->sign();
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSignedData::GetFlags) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		info.GetReturnValue().Set(Nan::New<v8::Number>(_this->getFlags()));
+		return;
+	}
+	TRY_END();
+}
+
+/*
+ * value: number
+ */
+NAN_METHOD(WSignedData::SetFlags) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		int flags = info[0]->ToNumber()->Uint32Value();
+		_this->setFlags(flags);
 		return;
 	}
 	TRY_END();
