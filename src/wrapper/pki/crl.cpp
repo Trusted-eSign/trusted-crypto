@@ -112,7 +112,7 @@ Handle<std::string> CRL::hash(Handle<std::string> algorithm){
 	LOGGER_OPENSSL(EVP_get_digestbyname);
 	const EVP_MD *md = EVP_get_digestbyname(algorithm->c_str());
 	if (!md) {
-		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "EVP_get_digestbyname");
+		THROW_OPENSSL_EXCEPTION(0, CRL, NULL, "EVP_get_digestbyname");
 	}
 
 	return this->hash(md);
@@ -134,11 +134,33 @@ Handle<std::string> CRL::hash(const EVP_MD *md) {
 	return res;
 }
 
-int CRL::version()
+long CRL::getVersion()
 {
 	LOGGER_FN();
+	std::string strBuf;
+
+	LOGGER_OPENSSL(X509_CRL_get_version);
+	long ver = X509_CRL_get_version(this->internal());
+
+	return ver;
+}
+
+Handle<std::string> CRL::getSigAlgName(){
+	LOGGER_FN();
 	
-	return X509_CRL_get_version(this->internal());
+	LOGGER_OPENSSL(OBJ_obj2nid);
+	int pkey_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
+
+	if (pkey_nid == NID_undef) {
+		THROW_EXCEPTION(0, CRL, NULL, "Can not get key nid");
+	}
+
+	LOGGER_OPENSSL(OBJ_nid2ln);
+	std::string sslbuf = OBJ_nid2ln(pkey_nid);
+
+	Handle<std::string> res = new std::string(sslbuf.c_str(), sslbuf.length());
+
+	return res;
 }
 
 Handle<std::string> CRL::issuerName()
@@ -162,7 +184,31 @@ Handle<std::string> CRL::issuerName()
 	return res;
 }
 
-Handle<std::string> CRL::nextUpdate(){
+Handle<std::string> CRL::getEncoded(){
+	LOGGER_FN();
+
+	try{
+		LOGGER_OPENSSL(BIO_new);
+		BIO * bio_out = BIO_new(BIO_s_mem());
+		LOGGER_OPENSSL(i2d_X509_CRL_bio);
+		if (!i2d_X509_CRL_bio(bio_out, this->internal())){
+			THROW_OPENSSL_EXCEPTION(0, CRL, NULL, "i2d_X509_CRL_bio");
+		}
+		BUF_MEM *bio_buf;
+		LOGGER_OPENSSL(BIO_get_mem_ptr);
+		BIO_get_mem_ptr(bio_out, &bio_buf);
+		Handle<std::string> res = new std::string(bio_buf->data, bio_buf->length);
+		LOGGER_OPENSSL(BIO_free);
+		BIO_free(bio_out);
+
+		return res;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, CRL, e, "Error get encoded CRL");
+	}	
+}
+
+Handle<std::string> CRL::getNextUpdate(){
 	LOGGER_FN();
 
 	LOGGER_OPENSSL(X509_CRL_get_nextUpdate);
@@ -170,7 +216,7 @@ Handle<std::string> CRL::nextUpdate(){
 	return ASN1_TIME_toString(time);
 }
 
-Handle<std::string> CRL::lastUpdate(){
+Handle<std::string> CRL::getThisUpdate(){
 	LOGGER_FN();
 
 	LOGGER_OPENSSL(X509_CRL_get_lastUpdate);

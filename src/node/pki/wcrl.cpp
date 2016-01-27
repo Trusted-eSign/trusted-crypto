@@ -19,12 +19,14 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "duplicate", Duplicate);
 	Nan::SetPrototypeMethod(tpl, "hash", Hash);
 
+	Nan::SetPrototypeMethod(tpl, "getEncoded", GetEncoded);
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
 	Nan::SetPrototypeMethod(tpl, "getIssuerName", GetIssuerName);
 	Nan::SetPrototypeMethod(tpl, "getLastUpdate", GetLastUpdate);
 	Nan::SetPrototypeMethod(tpl, "getNextUpdate", GetNextUpdate);
 	Nan::SetPrototypeMethod(tpl, "getCertificate", GetCertificate);
 	Nan::SetPrototypeMethod(tpl, "getThumbprint", GetThumbprint);
+	Nan::SetPrototypeMethod(tpl, "getSigAlgName", GetSigAlgName);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -43,14 +45,11 @@ NAN_METHOD(WCRL::New){
 
 NAN_METHOD(WCRL::GetVersion){
 	try{
-
 		UNWRAP_DATA(CRL);
 
-		int version = _this->version();
-		
-		v8::Local<v8::Number> v8Version = Nan::New<v8::Number>(version);
+		long version = _this->getVersion();
 
-		info.GetReturnValue().Set(v8Version);
+		info.GetReturnValue().Set(Nan::New<v8::Number>(version));
 		return;
 	}
 	TRY_END();
@@ -89,7 +88,7 @@ NAN_METHOD(WCRL::GetLastUpdate)
 		Handle<std::string> time = NULL;
 
 		try{
-			time = _this->lastUpdate();
+			time = _this->getThisUpdate();
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError(e->what());
@@ -112,7 +111,7 @@ NAN_METHOD(WCRL::GetNextUpdate)
 		Handle<std::string> time = NULL;
 
 		try{
-			time = _this->nextUpdate();
+			time = _this->getNextUpdate();
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError(e->what());
@@ -338,6 +337,38 @@ NAN_METHOD(WCRL::Hash)
 		Handle<std::string> hash = _this->hash(new std::string(alg));
 
 		info.GetReturnValue().Set(stringToBuffer(hash));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetEncoded) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> encCrl = _this->getEncoded();
+
+		v8::Local<v8::String> v8encCrl = Nan::New<v8::String>(encCrl->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8encCrl);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetSigAlgName) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> algName = _this->getSigAlgName();
+
+		v8::Local<v8::String> v8algName = Nan::New<v8::String>(algName->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8algName);
 		return;
 	}
 	TRY_END();

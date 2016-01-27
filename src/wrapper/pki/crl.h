@@ -35,11 +35,13 @@ public:
 	
 	//Properties
 	Handle<std::string> getThumbprint();
+	Handle<std::string> getEncoded();
+	Handle<std::string> getThisUpdate();
+	Handle<std::string> getNextUpdate();
+	Handle<std::string> getSigAlgName();
+	long getVersion();
 public:
-	int version();
 	Handle<std::string> issuerName();
-	Handle<std::string> lastUpdate();
-	Handle<std::string> nextUpdate();
 };
 
 
