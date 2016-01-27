@@ -1,9 +1,9 @@
-import {native} from "../native";
-import {BaseObject} from "../object";
+import * as native from "../native";
+import * as object from "../object";
 import {DataFormat} from "../data_format";
 import {Attribute} from "../pki/attr";
 
-export class SignerAttributeCollection extends BaseObject {
+export class SignerAttributeCollection extends object.BaseObject<native.CMS.SignerAttributeCollection> {
     
     constructor(nativeSigner: any) {
         super();
@@ -11,7 +11,7 @@ export class SignerAttributeCollection extends BaseObject {
         this.handle = nativeSigner;
     }
     
-    get length(){
+    get length(): number{
         return this.handle.length();
     }
     
@@ -24,7 +24,7 @@ export class SignerAttributeCollection extends BaseObject {
     }
     
     items(index: number): Attribute{
-        return <Attribute> Attribute.nativeCreate(this.handle.items(index));
+        return new Attribute(this.handle.items(index));
     }    
     
 }

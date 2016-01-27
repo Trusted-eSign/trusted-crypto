@@ -12,10 +12,6 @@ Handle<CertificateCollection> SignedData::certificates(){
 	LOGGER_OPENSSL(CMS_get1_certs);
 	certs = CMS_get1_certs(this->internal());
 
-	if (!certs){
-		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_get1_certs");
-	}
-
 	return new CertificateCollection(certs);
 }
 
@@ -29,10 +25,6 @@ Handle<SignerCollection> SignedData::signers(){
 	LOGGER_FN();
 
 	stack_st_CMS_SignerInfo *signers_ = CMS_get0_SignerInfos(this->internal());
-
-	if (!signers_){
-		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Has no signers");
-	}
 
 	return new SignerCollection(signers_, this->handle());
 }
@@ -103,37 +95,27 @@ void SignedData::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
 	if (out.isEmpty())
 		THROW_EXCEPTION(0, SignedData, NULL, "Parameter %d is NULL", 1);
 
-	CMS_set_detached(this->internal(), 0);
-
-	int flags = CMS_STREAM | CMS_PARTIAL; // | CMS_DETACHED;
-
-	// CMS_set_detached(this->internal(), 0);
-	// this->sign();
-
 	switch (format){
 	case DataFormat::DER:
-		if (flags & CMS_DETACHED){
-			LOGGER_OPENSSL("i2d_CMS_bio");
-			if (i2d_CMS_bio(out->internal(), this->internal()) < 1)
-				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "i2d_CMS_bio", NULL);
-		}
-		else{
-			LOGGER_OPENSSL("i2d_CMS_bio_stream");
-			if (i2d_CMS_bio_stream(out->internal(), this->internal(), this->content->internal(), flags) < 1)
-				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "i2d_CMS_bio_stream", NULL);
-		}
+
+		LOGGER_OPENSSL("i2d_CMS_bio");
+		if (i2d_CMS_bio(out->internal(), this->internal()) < 1)
+			THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "i2d_CMS_bio", NULL);
+
+		// LOGGER_OPENSSL("i2d_CMS_bio_stream");
+		// if (i2d_CMS_bio_stream(out->internal(), this->internal(), this->content->internal(), flags) < 1)
+		//   THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "i2d_CMS_bio_stream", NULL);
+
 		break;
 	case DataFormat::BASE64:
-		if (flags & CMS_DETACHED){
-			LOGGER_OPENSSL("PEM_write_bio_CMS");
-			if (PEM_write_bio_CMS(out->internal(), this->internal()) < 1)
-				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "PEM_write_bio_CMS", NULL);
-		}
-		else{
-			LOGGER_OPENSSL("PEM_write_bio_CMS_stream");
-			if (PEM_write_bio_CMS_stream(out->internal(), this->internal(), this->content->internal(), flags) < 1)
-				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "PEM_write_bio_CMS_stream", NULL);
-		}
+		LOGGER_OPENSSL("PEM_write_bio_CMS");
+		if (PEM_write_bio_CMS(out->internal(), this->internal()) < 1)
+			THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "PEM_write_bio_CMS", NULL);
+
+		// LOGGER_OPENSSL("PEM_write_bio_CMS_stream");
+		// if (PEM_write_bio_CMS_stream(out->internal(), this->internal(), this->content->internal(), flags) < 1)
+		//   THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "PEM_write_bio_CMS_stream", NULL);
+
 		break;
 
 	default:
@@ -141,7 +123,7 @@ void SignedData::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
 	}
 }
 
-Handle<Signer> SignedData::createSigner(Handle<Certificate> cert, Handle<Key> pkey, Handle<std::string> digestname, unsigned int flags){
+Handle<Signer> SignedData::createSigner(Handle<Certificate> cert, Handle<Key> pkey, Handle<std::string> digestname){
 	LOGGER_FN();
 
 	const EVP_MD* md = EVP_get_digestbyname(digestname->c_str());
@@ -183,18 +165,19 @@ Handle<Bio> SignedData::getContent(){
 	return this->content;
 }
 
-bool SignedData::verify(Handle<CertificateCollection> certs, int flags){
+bool SignedData::verify(Handle<CertificateCollection> certs){
 	LOGGER_FN();
-
-	flags |= CMS_NO_SIGNER_CERT_VERIFY;
 
 	stack_st_X509 *pCerts = NULL;
 	if (!certs.isEmpty()){
 		pCerts = certs->internal();
 	}
 
+	// Сдвиг курсора на начало
+	content->reset();
+
 	LOGGER_OPENSSL("CMS_verify");
-	int res = CMS_verify(this->internal(), pCerts, NULL, this->content->internal(), NULL, flags);
+	int res = CMS_verify(this->internal(), pCerts, NULL, content->internal(), NULL, flags);
 	if (!res){
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_verify");
 	}
@@ -211,14 +194,44 @@ Handle<SignedData> SignedData::sign(Handle<Certificate> cert, Handle<Key> pkey, 
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_sign");
 	}
 
-	return new SignedData(res);
+	Handle<SignedData> sd = new SignedData(res);
+	sd->flags = flags;
+
+	return sd;
 }
 
 void SignedData::sign(){
-	int flags = CMS_STREAM;
+	LOGGER_FN();
+
+	if (!(flags & CMS_DETACHED)){
+		CMS_set_detached(this->internal(), 0);
+	}
 
 	LOGGER_OPENSSL("CMS_final");
 	if (CMS_final(this->internal(), this->content->internal(), NULL, flags) < 1){
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_final");
 	}
+}
+
+int SignedData::getFlags(){
+	LOGGER_FN();
+
+	return this->flags;
+}
+
+void SignedData::setFlags(int v){
+	LOGGER_FN();
+
+	this->flags = v;
+}
+
+void SignedData::addFlag(int v){
+	LOGGER_FN();
+
+	this->flags |= v;
+}
+void SignedData::removeFlags(int v){
+	LOGGER_FN();
+
+	this->flags ^= v;
 }

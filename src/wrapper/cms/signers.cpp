@@ -8,7 +8,7 @@ int SignerCollection::length(){
 	LOGGER_OPENSSL("sk_CMS_SignerInfo_num");
 	int res = sk_CMS_SignerInfo_num(this->internal());
 
-	return res;
+	return (res == -1) ? 0 : res;
 }
 
 Handle<Signer> SignerCollection::items(int index){

@@ -1,14 +1,18 @@
-import {native} from "../native";
-import {BaseObject} from "../object";
+import * as native from "../native";
+import * as object from "../object";
 import {Oid} from "./oid";
 import {AttributeValueCollection} from "./attr_vals";
 
-export class Attribute extends BaseObject {
+export class Attribute extends object.BaseObject<native.PKI.Attribute> {
 
-    constructor() {
+    constructor(handle: native.PKI.Attribute);
+    constructor(param?) {
         super();
-
-        this.handle = new native.PKI.Certificate();
+        if (param instanceof native.PKI.Attribute){
+            this.handle = param;
+        }
+        else
+            this.handle = new native.PKI.Attribute();
     }
 
     get asnType(): number {
@@ -28,9 +32,9 @@ export class Attribute extends BaseObject {
 
     dupicate(): Attribute {
         let nattr = this.handle.duplicate();
-        let attr = Attribute.nativeCreate(nattr);
+        let attr = Attribute.wrap<native.PKI.Attribute, Attribute>(nattr);
 
-        return <Attribute>attr;
+        return attr;
     }
 
     export() {
@@ -41,7 +45,7 @@ export class Attribute extends BaseObject {
     values(): AttributeValueCollection;
     values(index?: number): any {
         let vals = this.handle.values();
-        let attr_vals: AttributeValueCollection = <AttributeValueCollection>AttributeValueCollection.nativeCreate(vals);
+        let attr_vals: AttributeValueCollection = AttributeValueCollection.wrap<native.PKI.AttributeValueCollection, AttributeValueCollection>(vals);
 
         if (index === undefined)
             return attr_vals;

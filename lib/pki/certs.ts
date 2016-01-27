@@ -1,5 +1,5 @@
-import {native} from "../native";
-import {BaseObject} from "../object";
+import * as native from "../native";
+import * as object from "../object";
 import {DataFormat} from "../data_format";
 import * as Collection from "../core/collection";
 import {Certificate} from "./cert";
@@ -9,12 +9,18 @@ const DEFAULT_DATA_FORMAT = DataFormat.DER;
 /**
  * Представление коллекции `X509` сертификатов
  */
-export class CertificateCollection extends BaseObject implements Collection.ICollectionWrite {
+export class CertificateCollection extends object.BaseObject<native.PKI.CertificateCollection> implements Collection.ICollectionWrite {
 
-    constructor() {
+    constructor(handle: native.PKI.CertificateCollection);
+    constructor();
+    constructor(param?) {
         super();
-
-        this.handle = new native.PKI.CertificateCollection();
+        if (param instanceof native.PKI.CertificateCollection){
+            this.handle = param;
+        }
+        else{
+            this.handle = new native.PKI.CertificateCollection();
+        }
     }
 
     /**
@@ -22,7 +28,7 @@ export class CertificateCollection extends BaseObject implements Collection.ICol
      * @param index Индекс элемента в коллекции
      */
     items(index: number): Certificate {
-        return  <Certificate> Certificate.nativeCreate(this.handle.items(index));
+        return  Certificate.wrap<native.PKI.Certificate, Certificate>(this.handle.items(index));
     }
 
     /**

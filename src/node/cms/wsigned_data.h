@@ -23,6 +23,8 @@ public:
 	// Properties
 	static NAN_METHOD(GetContent);
 	static NAN_METHOD(SetContent);
+	static NAN_METHOD(GetFlags);
+	static NAN_METHOD(SetFlags);
 
 	// Methods
 	static NAN_METHOD(GetCertificates);

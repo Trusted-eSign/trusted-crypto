@@ -1,16 +1,20 @@
-import {native} from "../native";
-import {BaseObject} from "../object";
+import * as native from "../native";
+import * as object from "../object";
 import {Oid} from "./oid";
 
-export class Algorithm extends BaseObject {
+export class Algorithm extends object.BaseObject<native.PKI.Algorithm>{
 
     constructor();
+    constructor(handle: native.PKI.Algorithm);
     constructor(name: string);
-    constructor(name?: string) {
+    constructor(param?: any) {
         super();
-
-        if (name)
-            this.handle = new native.PKI.Algorithm(name);
+        
+        if (param instanceof native.PKI.Algorithm){
+            this.handle = param;
+        }
+        else if (param)
+            this.handle = new native.PKI.Algorithm(param);
         else
             this.handle = new native.PKI.Algorithm();
     }

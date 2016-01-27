@@ -47,7 +47,7 @@ NAN_METHOD(WAttributeValueCollection::New){
 }
 
 /*
- * value: string
+ * value: Buffer
  */
 NAN_METHOD(WAttributeValueCollection::Push){
 	METHOD_BEGIN();
@@ -56,8 +56,8 @@ NAN_METHOD(WAttributeValueCollection::Push){
 		UNWRAP_DATA(AttributeValueCollection);
 
 		LOGGER_ARG("value");
-		v8::String::Utf8Value v8Value(info[0]->ToString());
-		std::string value(*v8Value);
+		v8::Local<v8::Object> v8Buffer = info[0]->ToObject();
+		std::string value(node::Buffer::Data(v8Buffer), node::Buffer::Length(v8Buffer));
 		_this->push(value);
 
 		return;

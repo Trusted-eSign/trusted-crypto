@@ -20,6 +20,7 @@
                 "src/node/certstore/wprovider_system.cpp",
                 "src/node/cms/wsigned_data.cpp",
                 "src/node/cms/wsigner.cpp",
+                "src/node/cms/wsigners.cpp",
                 "src/node/cms/wsigner_attrs.cpp",
                 "src/wrapper/stdafx.cpp",
                 "src/wrapper/common/bio.cpp",
