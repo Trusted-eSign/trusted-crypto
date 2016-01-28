@@ -23,17 +23,17 @@
 #include <node_object_wrap.h>
 
 void init(v8::Handle<v8::Object> target) {
-	//logger.start("/tmp/trustedtls/node.log", -1); // -1 = all levels bits
-	//logger.start("logger.txt", LoggerLevel::All );
+	// logger.start("/tmp/trustedtls/node.log", -1); // -1 = all levels bits
+	// logger.start("logger.txt", LoggerLevel::All );
 
 	// On Windows, we can't use Node's OpenSSL, so we link
 	// to a standalone OpenSSL library. Therefore, we need
 	// to initialize OpenSSL separately.
 
-	//TODO: Do I need to free these?
-	//I'm not sure where to call ERR_free_strings() and EVP_cleanup()
+	// TODO: Do I need to free these?
+	// I'm not sure where to call ERR_free_strings() and EVP_cleanup()
 
-	//LOGGER_TRACE("OpenSSL init");
+	// LOGGER_TRACE("OpenSSL init");
 
 	OpenSSL::run();
 
