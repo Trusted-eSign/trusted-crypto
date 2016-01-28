@@ -39,6 +39,7 @@ public:
 	Handle<std::string> getThisUpdate();
 	Handle<std::string> getNextUpdate();
 	Handle<std::string> getSigAlgName();
+	Handle<std::string> getSigAlgShortName();
 	long getVersion();
 public:
 	Handle<std::string> issuerName();

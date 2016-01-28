@@ -31,6 +31,7 @@ public:
 	static NAN_METHOD(GetCertificate);
 	static NAN_METHOD(GetThumbprint);
 	static NAN_METHOD(GetSigAlgName);
+	static NAN_METHOD(GetSigAlgShortName);
 
 	Handle<CRL> data_;
 	

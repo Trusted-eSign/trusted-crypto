@@ -99,6 +99,8 @@ export namespace PKI {
         getNextUpdate(): string;
         getCertificate(): Certificate;
         getThumbprint(): Buffer;
+        getSigAlgName(): string;
+        getSigAlgShortName(): string;
         equals(crl: CRL): boolean;
         hash(digestName: string): Buffer;
         duplicate(): CRL;

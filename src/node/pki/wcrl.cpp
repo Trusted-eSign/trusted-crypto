@@ -27,6 +27,7 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getCertificate", GetCertificate);
 	Nan::SetPrototypeMethod(tpl, "getThumbprint", GetThumbprint);
 	Nan::SetPrototypeMethod(tpl, "getSigAlgName", GetSigAlgName);
+	Nan::SetPrototypeMethod(tpl, "getSigAlgShortName", GetSigAlgShortName);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -369,6 +370,22 @@ NAN_METHOD(WCRL::GetSigAlgName) {
 		v8::Local<v8::String> v8algName = Nan::New<v8::String>(algName->c_str()).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8algName);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetSigAlgShortName) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> algSN = _this->getSigAlgShortName();
+
+		v8::Local<v8::String> v8algSN = Nan::New<v8::String>(algSN->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8algSN);
 		return;
 	}
 	TRY_END();

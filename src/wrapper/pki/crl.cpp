@@ -147,20 +147,47 @@ long CRL::getVersion()
 
 Handle<std::string> CRL::getSigAlgName(){
 	LOGGER_FN();
-	
-	LOGGER_OPENSSL(OBJ_obj2nid);
-	int pkey_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
 
-	if (pkey_nid == NID_undef) {
-		THROW_EXCEPTION(0, CRL, NULL, "Can not get key nid");
+	try{
+		LOGGER_OPENSSL(OBJ_obj2nid);
+		int pkey_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
+
+		if (pkey_nid == NID_undef) {
+			THROW_EXCEPTION(0, CRL, NULL, "Can not get key nid");
+		}
+
+		LOGGER_OPENSSL(OBJ_nid2ln);
+		std::string sslbuf = OBJ_nid2ln(pkey_nid);
+
+		Handle<std::string> res = new std::string(sslbuf.c_str(), sslbuf.length());
+
+		return res;
 	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature algorithm");
+	}	
+}
 
-	LOGGER_OPENSSL(OBJ_nid2ln);
-	std::string sslbuf = OBJ_nid2ln(pkey_nid);
+Handle<std::string> CRL::getSigAlgShortName(){
+	LOGGER_FN();
 
-	Handle<std::string> res = new std::string(sslbuf.c_str(), sslbuf.length());
+	try{
+		LOGGER_OPENSSL(OBJ_obj2nid);
+		int pkey_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
+		if (pkey_nid == NID_undef) {
+			THROW_EXCEPTION(0, CRL, NULL, "Can not get key nid");
+		}
 
-	return res;
+		LOGGER_OPENSSL(OBJ_nid2ln);
+		std::string sslbuf = OBJ_nid2sn(pkey_nid);
+
+		Handle<std::string> res = new std::string(sslbuf.c_str(), sslbuf.length());
+
+		return res;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature OID");
+	}
 }
 
 Handle<std::string> CRL::issuerName()

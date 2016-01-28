@@ -37,6 +37,14 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
     get thumbprint(): string {
         return this.handle.getThumbprint().toString("hex");
     }
+    
+    get sigAlgName(): string {
+        return this.handle.getSigAlgName();
+    }
+    
+    get sigAlgShortName(): string {
+        return this.handle.getSigAlgShortName();
+    }
 	
 	load(filename: string, dataFormat: DataFormat = DEFAULT_DATA_FORMAT){
 		this.handle.load(filename, dataFormat);
