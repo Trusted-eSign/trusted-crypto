@@ -54,11 +54,11 @@ void init(v8::Handle<v8::Object> target) {
 	target->Set(Nan::New("CMS").ToLocalChecked(), Cms);
 	WSignedData::Init(Cms);
 
-	//target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
-	//WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());
+	// target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
+	// WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());
 
 
-	//logger.start("log-node.txt", LoggerLevel::Debug);
+	// logger.start("log-node.txt", LoggerLevel::Debug);
 }
 
 NODE_MODULE(trusted, init)
