@@ -9,7 +9,7 @@ describe("SignedData", function () {
         key = trusted.pki.Key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");
     })
     
-   it("Sign new data", function(){
+    it("Sign new data", function(){
         var sd = new trusted.cms.SignedData();
         assert.equal(sd.content, null, "Init: content != null");
         assert.equal(sd.signers().length, 0, "Init: signers != 0");
@@ -37,8 +37,8 @@ describe("SignedData", function () {
         sd.sign();
         
         assert.equal(sd.export() != null, true)        
-       // assert.equal(sd.verify(), true);
-               
+        assert.equal(sd.verify(), true);
+                
     })
     
 });
