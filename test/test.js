@@ -40,8 +40,6 @@ describe('CRL', function () {
 	it("duplicate", function () {
         var crl1 = trusted.pki.Crl.load("test/test.crl");
         var crl2 = crl1.duplicate();
-		console.log("CRL1:", crl1.thumbprint);
-		console.log("CRL2:", crl2.thumbprint);
 		assert.equal(crl1.thumbprint === crl2.thumbprint, true, "CRL are not equals");
     })
 	

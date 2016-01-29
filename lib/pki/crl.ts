@@ -105,7 +105,8 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
     }
     
      duplicate(): Crl {
-        let crl = new Crl(this.handle.duplicate());
+        let crl = new Crl();
+        crl.handle = this.handle.duplicate();
         return crl;
     }
 	
