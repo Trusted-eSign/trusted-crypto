@@ -2,6 +2,7 @@ import * as native from "../native";
 import * as object from "../object";
 import {DataFormat} from "../data_format";
 import {Signer} from "./signer";
+import {SignerCollection} from "./signers";
 import {Certificate} from "../pki/cert";
 import {CertificateCollection} from "../pki/certs";
 import {Key} from "../pki/key";
@@ -16,6 +17,38 @@ export enum SignedDataContentType {
 export interface ISignedDataContent {
     type: SignedDataContentType;
     data: string | Buffer;
+}
+
+enum SignedDataPolicy {
+    text = 0x1,
+    noCertificates = 0x2,
+    noContentVerify = 0x4,
+    noAttributeVerify = 0x8,
+    noSignatures = noAttributeVerify | noContentVerify,
+    noIntern = 0x10,
+    noSignerCertificateVerify = 0x20,
+    noVerify = 0x20,
+    detached = 0x40,
+    binary = 0x80,
+    noAttributes = 0x100,
+    noSmimeCap = 0x200,
+    noOldMimeType = 0x400,
+    crlFEOL = 0x800,
+    stream = 0x1000,
+    noCrtl = 0x2000,
+    partial = 0x4000,
+    reuseDigest = 0x8000,
+    useKeyId = 0x10000,
+    debugDecrypt = 0x20000
+}
+
+function EnumGetName(e: any, name: string) {
+    for (let i in e) {
+        if (i.toString().toLowerCase() === name.toLowerCase()) {
+            return { name: i, value: e[i] };
+        }
+    }
+    return null;
 }
 
 /**
@@ -54,6 +87,33 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         this.handle.setContent(data)
         this.content_ = v;
     }
+    
+    get policies(): Array<string> {
+        let p = new Array<string>();
+
+        let flags = this.handle.getFlags();
+
+
+
+        for (let i in SignedDataPolicy) {
+            if (isNaN(i)) break;
+            if (+i & flags) p.push(SignedDataPolicy[i]);
+        }
+
+        return p;
+    }
+
+    set policies(v: string[]) {
+        let flags = 0;
+        for (let i in v) {
+            let flag = EnumGetName(SignedDataPolicy, v[i]);
+            if (flag) {
+                flags |= +flag.value;
+            }
+        }
+
+        this.handle.setFlags(flags);
+    }
 
     isDetached(): boolean {
         return this.handle.isDetached();
@@ -72,17 +132,11 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
     signers(index: number): Buffer;
     signers(): Array<Signer>;
     signers(index?: number): any {
-        let signers = this.handle.getSigners();
-        // signers.items = function(index: number): Signer { return this[index]; }
-        for (let i in signers) {
-            signers[i] = new Signer(signers[i]);
+        let signers = new SignerCollection (this.handle.getSigners());
+        if (index !== undefined){
+            return signers.items(index);
         }
-        if (index === undefined) {
-            return signers;
-        }
-        else {
-            return signers[index];
-        }
+        return signers;
     }
 
     /**
@@ -143,8 +197,8 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
     }
 
     createSigner(cert: Certificate, key: Key, digestName: string): Signer {
-        var signer: Signer = new Signer(this.handle.createSigner(cert.handle, key.handle, digestName));
-        return signer;
+        let signer:any = this.handle.createSigner(cert.handle, key.handle, digestName);
+        return new Signer(signer);
     }
     
     /**
