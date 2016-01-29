@@ -176,11 +176,15 @@ bool SignedData::verify(Handle<CertificateCollection> certs){
 	// Сдвиг курсора на начало
 	content->reset();
 
+	X509_STORE *store = X509_STORE_new();
+
 	LOGGER_OPENSSL("CMS_verify");
-	int res = CMS_verify(this->internal(), pCerts, NULL, content->internal(), NULL, flags);
+	int res = CMS_verify(this->internal(), pCerts, store, content->internal(), NULL, flags);
 	if (!res){
+		X509_STORE_free(store);
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_verify");
 	}
+	X509_STORE_free(store);
 
 	return res == 1;
 }

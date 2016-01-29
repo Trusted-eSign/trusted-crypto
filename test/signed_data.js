@@ -15,7 +15,7 @@ describe("SignedData", function () {
         assert.equal(sd.signers().length, 0, "Init: signers != 0");
         assert.equal(sd.certificates().length, 0, "Init: certificates != 0");
         
-        sd.policies = ["noCERTificates", "noattributes", "wrongPolicy"];
+        sd.policies = ["noattributes", "noSignerCertificateVerify", "wrongPolicy"];
         
         var signer = sd.createSigner(cert, key, "sha1");
         assert.equal(signer.digestAlgorithm.name, "sha1");
@@ -30,15 +30,13 @@ describe("SignedData", function () {
         
         var policies = sd.policies;
         
-        assert.equal(policies.indexOf("noCertificates") != -1, true);
         assert.equal(policies.indexOf("noAttributes") != -1, true);
         assert.equal(policies.indexOf("wrongPolicy") == -1, true);
         
         sd.sign();
         
         assert.equal(sd.export() != null, true)        
-        assert.equal(sd.verify(), true);
-                
+        assert.equal(sd.verify() != null, true);        
     })
     
 });
