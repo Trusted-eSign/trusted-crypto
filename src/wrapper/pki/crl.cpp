@@ -164,7 +164,7 @@ Handle<std::string> CRL::getSigAlgName(){
 		return res;
 	}
 	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature algorithm");
+		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature algorithm long name");
 	}	
 }
 
@@ -186,10 +186,29 @@ Handle<std::string> CRL::getSigAlgShortName(){
 		return res;
 	}
 	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature OID");
+		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature algorithm short name");
 	}
 }
 
+Handle<std::string> CRL::getSigAlgOID(){
+	LOGGER_FN();
+
+	try{
+		char buf[100];
+		LOGGER_OPENSSL(OBJ_obj2txt);
+		int bufLen = 0;
+		if ((bufLen = OBJ_obj2txt(buf, 100, this->internal()->sig_alg->algorithm, 1)) <= 0){
+			THROW_OPENSSL_EXCEPTION(0, Algorithm, NULL, "OBJ_obj2txt");
+		}
+			
+		std::string *res = new std::string(buf, bufLen);
+
+		return res;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature OID");
+	}
+}
 Handle<std::string> CRL::issuerName()
 {
 	LOGGER_FN();
@@ -235,6 +254,20 @@ Handle<std::string> CRL::getEncoded(){
 	}	
 }
 
+Handle<std::string> CRL::getSignature(){
+	LOGGER_FN();
+
+	try{
+		std::string sslbuf = std::string((char *)(this->internal()->signature)->data, (this->internal()->signature)->length);
+		Handle<std::string> res = new std::string(sslbuf.c_str(), sslbuf.length());
+
+		return res;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, CRL, e, "Error get signature CRL");
+	}
+}
+
 Handle<std::string> CRL::getNextUpdate(){
 	LOGGER_FN();
 
@@ -251,13 +284,13 @@ Handle<std::string> CRL::getThisUpdate(){
 	return ASN1_TIME_toString(time);
 }
 
-/*
-Handle<RevokedCertificate> CRL::getCertificate(Handle<Certificate> cert)
-{
+
+Handle<RevokedCertificate> CRL::getRevokedCertificate(Handle<Certificate> cert){
 	LOGGER_FN();
 
-	if (cert.isEmpty())
+	if (cert.isEmpty()){
 		THROW_EXCEPTION(0, CRL, NULL, ERROR_PARAMETER_NULL, 1);
+	}		
 	X509_REVOKED *rc = NULL;
 	LOGGER_OPENSSL(X509_CRL_get0_by_cert);
 	if (X509_CRL_get0_by_cert(this->internal(), &rc, cert->internal())){
@@ -267,7 +300,29 @@ Handle<RevokedCertificate> CRL::getCertificate(Handle<Certificate> cert)
 		return NULL;
 	}
 }
-*/
+
+Handle<RevokedCertificate> CRL::getRevokedCertificate(Handle<std::string> serial){
+	LOGGER_FN();
+
+	if (serial.isEmpty()){
+		THROW_EXCEPTION(0, CRL, NULL, ERROR_PARAMETER_NULL, 1);
+	}	
+	
+	BIGNUM* bn = BN_new();
+	BN_bin2bn((const unsigned char *)serial->data(), serial->length(), bn);
+
+	ASN1_INTEGER* asnInt = ASN1_INTEGER_new();
+	BN_to_ASN1_INTEGER(bn, asnInt);
+
+	X509_REVOKED *rc = NULL;	
+	LOGGER_OPENSSL(X509_CRL_get0_by_serial);
+	if (X509_CRL_get0_by_serial(this->internal(), &rc, asnInt)){
+		return new RevokedCertificate(rc, this->handle());
+	}
+	else{
+		return NULL;
+	}
+}
 
 Handle<std::string> RevokedCertificate::revocationDate()
 {

@@ -15,10 +15,14 @@ describe('CRL', function () {
     });
 
     it('params', function () {
+		assert.equal(typeof (crl.encoded), "string", "Bad encoded value")
+		assert.equal(typeof (crl.signature), "string", "Bad signature value")
+		
 		console.log("version:", crl.version);
 		console.log("SHA-1 hash:", crl.thumbprint);
 		console.log("Signature algorithm long name:", crl.sigAlgName);
 		console.log("Signature algorithm short name:", crl.sigAlgShortName);
+		console.log("Signature algorithm OID:", crl.sigAlgOID);
 		console.log("Issuer name:", crl.issuerName);
 		console.log("Last update:", crl.lastUpdate);
 		console.log("Next update:", crl.nextUpdate);
@@ -61,6 +65,11 @@ describe('CRL', function () {
 
         assert.equal(hash1 === hash2, true, "Значения хеш не совпадают");
 
+    })
+	
+	it("revoked", function () {
+        var crl1 = trusted.pki.Crl.load("test/test.crl");
+		crl1.getRevokedCertificateCert(trusted.pki.Certificate.load("test/test.crt"));
     })
 	
 });

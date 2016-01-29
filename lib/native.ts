@@ -80,6 +80,11 @@ export namespace PKI {
 
     }
 
+    export declare class RevokedCertificate {
+        revocationDate(): string;
+        reason(): number;
+    }
+    
     export declare class CertificateCollection {
         items(index: number): Certificate;
         length(): number;
@@ -93,6 +98,8 @@ export namespace PKI {
         import(raw: Buffer, dataFormat: DataFormat): void;
         save(filename: string, dataFormat: DataFormat): void;
         export(dataFormat: DataFormat): Buffer;
+        getEncoded(): string;
+        getSignature(): string;
         getVersion(): number;
         getIssuerName(): string;
         getLastUpdate(): string;
@@ -101,6 +108,9 @@ export namespace PKI {
         getThumbprint(): Buffer;
         getSigAlgName(): string;
         getSigAlgShortName(): string;
+        getSigAlgOID(): string;
+        getRevokedCertificateCert(cer: Certificate): RevokedCertificate;
+        getRevokedCertificateSerial(serial: string): RevokedCertificate;
         equals(crl: CRL): boolean;
         hash(digestName: string): Buffer;
         duplicate(): CRL;

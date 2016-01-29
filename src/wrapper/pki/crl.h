@@ -30,16 +30,18 @@ public:
 	Handle<std::string> hash(const EVP_MD *md);
 	Handle<std::string> hash(Handle<std::string> algorithm);
 
-	//Handle<RevokedCertificate> getCertificate(Handle<Certificate> cert);
-	//Handle<RevokedCertificate> getCertificate(Handle<std::string> serial);
+	Handle<RevokedCertificate> getRevokedCertificate(Handle<Certificate> cert);
+	Handle<RevokedCertificate> getRevokedCertificate(Handle<std::string> serial);
 	
 	//Properties
 	Handle<std::string> getThumbprint();
 	Handle<std::string> getEncoded();
+	Handle<std::string> getSignature();
 	Handle<std::string> getThisUpdate();
 	Handle<std::string> getNextUpdate();
 	Handle<std::string> getSigAlgName();
 	Handle<std::string> getSigAlgShortName();
+	Handle<std::string> getSigAlgOID();
 	long getVersion();
 public:
 	Handle<std::string> issuerName();

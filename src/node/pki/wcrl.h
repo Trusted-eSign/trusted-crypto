@@ -24,6 +24,7 @@ public:
 	static NAN_METHOD(Hash);
 
 	static NAN_METHOD(GetEncoded);
+	static NAN_METHOD(GetSignature);
 	static NAN_METHOD(GetVersion);
 	static NAN_METHOD(GetIssuerName);
 	static NAN_METHOD(GetLastUpdate);
@@ -32,6 +33,10 @@ public:
 	static NAN_METHOD(GetThumbprint);
 	static NAN_METHOD(GetSigAlgName);
 	static NAN_METHOD(GetSigAlgShortName);
+	static NAN_METHOD(GetSigAlgOID);
+
+	static NAN_METHOD(GetRevokedCertificateCert);
+	static NAN_METHOD(GetRevokedCertificateSerial);
 
 	Handle<CRL> data_;
 	

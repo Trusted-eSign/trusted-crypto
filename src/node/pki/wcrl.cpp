@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 
 #include "wcrl.h"
+#include "wcert.h"
 
 void WCRL::Init(v8::Handle<v8::Object> exports){
 	v8::Local<v8::String> className = Nan::New("CRL").ToLocalChecked();
@@ -20,6 +21,7 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "hash", Hash);
 
 	Nan::SetPrototypeMethod(tpl, "getEncoded", GetEncoded);
+	Nan::SetPrototypeMethod(tpl, "getSignature", GetSignature);
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
 	Nan::SetPrototypeMethod(tpl, "getIssuerName", GetIssuerName);
 	Nan::SetPrototypeMethod(tpl, "getLastUpdate", GetLastUpdate);
@@ -28,6 +30,10 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getThumbprint", GetThumbprint);
 	Nan::SetPrototypeMethod(tpl, "getSigAlgName", GetSigAlgName);
 	Nan::SetPrototypeMethod(tpl, "getSigAlgShortName", GetSigAlgShortName);
+	Nan::SetPrototypeMethod(tpl, "getSigAlgOID", GetSigAlgOID);
+
+	Nan::SetPrototypeMethod(tpl, "getRevokedCertificateCert", GetRevokedCertificateCert);
+	Nan::SetPrototypeMethod(tpl, "getRevokedCertificateSerial", GetRevokedCertificateSerial);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -359,6 +365,22 @@ NAN_METHOD(WCRL::GetEncoded) {
 	TRY_END();
 }
 
+NAN_METHOD(WCRL::GetSignature) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> sigCrl = _this->getSignature();
+
+		v8::Local<v8::String> v8sigCrl = Nan::New<v8::String>(sigCrl->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8sigCrl);
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WCRL::GetSigAlgName) {
 	METHOD_BEGIN();
 
@@ -386,6 +408,58 @@ NAN_METHOD(WCRL::GetSigAlgShortName) {
 		v8::Local<v8::String> v8algSN = Nan::New<v8::String>(algSN->c_str()).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8algSN);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetSigAlgOID) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> algSN = _this->getSigAlgOID();
+
+		v8::Local<v8::String> v8algSN = Nan::New<v8::String>(algSN->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8algSN);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetRevokedCertificateCert) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+		
+		LOGGER_ARG("certificate")
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		_this->getRevokedCertificate(wCert->data_);
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetRevokedCertificateSerial) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		LOGGER_ARG("serial")
+		v8::String::Utf8Value v8serial(info[0]->ToString());
+		char *serial = *v8serial;
+		std::string strSerial(serial);
+
+		_this->getRevokedCertificate(&strSerial);
+
+		info.GetReturnValue().Set(info.This());
 		return;
 	}
 	TRY_END();

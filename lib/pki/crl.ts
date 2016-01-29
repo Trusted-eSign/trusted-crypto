@@ -1,6 +1,8 @@
 import * as native from "../native";
 import * as object from "../object";
 import {DataFormat} from "../data_format";
+import {Certificate} from "./cert";
+
 
 const DEFAULT_DATA_FORMAT = DataFormat.DER;
 
@@ -16,6 +18,14 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
         else{
 		  this.handle = new native.PKI.CRL();
         }
+	}
+    
+    get encoded(): string{
+		return this.handle.getEncoded();
+	}
+    
+    get signature(): string{
+		return this.handle.getSignature();
 	}
 	
 	get version(): number{
@@ -45,7 +55,19 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
     get sigAlgShortName(): string {
         return this.handle.getSigAlgShortName();
     }
+    
+    get sigAlgOID(): string {
+        return this.handle.getSigAlgOID();
+    }
+    
+    getRevokedCertificateCert(cer: Certificate): native.PKI.RevokedCertificate{
+       return this.handle.getRevokedCertificateCert(cer.handle);
+    }
 	
+    getRevokedCertificateSerial(serial: string): native.PKI.RevokedCertificate{
+        return this.handle.getRevokedCertificateSerial(serial);
+    }
+    
 	load(filename: string, dataFormat: DataFormat = DEFAULT_DATA_FORMAT){
 		this.handle.load(filename, dataFormat);
 	}
