@@ -20,11 +20,11 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
         }
 	}
     
-    get encoded(): string{
+    get encoded(): Buffer{
 		return this.handle.getEncoded();
 	}
     
-    get signature(): string{
+    get signature(): Buffer{
 		return this.handle.getSignature();
 	}
 	

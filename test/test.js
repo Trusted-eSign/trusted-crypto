@@ -15,9 +15,8 @@ describe('CRL', function () {
     });
 
     it('params', function () {
-		assert.equal(typeof (crl.encoded), "string", "Bad encoded value")
-		assert.equal(typeof (crl.signature), "string", "Bad signature value")
-		
+		assert.equal(typeof (crl.encoded), "object", "Bad encoded value")
+		assert.equal(typeof (crl.signature), "object", "Bad signature value")
 		console.log("version:", crl.version);
 		console.log("SHA-1 hash:", crl.thumbprint);
 		console.log("Signature algorithm long name:", crl.sigAlgName);

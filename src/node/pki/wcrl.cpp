@@ -357,9 +357,7 @@ NAN_METHOD(WCRL::GetEncoded) {
 
 		Handle<std::string> encCrl = _this->getEncoded();
 
-		v8::Local<v8::String> v8encCrl = Nan::New<v8::String>(encCrl->c_str()).ToLocalChecked();
-
-		info.GetReturnValue().Set(v8encCrl);
+		info.GetReturnValue().Set(stringToBuffer(encCrl));
 		return;
 	}
 	TRY_END();
@@ -373,9 +371,7 @@ NAN_METHOD(WCRL::GetSignature) {
 
 		Handle<std::string> sigCrl = _this->getSignature();
 
-		v8::Local<v8::String> v8sigCrl = Nan::New<v8::String>(sigCrl->c_str()).ToLocalChecked();
-
-		info.GetReturnValue().Set(v8sigCrl);
+		info.GetReturnValue().Set(stringToBuffer(sigCrl));
 		return;
 	}
 	TRY_END();
