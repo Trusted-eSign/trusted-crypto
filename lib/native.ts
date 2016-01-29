@@ -98,8 +98,8 @@ export namespace PKI {
         import(raw: Buffer, dataFormat: DataFormat): void;
         save(filename: string, dataFormat: DataFormat): void;
         export(dataFormat: DataFormat): Buffer;
-        getEncoded(): string;
-        getSignature(): string;
+        getEncoded(): Buffer;
+        getSignature(): Buffer;
         getVersion(): number;
         getIssuerName(): string;
         getLastUpdate(): string;
