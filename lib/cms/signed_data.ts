@@ -19,6 +19,9 @@ export interface ISignedDataContent {
     data: string | Buffer;
 }
 
+/**
+ * Политики подписи
+ */
 enum SignedDataPolicy {
     text = 0x1,
     noCertificates = 0x2,
@@ -63,7 +66,10 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
     }
 
     private content_: ISignedDataContent = null;
-
+    
+    /**
+     * Возвращает содержимое подписи
+     */
     get content(): ISignedDataContent {
         if (!this.content_ && !this.isDetached()) {
             // Извлечь содержимое из подписи
@@ -76,6 +82,10 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         return this.content_;
     }
 
+    /**
+     * Задает содержимое подписи
+     * @param содержимое 
+     */
     set content(v: ISignedDataContent) {
         let data;
         if (v.type === SignedDataContentType.url) {
@@ -88,6 +98,9 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         this.content_ = v;
     }
     
+    /**
+     * Возвращает политики подписи
+     */
     get policies(): Array<string> {
         let p = new Array<string>();
 
@@ -103,6 +116,10 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         return p;
     }
 
+    /**
+     * Задает политики подписи
+     * @param Набор политик
+     */
     set policies(v: string[]) {
         let flags = 0;
         for (let i in v) {
@@ -115,11 +132,21 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         this.handle.setFlags(flags);
     }
 
+    /**
+     * Возвращает true если подпись открепленная
+     */
     isDetached(): boolean {
         return this.handle.isDetached();
     }
 
+    /**
+     * Возвращает сертификат по индексу
+     * @param index Индекс элемента в коллекции
+     */
     certificates(index: number): Buffer;
+    /**
+     * Возвращает коллекцию сертификатов
+     */
     certificates(): CertificateCollection;
     certificates(index?: number): any {
         let certs: CertificateCollection = new CertificateCollection(this.handle.getCertificates());
@@ -129,7 +156,14 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         return certs;
     }
 
+    /**
+     * Возвращает подписчика по индексу
+     * @param index индекс элемента в коллекции
+     */
     signers(index: number): Buffer;
+    /**
+     * Возвращает коллекцию подписчиков
+     */
     signers(): Array<Signer>;
     signers(index?: number): any {
         let signers = new SignerCollection (this.handle.getSigners());
@@ -196,6 +230,12 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         this.handle.save(filename, format);
     }
 
+    /**
+     * создает нового подписчика
+     * @param cert Сертификат подписчика
+     * @param key Закрытый ключ пожписчика
+     * @param digestName имя хэш алгоритма
+     */
     createSigner(cert: Certificate, key: Key, digestName: string): Signer {
         let signer:any = this.handle.createSigner(cert.handle, key.handle, digestName);
         return new Signer(signer);
@@ -210,7 +250,7 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         if (!certs) {
             certs_ = new CertificateCollection();
         }
-        return this.handle.verify(certs_.handle);
+            return this.handle.verify(certs_.handle);
     }
 
     /**

@@ -180,11 +180,10 @@ bool SignedData::verify(Handle<CertificateCollection> certs){
 
 	LOGGER_OPENSSL("CMS_verify");
 	int res = CMS_verify(this->internal(), pCerts, store, content->internal(), NULL, flags);
+	X509_STORE_free(store);
 	if (!res){
-		X509_STORE_free(store);
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_verify");
 	}
-	X509_STORE_free(store);
 
 	return res == 1;
 }

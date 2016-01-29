@@ -1,4 +1,4 @@
-let native = require("../build/Release/trusted.node");
+let native = require("../build/Debug/trusted.node");
 
 import {DataFormat} from "./data_format";
 import {PublicExponent} from "./public_exponent";

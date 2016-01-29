@@ -2,6 +2,9 @@ import * as native from "../native";
 import * as object from "../object";
 import {Oid} from "./oid";
 
+/**
+ * Представление X509_ALGOR
+ */
 export class Algorithm extends object.BaseObject<native.PKI.Algorithm>{
 
     constructor();
@@ -19,14 +22,23 @@ export class Algorithm extends object.BaseObject<native.PKI.Algorithm>{
             this.handle = new native.PKI.Algorithm();
     }
 
+    /**
+     * возвращает название алгоритма
+     */
     get name(): string {
         return this.handle.getName();
     }
 
+    /**
+     * возвращает идентификатор алгоритма
+     */
     get typeId(): Oid {
         return new Oid(this.handle.getTypeId());
     }
 
+    /**
+     * возвращает копию алгоритма
+     */
     duplicate(): Algorithm {
         let walg = this.handle.duplicate();
         let alg = new Algorithm();
@@ -34,6 +46,9 @@ export class Algorithm extends object.BaseObject<native.PKI.Algorithm>{
         return alg;
     }
     
+    /**
+     * возвращает true если алгоритм предназначен для вычисления хэш
+     */
     isDigest(): boolean{
         return this.handle.isDigest();
     }

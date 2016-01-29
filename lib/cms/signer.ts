@@ -17,20 +17,38 @@ export class Signer extends object.BaseObject<native.CMS.Signer> {
         this.handle = handle;
     }
 
+    /**
+     * Возвращает сертификат подписчика
+     */
     get certificate(): Certificate {
         return new Certificate(this.handle.getCertificate());
     }
 
+    /**
+     * Задает сертификат подписчика
+     * @param val Сертификат
+     * - если сенртификат не является сертификатом подписчика, то возникнет ошибка 
+     */
     set certificate(val: Certificate) {
         this.handle.setCertificate(val.handle);
     }
 
+    /**
+     * возвращает хэш алгоритм проверки содержимого 
+     */
     get digestAlgorithm(): Algorithm {
         let alg = new Algorithm(this.handle.getDigestAlgorithm());
         return alg;
     }
 
+    /**
+     * возвращает коллекцию подписанных атрибутов
+     */
     signedAttributes(): SignerAttributeCollection;
+    /**
+     * возвращает атрибут из коллекции по заданному индексу
+     * @param index индекс элемента в коллекции
+     */
     signedAttributes(index: number): Attribute;
     signedAttributes(index?: number): any {
         //get collection
@@ -46,7 +64,14 @@ export class Signer extends object.BaseObject<native.CMS.Signer> {
         }
     }
 
+    /**
+     * возвращает коллекцию подписанных атрибутов
+     */
     unsignedAttributes(): SignerAttributeCollection;
+    /**
+     * возвращает атрибут из коллекции по заданному индексу
+     * @param index индекс элемента в коллекции
+     */
     unsignedAttributes(index: number): Attribute;
     unsignedAttributes(index?: number): any {
         //get collection
