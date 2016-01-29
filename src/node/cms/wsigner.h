@@ -15,8 +15,6 @@ public:
 
 	static const char* className;
 
-	WRAP_NEW_INSTANCE(Signer);
-
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
 
@@ -30,7 +28,8 @@ public:
 	// Methods
 	static NAN_METHOD(GetSignedAttributes);
 	static NAN_METHOD(GetUnsignedAttributes);
-	
+
+	WRAP_NEW_INSTANCE(Signer);
 };
 
 #endif // !CMS_W_SIGNER_H_INCLUDED

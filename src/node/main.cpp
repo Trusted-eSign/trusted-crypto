@@ -19,6 +19,9 @@
 #include "certstore/wprovider_system.h"
 
 #include "cms/wsigned_data.h"
+#include "cms/wsigner.h"
+#include "cms/wsigners.h"
+#include "cms/wsigner_attrs.h"
 
 #include <node_object_wrap.h>
 
@@ -53,6 +56,9 @@ void init(v8::Handle<v8::Object> target) {
 	v8::Local<v8::Object> Cms = Nan::New<v8::Object>();
 	target->Set(Nan::New("CMS").ToLocalChecked(), Cms);
 	WSignedData::Init(Cms);
+	WSigner::Init(Cms);
+	WSignerCollection::Init(Cms);
+	WSignerAttributeCollection::Init(Cms);
 
 	// target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
 	// WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());

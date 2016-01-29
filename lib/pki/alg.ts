@@ -9,7 +9,7 @@ export class Algorithm extends object.BaseObject<native.PKI.Algorithm>{
     constructor(name: string);
     constructor(param?: any) {
         super();
-        
+
         if (param instanceof native.PKI.Algorithm){
             this.handle = param;
         }

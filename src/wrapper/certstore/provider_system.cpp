@@ -376,7 +376,21 @@ string ProviderSystem::readInputJsonFile(const char *path){
 		return string("");
 	}
 
-	return strTextJson;
+	ASN1_UTF8STRING  *asnStr = ASN1_STRING_new();
+	ASN1_STRING_set(asnStr, strTextJson.c_str(), strTextJson.length());
+
+	unsigned char *b;
+	std::string res("");
+	int b_len = ASN1_STRING_to_UTF8(&b, asnStr);
+	if (b_len != -1){
+		res += std::string((char *)b, b_len);
+		OPENSSL_free(b);
+	}
+	else{
+		res += std::string((char *)asnStr->data, asnStr->length);
+	}
+
+	return res;
 }
 
 int ProviderSystem::parseJsonAndFillingCacheStore(string *strInputJson){
