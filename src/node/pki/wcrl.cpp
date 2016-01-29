@@ -338,7 +338,7 @@ NAN_METHOD(WCRL::Hash)
 		UNWRAP_DATA(CRL);
 
 		LOGGER_ARG("algorithm")
-			v8::String::Utf8Value v8Alg(info[0]->ToString());
+		v8::String::Utf8Value v8Alg(info[0]->ToString());
 		char *alg = *v8Alg;
 
 		Handle<std::string> hash = _this->hash(new std::string(alg));

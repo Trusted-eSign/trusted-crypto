@@ -130,6 +130,11 @@ export namespace PKI {
         fillingCache(cacheURI: string, pvdURI: string): void;
         readJson(filename: string): string;
     }
+    
+     export declare class CertificationRequestInfo {
+        setSubject(x509name: string): void;
+        setSubjectPublicKey(key: PKI.Key): void;
+    }
 }
 
 export namespace CMS {
@@ -173,7 +178,7 @@ export namespace CMS {
         removeAt(index: number): void;
         items(index: number): PKI.Attribute;
     }
-
+    
 }
 
 module.exports.PKI = native.PKI;

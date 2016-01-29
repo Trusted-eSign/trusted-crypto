@@ -264,3 +264,19 @@ describe('CertificateCollection', function () {
         assert.equal(cert.version, 2);  
     })
 })
+
+describe('CertificationRequestInfo', function () {
+	var csr;
+	it('init', function () {
+        csr = new trusted.pki.CertificationRequestInfo();
+        assert.equal(csr != null, true);
+    })
+	
+   it("set", function () {  
+		csr.subject = ("/C=US/O=Test/CN=example.com");
+
+		var key = new trusted.pki.Key()
+		key.pubkeyLoad("test/CertStore/MY/pubkey_s.key", trusted.DataFormat.PEM);
+		csr.pubkey = key;
+    })
+})
