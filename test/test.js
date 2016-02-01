@@ -280,3 +280,22 @@ describe('CertificationRequestInfo', function () {
 		csr.pubkey = key;
     })
 })
+
+describe('CSR', function () {
+	var csr, key;
+	
+	it('init', function () {
+		key = trusted.pki.Key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");
+		
+        csr = new trusted.pki.CSR("/C=US/O=Test/CN=example.com", key, "SHA1");
+        assert.equal(csr != null, true);
+    })
+	
+   it("save", function () {  
+		csr.save("test/CertStore/MY/test.csr", trusted.DataFormat.PEM);
+    })
+	
+	it("encoded", function () {  
+		assert.equal(typeof (csr.encoded), "object", "Bad encoded value")
+    })
+})

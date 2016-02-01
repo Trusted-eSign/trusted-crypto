@@ -1,4 +1,4 @@
-let native = require("../build/Debug/trusted.node");
+let native = require("../build/Release/trusted.node");
 
 import {DataFormat} from "./data_format";
 import {PublicExponent} from "./public_exponent";
@@ -134,6 +134,12 @@ export namespace PKI {
      export declare class CertificationRequestInfo {
         setSubject(x509name: string): void;
         setSubjectPublicKey(key: PKI.Key): void;
+    }
+    
+    export declare class CSR {
+        constructor(name: string, key: PKI.Key, digest: string);
+        save(filename: string, dataFormat: DataFormat): void;
+        getEncoded(): Buffer;
     }
 }
 
