@@ -175,7 +175,7 @@ Handle<std::string> CSR::getEncoded(){
 
 		LOGGER_OPENSSL(PEM_write_bio_X509_REQ);
 		if (!PEM_write_bio_X509_REQ(bio_out, this->internal())){
-			THROW_OPENSSL_EXCEPTION(0, CRL, NULL, "PEM_write_bio_X509_REQ");
+			THROW_OPENSSL_EXCEPTION(0, CSR, NULL, "PEM_write_bio_X509_REQ");
 		}
 		BUF_MEM *bio_buf;
 		LOGGER_OPENSSL(BIO_get_mem_ptr);
@@ -187,6 +187,6 @@ Handle<std::string> CSR::getEncoded(){
 		return res;
 	}
 	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, CRL, e, "Error get encoded CSR");
+		THROW_EXCEPTION(0, CSR, e, "Error get encoded CSR");
 	}
 }
