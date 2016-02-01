@@ -15,7 +15,6 @@
 #include "pki/woid.h"
 #include "pki/walg.h"
 #include "pki/wattr.h"
-#include "pki/wcertRegInfo.h"
 #include "pki/wcsr.h"
 #include "certstore/wcertstore.h"
 #include "certstore/wprovider_system.h"
@@ -54,7 +53,6 @@ void init(v8::Handle<v8::Object> target) {
 	WKey::Init(Pki);
 	WCertStore::Init(Pki);
 	WProviderSystem::Init(Pki);
-	WCertificationRequestInfo::Init(Pki);
 	WCSR::Init(Pki);
 
 	v8::Local<v8::Object> Cms = Nan::New<v8::Object>();
