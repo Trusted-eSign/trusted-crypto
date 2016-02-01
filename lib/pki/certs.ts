@@ -33,7 +33,6 @@ export class CertificateCollection extends object.BaseObject<native.PKI.Certific
 
     /**
      * Возвращает размер коллекции
-     * @param index Индекс элемента в коллекции
      */
     get length(): number {
         return this.handle.length();

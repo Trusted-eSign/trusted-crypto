@@ -143,7 +143,7 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * Возвращает сертификат по индексу
      * @param index Индекс элемента в коллекции
      */
-    certificates(index: number): Buffer;
+    certificates(index: number): Certificate;
     /**
      * Возвращает коллекцию сертификатов
      */
@@ -160,11 +160,11 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * Возвращает подписчика по индексу
      * @param index индекс элемента в коллекции
      */
-    signers(index: number): Buffer;
+    signers(index: number): Signer;
     /**
      * Возвращает коллекцию подписчиков
      */
-    signers(): Array<Signer>;
+    signers(): SignerCollection;
     signers(index?: number): any {
         let signers = new SignerCollection (this.handle.getSigners());
         if (index !== undefined){
@@ -233,7 +233,7 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
     /**
      * создает нового подписчика
      * @param cert Сертификат подписчика
-     * @param key Закрытый ключ пожписчика
+     * @param key Закрытый ключ подписчика
      * @param digestName имя хэш алгоритма
      */
     createSigner(cert: Certificate, key: Key, digestName: string): Signer {

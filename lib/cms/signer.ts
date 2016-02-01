@@ -65,7 +65,7 @@ export class Signer extends object.BaseObject<native.CMS.Signer> {
     }
 
     /**
-     * возвращает коллекцию подписанных атрибутов
+     * возвращает коллекцию неподписанных подписанных атрибутов
      */
     unsignedAttributes(): SignerAttributeCollection;
     /**
