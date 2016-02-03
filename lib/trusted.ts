@@ -8,6 +8,8 @@ import * as certstore from "./pki/certstore"
 import * as providersystem from "./pki/provider_system"
 import * as oid from "./pki/oid";
 import * as alg from "./pki/alg";
+import * as certRegInfo from "./pki/certRegInfo";
+import * as certReg from "./pki/certReg";
 import * as csr from "./pki/csr";
 
 import * as signed_data from "./cms/signed_data";
@@ -25,6 +27,8 @@ export namespace pki {
     export let Key = key.Key;
     export let Oid = oid.Oid;
     export let Algorithm = alg.Algorithm;
+    export let CertificationRequestInfo = certRegInfo.CertificationRequestInfo;
+    export let CertificationRequest = certReg.CertificationRequest;
     export let CSR = csr.CSR;
 }
 

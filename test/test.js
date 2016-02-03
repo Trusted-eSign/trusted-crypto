@@ -212,7 +212,7 @@ describe('Algorithm', function () {
 describe('SignedData', function () {
     it("load", function () {
         var cms = new trusted.cms.SignedData();
-        cms.load("test/test02.txt.sig");
+        cms.load("test/testsig.sig", trusted.DataFormat.DER);
         
         var signers = cms.signers;
         for (var i in signers){
@@ -266,18 +266,19 @@ describe('CertificateCollection', function () {
 })
 
 describe('CSR', function () {
-	var csr, key;
+	var key, csr;
 	
 	it('init', function () {
 		key = trusted.pki.Key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");
 		
-        csr = new trusted.pki.CSR("/C=US/O=Test/CN=example.com", key, "SHA1");
+		csr = new trusted.pki.CSR("/C=US/O=Test/CN=example.com", key, "SHA1");
         assert.equal(csr != null, true);
+		
     })
 	
    it("save", function () {  
-		csr.save("test/CertStore/MY/test.csr", trusted.DataFormat.PEM);
-    })
+		csr.save("test/CertStore/MY/test.csr");
+   })
 	
 	it("encoded", function () {  
 		assert.equal(typeof (csr.encoded), "object", "Bad encoded value")

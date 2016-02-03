@@ -18,7 +18,7 @@ public:
 	static NAN_METHOD(New);
 
 	static NAN_METHOD(Save);
-	static NAN_METHOD(GetEncoded);
+	static NAN_METHOD(GetEncodedHEX);
 
 	Handle<CSR> data_;
 

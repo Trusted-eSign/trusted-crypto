@@ -130,11 +130,24 @@ export namespace PKI {
         fillingCache(cacheURI: string, pvdURI: string): void;
         readJson(filename: string): string;
     }
-        
+    
+    export declare class CertificationRequestInfo {
+       setSubject(x509name: string): void;
+       setSubjectPublicKey(key: PKI.Key): void;
+       setVersion(version: number): void;
+    }
+    
+    export declare class CertificationRequest {
+       constructor(csrinfo: PKI.CertificationRequestInfo);
+       sign(key: Key): void;
+       verify(): boolean;
+       getPEMString(): Buffer;
+    }
+    
     export declare class CSR {
         constructor(name: string, key: PKI.Key, digest: string);
         save(filename: string, dataFormat: DataFormat): void;
-        getEncoded(): Buffer;
+        getEncodedHEX(): Buffer;
     }
 }
 

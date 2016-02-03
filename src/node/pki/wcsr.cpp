@@ -3,6 +3,7 @@
 #include <node_buffer.h>
 
 #include "wcsr.h"
+#include "wcertReg.h"
 #include "wkey.h"
 
 void WCSR::Init(v8::Handle<v8::Object> exports){
@@ -17,7 +18,7 @@ void WCSR::Init(v8::Handle<v8::Object> exports){
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
 	Nan::SetPrototypeMethod(tpl, "save", Save);
-	Nan::SetPrototypeMethod(tpl, "getEncoded", GetEncoded);
+	Nan::SetPrototypeMethod(tpl, "getEncodedHEX", GetEncodedHEX);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -27,30 +28,31 @@ void WCSR::Init(v8::Handle<v8::Object> exports){
 
 NAN_METHOD(WCSR::New){
 	METHOD_BEGIN();
-	try{
+	try{		
 		WCSR *obj = new WCSR();
-
+		
 		LOGGER_ARG("x509Name");
 		v8::String::Utf8Value v8Name(info[0]->ToString());
 		char *x509Name = *v8Name;
 		if (x509Name == NULL) {
 			Nan::ThrowError("Wrong x509name");
 			info.GetReturnValue().SetUndefined();
+			
 		}
 		Handle<std::string> hname = new std::string(x509Name);
-
-		LOGGER_ARG("key")
-		WKey * wKey = WKey::Unwrap<WKey>(info[1]->ToObject());
-
-		LOGGER_ARG("digest");
+		
+			LOGGER_ARG("key")
+			 WKey * wKey = WKey::Unwrap<WKey>(info[1]->ToObject());
+		
+			LOGGER_ARG("digest");
 		v8::String::Utf8Value v8Digest(info[2]->ToString());
 		char *digest = *v8Digest;
 		std::string strDigest(digest);
-
+		
 		obj->data_ = new CSR(hname, wKey->data_, strDigest.c_str());
-
+		
 		obj->Wrap(info.This());
-
+		
 		info.GetReturnValue().Set(info.This());
 		return;
 	}
@@ -80,13 +82,13 @@ NAN_METHOD(WCSR::Save) {
 	TRY_END();
 }
 
-NAN_METHOD(WCSR::GetEncoded) {
+NAN_METHOD(WCSR::GetEncodedHEX) {
 	METHOD_BEGIN();
 
 	try {
 		UNWRAP_DATA(CSR);
 
-		Handle<std::string> encCSR = _this->getEncoded();
+		Handle<std::string> encCSR = _this->getEncodedHEX();
 
 		info.GetReturnValue().Set(stringToBuffer(encCSR));
 		return;

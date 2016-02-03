@@ -34,6 +34,8 @@ describe("SignedData", function () {
         assert.equal(policies.indexOf("wrongPolicy") == -1, true);
         
         sd.sign();
+		
+		sd.save("test/testsig.sig", trusted.DataFormat.DER);
         
         assert.equal(sd.export() != null, true)        
         assert.equal(sd.verify() != null, true);        
