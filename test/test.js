@@ -223,11 +223,13 @@ describe('SignedData', function () {
             console.log("Sign digest algorithm: ", alg.name);
         }       
         
-        var certs = cms.certificates;
-        for (var i in certs){
-            var cert = certs[i];
+        var certs = new trusted.pki.CertificateCollection();
+        certs = cms.certificates();
+        for (var i = 0; i < certs.length; i++){
+            var cert = certs.items(i);
             console.log(cert.subjectName);
         }
+        
         console.log("isDetached:", cms.isDetached());
     })
 })
