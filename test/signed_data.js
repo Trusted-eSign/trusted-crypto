@@ -35,7 +35,7 @@ describe("SignedData", function () {
         
         sd.sign();
 		
-		sd.save("test/testsig.sig", trusted.DataFormat.DER);
+		sd.save("test/testsig.sig", trusted.DataFormat.PEM);
         
         assert.equal(sd.export() != null, true)        
         assert.equal(sd.verify() != null, true);        

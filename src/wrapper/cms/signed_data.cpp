@@ -2,8 +2,6 @@
 
 #include "signed_data.h"
 
-IMPLEMENT_PEM_write(CMS, CMS_ContentInfo, PEM_STRING_CMS, CMS_ContentInfo)
-
 Handle<CertificateCollection> SignedData::certificates(){
 	LOGGER_FN();
 
@@ -49,44 +47,85 @@ bool SignedData::isDetached(){
 }
 
 void SignedData::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
-	if (in.isEmpty())
-		THROW_EXCEPTION(0, SignedData, NULL, "Parameter %d cann't be NULL", 1);
+	LOGGER_FN();
 
-	CMS_ContentInfo *ci = NULL;
-
-	in->reset();
-
-	switch (format){
-	case DataFormat::DER:
-		LOGGER_OPENSSL("d2i_CMS_bio");
-		ci = d2i_CMS_bio(in->internal(), NULL);
-
-		if (ci && !CMS_is_detached(ci)){
-			LOGGER_INFO("Get content from DER file");
-
-			ASN1_OCTET_STRING *asn = (*CMS_get0_content(ci));
-			Handle<Bio> content = new Bio(BIO_new_mem_buf(asn->data, asn->length));
-
-			this->setContent(content);
+	try{
+		if (in.isEmpty()){
+			THROW_EXCEPTION(0, SignedData, NULL, "Parameter %d cann't be NULL", 1);
 		}
-		break;
-	case DataFormat::BASE64:
-	{
-		BIO *content_ = this->content->internal();
-		LOGGER_OPENSSL("SMIME_read_CMS");
-		ci = SMIME_read_CMS(in->internal(), &content_);
-		break;
-	}
-	default:
-		THROW_EXCEPTION(0, SignedData, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
-	}
 
-	if (!ci) {
-		puts(OpenSSL::printErrors()->c_str());
-		THROW_EXCEPTION(0, SignedData, NULL, "Can not read CMS signed data from BIO");
-	}
+		CMS_ContentInfo *ci = NULL;
 
-	this->setData(ci);
+		in->reset();
+
+		switch (format){
+		case DataFormat::DER:
+			LOGGER_OPENSSL(d2i_CMS_bio);
+			ci = d2i_CMS_bio(in->internal(), NULL);
+			if (ci == NULL){
+				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "d2i_CMS_bio");
+			}
+
+			LOGGER_OPENSSL(CMS_is_detached);
+			if (ci && !CMS_is_detached(ci)){
+				LOGGER_INFO("Get content from DER file");
+
+				LOGGER_OPENSSL(CMS_get0_content);
+				ASN1_OCTET_STRING *asn = (*CMS_get0_content(ci));
+				if (asn == NULL){
+					THROW_EXCEPTION(0, SignedData, NULL, "CMS_get0_content");
+				}
+
+				LOGGER_OPENSSL(BIO_new_mem_buf);
+				Handle<Bio> content = new Bio(BIO_new_mem_buf(asn->data, asn->length));
+				if (content->internal() == NULL){
+					THROW_EXCEPTION(0, SignedData, NULL, "Error set content cms to BIO");
+				}
+
+				this->setContent(content);
+			}
+
+			break;
+		case DataFormat::BASE64:
+		{
+			LOGGER_OPENSSL("PEM_read_bio_CMS");
+			if ((ci = PEM_read_bio_CMS(in->internal(), NULL, NULL, NULL)) == NULL){
+				THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "PEM_read_bio_CMS");
+			};
+
+			LOGGER_OPENSSL(CMS_is_detached);
+			if (ci && !CMS_is_detached(ci)){
+				LOGGER_INFO("Get content from DER file");
+
+				ASN1_OCTET_STRING *asn = (*CMS_get0_content(ci));
+				if (asn == NULL){
+					THROW_EXCEPTION(0, SignedData, NULL, "CMS_get0_content");
+				}
+
+				Handle<Bio> content = new Bio(BIO_new_mem_buf(asn->data, asn->length));
+				if (content->internal() == NULL){
+					THROW_EXCEPTION(0, SignedData, NULL, "Error set content cms to BIO");
+				}
+
+				this->setContent(content);
+			}
+
+			break;
+		}
+		default:
+			THROW_EXCEPTION(0, SignedData, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
+		}
+
+		if (!ci) {
+			puts(OpenSSL::printErrors()->c_str());
+			THROW_EXCEPTION(0, SignedData, NULL, "Can not read CMS signed data from BIO");
+		}
+
+		this->setData(ci);
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, SignedData, e, "Error read cms");
+	}	
 }
 
 void SignedData::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){

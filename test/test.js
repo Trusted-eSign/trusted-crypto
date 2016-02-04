@@ -212,7 +212,7 @@ describe('Algorithm', function () {
 describe('SignedData', function () {
     it("load", function () {
         var cms = new trusted.cms.SignedData();
-        cms.load("test/testsig.sig", trusted.DataFormat.DER);
+        cms.load("test/testsig.sig", trusted.DataFormat.PEM);
         
         var signers = cms.signers;
         for (var i in signers){

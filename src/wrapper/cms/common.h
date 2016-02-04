@@ -1,5 +1,6 @@
 #include "../common/common.h"
 
+#include <openssl/pem.h>
 #include <openssl/cms.h>
 
 #include "../pki/pki.h"
