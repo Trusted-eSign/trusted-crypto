@@ -213,12 +213,15 @@ describe('SignedData', function () {
     it("load", function () {
         var cms = new trusted.cms.SignedData();
         cms.load("test/testsig.sig", trusted.DataFormat.PEM);
-        
-        var signers = cms.signers;
-        for (var i in signers){
-            var signer = signers[i];
-            console.log(signer.digestAlgorithm.name);
-        }
+		
+		var signer = new trusted.cms.Signer();
+		var signers = new trusted.cms.SignerCollection();
+		signers = cms.signers();
+        for (var i = 0; i < signers.length; i++){           
+            signer = cms.signers(i);
+            var alg = signer.digestAlgorithm;
+            console.log("Sign digest algorithm: ", alg.name);
+        }       
         
         var certs = cms.certificates;
         for (var i in certs){

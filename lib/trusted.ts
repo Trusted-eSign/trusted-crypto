@@ -13,7 +13,8 @@ import * as certReg from "./pki/certReg";
 import * as csr from "./pki/csr";
 
 import * as signed_data from "./cms/signed_data";
-
+import * as signer from "./cms/signer"
+import * as signercollection from "./cms/signers"
 
 export let DataFormat = dataFormat.DataFormat;
 export let PublicExponent = publicExponent.PublicExponent;
@@ -35,4 +36,6 @@ export namespace pki {
 export namespace cms {
     export let SignedData = signed_data.SignedData;
     export let SignedDataContentType = signed_data.SignedDataContentType;
+    export let Signer = signer.Signer;
+    export let SignerCollection = signercollection.SignerCollection;    
 }
