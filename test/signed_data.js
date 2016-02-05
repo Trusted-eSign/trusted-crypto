@@ -19,9 +19,7 @@ describe("SignedData", function () {
         
         var signer = sd.createSigner(cert, key, "sha1");
         assert.equal(signer.digestAlgorithm.name, "sha1");
-        // assert.equal(signer.signedAttributes().length, 1);
         assert.equal(sd.signers().length, 1);
-        // assert.equal(sd.certificates().length, 1);
         
         sd.content = {
             type: trusted.cms.SignedDataContentType.buffer,
@@ -40,5 +38,21 @@ describe("SignedData", function () {
         assert.equal(sd.export() != null, true)        
         assert.equal(sd.verify() != null, true);        
     })
+	
+	it("load", function () {
+        var cms = new trusted.cms.SignedData();
+        cms.load("test/testsig.sig", trusted.DataFormat.PEM);
+        
+		assert.equal(cms.signers().length, 1, "Неверное количество подписчиков");
+		assert.equal(cms.certificates().length, 1, "Неверное количество сертификатов");
+		assert.equal(cms.isDetached(), false, "Совмещенная подпись");
+		
+		var signers = cms.signers();
+        for (var i = 0; i < signers.length; i++){           
+            var signer = cms.signers(i);
+            assert.equal(signer.digestAlgorithm.name, "sha1", "Неверный алгоритм подписчика");
+        } 	
+       
+	})
     
 });

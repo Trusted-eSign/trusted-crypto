@@ -209,31 +209,6 @@ describe('Algorithm', function () {
     })
 })
 
-describe('SignedData', function () {
-    it("load", function () {
-        var cms = new trusted.cms.SignedData();
-        cms.load("test/testsig.sig", trusted.DataFormat.PEM);
-		
-		var signer = new trusted.cms.Signer();
-		var signers = new trusted.cms.SignerCollection();
-		signers = cms.signers();
-        for (var i = 0; i < signers.length; i++){           
-            signer = cms.signers(i);
-            var alg = signer.digestAlgorithm;
-            console.log("Sign digest algorithm: ", alg.name);
-        }       
-        
-        var certs = new trusted.pki.CertificateCollection();
-        certs = cms.certificates();
-        for (var i = 0; i < certs.length; i++){
-            var cert = certs.items(i);
-            console.log(cert.subjectName);
-        }
-        
-        console.log("isDetached:", cms.isDetached());
-    })
-})
-
 describe('CertificateCollection', function () {    
     it("push", function () {
         var certs = new trusted.pki.CertificateCollection();
