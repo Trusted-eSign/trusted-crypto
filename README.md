@@ -18,6 +18,20 @@ Trusted crypto library
 > node-gyp configure build
 ```
 
+Для сборки необходимо наличие модуля uuid.
+
+__Установка:__
+
+Linux:
+```
+apt-get install uuid-dev
+```
+OS X:
+```
+brew install ossp-uuid
+```
+
+
 ## Сборка TypeScript
 
 ```
