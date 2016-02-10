@@ -11,6 +11,7 @@ import * as alg from "./pki/alg";
 import * as certRegInfo from "./pki/certRegInfo";
 import * as certReg from "./pki/certReg";
 import * as csr from "./pki/csr";
+import * as cipher from "./pki/cipher";
 
 import * as signed_data from "./cms/signed_data";
 import * as signer from "./cms/signer"
@@ -31,6 +32,7 @@ export namespace pki {
     export let CertificationRequestInfo = certRegInfo.CertificationRequestInfo;
     export let CertificationRequest = certReg.CertificationRequest;
     export let CSR = csr.CSR;
+    export let Cipher = cipher.Cipher;
 }
 
 export namespace cms {

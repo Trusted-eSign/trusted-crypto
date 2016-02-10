@@ -149,6 +149,23 @@ export namespace PKI {
         save(filename: string, dataFormat: DataFormat): void;
         getEncodedHEX(): Buffer;
     }
+    
+    export declare class Cipher {
+        constructor(cipherName: string);
+        encrypt(filenameSource: string, filenameEnc: string): void;
+        decrypt(filenameEnc: string, filenameDec: string): void;               
+        setPass(password: string): void;
+        setDigest(digest: string): void;
+        setIV(iv: string): void;
+        setKey(key: string): void;
+        setSalt(salt: string): void;
+        getSalt(): Buffer;
+        getIV(): Buffer;
+        getKey(): Buffer;
+        getAlgorithm(): string;
+        getMode(): string;
+        getDigestAlgorithm(): string;
+    }
 }
 
 export namespace CMS {

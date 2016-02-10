@@ -18,6 +18,7 @@
 #include "pki/wcertRegInfo.h"
 #include "pki/wcertReg.h"
 #include "pki/wcsr.h"
+#include "pki/wcipher.h"
 #include "certstore/wcertstore.h"
 #include "certstore/wprovider_system.h"
 
@@ -58,6 +59,7 @@ void init(v8::Handle<v8::Object> target) {
 	WCSR::Init(Pki);
 	WCertificationRequestInfo::Init(Pki);
 	WCertificationRequest::Init(Pki);
+	WCipher::Init(Pki);
 
 	v8::Local<v8::Object> Cms = Nan::New<v8::Object>();
 	target->Set(Nan::New("CMS").ToLocalChecked(), Cms);
