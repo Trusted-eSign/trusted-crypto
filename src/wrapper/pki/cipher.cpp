@@ -163,7 +163,7 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec){
 					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
 				}
 			}
-			else{
+			else if (!hkey && !hiv){
 				LOGGER_OPENSSL(EVP_BytesToKey);
 				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, iv) == 0){
 					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
