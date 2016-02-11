@@ -2,17 +2,17 @@
 
 #include "cipher.h"
 
-Cipher::Cipher(Handle<std::string> ñipherAlgorithm){
+Cipher::Cipher(Handle<std::string> CipherAlgorithm){
 	LOGGER_FN();
 
-	if (ñipherAlgorithm.isEmpty()){
+	if (CipherAlgorithm.isEmpty()){
 		THROW_EXCEPTION(0, Cipher, NULL, "Cipher algorithm null");
 	}
 
 	try{
 		/*Cipher by name*/
 		LOGGER_OPENSSL(EVP_get_cipherbyname);
-		if ((cipher = EVP_get_cipherbyname(ñipherAlgorithm->c_str())) == NULL){
+		if ((cipher = EVP_get_cipherbyname(CipherAlgorithm->c_str())) == NULL){
 			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_get_cipherbyname 'return NULL'");
 		}
 

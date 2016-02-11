@@ -22,7 +22,7 @@ static const char magic[] = "Salted__";
 class Cipher{
 
 public:
-	Cipher(Handle<std::string> ñipherAlgorithm);
+	Cipher(Handle<std::string> CipherAlgorithm);
 
 	void encrypt(Handle<Bio> inSource, Handle<Bio> outEnc);
 	void decrypt(Handle<Bio> inEnc, Handle<Bio> outDec);
