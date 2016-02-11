@@ -80,11 +80,13 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc){
 		* Write 'Salted__' and salt to bio.
 		* Without salt possible to perform  dictionary attacks on the password
 		*/
-		LOGGER_OPENSSL(BIO_write);
-		if ((BIO_write(wbio, magic, sizeof magic - 1) != sizeof magic - 1
-			|| BIO_write(wbio, (char *)salt, sizeof salt) != sizeof salt)){
-			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error write bio");
-		}
+		if (hpass){
+			LOGGER_OPENSSL(BIO_write);
+			if ((BIO_write(wbio, magic, sizeof magic - 1) != sizeof magic - 1
+				|| BIO_write(wbio, (char *)salt, sizeof salt) != sizeof salt)){
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error write bio");
+			}
+		}		
 
 		if (benc != NULL){
 			LOGGER_OPENSSL(BIO_push);
@@ -140,18 +142,32 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec){
 		wbio = outDec->internal();
 
 		/*Read salt from encrypted file. Need for generate key and iv*/
-		LOGGER_OPENSSL(BIO_read);
-		if (BIO_read(rbio, mbuf, sizeof mbuf) != sizeof mbuf || BIO_read(rbio, (unsigned char *)salt,sizeof salt) != sizeof salt){
-			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "error reading input file");
-		}
-		else if (memcmp(mbuf, magic, sizeof magic - 1)) {
-			THROW_EXCEPTION(0, Cipher, NULL, "bad magic number");
-		}
-
 		if (hpass){
-			LOGGER_OPENSSL(EVP_BytesToKey);
-			if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, iv) == 0){
-				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+			LOGGER_OPENSSL(BIO_read);
+			if (BIO_read(rbio, mbuf, sizeof mbuf) != sizeof mbuf || BIO_read(rbio, (unsigned char *)salt, sizeof salt) != sizeof salt){
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "error reading input file");
+			}
+			else if (memcmp(mbuf, magic, sizeof magic - 1)) {
+				THROW_EXCEPTION(0, Cipher, NULL, "bad magic number");
+			}
+
+			if (!hkey){
+				LOGGER_OPENSSL(EVP_BytesToKey);
+				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, NULL) == 0){
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+				}
+			}
+			else if (!hiv){
+				LOGGER_OPENSSL(EVP_BytesToKey);
+				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, NULL, iv) == 0){
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+				}
+			}
+			else{
+				LOGGER_OPENSSL(EVP_BytesToKey);
+				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, iv) == 0){
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+				}
 			}
 		}		
 
