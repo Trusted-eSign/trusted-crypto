@@ -2,6 +2,7 @@ let native = require("../build/Release/trusted.node");
 
 import {DataFormat} from "./data_format";
 import {PublicExponent} from "./public_exponent";
+import {CryptoMethod} from "./crypto_method";
 
 export namespace PKI {
     export declare class Key {
@@ -152,8 +153,12 @@ export namespace PKI {
     
     export declare class Cipher {
         constructor(cipherName: string);
-        encrypt(filenameSource: string, filenameEnc: string): void;
-        decrypt(filenameEnc: string, filenameDec: string): void;               
+        setCryptoMethod(method: CryptoMethod): void;
+        encrypt(filenameSource: string, filenameEnc: string, format: DataFormat): void;
+        decrypt(filenameEnc: string, filenameDec: string, format: DataFormat): void;
+        addRecipientsCerts(certs: CertificateCollection): void;
+        setPrivKey(rkey: Key): void;
+        setRecipientCert(rcert: Certificate): void;               
         setPass(password: string): void;
         setDigest(digest: string): void;
         setIV(iv: string): void;

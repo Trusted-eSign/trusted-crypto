@@ -16,9 +16,15 @@ public:
 
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
+
+	static NAN_METHOD(SetCryptoMethod);
 	
 	static NAN_METHOD(Encrypt);
 	static NAN_METHOD(Decrypt);
+
+	static NAN_METHOD(AddRecipientsCerts);
+	static NAN_METHOD(SetPrivKey);
+	static NAN_METHOD(SetRecipientCert);
 
 	static NAN_METHOD(SetDigest);
 	static NAN_METHOD(SetSalt);

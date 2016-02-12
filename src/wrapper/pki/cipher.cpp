@@ -33,180 +33,336 @@ Cipher::Cipher(Handle<std::string> CipherAlgorithm){
 	}
 }
 
-void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc){
+void Cipher::setCryptoMethod(CryptoMethod::Crypto_Method method){
 	LOGGER_FN();
 
 	try{
-		/*Check pass*/
-		if (hpass == NULL){
+		switch (method){
+		case CryptoMethod::SYMMETRIC:
+			hmethod = CryptoMethod::SYMMETRIC;
+			break;
+		case CryptoMethod::ASSYMETRIC:
+			hmethod = CryptoMethod::ASSYMETRIC;
+			break;
+		default:
+			THROW_EXCEPTION(0, Cipher, NULL, "Unknown crypto method");
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Cipher, e, "Error set crypto method");
+	}	
+}
 
-			/*Check key*/
-			if (hkey == NULL){
-				THROW_EXCEPTION(0, Cipher, NULL, "key  undefined");
+void Cipher::addRecipientsCerts(Handle<CertificateCollection> certs){
+	LOGGER_FN();
+
+	try{
+		LOGGER_OPENSSL(sk_X509_new_null);
+		if (encerts == NULL && (encerts = sk_X509_new_null()) == NULL){
+			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error init stack of X509");
+		}
+
+		for (int i = 0, c = certs->length(); i < c; i++){
+			LOGGER_OPENSSL(sk_X509_push);
+			sk_X509_push(encerts, (certs->items(i))->internal());
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Cipher, e, "Error add recipients certs");
+	}	
+}
+
+void Cipher::setPrivKey(Handle<Key> privkey){
+	LOGGER_FN();
+
+	rkey = privkey->internal();
+	if (!rkey){
+		THROW_EXCEPTION(0, Cipher, NULL, "Private key undefined");
+	}
+}
+
+void Cipher::setRecipientCert(Handle<Certificate> cert){
+	LOGGER_FN();
+
+	rcert = cert->internal();
+	if (!rcert){
+		THROW_EXCEPTION(0, Cipher, NULL, "Recipient certificate undefined");
+	}
+}
+
+void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_FORMAT format){
+	LOGGER_FN();
+
+	try{
+		switch (hmethod){
+		//***************************************************************************************
+		// Symmetric encrypt
+		//***************************************************************************************
+		case CryptoMethod::SYMMETRIC:
+			/*Check pass*/
+			if (hpass == NULL){
+
+				/*Check key*/
+				if (hkey == NULL){
+					THROW_EXCEPTION(0, Cipher, NULL, "key  undefined");
+				}
+
+				/*Check IV*/
+				if (hiv == NULL){
+					THROW_EXCEPTION(0, Cipher, NULL, "iv undefined");
+				}
 			}
 
-			/*Check IV*/
-			if (hiv == NULL){
-				THROW_EXCEPTION(0, Cipher, NULL, "iv undefined");
+			if ((buff = (unsigned char *)OPENSSL_malloc(EVP_ENCODE_LENGTH(bsize))) == NULL){
+				THROW_EXCEPTION(0, Cipher, NULL, "OPENSSL_malloc failure");
 			}
-		}
-		
-		if((buff = (unsigned char *)OPENSSL_malloc(EVP_ENCODE_LENGTH(bsize))) == NULL){
-			THROW_EXCEPTION(0, Cipher, NULL, "OPENSSL_malloc failure");
-		}
 
-		/*
-		* We use 'benc' how cipher BIO method.
-		* This is a filter BIO that encrypts any data written through it
-		*/
-		LOGGER_OPENSSL(BIO_new);
-		if ((benc = BIO_new(BIO_f_cipher())) == NULL){
-			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "BIO_new(BIO_f_cipher())");
-		}
-
-		/*Save internal BIO cipher context to 'ctx'*/
-		LOGGER_OPENSSL(BIO_get_cipher_ctx);
-		BIO_get_cipher_ctx(benc, &ctx);
-
-		/*Use param '1' for encrypt*/
-		LOGGER_OPENSSL(EVP_CipherInit_ex);
-		if (!EVP_CipherInit_ex(ctx, cipher, NULL, key, iv, 1)) {
-			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error setting cipher");
-		}
-
-		wbio = outEnc->internal();
-		
-		/*
-		* Write 'Salted__' and salt to bio.
-		* Without salt possible to perform  dictionary attacks on the password
-		*/
-		if (hpass){
-			LOGGER_OPENSSL(BIO_write);
-			if ((BIO_write(wbio, magic, sizeof magic - 1) != sizeof magic - 1
-				|| BIO_write(wbio, (char *)salt, sizeof salt) != sizeof salt)){
-				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error write bio");
+			/*
+			* We use 'benc' how cipher BIO method.
+			* This is a filter BIO that encrypts any data written through it
+			*/
+			LOGGER_OPENSSL(BIO_new);
+			if ((benc = BIO_new(BIO_f_cipher())) == NULL){
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "BIO_new(BIO_f_cipher())");
 			}
-		}		
 
-		if (benc != NULL){
-			LOGGER_OPENSSL(BIO_push);
-			wbio = BIO_push(benc, wbio);
-		}
+			/*Save internal BIO cipher context to 'ctx'*/
+			LOGGER_OPENSSL(BIO_get_cipher_ctx);
+			BIO_get_cipher_ctx(benc, &ctx);
 
-		/*Write data to bio (cipher BIO method)*/
-		for (;;) {
-			LOGGER_OPENSSL(BIO_read);
-			inl = BIO_read(inSource->internal(), (char *)buff, bsize);
-			if (inl <= 0){
+			/*Use param '1' for encrypt*/
+			LOGGER_OPENSSL(EVP_CipherInit_ex);
+			if (!EVP_CipherInit_ex(ctx, cipher, NULL, key, iv, 1)) {
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error setting cipher");
+			}
+
+			wbio = outEnc->internal();
+
+			/*
+			* Write 'Salted__' and salt to bio.
+			* Without salt possible to perform  dictionary attacks on the password
+			*/
+			if (hpass){
+				LOGGER_OPENSSL(BIO_write);
+				if ((BIO_write(wbio, magic, sizeof magic - 1) != sizeof magic - 1
+					|| BIO_write(wbio, (char *)salt, sizeof salt) != sizeof salt)){
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error write bio");
+				}
+			}
+
+			if (benc != NULL){
+				LOGGER_OPENSSL(BIO_push);
+				wbio = BIO_push(benc, wbio);
+			}
+
+			/*Write data to bio (cipher BIO method)*/
+			for (;;) {
+				LOGGER_OPENSSL(BIO_read);
+				inl = BIO_read(inSource->internal(), (char *)buff, bsize);
+				if (inl <= 0){
+					break;
+				}
+				LOGGER_OPENSSL(BIO_write);
+				if (BIO_write(wbio, (char *)buff, inl) != inl) {
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error writing output bio");
+				}
+			}
+
+			LOGGER_OPENSSL(BIO_flush);
+			if (!BIO_flush(wbio)){
+				THROW_EXCEPTION(0, Cipher, NULL, "bad decrypt");
+			}
+
+			break;
+
+		//****************************************************************************************
+		// Assymmetric encrypt
+		//****************************************************************************************
+		case CryptoMethod::ASSYMETRIC:
+			if (!encerts){
+				THROW_EXCEPTION(0, Cipher, NULL, "Recipients certs undefined");
+			}			
+
+			flags |= CMS_PARTIAL;
+
+			LOGGER_OPENSSL(CMS_encrypt);
+			cms = CMS_encrypt(encerts, inSource->internal(), cipher, flags);
+			if (!cms){
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error create encrypted CMS_ContentInfo");
+			}
+
+			switch (format){
+			case DataFormat::DER:
+				LOGGER_OPENSSL(i2d_CMS_bio_stream);
+				if (!i2d_CMS_bio_stream(outEnc->internal(), cms, inSource->internal(), flags)) {
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "i2d_CMS_bio_stream");
+				}
 				break;
+			case DataFormat::BASE64:
+				LOGGER_OPENSSL(PEM_write_bio_CMS_stream);
+				if (!PEM_write_bio_CMS_stream(outEnc->internal(), cms, inSource->internal(), flags)) {
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "PEM_write_bio_CMS_stream");
+				}
+				break;
+			default:
+				THROW_EXCEPTION(0, Cipher, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
 			}
-			LOGGER_OPENSSL(BIO_write);
-			if (BIO_write(wbio, (char *)buff, inl) != inl) {
-				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error writing output bio");
-			}
+
+			break;
+		default:
+			THROW_EXCEPTION(0, Cipher, NULL, "Unknown crypto method");
 		}
 
-		LOGGER_OPENSSL(BIO_flush);
-		if (!BIO_flush(wbio)){
-			THROW_EXCEPTION(0, Cipher, NULL, "bad decrypt");
-		}
+		
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Cipher, e, "Error encrypt");
 	}	
 }
 
-void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec){
+void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FORMAT format){
 	LOGGER_FN();
 
 	try{
-		/*Check pass*/
-		if (hpass == NULL){
+		switch (hmethod){
+		//***************************************************************************************
+		// Symmetric decrypt
+		//***************************************************************************************
+		case CryptoMethod::SYMMETRIC:
+			/*Check pass*/
+			if (hpass == NULL){
 
-			/*Check key*/
-			if (hkey == NULL){
-				THROW_EXCEPTION(0, Cipher, NULL, "key  undefined");
-			}
+				/*Check key*/
+				if (hkey == NULL){
+					THROW_EXCEPTION(0, Cipher, NULL, "key  undefined");
+				}
 
-			/*Check IV*/
-			if (hiv == NULL){
-				THROW_EXCEPTION(0, Cipher, NULL, "iv undefined");
-			}
-		}
-
-		if ((buff = (unsigned char *)OPENSSL_malloc(EVP_ENCODE_LENGTH(bsize))) == NULL){
-			THROW_EXCEPTION(0, Cipher, NULL, "OPENSSL_malloc failure");
-		}
-
-		rbio = inEnc->internal();
-		wbio = outDec->internal();
-
-		/*Read salt from encrypted file. Need for generate key and iv*/
-		if (hpass){
-			LOGGER_OPENSSL(BIO_read);
-			if (BIO_read(rbio, mbuf, sizeof mbuf) != sizeof mbuf || BIO_read(rbio, (unsigned char *)salt, sizeof salt) != sizeof salt){
-				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "error reading input file");
-			}
-			else if (memcmp(mbuf, magic, sizeof magic - 1)) {
-				THROW_EXCEPTION(0, Cipher, NULL, "bad magic number");
-			}
-
-			if (!hkey){
-				LOGGER_OPENSSL(EVP_BytesToKey);
-				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, NULL) == 0){
-					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+				/*Check IV*/
+				if (hiv == NULL){
+					THROW_EXCEPTION(0, Cipher, NULL, "iv undefined");
 				}
 			}
-			else if (!hiv){
-				LOGGER_OPENSSL(EVP_BytesToKey);
-				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, NULL, iv) == 0){
-					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+
+			if ((buff = (unsigned char *)OPENSSL_malloc(EVP_ENCODE_LENGTH(bsize))) == NULL){
+				THROW_EXCEPTION(0, Cipher, NULL, "OPENSSL_malloc failure");
+			}
+
+			rbio = inEnc->internal();
+			wbio = outDec->internal();
+
+			/*Read salt from encrypted file. Need for generate key and iv*/
+			if (hpass){
+				LOGGER_OPENSSL(BIO_read);
+				if (BIO_read(rbio, mbuf, sizeof mbuf) != sizeof mbuf || BIO_read(rbio, (unsigned char *)salt, sizeof salt) != sizeof salt){
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "error reading input file");
+				}
+				else if (memcmp(mbuf, magic, sizeof magic - 1)) {
+					THROW_EXCEPTION(0, Cipher, NULL, "bad magic number");
+				}
+
+				if (!hkey){
+					LOGGER_OPENSSL(EVP_BytesToKey);
+					if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, NULL) == 0){
+						THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+					}
+				}
+				else if (!hiv){
+					LOGGER_OPENSSL(EVP_BytesToKey);
+					if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, NULL, iv) == 0){
+						THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+					}
+				}
+				else if (!hkey && !hiv){
+					LOGGER_OPENSSL(EVP_BytesToKey);
+					if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, iv) == 0){
+						THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+					}
 				}
 			}
-			else if (!hkey && !hiv){
-				LOGGER_OPENSSL(EVP_BytesToKey);
-				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, iv) == 0){
-					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
+
+			LOGGER_OPENSSL(BIO_new);
+			if ((benc = BIO_new(BIO_f_cipher())) == NULL){
+				THROW_EXCEPTION(0, Cipher, NULL, "BIO_new(BIO_f_cipher())");
+			}
+
+			LOGGER_OPENSSL(BIO_get_cipher_ctx);
+			BIO_get_cipher_ctx(benc, &ctx);
+
+			/*Use param '0' for decrypt*/
+			LOGGER_OPENSSL(EVP_CipherInit_ex);
+			if (!EVP_CipherInit_ex(ctx, cipher, NULL, key, iv, 0)) {
+				THROW_EXCEPTION(0, Cipher, NULL, "Error setting cipher");
+			}
+
+			if (benc != NULL){
+				LOGGER_OPENSSL(BIO_push);
+				wbio = BIO_push(benc, wbio);
+			}
+
+			/*Write data to bio (cipher BIO method)*/
+			for (;;) {
+				LOGGER_OPENSSL(BIO_read);
+				inl = BIO_read(rbio, (char *)buff, bsize);
+				if (inl <= 0){
+					break;
+				}
+				LOGGER_OPENSSL(BIO_write);
+				if (BIO_write(wbio, (char *)buff, inl) != inl) {
+					THROW_EXCEPTION(0, Cipher, NULL, "Error writing output bio");
 				}
 			}
-		}		
 
-		LOGGER_OPENSSL(BIO_new);
-		if ((benc = BIO_new(BIO_f_cipher())) == NULL){
-			THROW_EXCEPTION(0, Cipher, NULL, "BIO_new(BIO_f_cipher())");
-		}
+			LOGGER_OPENSSL(BIO_flush);
+			if (!BIO_flush(wbio)){
+				THROW_EXCEPTION(0, Cipher, NULL, "bad decrypt");
+			}
 
-		LOGGER_OPENSSL(BIO_get_cipher_ctx);
-		BIO_get_cipher_ctx(benc, &ctx);
+			break;
 
-		/*Use param '0' for decrypt*/
-		LOGGER_OPENSSL(EVP_CipherInit_ex);
-		if (!EVP_CipherInit_ex(ctx, cipher, NULL, key, iv, 0)) {
-			THROW_EXCEPTION(0, Cipher, NULL, "Error setting cipher");
-		}
+		//***************************************************************************************
+		// Assymmetric decrypt
+		//***************************************************************************************
+		case CryptoMethod::ASSYMETRIC:
+			if (!rcert || !rkey){
+				THROW_EXCEPTION(0, Cipher, NULL, "Recipient cert or key undefined");
+			}
 
-		if (benc != NULL){
-			LOGGER_OPENSSL(BIO_push);
-			wbio = BIO_push(benc, wbio);
-		}
-
-		/*Write data to bio (cipher BIO method)*/
-		for (;;) {
-			LOGGER_OPENSSL(BIO_read);
-			inl = BIO_read(rbio, (char *)buff, bsize);
-			if (inl <= 0){
+			/* Parse message */
+			switch (format){
+			case DataFormat::DER:
+				LOGGER_OPENSSL(d2i_CMS_bio);
+				if ((cms = d2i_CMS_bio(inEnc->internal(), NULL)) == NULL) {
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "d2i_CMS_bio");
+				}
 				break;
+
+			case DataFormat::BASE64:
+				LOGGER_OPENSSL(PEM_read_bio_CMS);
+				if ((cms = PEM_read_bio_CMS(inEnc->internal(), NULL, NULL, NULL)) == NULL) {
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "PEM_read_bio_CMS");
+				}
+				break;
+
+			default:
+				THROW_EXCEPTION(0, Cipher, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
 			}
-			LOGGER_OPENSSL(BIO_write);
-			if (BIO_write(wbio, (char *)buff, inl) != inl) {
-				THROW_EXCEPTION(0, Cipher, NULL, "Error writing output bio");
+
+			LOGGER_OPENSSL(CMS_decrypt_set1_pkey);
+			if (!CMS_decrypt_set1_pkey(cms, rkey, rcert)) {
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "CMS_decrypt_set1_pkey 'Error set private key'");
 			}
+
+			LOGGER_OPENSSL(CMS_decrypt);
+			if (!CMS_decrypt(cms, NULL, NULL, rbio, outDec->internal(), flags)) {
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "CMS_decrypt 'Error decrypt cms'");
+			}
+
+			break;
+		default:
+			THROW_EXCEPTION(0, Cipher, NULL, "Unknown crypto method");
 		}
 
-		LOGGER_OPENSSL(BIO_flush);
-		if (!BIO_flush(wbio)){
-			THROW_EXCEPTION(0, Cipher, NULL, "bad decrypt");
-		}
+		
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Cipher, e, "Error decrypt");

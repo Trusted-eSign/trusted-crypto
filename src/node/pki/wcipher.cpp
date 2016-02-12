@@ -3,6 +3,9 @@
 #include <node_buffer.h>
 
 #include "wcipher.h"
+#include "wcerts.h"
+#include "wcert.h"
+#include "wkey.h"
 
 void WCipher::Init(v8::Handle<v8::Object> exports){
 	METHOD_BEGIN();
@@ -15,8 +18,14 @@ void WCipher::Init(v8::Handle<v8::Object> exports){
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
+	Nan::SetPrototypeMethod(tpl, "setCryptoMethod", SetCryptoMethod);
+
 	Nan::SetPrototypeMethod(tpl, "encrypt", Encrypt);
 	Nan::SetPrototypeMethod(tpl, "decrypt", Decrypt);
+
+	Nan::SetPrototypeMethod(tpl, "addRecipientsCerts", AddRecipientsCerts);
+	Nan::SetPrototypeMethod(tpl, "setPrivKey", SetPrivKey);
+	Nan::SetPrototypeMethod(tpl, "setRecipientCert", SetRecipientCert);
 
 	Nan::SetPrototypeMethod(tpl, "setDigest", SetDigest);
 	Nan::SetPrototypeMethod(tpl, "setSalt", SetSalt);
@@ -58,6 +67,23 @@ NAN_METHOD(WCipher::New){
 	TRY_END();	
 }
 
+NAN_METHOD(WCipher::SetCryptoMethod) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("method");
+		int method = info[0]->ToNumber()->Int32Value();
+
+		UNWRAP_DATA(Cipher);
+
+		_this->setCryptoMethod(CryptoMethod::get(method));
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WCipher::Encrypt) {
 	METHOD_BEGIN();
 
@@ -70,6 +96,9 @@ NAN_METHOD(WCipher::Encrypt) {
 		v8::String::Utf8Value v8FilenameEnc(info[1]->ToString());
 		char *filenameEnc = *v8FilenameEnc;
 
+		LOGGER_ARG("format");
+		int format = info[2]->ToNumber()->Int32Value();
+
 		Handle<Bio> inSource = NULL;
 		Handle<Bio> outEnc = NULL;
 
@@ -78,7 +107,7 @@ NAN_METHOD(WCipher::Encrypt) {
 
 		UNWRAP_DATA(Cipher);
 
-		_this->encrypt(inSource, outEnc);
+		_this->encrypt(inSource, outEnc, DataFormat::get(format));
 
 		info.GetReturnValue().Set(info.This());
 		return;
@@ -98,6 +127,9 @@ NAN_METHOD(WCipher::Decrypt) {
 		v8::String::Utf8Value v8FilenameDec(info[1]->ToString());
 		char *filenameDec = *v8FilenameDec;
 
+		LOGGER_ARG("format");
+		int format = info[2]->ToNumber()->Int32Value();
+
 		Handle<Bio> inEnc = NULL;
 		Handle<Bio> outDec = NULL;
 
@@ -106,7 +138,58 @@ NAN_METHOD(WCipher::Decrypt) {
 
 		UNWRAP_DATA(Cipher);
 
-		_this->decrypt(inEnc, outDec);
+		_this->decrypt(inEnc, outDec, DataFormat::get(format));
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCipher::AddRecipientsCerts) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("certs");
+		WCertificateCollection * wCerts = WCertificateCollection::Unwrap<WCertificateCollection>(info[0]->ToObject());
+
+		UNWRAP_DATA(Cipher);
+
+		_this->addRecipientsCerts(wCerts->data_);
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCipher::SetRecipientCert) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("rcert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		UNWRAP_DATA(Cipher);
+
+		_this->setRecipientCert(wCert->data_);
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCipher::SetPrivKey) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("rkey");
+		WKey * wKey = WKey::Unwrap<WKey>(info[0]->ToObject());
+
+		UNWRAP_DATA(Cipher);
+
+		_this->setPrivKey(wKey->data_);
 
 		info.GetReturnValue().Set(info.This());
 		return;
