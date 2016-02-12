@@ -20,19 +20,19 @@ int Key::privkeyLoad(std::string filename, DataFormat::DATA_FORMAT format, std::
 
 		in->reset();
 
-		const void * pass = password.c_str();
+		void * pass = (void *) password.c_str();
 
 		switch (format){
 		case DataFormat::DER:
 			LOGGER_OPENSSL(d2i_PKCS8PrivateKey_bio);
-			key = d2i_PKCS8PrivateKey_bio(in->internal(), NULL, 0, NULL);//(void *)pass);
+			key = d2i_PKCS8PrivateKey_bio(in->internal(), NULL, 0, pass);
 			if (!key) {
 				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "d2i_PKCS8PrivateKey_bio");
 			}
 			break;
 		case DataFormat::BASE64:
 			LOGGER_OPENSSL(PEM_read_bio_PrivateKey);
-			key = PEM_read_bio_PrivateKey(in->internal(), NULL, 0, NULL);//(void *)pass);
+			key = PEM_read_bio_PrivateKey(in->internal(), NULL, 0, pass);
 			if (!key) {
 				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "PEM_read_bio_PrivateKey");
 			}
