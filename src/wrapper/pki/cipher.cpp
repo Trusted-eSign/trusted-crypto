@@ -183,7 +183,7 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 				THROW_EXCEPTION(0, Cipher, NULL, "Recipients certs undefined");
 			}			
 
-			flags |= CMS_PARTIAL;
+			flags |= CMS_BINARY; /*Don't translate message to text*/
 
 			LOGGER_OPENSSL(CMS_encrypt);
 			cms = CMS_encrypt(encerts, inSource->internal(), cipher, flags);
@@ -353,7 +353,7 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 			}
 
 			LOGGER_OPENSSL(CMS_decrypt);
-			if (!CMS_decrypt(cms, NULL, NULL, rbio, outDec->internal(), flags)) {
+			if (!CMS_decrypt(cms, NULL, NULL, NULL, outDec->internal(), flags)) {
 				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "CMS_decrypt 'Error decrypt cms'");
 			}
 
