@@ -89,12 +89,6 @@ export declare abstract class Provider {
     fromJSON();
 }
 
-class ProviderMy extends Provider {
-    static fromJSON(): ProviderMy {
-        return new ProviderMy();
-    }
-}
-
 export declare class ProviderSystem extends Provider {
     constructor(folder: string);
 }
