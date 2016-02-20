@@ -1,7 +1,7 @@
 import {BaseObject} from "../lib/object";
 import * as trusted from "../lib/trusted";
 
-export interface IPkiItem {
+export interface IPkiItem extends IPkiCrl, IPkiCertificate, IPkiRequest, IPkiKey{
     /**
      * DER | PEM
      */
@@ -13,8 +13,39 @@ export interface IPkiItem {
     uri: string;
     provider: string;
     categoty: string;
-    keyId?: string;
     hash: string;
+}
+
+export interface IPkiKey{
+    encrypted?: boolean;
+    hash: string;
+}
+
+export interface IPkiCrl{
+    issuerName?: string;
+    issuerFriendlyName?: string;
+    lastUpdate?: Date;
+    nextUpdate?: Date;
+    hash: string; // thumbprint SHA1
+}
+
+export interface IPkiRequest{
+    subjectName?: string;
+    subjectFriendlyName?: string;
+    key?: string; // thumbprint ket SHA1
+    hash: string; // thumbprint SHA1
+}
+
+export interface IPkiCertificate{
+    subjectName?: string;
+    subjectFriendlyName?: string;
+    issuerName?: string;
+    issuerFriendlyName?: string;
+    notAfter?: Date;
+    notBefore?: Date;
+    serial?: string;
+    key?: string; // thumbprint ket SHA1
+    hash: string; // thumbprint SHA1
 }
 
 export interface IFilter {
@@ -33,17 +64,15 @@ export interface IFilter {
      */
     category?: string[];
     hash?: string;
+    subjectName?: string;
+    subjectFriendlyName?: string;
+    issuerName?: string;
+    issuerFriendlyName?: string;
+    isValid?: boolean;
+    serial?: string;
 }
 
-export interface IProvider {
-    type: string;
-    items: IPkiItem[];
-    find(filter: IFilter): IPkiItem[];
-    toJSON();
-    fromJSON();
-}
-
-export declare abstract class Provider implements IProvider {
+export declare abstract class Provider {
     type: string;
 
     /**
@@ -56,8 +85,14 @@ export declare abstract class Provider implements IProvider {
      */
     find(filter: IFilter): IPkiItem[];
     toJSON();
-    static fromJSON(): IProvider;
+    static fromJSON(): Provider;
     fromJSON();
+}
+
+class ProviderMy extends Provider {
+    static fromJSON(): ProviderMy {
+        return new ProviderMy();
+    }
 }
 
 export declare class ProviderSystem extends Provider {
@@ -73,7 +108,9 @@ export declare class ProviderTSL extends Provider {
 }
 
 export declare class PkiStore {
-    constructor();
+    constructor(json: string);
+
+    cash: CashJson;
 
     items: IPkiItem[];
     /**
@@ -99,5 +136,14 @@ export declare class PkiStore {
     /**
      * Коллекция провайдеров
      */
-    providers: IProvider[];
+    providers: Provider[];
+}
+
+export declare class CashJson {
+    filenName: string;
+    contructor(fileName: string);
+    save(fileName: string);
+    load(fileName: string);
+    export(): IPkiItem[];
+    import(items: IPkiItem[]);
 }
