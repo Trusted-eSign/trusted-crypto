@@ -8,8 +8,8 @@
         "sourceMap": true
 	},
 	"exclude":[
-		"/node_modules",
-		"/buildjs",
-		"/inrefaces"
+		"node_modules",
+		"buildjs",
+		"inrefaces"
 	]
 }
