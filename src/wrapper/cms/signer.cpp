@@ -33,7 +33,8 @@ Handle<std::string> Signer::getSignature(){
 	LOGGER_FN();
 	
 #if OPENSSL_VERSION_NUMBER > 0x1000200fL
-	// Ìåòîä ïîääåðæèâàåòñÿ íà÷èíàÿ ñ âåðñèè OpenSSL v1.0.2
+/*
+	// ÃŒÃ¥Ã²Ã®Ã¤ Ã¯Ã®Ã¤Ã¤Ã¥Ã°Ã¦Ã¨Ã¢Ã Ã¥Ã²Ã±Ã¿ Ã­Ã Ã·Ã¨Ã­Ã Ã¿ Ã± Ã¢Ã¥Ã°Ã±Ã¨Ã¨ OpenSSL v1.0.2
 	LOGGER_OPENSSL("CMS_SignerInfo_get0_signature");
 	ASN1_OCTET_STRING *sign = CMS_SignerInfo_get0_signature(this->internal());
 	if (!sign){
@@ -44,8 +45,11 @@ Handle<std::string> Signer::getSignature(){
 
 	return new std::string(buf, sign->length);
 #else
+*/
 	THROW_EXCEPTION(0, Signer, NULL, "Mehtod is not implemented for current version of OpenSSL");
+/*
 #endif 
+*/
 }
 
 Handle<SignerAttributeCollection> Signer::signedAttributes(){
