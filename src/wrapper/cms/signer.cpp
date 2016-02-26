@@ -31,9 +31,8 @@ Handle<Certificate> Signer::getCertificate(){
 
 Handle<std::string> Signer::getSignature(){
 	LOGGER_FN();
-	
-#if OPENSSL_VERSION_NUMBER > 0x1000200fL
 /*
+#if OPENSSL_VERSION_NUMBER > 0x1000200fL
 	// Ìåòîä ïîääåðæèâàåòñÿ íà÷èíàÿ ñ âåðñèè OpenSSL v1.0.2
 	LOGGER_OPENSSL("CMS_SignerInfo_get0_signature");
 	ASN1_OCTET_STRING *sign = CMS_SignerInfo_get0_signature(this->internal());
