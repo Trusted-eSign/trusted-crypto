@@ -45,6 +45,9 @@ public:
 	long getVersion();
 public:
 	Handle<std::string> issuerName();
+	Handle<std::string> issuerFriendlyName();
+protected:
+	static Handle<std::string> GetCommonName(X509_NAME *a);
 };
 
 

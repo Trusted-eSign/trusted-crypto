@@ -1,4 +1,4 @@
-#include "common.h"
+/*#include "common.h"
 
 #ifndef COMMON_PROVIDER_H_INCLUDE
 #define COMMON_PROVIDER_H_INCLUDE
@@ -36,4 +36,4 @@ protected:
 	std::vector<Provider> _items;
 };
 
-#endif //!COMMON_PROVIDER_H_INCLUDE
+#endif //!COMMON_PROVIDER_H_INCLUDE*/

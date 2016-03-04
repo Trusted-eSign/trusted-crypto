@@ -41,10 +41,10 @@ NAN_METHOD(WCSR::New){
 		}
 		Handle<std::string> hname = new std::string(x509Name);
 		
-			LOGGER_ARG("key")
-			 WKey * wKey = WKey::Unwrap<WKey>(info[1]->ToObject());
+		LOGGER_ARG("key")
+		WKey * wKey = WKey::Unwrap<WKey>(info[1]->ToObject());
 		
-			LOGGER_ARG("digest");
+		LOGGER_ARG("digest");
 		v8::String::Utf8Value v8Digest(info[2]->ToString());
 		char *digest = *v8Digest;
 		std::string strDigest(digest);

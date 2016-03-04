@@ -13,10 +13,15 @@ import * as certRegInfo from "./pki/certRegInfo";
 import * as certReg from "./pki/certReg";
 import * as csr from "./pki/csr";
 import * as cipher from "./pki/cipher";
+import * as chain from "./pki/chain";
 
 import * as signed_data from "./cms/signed_data";
 import * as signer from "./cms/signer"
 import * as signercollection from "./cms/signers"
+
+import * as pkistore from "./pki/pkistore"
+import * as provider_system from "./pki/psystem"
+import * as cashjson from "./pki/cashjson"
 
 export let DataFormat = dataFormat.DataFormat;
 export let PublicExponent = publicExponent.PublicExponent;
@@ -35,6 +40,10 @@ export namespace pki {
     export let CertificationRequest = certReg.CertificationRequest;
     export let CSR = csr.CSR;
     export let Cipher = cipher.Cipher;
+    export let Chain = chain.Chain;
+    export let PkiStore = pkistore.PkitStore;
+    export let Provider_System = provider_system.Provider_System;
+    export let CashJson = cashjson.CashJson;
 }
 
 export namespace cms {

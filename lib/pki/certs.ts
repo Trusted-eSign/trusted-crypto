@@ -15,7 +15,7 @@ export class CertificateCollection extends object.BaseObject<native.PKI.Certific
     constructor();
     constructor(param?) {
         super();
-        if (param instanceof native.PKI.CertificateCollection){
+        if (param instanceof native.PKI.CertificateCollection) {
             this.handle = param;
         }
         else{

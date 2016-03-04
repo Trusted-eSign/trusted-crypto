@@ -230,6 +230,47 @@ Handle<std::string> CRL::issuerName()
 	return res;
 }
 
+Handle<std::string> CRL::issuerFriendlyName()
+{
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_get_issuer_name);
+	return GetCommonName(X509_CRL_get_issuer(this->internal()));
+}
+
+Handle<std::string> CRL::GetCommonName(X509_NAME *a){
+	LOGGER_FN();
+
+	Handle<std::string> name = new std::string("");
+	if (a == NULL)
+		THROW_EXCEPTION(0, Certificate, NULL, "Parameter 1 can not be NULL");
+
+	int nid = NID_commonName;
+	LOGGER_OPENSSL(X509_NAME_get_index_by_NID);
+	int index = X509_NAME_get_index_by_NID(a, nid, -1);
+	if (index >= 0) {
+		LOGGER_OPENSSL(X509_NAME_get_entry);
+		X509_NAME_ENTRY *issuerNameCommonName = X509_NAME_get_entry(a, index);
+
+		if (issuerNameCommonName) {
+			LOGGER_OPENSSL(X509_NAME_ENTRY_get_data);
+			ASN1_STRING *issuerCNASN1 = X509_NAME_ENTRY_get_data(issuerNameCommonName);
+
+			if (issuerCNASN1 != NULL) {
+				unsigned char *utf = NULL;
+				LOGGER_OPENSSL(ASN1_STRING_to_UTF8);
+				ASN1_STRING_to_UTF8(&utf, issuerCNASN1);
+				name = new std::string((char *)utf);
+				OPENSSL_free(utf);
+			}
+		}
+	}
+	else {
+		return new std::string("No common name");
+	}
+	return name;
+}
+
 Handle<std::string> CRL::getEncoded(){
 	LOGGER_FN();
 

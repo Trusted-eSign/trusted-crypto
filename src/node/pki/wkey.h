@@ -1,16 +1,13 @@
-//#ifndef PKI_WKEY_H_INCLUDED
-//#define  PKI_WKEY_H_INCLUDED
+#ifndef WKEY_H_INCLUDED
+#define WKEY_H_INCLUDED
 
 #include "../../wrapper/pki/key.h"
 
-#include <node.h>
-#include <v8.h>
-#include <node_object_wrap.h>
 #include <nan.h>
+#include "../utils/wrap.h"
 #include "../helper.h"
 
-class WKey : public node::ObjectWrap
-{
+WRAP_CLASS(Key){
 public:
 	WKey(){};
 	~WKey(){};
@@ -38,12 +35,7 @@ public:
 	static NAN_METHOD(pubkeySaveBIO);
 	static NAN_METHOD(pubkeySaveMemory);
 
-	Handle<Key> data_;
-
-	static inline Nan::Persistent<v8::Function> & constructor() {
-		static Nan::Persistent<v8::Function> my_constructor;
-		return my_constructor;
-	}
+	WRAP_NEW_INSTANCE(Key);
 };
 
-//#endif //PKI_WKEY_H_INCLUDED
+#endif //WKEY_H_INCLUDED

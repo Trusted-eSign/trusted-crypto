@@ -4,10 +4,10 @@
 #include "../../wrapper/pki/crl.h"
 
 #include <nan.h>
+#include "../utils/wrap.h"
 #include "../helper.h"
 
-class WCRL: public node::ObjectWrap
-{
+WRAP_CLASS(CRL){
 public:
 	WCRL(){};
 	~WCRL(){};
@@ -27,6 +27,7 @@ public:
 	static NAN_METHOD(GetSignature);
 	static NAN_METHOD(GetVersion);
 	static NAN_METHOD(GetIssuerName);
+	static NAN_METHOD(GetIssuerFriendlyName);
 	static NAN_METHOD(GetLastUpdate);
 	static NAN_METHOD(GetNextUpdate);
 	static NAN_METHOD(GetCertificate);
@@ -38,12 +39,7 @@ public:
 	static NAN_METHOD(GetRevokedCertificateCert);
 	static NAN_METHOD(GetRevokedCertificateSerial);
 
-	Handle<CRL> data_;
-	
-	static inline Nan::Persistent<v8::Function> & constructor() {
-		static Nan::Persistent<v8::Function> my_constructor;
-		return my_constructor;
-	}
+	WRAP_NEW_INSTANCE(CRL);
 };
 
 #endif //PKI_WCRL_H_INCLUDED

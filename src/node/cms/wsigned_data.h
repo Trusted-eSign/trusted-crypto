@@ -1,4 +1,4 @@
-#ifndef CMS_W_SIGNED_DATA_H_INCLUDED
+#ifndef CMS_W_SIGNED_DATA_H_INCLUDEDWRAP_NEW_INSTANCE(SignedData)
 #define CMS_W_SIGNED_DATA_H_INCLUDED
 
 #include "../../wrapper/cms/common.h"

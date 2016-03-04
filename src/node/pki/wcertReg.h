@@ -3,13 +3,11 @@
 
 #include "../../wrapper/pki/certReg.h"
 
-#include <node.h>
-#include <v8.h>
-#include <node_object_wrap.h>
 #include <nan.h>
+#include "../utils/wrap.h"
 #include "../helper.h"
 
-class WCertificationRequest : public node::ObjectWrap{
+WRAP_CLASS(CertificationRequest){
 public:
 	WCertificationRequest(){};
 	~WCertificationRequest(){};
@@ -20,12 +18,7 @@ public:
 	static NAN_METHOD(Sign);
 	static NAN_METHOD(GetPEMString);
 
-	Handle<CertificationRequest> data_;
-
-	static inline Nan::Persistent<v8::Function> & constructor() {
-		static Nan::Persistent<v8::Function> my_constructor;
-		return my_constructor;
-	}
+	WRAP_NEW_INSTANCE(CertificationRequest);
 };
 
 #endif //PKI_WCERTREQ_H_INCLUDED

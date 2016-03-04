@@ -19,8 +19,10 @@
 #include "pki/wcertReg.h"
 #include "pki/wcsr.h"
 #include "pki/wcipher.h"
-#include "certstore/wcertstore.h"
-#include "certstore/wprovider_system.h"
+#include "pki/wchain.h"
+#include "store/wpkistore.h"
+#include "store/wsystem.h"
+#include "store/wcashjson.h"
 
 #include "cms/wsigned_data.h"
 #include "cms/wsigner.h"
@@ -31,7 +33,7 @@
 
 void init(v8::Handle<v8::Object> target) {
 	// logger.start("/tmp/trustedtls/node.log", -1); // -1 = all levels bits
-	// logger.start("logger.txt", LoggerLevel::All );
+	 logger.start("logger.txt", LoggerLevel::All );
 
 	// On Windows, we can't use Node's OpenSSL, so we link
 	// to a standalone OpenSSL library. Therefore, we need
@@ -54,12 +56,16 @@ void init(v8::Handle<v8::Object> target) {
 	WAlgorithm::Init(Pki);
 	WAttribute::Init(Pki);
 	WKey::Init(Pki);
-	WCertStore::Init(Pki);
-	WProviderSystem::Init(Pki);
 	WCSR::Init(Pki);
 	WCertificationRequestInfo::Init(Pki);
 	WCertificationRequest::Init(Pki);
 	WCipher::Init(Pki);
+	WChain::Init(Pki);
+	WPkiStore::Init(Pki);
+	WProvider_System::Init(Pki);
+	WFilter::Init(Pki);
+	WPkiItem::Init(Pki);
+	WCashJson::Init(Pki);
 
 	v8::Local<v8::Object> Cms = Nan::New<v8::Object>();
 	target->Set(Nan::New("CMS").ToLocalChecked(), Cms);

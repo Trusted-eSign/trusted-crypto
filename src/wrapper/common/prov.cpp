@@ -1,4 +1,4 @@
-#include "../stdafx.h"
+/*#include "../stdafx.h"
 
 #include "prov.h"
 
@@ -90,3 +90,4 @@ void ProviderCollection::push(Provider &v)
 
 	_items.push_back(v);
 }
+*/

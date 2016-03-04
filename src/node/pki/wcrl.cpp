@@ -24,6 +24,7 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getSignature", GetSignature);
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
 	Nan::SetPrototypeMethod(tpl, "getIssuerName", GetIssuerName);
+	Nan::SetPrototypeMethod(tpl, "getIssuerFriendlyName", GetIssuerFriendlyName);
 	Nan::SetPrototypeMethod(tpl, "getLastUpdate", GetLastUpdate);
 	Nan::SetPrototypeMethod(tpl, "getNextUpdate", GetNextUpdate);
 	Nan::SetPrototypeMethod(tpl, "getCertificate", GetCertificate);
@@ -81,6 +82,22 @@ NAN_METHOD(WCRL::GetIssuerName)
 		v8::Local<v8::String> v8Name = Nan::New<v8::String>(name->c_str()).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8Name);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetIssuerFriendlyName) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> fname = _this->issuerFriendlyName();
+
+		v8::Local<v8::String> v8FName = Nan::New<v8::String>(fname->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8FName);
 		return;
 	}
 	TRY_END();

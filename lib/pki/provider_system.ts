@@ -20,4 +20,8 @@ export class ProviderSystem extends object.BaseObject<native.PKI.ProviderSystem>
     readJson(filename: string): string {
         return this.handle.readJson(filename);
     }
+
+    testRead(filename: string): string {
+        return this.handle.testRead(filename);
+    }
 }

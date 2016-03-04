@@ -44,6 +44,13 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
     get issuerName(): string {
         return this.handle.getIssuerName();
     }
+    
+    /**
+     * возвращает пользовательское имя издателя сертификата
+     */
+    get issuerFriendlyName(): string {
+        return this.handle.getIssuerFriendlyName();
+    }
 	
     /**
      * возвращает дату последнего обновления

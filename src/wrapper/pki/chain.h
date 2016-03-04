@@ -1,52 +1,50 @@
 #ifndef CMS_PKI_CHAIN_H_INCLUDED
 #define  CMS_PKI_CHAIN_H_INCLUDED
 
-//#include <openssl/x509v3.h>
-//
-//#include "../common/common.h"
-//
-//#define ERROR_CRL_BAD_INPUT_DATA "Input data is not CRL"
-//#define ERROR_CRL_BAD_DIR_INPUT_DATA "Input data is not binary CRL format"
-//#define ERROR_CRL_BAD_PEM_INPUT_DATA "Input data is not PEM CRL format"
-//
-//class CTWRAPPER_API CRL;
-//class CTWRAPPER_API RevokedCertificate;
-//
-//#include "pki.h"
-//
-//SSLOBJECT_free(X509_CRL, X509_CRL_free);
-//
-//class CRL : public SSLObject < X509_CRL > {
-//public:
-//	SSLOBJECT_new(CRL, X509_CRL){}
-//	SSLOBJECT_new_null(CRL, X509_CRL, X509_CRL_new){}
-//
-//	void read(Handle<Bio> in, DataFormat format);
-//	void write(Handle<Bio> out, DataFormat format);
-//	Handle<CRL> duplicate();
-//
-//	Handle<RevokedCertificate> getCertificate(Handle<Certificate> cert);
-//	Handle<RevokedCertificate> getCertificate(Handle<std::string> serial);
-//
-//	//Properties
-//public:
-//	int version();
-//	Handle<std::string> issuerName();
-//	Handle<std::string> lastUpdate();
-//	Handle<std::string> nextUpdate();
-//};
-//
-//
-//SSLOBJECT_free(X509_REVOKED, X509_REVOKED_free);
-//class RevokedCertificate : public SSLObject < X509_REVOKED > {
-//public:
-//	SSLOBJECT_new(RevokedCertificate, X509_REVOKED){}
-//	SSLOBJECT_new_null(RevokedCertificate, X509_REVOKED, X509_REVOKED_new){}
-//
-//	//Properties
-//public:
-//	Handle<std::string> revocationDate();
-//	int reason();
-//};
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/cms.h>
+#include <openssl/x509.h>
+
+#include "../common/common.h"
+
+#include "../store/pkistore.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "certs.h"
+#include "cert.h"
+#include "revocation.h"
+
+#include "../pki/crl.h"
+#include "../store/provider_system.h"
+
+class CTWRAPPER_API Chain;
+
+class Chain{
+
+public:
+	Chain(){};
+	~Chain(){};
+
+	/* Build chain relative certificate collection */
+	Handle<CertificateCollection> buildChain(Handle<Certificate> cert, Handle<CertificateCollection> certs);
+
+	/* Build chain relative provider certificates store */
+//	Handle<CertificateCollection> buildChain(Handle<Certificate> cert, ProviderStore::PVD_STORE pvdStore);
+
+	/* Check cerificates in chain */
+//	bool verifyChain(Handle<CertificateCollection> chain, Handle<ProviderSystem> prvSys);
+
+private:
+	Handle<Certificate> getIssued(Handle<CertificateCollection> certs, Handle<Certificate> cert);
+	bool checkIssued(Handle<Certificate> issuer, Handle<Certificate> cert);
+
+
+
+	int checkTrust(Handle<Certificate> cert);
+};
 
 #endif //!CMS_PKI_CHAIN_H_INCLUDED

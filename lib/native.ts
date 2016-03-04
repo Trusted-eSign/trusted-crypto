@@ -85,7 +85,7 @@ export namespace PKI {
         revocationDate(): string;
         reason(): number;
     }
-    
+
     export declare class CertificateCollection {
         items(index: number): Certificate;
         length(): number;
@@ -103,6 +103,7 @@ export namespace PKI {
         getSignature(): Buffer;
         getVersion(): number;
         getIssuerName(): string;
+        getIssuerFriendlyName(): string;
         getLastUpdate(): string;
         getNextUpdate(): string;
         getCertificate(): Certificate;
@@ -130,27 +131,28 @@ export namespace PKI {
         constructor(filename: string);
         fillingCache(cacheURI: string, pvdURI: string): void;
         readJson(filename: string): string;
+        testRead(filename: string): string;
     }
-    
+
     export declare class CertificationRequestInfo {
        setSubject(x509name: string): void;
        setSubjectPublicKey(key: PKI.Key): void;
        setVersion(version: number): void;
     }
-    
+
     export declare class CertificationRequest {
        constructor(csrinfo: PKI.CertificationRequestInfo);
        sign(key: Key): void;
        verify(): boolean;
        getPEMString(): Buffer;
     }
-    
+
     export declare class CSR {
         constructor(name: string, key: PKI.Key, digest: string);
         save(filename: string, dataFormat: DataFormat): void;
         getEncodedHEX(): Buffer;
     }
-    
+
     export declare class Cipher {
         constructor(cipherName: string);
         setCryptoMethod(method: CryptoMethod): void;
@@ -158,7 +160,7 @@ export namespace PKI {
         decrypt(filenameEnc: string, filenameDec: string, format: DataFormat): void;
         addRecipientsCerts(certs: CertificateCollection): void;
         setPrivKey(rkey: Key): void;
-        setRecipientCert(rcert: Certificate): void;               
+        setRecipientCert(rcert: Certificate): void;
         setPass(password: string): void;
         setDigest(digest: string): void;
         setIV(iv: string): void;
@@ -171,6 +173,177 @@ export namespace PKI {
         getMode(): string;
         getDigestAlgorithm(): string;
     }
+
+    export declare class Chain {
+        buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection;
+        verifyChain(chain: CertificateCollection, prvSys: ProviderSystem): boolean;
+    }
+    
+    export interface IPkiItem extends IPkiCrl, IPkiCertificate, IPkiRequest, IPkiKey {
+    /**
+     * DER | PEM
+     */
+    format: string;
+    /**
+     * CRL | CERTIFICATE | KEY | REQUEST
+     */
+    type: string;
+    uri: string;
+    provider: string;
+    category: string;
+    hash: string;
+}
+
+export interface IPkiKey{
+    encrypted?: boolean;
+}
+
+export interface IPkiCrl{
+    issuerName?: string;
+    issuerFriendlyName?: string;
+    lastUpdate?: string;
+    nextUpdate?: string;
+}
+
+export interface IPkiRequest{
+    subjectName?: string;
+    subjectFriendlyName?: string;
+    key?: string; // thumbprint ket SHA1
+}
+
+export interface IPkiCertificate{
+    subjectName?: string;
+    subjectFriendlyName?: string;
+    issuerName?: string;
+    issuerFriendlyName?: string;
+    notAfter?: string;
+    notBefore?: string;
+    serial?: string;
+    key?: string; // thumbprint ket SHA1
+}
+
+export interface IFilter {
+    /**
+     * PkiItem
+     * CRL | CERTIFICATE | KEY | REQUEST
+     */
+    type?: string[];
+    /**
+     * Provider
+     * SYSTEM, MICROSOFT, CRYPTOPRO, TSL, PKCS11, TRUSTEDNET 
+     */
+    provider?: string[];
+    /**
+     * MY, OTHERS, TRUST, CRL
+     */
+    category?: string[];
+    hash?: string;
+    subjectName?: string;
+    subjectFriendlyName?: string;
+    issuerName?: string;
+    issuerFriendlyName?: string;
+    isValid?: boolean;
+    serial?: string;
+}
+
+export declare abstract class Provider {
+    type: string;
+
+    /**
+     * Возвращает полный список хранимых элементов
+     */
+    items: IPkiItem[];
+}
+
+export declare class Provider_System extends Provider {
+    constructor(folder: string);
+}
+
+export declare class ProviderMicrosoft extends Provider {
+    constructor();
+}
+
+export declare class ProviderTSL extends Provider {
+    constructor(url: string);
+}
+
+export declare class PkiStore {
+    constructor(json: string);
+
+    getCash(): CashJson;
+
+    items: IPkiItem[];
+    /**
+     * Возвращает набор элементов по фильтру
+     * - если фильтр пустой, возвращает все элементы
+     */
+    find(filter?: Filter): IPkiItem[];
+    /**
+     * ?
+     */
+    find(item: IPkiItem, filter: IFilter): IPkiItem[];
+    /**
+     * Возвращает ключ по фильтру
+     * - фильтр задается относительно элементов, которые могут быть связаны с ключом
+     */
+    findKey(filter: IFilter): IPkiItem;
+
+    /**
+     * Возвращает объект из структуры
+     */
+    getItem(item: PkiItem): any;
+
+    addProvider(provider: Provider): void;
+    /**
+     * Коллекция провайдеров
+     */
+    providers: Provider[];
+}
+
+export declare class CashJson {
+    constructor(fileName: string);
+    filenName: string;
+    save(fileName: string);
+    load(fileName: string);
+    export(): IPkiItem[];
+    import(items: IPkiItem[]);
+    import(item: PkiItem);
+}
+
+export declare class Filter {
+    constructor();
+    setType(type: string): void;
+    setProvider(provider: string): void;
+    setCategory(category: string): void;
+    setHash(hash: string): void;
+    setSubjectName(subjectName: string): void;
+    setSubjectFriendlyName(subjectFriendlyName: string): void;
+    setIssuerName(issuerName: string): void;
+    setIssuerFriendlyName(issuerFriendlyName: string): void;
+    setIsValid(valid: boolean): void;
+    setSerial(serial: string): void;
+}
+
+export declare class PkiItem {
+    constructor();
+    setFormat(type: string): void;
+    setType(type: string): void;
+    setProvider(provider: string): void;
+    setCategory(category: string): void;
+    setURI(category: string): void;
+    setHash(hash: string): void;
+    setSubjectName(subjectName: string): void;
+    setSubjectFriendlyName(subjectFriendlyName: string): void;
+    setIssuerName(issuerName: string): void;
+    setIssuerFriendlyName(issuerFriendlyName: string): void;
+    setSerial(serial: string): void;
+    setNotBefore(before: string): void;
+    setNotAfter(after: string): void;
+    setLastUpdate(lastUpdate: string): void;
+    setNextUpdate(nextUpdate: string): void;
+    setKey(key: string): void;
+    setKeyEncrypted(enc: boolean): void;
+}
 }
 
 export namespace CMS {
@@ -214,7 +387,7 @@ export namespace CMS {
         removeAt(index: number): void;
         items(index: number): PKI.Attribute;
     }
-    
+
 }
 
 module.exports.PKI = native.PKI;

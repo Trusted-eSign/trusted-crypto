@@ -1,15 +1,13 @@
-//#ifndef CMS_PKI_CSR_H_INCLUDED
-//#define CMS_PKI_CSR_H_INCLUDED
+#ifndef WCSR_H_INCLUDED
+#define WCSR_H_INCLUDED
 
 #include "../../wrapper/pki/csr.h"
 
-#include <node.h>
-#include <v8.h>
-#include <node_object_wrap.h>
 #include <nan.h>
+#include "../utils/wrap.h"
 #include "../helper.h"
 
-class WCSR : public node::ObjectWrap{
+WRAP_CLASS(CSR){
 public:
 	WCSR(){};
 	~WCSR(){};
@@ -20,12 +18,7 @@ public:
 	static NAN_METHOD(Save);
 	static NAN_METHOD(GetEncodedHEX);
 
-	Handle<CSR> data_;
-
-	static inline Nan::Persistent<v8::Function> & constructor() {
-		static Nan::Persistent<v8::Function> my_constructor;
-		return my_constructor;
-	}
+	WRAP_NEW_INSTANCE(CSR);
 };
 
-//#endif //CMS_PKI_CSR_H_INCLUDED
+#endif //WCSR_H_INCLUDED
