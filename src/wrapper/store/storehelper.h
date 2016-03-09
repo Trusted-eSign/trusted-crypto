@@ -115,9 +115,9 @@ public:
 	void setSerial(Handle<std::string> serial);
 	void setIsValid(bool isValid);
 public:
-	std::vector<Handle<std::string>> types; /* CRL | CERTIFICATE | KEY | REQUEST (optional) */
-	std::vector<Handle<std::string>> providers; /* SYSTEM, MICROSOFT, CRYPTOPRO, TSL, PKCS11, TRUSTEDNET (optional) */
-	std::vector<Handle<std::string>> categorys; /* MY, OTHER, CA, TRUSTED (optional) */
+	std::vector<Handle<std::string> > types; /* CRL | CERTIFICATE | KEY | REQUEST (optional) */
+	std::vector<Handle<std::string> > providers; /* SYSTEM, MICROSOFT, CRYPTOPRO, TSL, PKCS11, TRUSTEDNET (optional) */
+	std::vector<Handle<std::string> > categorys; /* MY, OTHER, CA, TRUSTED (optional) */
 	Handle<std::string> hash; /* SHA-1 hash (optional) */
 	Handle<std::string> subjectName;
 	Handle<std::string> subjectFriendlyName;
