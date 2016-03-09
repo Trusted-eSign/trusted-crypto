@@ -1,17 +1,17 @@
 import * as native from "../native";
 import * as object from "../object";
-import {Certificate} from "./cert";
-import {Crl} from "./crl";
-import {CertificationRequest} from "./certReg";
-import {Key} from "./key";
+import {Certificate} from "../pki/cert";
+import {Crl} from "../pki/crl";
+import {CertificationRequest} from "../pki/certReg";
+import {Key} from "../pki/key";
 import {CashJson} from "./cashjson";
 
-export class Filter extends object.BaseObject<native.PKI.Filter> implements native.PKI.IFilter {
+export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements native.PKISTORE.IFilter {
 
     constructor() {
-        handle: native.PKI.Filter;
+        handle: native.PKISTORE.Filter;
         super();
-        this.handle = new native.PKI.Filter();
+        this.handle = new native.PKISTORE.Filter();
     }
 
     set types(type: string){
@@ -51,12 +51,12 @@ export class Filter extends object.BaseObject<native.PKI.Filter> implements nati
     }
 }
 
-export class PkiItem extends object.BaseObject<native.PKI.PkiItem> implements native.PKI.IPkiItem {
+export class PkiItem extends object.BaseObject<native.PKISTORE.PkiItem> implements native.PKISTORE.IPkiItem {
 
     constructor() {
-        handle: native.PKI.PkiItem;
+        handle: native.PKISTORE.PkiItem;
         super();
-        this.handle = new native.PKI.PkiItem();
+        this.handle = new native.PKISTORE.PkiItem();
     }
     
     set format(format: string){
@@ -129,26 +129,26 @@ export class PkiItem extends object.BaseObject<native.PKI.PkiItem> implements na
 
 }
 
-export class PkitStore extends object.BaseObject<native.PKI.PkiStore> {
-    constructor(handle: native.PKI.PkiStore);
+export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
+    constructor(handle: native.PKISTORE.PkiStore);
     constructor(folder: string);
     constructor(param) {
         super();
-        if (param instanceof native.PKI.PkiStore)
+        if (param instanceof native.PKISTORE.PkiStore)
             this.handle = param;
         else
-            this.handle = new native.PKI.PkiStore(param);
+            this.handle = new native.PKISTORE.PkiStore(param);
     }
     
     get cash(): CashJson {
-        return CashJson.wrap<native.PKI.CashJson, CashJson>(this.handle.getCash());
+        return CashJson.wrap<native.PKISTORE.CashJson, CashJson>(this.handle.getCash());
     }
 
-    addProvider(provider: native.PKI.Provider) {
+    addProvider(provider: native.PKISTORE.Provider) {
         return this.handle.addProvider(provider);
     }
 
-    find(ifilter?: native.PKI.IFilter): native.PKI.IPkiItem[] {
+    find(ifilter?: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem[] {
         let filter = new Filter();
         
         if(!ifilter){
@@ -200,7 +200,7 @@ export class PkitStore extends object.BaseObject<native.PKI.PkiStore> {
        return this.handle.find(filter.handle);
     }
     
-    findKey(ifilter: native.PKI.IFilter): native.PKI.IPkiItem {
+    findKey(ifilter: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem {
         let filter = new Filter();
                 
         if (ifilter.type) {
@@ -248,7 +248,7 @@ export class PkitStore extends object.BaseObject<native.PKI.PkiStore> {
        return this.handle.findKey(filter.handle);
     }
 
-    getItem(item: native.PKI.IPkiItem): any {
+    getItem(item: native.PKISTORE.IPkiItem): any {
         let pkiItem = new PkiItem();
 
         pkiItem.format = item.format;

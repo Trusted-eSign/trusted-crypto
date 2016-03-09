@@ -2,18 +2,18 @@ import * as native from "../native";
 import * as object from "../object";
 import {PkiItem} from "./pkistore";
 
-export class CashJson extends object.BaseObject<native.PKI.CashJson> {
+export class CashJson extends object.BaseObject<native.PKISTORE.CashJson> {
     constructor(fileName: string) {
-        handle: native.PKI.CashJson;
+        handle: native.PKISTORE.CashJson;
         super();
-        this.handle = new native.PKI.CashJson(fileName);
+        this.handle = new native.PKISTORE.CashJson(fileName);
     }
 
-    export(): native.PKI.IPkiItem[] {
+    export(): native.PKISTORE.IPkiItem[] {
         return this.handle.export();
     }
 
-    import(items: native.PKI.IPkiItem[]): void {
+    import(items: native.PKISTORE.IPkiItem[]): void {
         for(let i in items){
             let pkiItem = new PkiItem();
 

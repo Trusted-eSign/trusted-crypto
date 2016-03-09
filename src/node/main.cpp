@@ -61,11 +61,7 @@ void init(v8::Handle<v8::Object> target) {
 	WCertificationRequest::Init(Pki);
 	WCipher::Init(Pki);
 	WChain::Init(Pki);
-	WPkiStore::Init(Pki);
-	WProvider_System::Init(Pki);
-	WFilter::Init(Pki);
-	WPkiItem::Init(Pki);
-	WCashJson::Init(Pki);
+
 
 	v8::Local<v8::Object> Cms = Nan::New<v8::Object>();
 	target->Set(Nan::New("CMS").ToLocalChecked(), Cms);
@@ -73,6 +69,14 @@ void init(v8::Handle<v8::Object> target) {
 	WSigner::Init(Cms);
 	WSignerCollection::Init(Cms);
 	WSignerAttributeCollection::Init(Cms);
+
+	v8::Local<v8::Object> PkiStore = Nan::New<v8::Object>();
+	target->Set(Nan::New("PKISTORE").ToLocalChecked(), PkiStore);
+	WPkiStore::Init(PkiStore);
+	WProvider_System::Init(PkiStore);
+	WFilter::Init(PkiStore);
+	WPkiItem::Init(PkiStore);
+	WCashJson::Init(PkiStore);
 
 	// target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
 	// WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());

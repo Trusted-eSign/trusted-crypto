@@ -9,12 +9,12 @@ describe('Store', function () {
     var certWithKey;
     
 	it('init', function () {	
-		store = new trusted.pki.PkiStore(DEFAULT_CERTSTORE_PATH+"/cash.json");
+		store = new trusted.pkistore.PkiStore(DEFAULT_CERTSTORE_PATH+"/cash.json");
         assert.equal(store != null, true);	
     })
     
     it('add provider', function () {	
-        providerSystem = new trusted.pki.Provider_System(DEFAULT_CERTSTORE_PATH);
+        providerSystem = new trusted.pkistore.Provider_System(DEFAULT_CERTSTORE_PATH);
         assert.equal(providerSystem != null, true);
         store.addProvider(providerSystem.handle);	
     })

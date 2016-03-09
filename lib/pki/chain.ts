@@ -3,7 +3,7 @@ import * as object from "../object";
 import {DataFormat} from "../data_format";
 import {Certificate} from "../pki/cert";
 import {CertificateCollection} from "../pki/certs";
-import {ProviderSystem} from "../pki/provider_system";
+import {Provider_System} from "../pkistore/psystem";
 
 const DEFAULT_DATA_FORMAT = DataFormat.PEM;
 
@@ -30,7 +30,7 @@ export class Chain extends object.BaseObject<native.PKI.Chain> {
      * @param  {ProviderSystem} prvSys
      * @returns boolean
      */
-    verifyChain(chain: CertificateCollection, prvSys: ProviderSystem): boolean {
+    verifyChain(chain: CertificateCollection, prvSys: Provider_System): boolean {
        return this.handle.verifyChain(chain.handle, prvSys.handle);
     }
 
