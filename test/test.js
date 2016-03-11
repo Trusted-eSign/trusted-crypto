@@ -43,8 +43,8 @@ describe('CRL', function () {
     })
 	
 	it("equals", function () {
-        var crl1 = trusted.pki.Crl.load("test/CertStore/CRL/ThawteCSG2.crl");
-        var crl2 = trusted.pki.Crl.load("test/CertStore/CRL/ThawtePCA.crl");
+        var crl1 = trusted.pki.Crl.load("test/test.crl");
+        var crl2 = trusted.pki.Crl.load("test/ThawteCSG2.crl");
         assert.equal(crl1.equals(crl1), 0, "CRL are equals");
 		assert.equal(crl1.equals(crl2), -1, "CRL are not equals");
     })
@@ -257,7 +257,7 @@ describe('CSR', function () {
     })
 	
    it("save", function () {  
-		csr.save("test/CertStore/MY/test.csr");
+		csr.save("test/test.csr");
    })
 	
 	it("encoded", function () {  

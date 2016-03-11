@@ -628,8 +628,22 @@ Handle<std::string> Provider_System::getKey(Handle<std::string> objectPatch){
 		Handle<std::string> key_file_name;
 		size_t lastindex;
 
-		lastindex = objectPatch->find_last_of(".");
-		key_file_name = new std::string(objectPatch->substr(0, lastindex) + ".key");
+		Handle<std::string> key_hash = new std::string(objectPatch->c_str());
+		const size_t last_slash_idx = key_hash->find_last_of(CROSSPLATFORM_SLASH);
+		if (std::string::npos != last_slash_idx){
+			key_hash->erase(0, last_slash_idx + 1);
+		}
+		const size_t period_idx = key_hash->rfind('.');
+		if (std::string::npos != period_idx){
+			key_hash->erase(period_idx);
+		}
+		const size_t underscore_idx = key_hash->find_last_of('_');
+		if (std::string::npos != underscore_idx){
+			key_hash = new std::string(key_hash->substr(underscore_idx + 1, key_hash->length()));
+		}
+
+		lastindex = objectPatch->find_last_of(CROSSPLATFORM_SLASH);
+		key_file_name = new std::string(objectPatch->substr(0, lastindex) + CROSSPLATFORM_SLASH + key_hash->c_str() + ".key");
 		LOGGER_OPENSSL("BIO_new");
 		bioKeyFile = BIO_new(BIO_s_file());
 		LOGGER_OPENSSL("BIO_read_filename");
