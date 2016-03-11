@@ -201,16 +201,22 @@ Handle<std::string> Certificate::getSerialNumber()
 {
 	LOGGER_FN();
 
-	LOGGER_OPENSSL(X509_get_serialNumber);
-	ASN1_INTEGER *sn = X509_get_serialNumber(this->internal());
-	unsigned char* out = NULL;
-	LOGGER_OPENSSL(i2d_ASN1_INTEGER);
-	int out_len = i2d_ASN1_INTEGER(sn, &out);
+	LOGGER_OPENSSL(BIO_new);
+	BIO * bioSerial = BIO_new(BIO_s_mem());
+	LOGGER_OPENSSL(i2a_ASN1_INTEGER);
+	if (i2a_ASN1_INTEGER(bioSerial, X509_get_serialNumber(this->internal())) < 0){
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "i2a_ASN1_INTEGER", NULL);
+	}
 
-	Handle<std::string> res = new std::string((char *)out, out_len);
+	int contlen;
+	char * cont;
+	LOGGER_OPENSSL(BIO_get_mem_data);
+	contlen = BIO_get_mem_data(bioSerial, &cont);
 
-	LOGGER_OPENSSL(OPENSSL_free);
-	OPENSSL_free(out);
+	Handle<std::string> res = new std::string(cont, contlen);
+
+	BIO_free(bioSerial);
+
 	return res;
 }
 

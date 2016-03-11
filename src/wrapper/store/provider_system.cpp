@@ -234,11 +234,7 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 			item->certSubjectFriendlyName = hcert->getSubjectFriendlyName();
 			item->certIssuerName = hcert->getIssuerName();
 			item->certIssuerFriendlyName = hcert->getIssuerFriendlyName();
-
-			char * hexSerial;
-			Handle<std::string> hserial = hcert->getSerialNumber();
-			bin_to_strhex((unsigned char *)hserial->c_str(), hserial->length(), &hexSerial);
-			item->certSerial = new std::string(hexSerial);
+			item->certSerial = hcert->getSerialNumber();
 
 			item->certNotBefore = hcert->getNotBefore();
 			item->certNotAfter = hcert->getNotAfter();

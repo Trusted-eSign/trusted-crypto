@@ -32,7 +32,7 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
      * возвращает серийный номер сертификата
      */
     get serialNumber(): string {
-        return this.handle.getSerialNumber().toString("hex");
+        return this.handle.getSerialNumber().toString();
     }
 
     /**

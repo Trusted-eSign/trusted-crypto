@@ -97,7 +97,7 @@ describe('Certificate', function () {
         console.log("in:", cert.issuerName);
         console.log("nBefore:", cert.notBefore);
         console.log("nAfter:", cert.notAfter);
-        console.log("serialNumber:", cert.serialNumber.toString('hex'));
+        console.log("serialNumber:", cert.serialNumber.toString());
         console.log("thumbprint:", cert.thumbprint.toString('hex'));
         console.log("version:", cert.version);
         console.log("type:", cert.type);
