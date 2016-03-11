@@ -8,15 +8,15 @@ describe('Store', function () {
 	var providerSystem;
     var certWithKey;
     
-	it('init', function () {	
+	it('init', function () {
+        providerSystem = new trusted.pkistore.Provider_System(DEFAULT_CERTSTORE_PATH);
+        assert.equal(providerSystem != null, true);
+       	
 		store = new trusted.pkistore.PkiStore(DEFAULT_CERTSTORE_PATH+"/cash.json");
         assert.equal(store != null, true);	
     })
     
-    it('add pki objects', function () {
-       providerSystem = new trusted.pkistore.Provider_System(DEFAULT_CERTSTORE_PATH);
-       assert.equal(providerSystem != null, true);
-        	
+    it('add pki objects', function () {       	
        var cert  = trusted.pki.Certificate.load("test/cert1.crt", trusted.DataFormat.PEM);
        var crl = trusted.pki.Crl.load("test/test.crl");
        var key = trusted.pki.Key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");

@@ -10,9 +10,11 @@
 	#include <windows.h>
 	#include <tchar.h> 
 	#include <strsafe.h>
+	#include <direct.h>
 #endif
 #if defined(OPENSSL_SYS_UNIX) 
 	#include <dirent.h>
+	#include <sys/types.h>
 	#include <sys/stat.h>
 	#include <uuid/uuid.h>
 #endif

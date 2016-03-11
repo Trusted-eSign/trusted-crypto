@@ -33,6 +33,15 @@ void Provider_System::init(Handle<std::string> folder){
 	class stat st;
 	BIO *bioFile;
 
+	if((dir = opendir(folder->c_str())) == NULL){
+		if (mkdir(folder->c_str(), 0700) != 0){
+			THROW_EXCEPTION(0, Provider_System, NULL, "Error create folder");
+		}
+	}
+	else{
+		closedir(dir);
+	}
+
 	std::string listCertStore[] = {
 		"MY",
 		"OTHERS",
@@ -43,6 +52,13 @@ void Provider_System::init(Handle<std::string> folder){
 	for (int i = 0, c = sizeof(listCertStore) / sizeof(*listCertStore); i < c; i++){
 		std::string dirInCertStore = (std::string)folder->c_str() + CROSSPLATFORM_SLASH + listCertStore[i].c_str();
 		dir = opendir(dirInCertStore.c_str());
+		if(dir == NULL){
+			if (mkdir(dirInCertStore.c_str(), 0700) != 0){
+				THROW_EXCEPTION(0, Provider_System, NULL, "Error create folder");
+			}
+
+			continue;
+		}
 		while ((ent = readdir(dir)) != NULL) {
 			const std::string file_name = ent->d_name;
 			const std::string uri = dirInCertStore + CROSSPLATFORM_SLASH +   file_name;
@@ -80,6 +96,12 @@ void Provider_System::init(Handle<std::string> folder){
 		TCHAR szDir[MAX_PATH];
 		BIO *bioFile;
 
+		if ((dir = FindFirstFile(folder->c_str(), &file_data)) == INVALID_HANDLE_VALUE){
+			if (_mkdir(folder->c_str()) != 0){
+				THROW_EXCEPTION(0, Provider_System, NULL, "Error create folder");
+			}
+		}
+
 		std::string listCertStore[] = {
 			"MY",
 			"OTHERS",
@@ -92,7 +114,11 @@ void Provider_System::init(Handle<std::string> folder){
 			std::string tempdirInCertStore = "";
 			tempdirInCertStore = dirInCertStore + "\\*";
 			LOGGER_TRACE("FindFirstFile");
-			if ((dir = FindFirstFile(tempdirInCertStore.c_str(), &file_data)) == INVALID_HANDLE_VALUE){
+			if ((dir = FindFirstFile(tempdirInCertStore.c_str(), &file_data)) == INVALID_HANDLE_VALUE){			
+				if (_mkdir(dirInCertStore.c_str()) != 0){
+					THROW_EXCEPTION(0, Provider_System, NULL, "Error create folder");
+				}
+
 				continue;
 			}
 
