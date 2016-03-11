@@ -16,6 +16,10 @@ public:
 	static NAN_METHOD(New);
 	
 	static NAN_METHOD(AddProvider);
+	static NAN_METHOD(AddCert);
+	static NAN_METHOD(AddCrl);
+	static NAN_METHOD(AddCsr);
+	static NAN_METHOD(AddKey);
 	static NAN_METHOD(Find);
 	static NAN_METHOD(FindKey);
 	static NAN_METHOD(GetItem);
@@ -29,6 +33,8 @@ public:
 
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
+
+	WRAP_NEW_INSTANCE(Provider);
 };
 
 WRAP_CLASS(Filter){

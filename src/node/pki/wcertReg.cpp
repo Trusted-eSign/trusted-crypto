@@ -17,6 +17,7 @@ void WCertificationRequest::Init(v8::Handle<v8::Object> exports){
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
+	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "sign", Sign);
 	Nan::SetPrototypeMethod(tpl, "getPEMString", GetPEMString);
 
@@ -41,6 +42,35 @@ NAN_METHOD(WCertificationRequest::New){
 		return;
 	}
 	TRY_END();	
+}
+
+/*
+* filename: String
+* format: DataFormat
+*/
+NAN_METHOD(WCertificationRequest::Load) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("filename");
+		v8::String::Utf8Value v8Filename(info[0]->ToString());
+		char *filename = *v8Filename;
+
+		LOGGER_ARG("format");
+		int format = info[1]->ToNumber()->Int32Value();
+
+		UNWRAP_DATA(CertificationRequest);
+
+		Handle<Bio> in = NULL;
+
+		in = new Bio(BIO_TYPE_FILE, filename, "rb");
+
+		_this->read(in, DataFormat::get(format));
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
 }
 
 NAN_METHOD(WCertificationRequest::Sign){

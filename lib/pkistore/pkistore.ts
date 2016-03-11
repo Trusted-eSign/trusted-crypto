@@ -7,9 +7,7 @@ import {Key} from "../pki/key";
 import {CashJson} from "./cashjson";
 
 export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements native.PKISTORE.IFilter {
-
     constructor() {
-        handle: native.PKISTORE.Filter;
         super();
         this.handle = new native.PKISTORE.Filter();
     }
@@ -52,9 +50,7 @@ export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements
 }
 
 export class PkiItem extends object.BaseObject<native.PKISTORE.PkiItem> implements native.PKISTORE.IPkiItem {
-
     constructor() {
-        handle: native.PKISTORE.PkiItem;
         super();
         this.handle = new native.PKISTORE.PkiItem();
     }
@@ -145,7 +141,23 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
     }
 
     addProvider(provider: native.PKISTORE.Provider) {
-        return this.handle.addProvider(provider);
+        this.handle.addProvider(provider);
+    }
+    
+    addCert(provider: native.PKISTORE.Provider, category: string, cert: Certificate, flags: number) {
+        this.handle.addCert(provider, category, cert.handle, flags);
+    }
+    
+    addCrl(provider: native.PKISTORE.Provider, category: string, crl: Crl, flags: number) {
+        this.handle.addCrl(provider, category, crl.handle, flags);
+    }
+    
+    addKey(provider: native.PKISTORE.Provider, key: Key, password: string) {
+        this.handle.addKey(provider, key.handle, password);
+    }
+    
+    addCsr(provider: native.PKISTORE.Provider, category: string, csr: CertificationRequest) {
+        this.handle.addCsr(provider, category, csr.handle);
     }
 
     find(ifilter?: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem[] {

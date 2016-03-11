@@ -30,7 +30,7 @@ public:
 
 	Handle<ProviderCollection> providers;
 
-	void addProvider(Provider* provider);
+	void addProvider(Handle<Provider> provider);
 	void deleteProvider(Handle<std::string> typeProvider);
 	
 	Handle<PkiItemCollection> find(Handle<Filter> filter);
@@ -40,6 +40,11 @@ public:
 	Handle<CRL> getItemCrl(Handle<PkiItem> item);
 	Handle<Key> getItemKey(Handle<PkiItem> item);
 	Handle<CertificationRequest> getItemReq(Handle<PkiItem> item);
+
+	void addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, unsigned int flags);
+	void addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl, unsigned int flags);
+	void addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CertificationRequest> csr);
+	void addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password);
 };
 
 #endif //PKISTORE_H_INCLUDED

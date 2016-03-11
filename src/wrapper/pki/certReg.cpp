@@ -91,3 +91,33 @@ Handle<std::string> CertificationRequest::getPEMString(){
 		THROW_EXCEPTION(0, CertificationRequest, e, "Error get pem CSR");
 	}
 }
+
+void CertificationRequest::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
+	LOGGER_FN();
+
+	if (in.isEmpty())
+		THROW_EXCEPTION(0, CertificationRequest, NULL, "Parameter %d cann't be NULL", 1);
+
+	X509_REQ *req = NULL;
+
+	in->reset();
+
+	switch (format){
+	case DataFormat::DER:
+		LOGGER_OPENSSL(d2i_X509_REQ_bio);
+		req = d2i_X509_REQ_bio(in->internal(), NULL);
+		break;
+	case DataFormat::BASE64:
+		LOGGER_OPENSSL(PEM_read_bio_X509);
+		req = PEM_read_bio_X509_REQ(in->internal(), NULL, NULL, NULL);
+		break;
+	default:
+		THROW_EXCEPTION(0, CertificationRequest, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
+	}
+
+	if (!req) {
+		THROW_EXCEPTION(0, CertificationRequest, NULL, "Can not read X509_REQ data from BIO");
+	}
+
+	this->setData(req);
+}

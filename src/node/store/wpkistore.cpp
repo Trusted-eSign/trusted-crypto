@@ -25,6 +25,10 @@ void WPkiStore::Init(v8::Handle<v8::Object> exports){
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
 	Nan::SetPrototypeMethod(tpl, "addProvider", AddProvider);
+	Nan::SetPrototypeMethod(tpl, "addCert", AddCert);
+	Nan::SetPrototypeMethod(tpl, "addCrl", AddCrl);
+	Nan::SetPrototypeMethod(tpl, "addKey", AddKey);
+	Nan::SetPrototypeMethod(tpl, "addCsr", AddCsr);
 	Nan::SetPrototypeMethod(tpl, "find", Find);
 	Nan::SetPrototypeMethod(tpl, "findKey", FindKey);
 	Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
@@ -59,13 +63,113 @@ NAN_METHOD(WPkiStore::AddProvider){
 	METHOD_BEGIN();
 
 	try{
-		LOGGER_ARG("provider_system");
+		LOGGER_ARG("provider");
 		WProvider * wProv = WProvider::Unwrap<WProvider>(info[0]->ToObject());
 
 		UNWRAP_DATA(PkiStore);
 
-		_this->addProvider((wProv->data_.operator->()));
+		_this->addProvider(wProv->data_);
 						
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+
+	TRY_END();
+}
+
+NAN_METHOD(WPkiStore::AddCert){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("provider");
+		WProvider * wProv = WProvider::Unwrap<WProvider>(info[0]->ToObject());
+
+		LOGGER_ARG("category");
+		v8::String::Utf8Value v8Category(info[1]->ToString());
+		char *category = *v8Category;
+
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[2]->ToObject());
+
+		UNWRAP_DATA(PkiStore);
+
+		_this->addPkiObject(wProv->data_, new std::string(category), wCert->data_, NULL);
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+
+	TRY_END();
+}
+
+NAN_METHOD(WPkiStore::AddCrl){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("provider");
+		WProvider * wProv = WProvider::Unwrap<WProvider>(info[0]->ToObject());
+
+		LOGGER_ARG("category");
+		v8::String::Utf8Value v8Category(info[1]->ToString());
+		char *category = *v8Category;
+
+		LOGGER_ARG("crl");
+		WCRL * wCrl = WCRL::Unwrap<WCRL>(info[2]->ToObject());
+
+		UNWRAP_DATA(PkiStore);
+
+		_this->addPkiObject(wProv->data_, new std::string(category), wCrl->data_, NULL);
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+
+	TRY_END();
+}
+
+NAN_METHOD(WPkiStore::AddCsr){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("provider");
+		WProvider * wProv = WProvider::Unwrap<WProvider>(info[0]->ToObject());
+
+		LOGGER_ARG("category");
+		v8::String::Utf8Value v8Category(info[1]->ToString());
+		char *category = *v8Category;
+
+		LOGGER_ARG("csr");
+		WCertificationRequest * wCsr = WCertificationRequest::Unwrap<WCertificationRequest>(info[2]->ToObject());
+
+		UNWRAP_DATA(PkiStore);
+
+		_this->addPkiObject(wProv->data_, new std::string(category), wCsr->data_);
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+
+	TRY_END();
+}
+
+NAN_METHOD(WPkiStore::AddKey){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("provider");
+		WProvider * wProv = WProvider::Unwrap<WProvider>(info[0]->ToObject());
+
+		LOGGER_ARG("key");
+		WKey * wKey = WKey::Unwrap<WKey>(info[1]->ToObject());
+
+		LOGGER_ARG("password");
+		v8::String::Utf8Value v8Pass(info[2]->ToString());
+		char *password = *v8Pass;
+
+		UNWRAP_DATA(PkiStore);
+
+		_this->addPkiObject(wProv->data_, wKey->data_, new std::string(password));
+
 		info.GetReturnValue().Set(info.This());
 		return;
 	}

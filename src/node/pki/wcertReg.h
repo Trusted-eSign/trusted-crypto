@@ -15,6 +15,7 @@ public:
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
 
+	static NAN_METHOD(Load);
 	static NAN_METHOD(Sign);
 	static NAN_METHOD(GetPEMString);
 

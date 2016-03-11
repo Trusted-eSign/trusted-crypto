@@ -21,6 +21,7 @@ public:
 	CertificationRequest(Handle<CertificationRequestInfo> csrinfo);
 
 	//Methods
+	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);
 	void sign(Handle<Key> key, const char* digest);
 	bool verify();
 

@@ -322,8 +322,200 @@ Handle<PkiItemCollection> PkiStore::getItems(){
 	}	
 }
 
-void PkiStore::addProvider(Provider* provider){
+void PkiStore::addProvider(Handle<Provider> provider){
 	LOGGER_FN();
 	
 	providers->push(provider);
+}
+
+void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, unsigned int flags){
+	LOGGER_FN();
+
+	try{
+		if (strcmp(provider->type->c_str(), "SYSTEM") == 0){
+			std::string uri = (std::string)provider->path->c_str() + CROSSPLATFORM_SLASH + (std::string)category->c_str() + CROSSPLATFORM_SLASH;
+
+			char * hexHash;
+			Handle<std::string> hhash = cert->getThumbprint();
+			Provider_System::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+
+			uri = uri + std::string(hexHash) + "_";
+
+			EVP_PKEY *pkey;
+			LOGGER_OPENSSL(BIO_new);
+			BIO * bioBN = BIO_new(BIO_s_mem());
+			LOGGER_OPENSSL(X509_get_pubkey);
+			pkey = X509_get_pubkey(cert->internal());
+			if (pkey == NULL) {
+				THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Modulus=unavailable", NULL);
+			}
+
+			#ifndef OPENSSL_NO_RSA
+			if (pkey->type == EVP_PKEY_RSA)
+				BN_print(bioBN, pkey->pkey.rsa->n);
+			else
+			#endif
+			#ifndef OPENSSL_NO_DSA
+				if (pkey->type == EVP_PKEY_DSA)
+					BN_print(bioBN, pkey->pkey.dsa->pub_key);
+				else
+			#endif
+
+			LOGGER_OPENSSL(EVP_PKEY_free);
+			EVP_PKEY_free(pkey);
+			
+			int contlen;
+			char * cont;
+			LOGGER_OPENSSL(BIO_get_mem_data);
+			contlen = BIO_get_mem_data(bioBN, &cont);
+
+			unsigned char tmphash[SHA_DIGEST_LENGTH];
+			LOGGER_OPENSSL(SHA1);
+			SHA1((const unsigned char *)cont, contlen, tmphash);
+			Provider_System::bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+
+			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".crt";
+
+			Handle<std::string> huri = new std::string(uri);
+ 			Provider_System::addPkiObject(huri, cert, flags);
+		}
+		else{
+			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, PkiStore, e, "Error add certificate to store");
+	}
+}
+
+void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl, unsigned int flags){
+	LOGGER_FN();
+
+	try{
+		if (strcmp(provider->type->c_str(), "SYSTEM") == 0){
+			std::string uri = (std::string)provider->path->c_str() + CROSSPLATFORM_SLASH + (std::string)category->c_str() + CROSSPLATFORM_SLASH;
+
+			char * hexHash;
+			Handle<std::string> hhash = crl->getThumbprint();
+			Provider_System::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+
+			uri = uri + std::string(hexHash) + ".crl";
+
+			Handle<std::string> huri = new std::string(uri);
+			Provider_System::addPkiObject(huri, crl, flags);
+		}
+		else{
+			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, PkiStore, e, "Error add crl to store");
+	}
+}
+
+void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CertificationRequest> csr){
+	LOGGER_FN();
+
+	try{
+		if (strcmp(provider->type->c_str(), "SYSTEM") == 0){
+			std::string uri = (std::string)provider->path->c_str() + CROSSPLATFORM_SLASH + (std::string)category->c_str() + CROSSPLATFORM_SLASH;
+
+			unsigned char hash[EVP_MAX_MD_SIZE] = { 0 };
+			unsigned int hashlen = 0;
+			LOGGER_OPENSSL(X509_digest);
+			if (!X509_REQ_digest(csr->internal(), EVP_sha1(), hash, &hashlen)) {
+				THROW_OPENSSL_EXCEPTION(0, Provider_System, NULL, "X509_REQ_digest");
+			}
+			Handle<std::string> hhash = new std::string((char *)hash, hashlen);
+
+			char * hexHash;
+			Provider_System::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+
+			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + "_";
+
+			EVP_PKEY *pkey;
+			LOGGER_OPENSSL(BIO_new);
+			BIO * bioBN = BIO_new(BIO_s_mem());
+			LOGGER_OPENSSL(X509_REQ_get_pubkey);
+			pkey = X509_REQ_get_pubkey(csr->internal());
+			if (pkey == NULL) {
+				THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Modulus=unavailable", NULL);
+			}
+
+			#ifndef OPENSSL_NO_RSA
+			if (pkey->type == EVP_PKEY_RSA)
+				BN_print(bioBN, pkey->pkey.rsa->n);
+			else
+				#endif
+			#ifndef OPENSSL_NO_DSA
+				if (pkey->type == EVP_PKEY_DSA)
+					BN_print(bioBN, pkey->pkey.dsa->pub_key);
+				else
+					#endif
+
+					LOGGER_OPENSSL(EVP_PKEY_free);
+			EVP_PKEY_free(pkey);
+
+			int contlen;
+			char * cont;
+			LOGGER_OPENSSL(BIO_get_mem_data);
+			contlen = BIO_get_mem_data(bioBN, &cont);
+
+			unsigned char tmphash[SHA_DIGEST_LENGTH];
+			LOGGER_OPENSSL(SHA1);
+			SHA1((const unsigned char *)cont, contlen, tmphash);
+			Provider_System::bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+
+			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".csr";
+
+			Handle<std::string> huri = new std::string(uri);
+			Provider_System::addPkiObject(huri, csr);
+		}
+		else{
+			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, PkiStore, e, "Error add csr to store");
+	}
+}
+
+void PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password){
+	LOGGER_FN();
+
+	try{
+		if (strcmp(provider->type->c_str(), "SYSTEM") == 0){
+			std::string uri = (std::string)provider->path->c_str() + CROSSPLATFORM_SLASH + "MY" + CROSSPLATFORM_SLASH;
+
+			RSA *rsa = NULL;
+			LOGGER_OPENSSL(EVP_PKEY_get1_RSA);
+			rsa = EVP_PKEY_get1_RSA(key->internal());
+
+			LOGGER_OPENSSL(BIO_new);
+			BIO * bioBN = BIO_new(BIO_s_mem());
+			BN_print(bioBN, rsa->n);
+
+			int contlen;
+			char * cont;
+			LOGGER_OPENSSL(BIO_get_mem_data);
+			contlen = BIO_get_mem_data(bioBN, &cont);
+
+			char * hexHash;
+			unsigned char tmphash[SHA_DIGEST_LENGTH];
+			LOGGER_OPENSSL(SHA1);
+			SHA1((const unsigned char *)cont, contlen, tmphash);
+			Provider_System::bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+									
+			uri = uri + std::string(hexHash) + ".key";
+
+			Handle<std::string> huri = new std::string(uri);
+			Provider_System::addPkiObject(huri, key, password);
+		}
+		else{
+			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, PkiStore, e, "Error add key to store");
+	}
 }

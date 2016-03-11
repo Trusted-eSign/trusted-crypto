@@ -126,6 +126,7 @@ export namespace PKI {
 
     export declare class CertificationRequest {
        constructor(csrinfo: PKI.CertificationRequestInfo);
+       load(filename: string, dataFormat: DataFormat): void;
        sign(key: Key): void;
        verify(): boolean;
        getPEMString(): Buffer;
@@ -317,6 +318,11 @@ export namespace PKISTORE {
         getItem(item: PkiItem): any;
 
         addProvider(provider: Provider): void;
+
+        addCert(provider: Provider, category: string, cert: PKI.Certificate, flags: number): void;
+        addCrl(provider: Provider, category: string, crl: PKI.CRL, flags: number): void;
+        addKey(provider: Provider, key: PKI.Key, password: string): void;
+        addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): void;
     }
 
     export declare class CashJson {

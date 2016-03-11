@@ -11,6 +11,7 @@ Provider_System::Provider_System(Handle<std::string> folder){
 
 	try{
 		type = new std::string("SYSTEM");
+		path = folder;
 		providerItemCollection = new PkiItemCollection();
 
 		if (folder.isEmpty()){
@@ -540,6 +541,65 @@ Handle<Key> Provider_System::getKeyFromURI(Handle<std::string> uri, Handle<std::
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Provider_System, e, "getCSRFromURI");
+	}
+}
+
+void Provider_System::addPkiObject(Handle<std::string> uri, Handle<Certificate> cert, unsigned int flags){
+	LOGGER_FN();
+
+	try{
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, uri->c_str(), "wb");
+
+		LOGGER_OPENSSL(PEM_write_bio_X509);
+		if (!PEM_write_bio_X509(out->internal(), cert->internal())){
+			THROW_OPENSSL_EXCEPTION(0, Provider_System, NULL, "PEM_write_bio_X509", NULL);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Provider_System, e, "Error add certificate to store");
+	}	
+}
+
+void Provider_System::addPkiObject(Handle<std::string> uri, Handle<CRL> crl, unsigned int flags){
+	LOGGER_FN();
+
+	try{
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, uri->c_str(), "wb");
+
+		LOGGER_OPENSSL(i2d_X509_CRL_bio);
+		if (!i2d_X509_CRL_bio(out->internal(), crl->internal())){
+			THROW_OPENSSL_EXCEPTION(0, CRL, NULL, "i2d_X509_CRL_bio");
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Provider_System, e, "Error add crl to store");
+	}
+}
+
+void Provider_System::addPkiObject(Handle<std::string> huri, Handle<Key> key, Handle<std::string> password){
+	LOGGER_FN();
+
+	try{
+		key->privkeySave(huri->c_str(), DataFormat::BASE64, password->c_str());
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Provider_System, e, "Error add crl to store");
+	}
+}
+
+void Provider_System::addPkiObject(Handle<std::string> uri, Handle<CertificationRequest> csr){
+	LOGGER_FN();
+
+	try{
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, uri->c_str(), "wb");
+
+		LOGGER_OPENSSL(PEM_write_bio_X509_REQ);
+		if (!PEM_write_bio_X509_REQ(out->internal(), csr->internal())){
+			THROW_OPENSSL_EXCEPTION(0, Provider_System, NULL, "PEM_write_bio_X509_REQ", NULL);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Provider_System, e, "Error add csr to store");
 	}
 }
 

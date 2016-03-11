@@ -134,6 +134,7 @@ public:
 
 public:
 	Handle<std::string> type;
+	Handle<std::string> path; /* Only for provider system */
 
 	Handle<PkiItemCollection> getProviderItemCollection();
 	Handle<PkiItemCollection> providerItemCollection;
@@ -147,9 +148,8 @@ public:
 	Handle<Provider> items(int index);
 	int length();
 	void push(Handle<Provider> v);
-	void push(Provider &v);
 protected:
-	std::vector<Provider> _items;
+	std::vector<Handle<Provider> > _items;
 };
 
 #endif //STOREHELPER_H_INCLUDED

@@ -11,7 +11,7 @@ Handle<PkiItemCollection> Provider::getProviderItemCollection(){
 ProviderCollection::ProviderCollection(){
 	LOGGER_FN();
 
-	_items = std::vector<Provider>();
+	_items = std::vector<Handle<Provider> >();
 }
 
 ProviderCollection::~ProviderCollection(){
@@ -21,7 +21,7 @@ ProviderCollection::~ProviderCollection(){
 Handle<Provider> ProviderCollection::items(int index){
 	LOGGER_FN();
 
-	return new Provider(_items.at(index));
+	return _items.at(index);
 }
 
 int ProviderCollection::length(){
@@ -31,12 +31,6 @@ int ProviderCollection::length(){
 }
 
 void ProviderCollection::push(Handle<Provider> v){
-	LOGGER_FN();
-
-	_items.push_back((*v.operator->()));
-}
-
-void ProviderCollection::push(Provider &v){
 	LOGGER_FN();
 
 	_items.push_back(v);
