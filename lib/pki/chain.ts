@@ -10,7 +10,6 @@ const DEFAULT_DATA_FORMAT = DataFormat.PEM;
 export class Chain extends object.BaseObject<native.PKI.Chain> {
 
     constructor() {
-        handle: native.PKI.Chain;
         super();
         this.handle = new native.PKI.Chain();
     }

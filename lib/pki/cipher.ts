@@ -11,7 +11,6 @@ const DEFAULT_DATA_FORMAT = DataFormat.PEM;
 export class Cipher extends object.BaseObject<native.PKI.Cipher> {
 
     constructor(cipherName: string) {
-        handle: native.PKI.Cipher;
         super();
         this.handle = new native.PKI.Cipher(cipherName);
     }

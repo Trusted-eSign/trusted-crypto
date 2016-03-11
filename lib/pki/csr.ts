@@ -8,9 +8,8 @@ const DEFAULT_DATA_FORMAT = DataFormat.PEM;
 
 export class CSR extends object.BaseObject<native.PKI.CSR> {
     
-    constructor(name: string, key: Key, digest: string) {       
-        handle: native.PKI.CSR;
-        super();   
+    constructor(name: string, key: Key, digest: string) {
+        super();
         this.handle = new native.PKI.CSR(name, key.handle, digest);
     } 
 

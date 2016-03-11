@@ -4,7 +4,6 @@ import {PkiItem} from "./pkistore";
 
 export class CashJson extends object.BaseObject<native.PKISTORE.CashJson> {
     constructor(fileName: string) {
-        handle: native.PKISTORE.CashJson;
         super();
         this.handle = new native.PKISTORE.CashJson(fileName);
     }
