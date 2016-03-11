@@ -377,6 +377,10 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".crt";
 
 			Handle<std::string> huri = new std::string(uri);
+
+			LOGGER_OPENSSL(BIO_free_all);
+			BIO_free_all(bioBN);
+
  			Provider_System::addPkiObject(huri, cert, flags);
 		}
 		else{
@@ -469,6 +473,10 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".csr";
 
 			Handle<std::string> huri = new std::string(uri);
+
+			LOGGER_OPENSSL(BIO_free_all);
+			BIO_free_all(bioBN);
+
 			Provider_System::addPkiObject(huri, csr);
 		}
 		else{
@@ -509,6 +517,10 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<s
 			uri = uri + std::string(hexHash) + ".key";
 
 			Handle<std::string> huri = new std::string(uri);
+
+			LOGGER_OPENSSL(BIO_free_all);
+			BIO_free_all(bioBN);
+
 			Provider_System::addPkiObject(huri, key, password);
 		}
 		else{
