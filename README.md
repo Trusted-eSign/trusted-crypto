@@ -7,7 +7,16 @@ Trusted crypto library
 > npm install -g typescrypt
 > npm install -g tsd
 > npm install -g mocha
+> npm install -g async
+> npm install -g request
 > npm install
+```
+# Установка tsd-пакетов
+
+```
+> tsd install
+> tsd install request --save
+> tsd install async --save
 ```
 
 # Сборка проекта
