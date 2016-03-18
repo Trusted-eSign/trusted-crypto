@@ -45,6 +45,7 @@ public:
 	void addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl, unsigned int flags);
 	void addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CertificationRequest> csr);
 	void addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password);
+	std::vector<std::string> getCrlDistPoints(Handle<Certificate> cert);
 };
 
 #endif //PKISTORE_H_INCLUDED

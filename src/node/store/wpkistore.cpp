@@ -33,6 +33,7 @@ void WPkiStore::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "findKey", FindKey);
 	Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
 	Nan::SetPrototypeMethod(tpl, "getCash", GetCash);
+	Nan::SetPrototypeMethod(tpl, "getCrlDistPoints", GetCrlDistPoints);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -921,5 +922,32 @@ NAN_METHOD(WPkiItem::SetKeyEncrypted) {
 		_this->setKeyEncypted(v8Enc->BooleanValue());
 		return;
 	}
+	TRY_END();
+}
+
+NAN_METHOD(WPkiStore::GetCrlDistPoints){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		UNWRAP_DATA(PkiStore);
+
+		std::vector<std::string> res = _this->getCrlDistPoints(wCert->data_);
+
+		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+
+		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
+
+		for (int i = 0; i < res.size(); i++){
+			v8::Local<v8::String> v8Str = Nan::New<v8::String>(res[i]).ToLocalChecked();
+			array8->Set(i, v8Str);
+		}
+
+		info.GetReturnValue().Set(array8);
+		return;
+	}
+
 	TRY_END();
 }

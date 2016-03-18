@@ -24,6 +24,7 @@ public:
 	static NAN_METHOD(FindKey);
 	static NAN_METHOD(GetItem);
 	static NAN_METHOD(GetCash);
+	static NAN_METHOD(GetCrlDistPoints);
 };
 
 WRAP_CLASS(Provider){

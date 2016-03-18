@@ -1,5 +1,6 @@
 var assert = require('assert');
 var trusted = require("../index.js")
+var async = require("async");
 
 var DEFAULT_CERTSTORE_PATH = "test/CertStore";
 
@@ -79,6 +80,30 @@ describe('Store', function () {
        store.cash.import(items);
        var exportPKI = store.cash.export();
        assert.equal(exportPKI.length > 0, true);
-    })    
-    	
-})
+    })
+       
+    it('download CRL',  function (done) { 
+       this.timeout(10000);        
+       var testCert = trusted.pki.Certificate.load("test/test-ru.crt", trusted.DataFormat.DER);
+       var path = DEFAULT_CERTSTORE_PATH + "/temp.crl";
+       var crl;
+           
+
+       store.downloadCRL(testCert, path, function(err, res){
+           if (err){
+               console.log(err);
+               done(err);
+           }
+           else{
+                crl = res;
+                console.log("All CRL downloaded");
+                console.log("Isuer name:", crl.issuerFriendlyName);
+                
+                store.addCrl(providerSystem.handle, "CRL", crl, 0); 
+                
+                done();
+           }          
+        });                             
+  });
+     	
+});

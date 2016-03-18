@@ -1,10 +1,48 @@
 import * as native from "../native";
 import * as object from "../object";
+import * as fs  from "fs";
+import * as request  from "request";
+import * as async  from "async";
+
+import {DataFormat} from "../data_format";
 import {Certificate} from "../pki/cert";
 import {Crl} from "../pki/crl";
 import {CertificationRequest} from "../pki/certReg";
 import {Key} from "../pki/key";
 import {CashJson} from "./cashjson";
+
+/**
+* Download file
+* @param url  url to remote file
+* @param path path for save in local system
+* @param done callback function
+*/
+function download(url: string, path: string, done: Function): void {
+    let sendReq = request.get(url);
+
+    sendReq.on("response", function(response){
+        switch (response.statusCode) {
+            case 200:
+                let stream = fs.createWriteStream(path);
+
+                response.on("data", function(chunk){
+                    stream.write(chunk);
+                }).on("end", function(){
+                    stream.end();
+                    done(null, url, path);
+                });
+
+                break;
+            default:
+                done(new Error("Server responded with status code" + response.statusCode));
+        }
+    });
+
+     sendReq.on("error", function(err) {
+        fs.unlink(path);
+        done(err.message);
+     });
+}
 
 export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements native.PKISTORE.IFilter {
     constructor() {
@@ -12,39 +50,39 @@ export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements
         this.handle = new native.PKISTORE.Filter();
     }
 
-    set types(type: string){
+    set types(type: string) {
         this.handle.setType(type);
     }
-    
-    set providers(provider: string){
+
+    set providers(provider: string) {
         this.handle.setProvider(provider);
     }
-    
-    set categorys(category: string){
+
+    set categorys(category: string) {
         this.handle.setCategory(category);
     }
-    
-    set hash(hash: string){
+
+    set hash(hash: string) {
         this.handle.setHash(hash);
     }
-    
-    set subjectName(subjectName: string){
+
+    set subjectName(subjectName: string) {
         this.handle.setSubjectName(subjectName);
     }
-    
-    set subjectFriendlyName(subjectFriendlyName: string){
+
+    set subjectFriendlyName(subjectFriendlyName: string) {
         this.handle.setSubjectFriendlyName(subjectFriendlyName);
     }
-    
-    set issuerName(issuerName: string){
+
+    set issuerName(issuerName: string) {
         this.handle.setIssuerName(issuerName);
     }
-    
-    set issuerFriendlyName(issuerFriendlyName: string){
+
+    set issuerFriendlyName(issuerFriendlyName: string) {
         this.handle.setIssuerFriendlyName(issuerFriendlyName);
     }
-    
-    set serial(serial: string){
+
+    set serial(serial: string) {
         this.handle.setSerial(serial);
     }
 }
@@ -54,72 +92,72 @@ export class PkiItem extends object.BaseObject<native.PKISTORE.PkiItem> implemen
         super();
         this.handle = new native.PKISTORE.PkiItem();
     }
-    
-    set format(format: string){
+
+    set format(format: string) {
         this.handle.setFormat(format);
     }
 
-    set type(type: string){
+    set type(type: string) {
         this.handle.setType(type);
     }
-    
-    set provider(provider: string){
+
+    set provider(provider: string) {
         this.handle.setProvider(provider);
     }
-    
-    set category(category: string){
+
+    set category(category: string) {
         this.handle.setCategory(category);
     }
-    
-    set uri(uri: string){
+
+    set uri(uri: string) {
         this.handle.setURI(uri);
     }
-    
-    set hash(hash: string){
+
+    set hash(hash: string) {
         this.handle.setHash(hash);
     }
-    
-    set subjectName(subjectName: string){
+
+    set subjectName(subjectName: string) {
         this.handle.setSubjectName(subjectName);
     }
-    
-    set subjectFriendlyName(subjectFriendlyName: string){
+
+    set subjectFriendlyName(subjectFriendlyName: string) {
         this.handle.setSubjectFriendlyName(subjectFriendlyName);
     }
-    
-    set issuerName(issuerName: string){
+
+    set issuerName(issuerName: string) {
         this.handle.setIssuerName(issuerName);
     }
-    
-    set issuerFriendlyName(issuerFriendlyName: string){
+
+    set issuerFriendlyName(issuerFriendlyName: string) {
         this.handle.setIssuerFriendlyName(issuerFriendlyName);
     }
-    
-    set serial(serial: string){
+
+    set serial(serial: string) {
         this.handle.setSerial(serial);
     }
-    
-    set notBefore(before: string){
+
+    set notBefore(before: string) {
         this.handle.setNotBefore(before);
     }
-    
-    set notAfter(after: string){
+
+    set notAfter(after: string) {
         this.handle.setNotAfter(after);
     }
-    
-    set lastUpdate(lastUpdate: string){
+
+    set lastUpdate(lastUpdate: string) {
         this.handle.setLastUpdate(lastUpdate);
     }
-    
-    set nextUpdate(nextUpdate: string){
+
+    set nextUpdate(nextUpdate: string) {
         this.handle.setNextUpdate(nextUpdate);
     }
-    
-    set key(key: string){
+
+    set key(key: string) {
         this.handle.setKey(key);
     }
-    
-    set keyEnc(enc: boolean){
+
+    set keyEnc(enc: boolean) {
         this.handle.setKeyEncrypted(enc);
     }
 
@@ -135,7 +173,7 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         else
             this.handle = new native.PKISTORE.PkiStore(param);
     }
-    
+
     get cash(): CashJson {
         return CashJson.wrap<native.PKISTORE.CashJson, CashJson>(this.handle.getCash());
     }
@@ -143,121 +181,121 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
     addProvider(provider: native.PKISTORE.Provider) {
         this.handle.addProvider(provider);
     }
-    
+
     addCert(provider: native.PKISTORE.Provider, category: string, cert: Certificate, flags: number) {
         this.handle.addCert(provider, category, cert.handle, flags);
     }
-    
+
     addCrl(provider: native.PKISTORE.Provider, category: string, crl: Crl, flags: number) {
         this.handle.addCrl(provider, category, crl.handle, flags);
     }
-    
+
     addKey(provider: native.PKISTORE.Provider, key: Key, password: string) {
         this.handle.addKey(provider, key.handle, password);
     }
-    
+
     addCsr(provider: native.PKISTORE.Provider, category: string, csr: CertificationRequest) {
         this.handle.addCsr(provider, category, csr.handle);
     }
 
     find(ifilter?: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem[] {
         let filter = new Filter();
-        
-        if(!ifilter){
+
+        if (!ifilter) {
             return this.handle.find(filter.handle);
         }
-        
+
         if (ifilter.type) {
             for (let i in ifilter.type) {
                 filter.types = ifilter.type[i];
             }
         }
-        
+
         if (ifilter.provider) {
             for (let i in ifilter.provider) {
                 filter.providers = ifilter.provider[i];
             }
         }
-        
+
         if (ifilter.category) {
             for (let i in ifilter.category) {
                 filter.categorys = ifilter.category[i];
             }
         }
-        
+
         if (ifilter.hash) {
             filter.hash = ifilter.hash;
         }
-        
+
         if (ifilter.subjectName) {
             filter.subjectName = ifilter.subjectName;
         }
-        
+
         if (ifilter.subjectFriendlyName) {
             filter.subjectFriendlyName = ifilter.subjectFriendlyName;
         }
-        
+
         if (ifilter.issuerName) {
             filter.issuerName = ifilter.issuerName;
         }
-        
+
         if (ifilter.issuerFriendlyName) {
             filter.issuerFriendlyName = ifilter.issuerFriendlyName;
         }
-        
+
         if (ifilter.serial) {
             filter.serial = ifilter.serial;
         }
 
-       return this.handle.find(filter.handle);
+        return this.handle.find(filter.handle);
     }
-    
+
     findKey(ifilter: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem {
         let filter = new Filter();
-                
+
         if (ifilter.type) {
             for (let i in ifilter.type) {
                 filter.types = ifilter.type[i];
             }
         }
-        
+
         if (ifilter.provider) {
             for (let i in ifilter.provider) {
                 filter.providers = ifilter.provider[i];
             }
         }
-        
+
         if (ifilter.category) {
             for (let i in ifilter.category) {
                 filter.categorys = ifilter.category[i];
             }
         }
-        
+
         if (ifilter.hash) {
             filter.hash = ifilter.hash;
         }
-        
+
         if (ifilter.subjectName) {
             filter.subjectName = ifilter.subjectName;
         }
-        
+
         if (ifilter.subjectFriendlyName) {
             filter.subjectFriendlyName = ifilter.subjectFriendlyName;
         }
-        
+
         if (ifilter.issuerName) {
             filter.issuerName = ifilter.issuerName;
         }
-        
+
         if (ifilter.issuerFriendlyName) {
             filter.issuerFriendlyName = ifilter.issuerFriendlyName;
         }
-        
+
         if (ifilter.serial) {
             filter.serial = ifilter.serial;
         }
 
-       return this.handle.findKey(filter.handle);
+        return this.handle.findKey(filter.handle);
     }
 
     getItem(item: native.PKISTORE.IPkiItem): any {
@@ -302,21 +340,66 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         if (item.encrypted) {
             pkiItem.keyEnc = item.encrypted;
         }
-        
+
         if (item.type === "CERTIFICATE") {
             return Certificate.wrap<native.PKI.Certificate, Certificate>(this.handle.getItem(pkiItem.handle));
         }
-        
+
         if (item.type === "CRL") {
             return Crl.wrap<native.PKI.CRL, Crl>(this.handle.getItem(pkiItem.handle));
         }
-        
+
         if (item.type === "REQUEST") {
             return CertificationRequest.wrap<native.PKI.CertificationRequest, CertificationRequest>(this.handle.getItem(pkiItem.handle));
         }
-        
+
         if (item.type === "KEY") {
             return Key.wrap<native.PKI.Key, Key>(this.handle.getItem(pkiItem.handle));
+        }
+    }
+    
+    /**
+    * Get array distribution points for certificate
+    * @param cert  Certificate
+    */
+    getCrlDistPoints(cert: Certificate): Array<string> {
+        return this.handle.getCrlDistPoints(cert.handle);
+    }
+    
+    /**
+    * Download CRL
+    * @param cert  Certificate for download crl
+    * @param path path for save in local system
+    * @param done callback function
+    */
+    downloadCRL(cert: Certificate, path: string, done: Function): void {
+        let crl = new Crl();
+        let distPoints = this.getCrlDistPoints(cert);
+        let returnPath;
+
+        try {
+            async.forEachOf(distPoints, function(value, key, callback) {
+                download(value, path + key, function(err, url, goodPath) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    else {
+                        returnPath = goodPath;
+                        callback();
+                    }
+                });
+            }, function(err) {
+                if (err) {
+                    done(err.message, null);
+                }
+                else {
+                    crl.load(returnPath);
+                    done(null, crl);
+                }
+            });
+        }
+       catch (e) {
+            done(e, null);
         }
     }
 }
