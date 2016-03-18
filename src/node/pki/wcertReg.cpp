@@ -30,12 +30,17 @@ void WCertificationRequest::Init(v8::Handle<v8::Object> exports){
 NAN_METHOD(WCertificationRequest::New){
 	METHOD_BEGIN();
 	try{
-		LOGGER_ARG("csrinfo")
-		WCertificationRequestInfo * wCertRegInfo = WCertificationRequestInfo::Unwrap<WCertificationRequestInfo>(info[0]->ToObject());
-		
 		WCertificationRequest *obj = new WCertificationRequest();
-		obj->data_ = new CertificationRequest(wCertRegInfo->data_);
+		obj->data_ = new CertificationRequest();
 
+		if (!info[0]->IsUndefined()){
+			LOGGER_INFO("csrinfo");
+			WCertificationRequestInfo * wCertRegInfo = WCertificationRequestInfo::Unwrap<WCertificationRequestInfo>(info[0]->ToObject());
+
+			obj->data_ = new CertificationRequest(wCertRegInfo->data_);
+
+		}
+		
 		obj->Wrap(info.This());
 
 		info.GetReturnValue().Set(info.This());
