@@ -253,7 +253,7 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 
 			char * hexHash;
 			Handle<std::string> hhash = hcert->getThumbprint();
-			bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+			PkiStore::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
 			item->hash = new std::string(hexHash);
 
 			item->certSubjectName = hcert->getSubjectName();
@@ -303,7 +303,7 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 			Handle<std::string> hhash = new std::string((char *)hash, hashlen);
 
 			char * hexHash;
-			bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+			PkiStore::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
 			item->hash = new std::string(hexHash);
 
 			/* Request subject name */
@@ -375,7 +375,7 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 			
 			char * hexHash;
 			Handle<std::string> hhash = hcrl->getThumbprint();
-			bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+			PkiStore::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
 			item->hash = new std::string(hexHash);
 
 			item->crlIssuerName = hcrl->issuerName();
@@ -622,23 +622,6 @@ void Provider_System::addPkiObject(Handle<std::string> uri, Handle<Certification
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error add csr to store");
-	}
-}
-
-void Provider_System::bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result){
-	LOGGER_FN();
-
-	char hex_str[] = "0123456789abcdef";
-	unsigned int  i;
-
-	*result = (char *)malloc(binsz * 2 + 1);
-	(*result)[binsz * 2] = 0;
-
-	if (!binsz)	return;
-
-	for (i = 0; i < binsz; i++){
-		(*result)[i * 2 + 0] = hex_str[(bin[i] >> 4) & 0x0F];
-		(*result)[i * 2 + 1] = hex_str[(bin[i]) & 0x0F];
 	}
 }
 

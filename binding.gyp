@@ -24,6 +24,7 @@
                 "src/node/store/wcashjson.cpp",
                 "src/node/store/wpkistore.cpp",
                 "src/node/store/wsystem.cpp",
+                "src/node/store/wmicrosoft.cpp",
                 "src/node/cms/wsigned_data.cpp",
                 "src/node/cms/wsigner.cpp",
                 "src/node/cms/wsigners.cpp",
@@ -81,7 +82,8 @@
                             ]
                         ],
                         "libraries": [
-                            "-l<(openssl_root)/lib/libeay32.lib"
+                            "-l<(openssl_root)/lib/libeay32.lib",
+                            "-lcrypt32.lib"
                         ],
                         "include_dirs": [
                             "<(openssl_root)/include"

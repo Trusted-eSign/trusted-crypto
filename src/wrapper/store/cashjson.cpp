@@ -49,45 +49,52 @@ Handle<PkiItemCollection> CashJson::exportJson(){
 			THROW_EXCEPTION(0, CashJson, NULL, "Parsing JSON unsuccessful");
 		}
 
-		Json::Value listPkiObj = jsnRoot["SYSTEM"]["PKIobject"]; /*Надо расширить !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+		std::string listProviders[] = {
+			"SYSTEM",
+			"MICROSOFT"
+		};
 
-		for (int i = 0; i < listPkiObj.size(); i++){
-			itemTemp->format = new std::string(listPkiObj[i]["Format"].asString());
-			itemTemp->type = new std:: string(listPkiObj[i]["Type"].asString());
-			itemTemp->uri = new std::string(listPkiObj[i]["URI"].asString());
-			itemTemp->provider = new std::string(listPkiObj[i]["Provider"].asString());
-			itemTemp->category = new std::string(listPkiObj[i]["Category"].asString());
-			itemTemp->hash = new std::string(listPkiObj[i]["Hash"].asString());
+		for (int i = 0, c = sizeof(listProviders) / sizeof(*listProviders); i < c; i++){
+			Json::Value listPkiObj = jsnRoot[listProviders[i]]["PKIobject"];
 
-			if (strcmp(itemTemp->type->c_str(), "CERTIFICATE") == 0){
-				itemTemp->certSubjectName = new std::string(listPkiObj[i]["SubjectName"].asString());
-				itemTemp->certSubjectFriendlyName = new std::string(listPkiObj[i]["SubjectFriendlyName"].asString());
-				itemTemp->certIssuerName = new std::string(listPkiObj[i]["IssuerName"].asString());
-				itemTemp->certIssuerFriendlyName = new std::string(listPkiObj[i]["IssuerFriendlyName"].asString());
-				itemTemp->certSerial = new std::string(listPkiObj[i]["Serial"].asString());
-				itemTemp->certNotBefore = new std::string(listPkiObj[i]["NotBefore"].asString());
-				itemTemp->certNotAfter = new std::string(listPkiObj[i]["NotAfter"].asString());
-				itemTemp->certKey = new std::string(listPkiObj[i]["Key"].asString());
-			}			
-			else if (strcmp(itemTemp->type->c_str(), "CRL") == 0){
-				itemTemp->crlIssuerName = new std::string(listPkiObj[i]["IssuerName"].asString());
-				itemTemp->crlIssuerFriendlyName = new std::string(listPkiObj[i]["IssuerFriendlyName"].asString());
-				itemTemp->crlLastUpdate = new std::string(listPkiObj[i]["LastUpdate"].asString());
-				itemTemp->crlNextUpdate = new std::string(listPkiObj[i]["NextUpdate"].asString());
-			}
-			else if (strcmp(itemTemp->type->c_str(), "REQUEST") == 0){
-				itemTemp->csrSubjectName = new std::string(listPkiObj[i]["SubjectName"].asString());
-				itemTemp->csrSubjectFriendlyName = new std::string(listPkiObj[i]["SubjectFriendlyName"].asString());
-				itemTemp->csrKey = new std::string(listPkiObj[i]["Key"].asString());
-			}
-			else if (strcmp(itemTemp->type->c_str(), "KEY") == 0){
-				itemTemp->keyEncrypted = listPkiObj[i]["Encrypted"].asBool();
-			}
-			else{
-				THROW_EXCEPTION(0, CashJson, NULL, "Unknown pki object type");
-			}
+			for (int i = 0; i < listPkiObj.size(); i++){
+				itemTemp->format = new std::string(listPkiObj[i]["Format"].asString());
+				itemTemp->type = new std::string(listPkiObj[i]["Type"].asString());
+				itemTemp->uri = new std::string(listPkiObj[i]["URI"].asString());
+				itemTemp->provider = new std::string(listPkiObj[i]["Provider"].asString());
+				itemTemp->category = new std::string(listPkiObj[i]["Category"].asString());
+				itemTemp->hash = new std::string(listPkiObj[i]["Hash"].asString());
 
-			items->push(itemTemp);
+				if (strcmp(itemTemp->type->c_str(), "CERTIFICATE") == 0){
+					itemTemp->certSubjectName = new std::string(listPkiObj[i]["SubjectName"].asString());
+					itemTemp->certSubjectFriendlyName = new std::string(listPkiObj[i]["SubjectFriendlyName"].asString());
+					itemTemp->certIssuerName = new std::string(listPkiObj[i]["IssuerName"].asString());
+					itemTemp->certIssuerFriendlyName = new std::string(listPkiObj[i]["IssuerFriendlyName"].asString());
+					itemTemp->certSerial = new std::string(listPkiObj[i]["Serial"].asString());
+					itemTemp->certNotBefore = new std::string(listPkiObj[i]["NotBefore"].asString());
+					itemTemp->certNotAfter = new std::string(listPkiObj[i]["NotAfter"].asString());
+					itemTemp->certKey = new std::string(listPkiObj[i]["Key"].asString());
+				}
+				else if (strcmp(itemTemp->type->c_str(), "CRL") == 0){
+					itemTemp->crlIssuerName = new std::string(listPkiObj[i]["IssuerName"].asString());
+					itemTemp->crlIssuerFriendlyName = new std::string(listPkiObj[i]["IssuerFriendlyName"].asString());
+					itemTemp->crlLastUpdate = new std::string(listPkiObj[i]["LastUpdate"].asString());
+					itemTemp->crlNextUpdate = new std::string(listPkiObj[i]["NextUpdate"].asString());
+				}
+				else if (strcmp(itemTemp->type->c_str(), "REQUEST") == 0){
+					itemTemp->csrSubjectName = new std::string(listPkiObj[i]["SubjectName"].asString());
+					itemTemp->csrSubjectFriendlyName = new std::string(listPkiObj[i]["SubjectFriendlyName"].asString());
+					itemTemp->csrKey = new std::string(listPkiObj[i]["Key"].asString());
+				}
+				else if (strcmp(itemTemp->type->c_str(), "KEY") == 0){
+					itemTemp->keyEncrypted = listPkiObj[i]["Encrypted"].asBool();
+				}
+				else{
+					THROW_EXCEPTION(0, CashJson, NULL, "Unknown pki object type");
+				}
+
+				items->push(itemTemp);
+			}
 		}
 
 		return items;

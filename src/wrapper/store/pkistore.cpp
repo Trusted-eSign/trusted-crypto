@@ -3,6 +3,7 @@
 #include "pkistore.h"
 
 #include "provider_system.h"
+#include "provider_microsoft.h"
 
 PkiStore::PkiStore(Handle<std::string> json){
 	LOGGER_FN();
@@ -223,6 +224,9 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 		if (strcmp(item->provider->c_str(), "SYSTEM") == 0){
 			cert = Provider_System::getCertFromURI(item->uri, item->format);
 		}
+		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0){
+			cert = ProviderMicrosoft::getCert(item->hash, item->category);
+		}
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
@@ -242,6 +246,9 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 
 		if (strcmp(item->provider->c_str(), "SYSTEM") == 0){
 			crl = Provider_System::getCRLFromURI(item->uri, item->format);
+		}
+		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0){
+			crl = ProviderMicrosoft::getCRL(item->hash, item->category);
 		}
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
@@ -337,7 +344,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 
 			char * hexHash;
 			Handle<std::string> hhash = cert->getThumbprint();
-			Provider_System::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+			bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
 
 			uri = uri + std::string(hexHash) + "_";
 
@@ -372,7 +379,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 			unsigned char tmphash[SHA_DIGEST_LENGTH];
 			LOGGER_OPENSSL(SHA1);
 			SHA1((const unsigned char *)cont, contlen, tmphash);
-			Provider_System::bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+			bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
 
 			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".crt";
 
@@ -401,7 +408,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 
 			char * hexHash;
 			Handle<std::string> hhash = crl->getThumbprint();
-			Provider_System::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+			bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
 
 			uri = uri + std::string(hexHash) + ".crl";
 
@@ -433,7 +440,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 			Handle<std::string> hhash = new std::string((char *)hash, hashlen);
 
 			char * hexHash;
-			Provider_System::bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
+			bin_to_strhex((unsigned char *)hhash->c_str(), hhash->length(), &hexHash);
 
 			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + "_";
 
@@ -468,7 +475,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 			unsigned char tmphash[SHA_DIGEST_LENGTH];
 			LOGGER_OPENSSL(SHA1);
 			SHA1((const unsigned char *)cont, contlen, tmphash);
-			Provider_System::bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+			bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
 
 			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".csr";
 
@@ -512,7 +519,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<s
 			unsigned char tmphash[SHA_DIGEST_LENGTH];
 			LOGGER_OPENSSL(SHA1);
 			SHA1((const unsigned char *)cont, contlen, tmphash);
-			Provider_System::bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+			bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
 									
 			uri = uri + std::string(hexHash) + ".key";
 
@@ -575,4 +582,21 @@ std::vector<std::string> PkiStore::getCrlDistPoints(Handle<Certificate> cert){
 	}
 
 	return res;
+}
+
+void PkiStore::bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result){
+	LOGGER_FN();
+
+	char hex_str[] = "0123456789abcdef";
+	unsigned int  i;
+
+	*result = (char *)malloc(binsz * 2 + 1);
+	(*result)[binsz * 2] = 0;
+
+	if (!binsz)	return;
+
+	for (i = 0; i < binsz; i++){
+		(*result)[i * 2 + 0] = hex_str[(bin[i] >> 4) & 0x0F];
+		(*result)[i * 2 + 1] = hex_str[(bin[i]) & 0x0F];
+	}
 }

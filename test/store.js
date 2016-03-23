@@ -6,7 +6,7 @@ var DEFAULT_CERTSTORE_PATH = "test/CertStore";
 
 describe('Store', function () {
 	var store;
-	var providerSystem;
+	var providerSystem, providerMicrosoft;
     var certWithKey;
     
 	it('init', function () {
@@ -38,10 +38,14 @@ describe('Store', function () {
        assert.equal(newKey != null, true);
     })
     
-    it('add provider', function () {	
+    it('add providers', function () {	
         providerSystem = new trusted.pkistore.Provider_System(DEFAULT_CERTSTORE_PATH);
         assert.equal(providerSystem != null, true);
-        store.addProvider(providerSystem.handle);	
+        store.addProvider(providerSystem.handle);
+        
+        providerMicrosoft = new trusted.pkistore.ProviderMicrosoft();
+        assert.equal(providerMicrosoft != null, true);
+        store.addProvider(providerMicrosoft.handle);	
     })
 	
 	it('find', function () {	

@@ -8,11 +8,13 @@
 
 #if defined(OPENSSL_SYS_WINDOWS) 
 	#include <windows.h>
+	#include <wincrypt.h>
 	#include <tchar.h> 
 	#include <strsafe.h>
 	#include <direct.h>
 #endif
-#if defined(OPENSSL_SYS_UNIX) 
+#if defined(OPENSSL_SYS_UNIX)
+	#include "../../CPROCSP/WinCryptEx.h"
 	#include <dirent.h>
 	#include <sys/types.h>
 	#include <sys/stat.h>
@@ -36,8 +38,6 @@ public:
 	static void addPkiObject(Handle<std::string> uri, Handle<CRL> crl, unsigned int flags);
 	static void addPkiObject(Handle<std::string> uri, Handle<CertificationRequest> csr);
 	static void addPkiObject(Handle<std::string> uri, Handle<Key> key, Handle<std::string> password);
-
-	static void bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result);
 
 private:
 	void init(Handle<std::string> folder);
