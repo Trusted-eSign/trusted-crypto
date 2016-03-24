@@ -20,15 +20,11 @@
 #endif
 
 #undef HAVE_CONFIG_H // CSP headers includes myconfig.h if HAVE_CONFIG_H is defined
-//#include <cpcsp/WinCryptEx.h>
+#include <cpcsp/WinCryptEx.h>
+#define CSP_BOOL BOOL
 
 #define HCRYPT_NULL 0
 #endif                          //added
-
-#ifdef UNIX
-	#include "../CPROCSP/WinCryptEx.h"
-	typedef int                 BOOL;
-#endif
 
 #ifndef INT32_MAX
 #  define INT32_MAX __MAXINT__(int32_t)

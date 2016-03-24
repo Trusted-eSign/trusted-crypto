@@ -7,14 +7,11 @@
 #include <string>
 
 #if defined(OPENSSL_SYS_WINDOWS) 
-	#include <windows.h>
-	#include <wincrypt.h>
 	#include <tchar.h> 
 	#include <strsafe.h>
 	#include <direct.h>
 #endif
 #if defined(OPENSSL_SYS_UNIX)
-	#include "../../CPROCSP/WinCryptEx.h"
 	#include <dirent.h>
 	#include <sys/types.h>
 	#include <sys/stat.h>

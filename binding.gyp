@@ -119,7 +119,7 @@
 
                         "include_dirs": [
                             "<(node_root_dir)/deps/openssl/openssl/include",
-                            "src/CPROCSP"
+                            "/opt/cprocsp/include"
                         ],
 
                         "defines": [ "UNIX" ]
