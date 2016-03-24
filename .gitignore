@@ -2,14 +2,10 @@
 /typings
 /build
 /buildjs
-test/CertStore/cash.json
-test/CertStore/CRL/1ebb0526075855661c09d7d9b59abd950bdae0ef.crl
-test/CertStore/MY/84cd1d796cfb42d00166737c6e16d596cf83695e_15b5c91c943cd687ccf6b85a7b28273f281d3eba.crt
-test/CertStore/MY/be48a9dcc1c29e9fa0881b198bc7295e4b7a5ebb_15b5c91c943cd687ccf6b85a7b28273f281d3eba.csr
-test/CertStore/MY/15b5c91c943cd687ccf6b85a7b28273f281d3eba.key
 logger.txt
 test/decAssym.txt
 test/encAssym.txt
 test/encSym.txt
 test/decSym.txt
 test/testsig.sig
+test/CertStore

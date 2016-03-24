@@ -619,12 +619,10 @@ int Key::keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, Pub
 int Key::privkeySave(std::string filename, DataFormat::DATA_FORMAT format, std::string password) {
 	try{
 		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "w+");
-		EVP_PKEY *key = NULL;
+
 		if (out.isEmpty()){
 			THROW_EXCEPTION(0, Key, NULL, "Bio is empty");
 		}
-
-		const void * pass = password.c_str();
 
 		switch (format){
 		case DataFormat::DER:
@@ -672,8 +670,6 @@ int Key::privkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format, std::st
 			THROW_EXCEPTION(0, Key, NULL, "Bio is empty");
 		}
 
-		const void * pass = password.c_str();
-
 		switch (format){
 		case DataFormat::DER:
 			if ((password).length() > 0){
@@ -718,8 +714,6 @@ int Key::privkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format, std
 	try{
 		Handle<Bio> out = new Bio(BIO_TYPE_MEM, data);
 
-		const void * pass = password.c_str();
-
 		switch (format){
 		case DataFormat::DER:
 			if ((password).length() > 0){
@@ -763,7 +757,7 @@ int Key::privkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format, std
 int Key::pubkeySave(std::string filename, DataFormat::DATA_FORMAT format) {
 	try{
 		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "w+");
-		EVP_PKEY *key = NULL;
+
 		if (out.isEmpty()){
 			THROW_EXCEPTION(0, Key, NULL, "Bio is empty");
 		}

@@ -278,9 +278,7 @@ Handle<CRL> ProviderMicrosoft::getCRL(Handle<std::string> hash, Handle<std::stri
 
 	try{
 		HCERTSTORE hCertStore;
-		PCCERT_CONTEXT pCertContext = NULL;
 		PCCRL_CONTEXT pCrlContext = NULL;
-		CERT_INFO certInfo = { 0 };
 
 		const unsigned char *p;
 

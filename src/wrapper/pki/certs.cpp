@@ -10,7 +10,6 @@ void CertificateCollection::push(Handle<Certificate> cert) {
 		this->setData(sk_X509_new_null());
 	}
 	Handle<Certificate> certcpy = cert->duplicate();
-	X509* text = certcpy->internal();
 
 	LOGGER_OPENSSL("sk_X509_push");
 	sk_X509_push(this->internal(), certcpy->internal());

@@ -38,9 +38,6 @@ Handle<PkiItemCollection> CashJson::exportJson(){
 		
 		Json::Value jsnRoot;
 		Json::Reader jsnReader;
-		X509 *xcert = NULL;
-		X509_CRL *xcrl = NULL;
-		X509_REQ *xreq = NULL;
 
 		std::ifstream jsonFile(jsonFileName->c_str(), std::ifstream::binary);
 
