@@ -4,16 +4,6 @@
 
 #include <string.h>
 
-#if defined(OPENSSL_SYS_WINDOWS) 
-	#include <windows.h>
-	#include <wincrypt.h>
-	#include <tchar.h> 
-	#include <strsafe.h>
-#endif
-#if defined(OPENSSL_SYS_UNIX)
-	#include "../../CPROCSP/WinCryptEx.h"
-#endif
-
 #include "pkistore.h"
 
 class ProviderMicrosoft : public Provider{

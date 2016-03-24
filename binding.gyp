@@ -96,13 +96,33 @@
                         }
                     },
                     {
+                        "conditions": [
+                            [
+                                "target_arch=='x64'",
+                                {
+                                    "variables": {
+                                        "csp_root%": "/opt/cprocsp/lib/amd64"
+                                    }
+                                },
+                                {
+                                    "variables": {
+                                        "csp_root%": "/opt/cprocsp/lib/ia32"
+                                    }
+                                }
+                            ]
+                        ],
+
                         "libraries": [
-                            "-luuid"
+                            "-luuid",
+                            "-L<(csp_root) -lcapi20"
                         ],
 
                         "include_dirs": [
-                            "<(node_root_dir)/deps/openssl/openssl/include"
-                        ]
+                            "<(node_root_dir)/deps/openssl/openssl/include",
+                            "src/CPROCSP"
+                        ],
+
+                        "defines": [ "UNIX" ]
                     }
                 ]
             ],
