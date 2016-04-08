@@ -286,6 +286,7 @@ export namespace PKISTORE {
 
     export declare class Provider_System extends Provider {
         constructor(folder: string);
+        objectToPkiItem(pathr: string): IPkiItem;
     }
 
     export declare class ProviderMicrosoft extends Provider {
@@ -320,10 +321,10 @@ export namespace PKISTORE {
 
         addProvider(provider: Provider): void;
 
-        addCert(provider: Provider, category: string, cert: PKI.Certificate, flags: number): void;
-        addCrl(provider: Provider, category: string, crl: PKI.CRL, flags: number): void;
-        addKey(provider: Provider, key: PKI.Key, password: string): void;
-        addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): void;
+        addCert(provider: Provider, category: string, cert: PKI.Certificate, flags: number): string;
+        addCrl(provider: Provider, category: string, crl: PKI.CRL, flags: number): string;
+        addKey(provider: Provider, key: PKI.Key, password: string): string;
+        addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
 
         downloadCRL(cert: PKI.Certificate, path: string, done: Function): void;
         getCrlDistPoints(cert: PKI.Certificate): Array<string>;

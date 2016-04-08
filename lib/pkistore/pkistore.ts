@@ -182,20 +182,20 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         this.handle.addProvider(provider);
     }
 
-    addCert(provider: native.PKISTORE.Provider, category: string, cert: Certificate, flags: number) {
-        this.handle.addCert(provider, category, cert.handle, flags);
+    addCert(provider: native.PKISTORE.Provider, category: string, cert: Certificate, flags: number): string {
+        return this.handle.addCert(provider, category, cert.handle, flags);
     }
 
-    addCrl(provider: native.PKISTORE.Provider, category: string, crl: Crl, flags: number) {
-        this.handle.addCrl(provider, category, crl.handle, flags);
+    addCrl(provider: native.PKISTORE.Provider, category: string, crl: Crl, flags: number): string {
+        return this.handle.addCrl(provider, category, crl.handle, flags);
     }
 
-    addKey(provider: native.PKISTORE.Provider, key: Key, password: string) {
-        this.handle.addKey(provider, key.handle, password);
+    addKey(provider: native.PKISTORE.Provider, key: Key, password: string): string {
+        return this.handle.addKey(provider, key.handle, password);
     }
 
-    addCsr(provider: native.PKISTORE.Provider, category: string, csr: CertificationRequest) {
-        this.handle.addCsr(provider, category, csr.handle);
+    addCsr(provider: native.PKISTORE.Provider, category: string, csr: CertificationRequest): string {
+        return this.handle.addCsr(provider, category, csr.handle);
     }
 
     find(ifilter?: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem[] {

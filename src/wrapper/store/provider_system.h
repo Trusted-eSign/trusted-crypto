@@ -36,9 +36,10 @@ public:
 	static void addPkiObject(Handle<std::string> uri, Handle<CertificationRequest> csr);
 	static void addPkiObject(Handle<std::string> uri, Handle<Key> key, Handle<std::string> password);
 
-private:
-	void init(Handle<std::string> folder);
 	Handle<PkiItem> objectToPKIItem(Handle<std::string> URI);
+
+private:
+	void init(Handle<std::string> folder);	
 	
 	/*
 	* Check file for pkcs#8 private key headers.

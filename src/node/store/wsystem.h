@@ -14,6 +14,7 @@ public:
 
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
+	static NAN_METHOD(ObjectToPkiItem);
 };
 
 #endif //PKI_WCERT_H_INCLUDED

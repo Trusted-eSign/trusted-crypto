@@ -9,6 +9,8 @@ describe('Store', function () {
 	var providerSystem, providerMicrosoft;
     var certWithKey;
     
+    var uri;
+    
 	it('init', function () {
         providerSystem = new trusted.pkistore.Provider_System(DEFAULT_CERTSTORE_PATH);
         assert.equal(providerSystem != null, true);
@@ -23,7 +25,7 @@ describe('Store', function () {
        var key = trusted.pki.Key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");
        var csr = trusted.pki.CertificationRequest.load("test/test.csr", trusted.DataFormat.PEM, "");
        
-       store.addCert(providerSystem.handle, "MY", cert, 0);
+       uri = store.addCert(providerSystem.handle, "MY", cert, 0);
        store.addCrl(providerSystem.handle, "CRL", crl, 0);
        store.addKey(providerSystem.handle, key, "");
        store.addCsr(providerSystem.handle, "MY", csr);
@@ -109,5 +111,10 @@ describe('Store', function () {
            }          
         });                             
   });
+  
+  it('Object to PkiItem', function () {	
+       var item = providerSystem.objectToPkiItem(uri);
+       assert.equal(item != null, true);
+    })
      	
 });

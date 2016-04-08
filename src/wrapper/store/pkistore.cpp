@@ -335,7 +335,7 @@ void PkiStore::addProvider(Handle<Provider> provider){
 	providers->push(provider);
 }
 
-void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, unsigned int flags){
+Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, unsigned int flags){
 	LOGGER_FN();
 
 	try{
@@ -389,6 +389,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 			BIO_free_all(bioBN);
 
  			Provider_System::addPkiObject(huri, cert, flags);
+			return huri;
 		}
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
@@ -399,7 +400,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 	}
 }
 
-void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl, unsigned int flags){
+Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl, unsigned int flags){
 	LOGGER_FN();
 
 	try{
@@ -414,6 +415,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 
 			Handle<std::string> huri = new std::string(uri);
 			Provider_System::addPkiObject(huri, crl, flags);
+			return huri;
 		}
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
@@ -424,7 +426,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 	}
 }
 
-void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CertificationRequest> csr){
+Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CertificationRequest> csr){
 	LOGGER_FN();
 
 	try{
@@ -485,6 +487,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 			BIO_free_all(bioBN);
 
 			Provider_System::addPkiObject(huri, csr);
+			return huri;
 		}
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
@@ -495,7 +498,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> categ
 	}
 }
 
-void PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password){
+Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password){
 	LOGGER_FN();
 
 	try{
@@ -529,6 +532,7 @@ void PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<s
 			BIO_free_all(bioBN);
 
 			Provider_System::addPkiObject(huri, key, password);
+			return huri;
 		}
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")

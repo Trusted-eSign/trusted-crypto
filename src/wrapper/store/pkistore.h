@@ -41,10 +41,10 @@ public:
 	Handle<Key> getItemKey(Handle<PkiItem> item);
 	Handle<CertificationRequest> getItemReq(Handle<PkiItem> item);
 
-	void addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, unsigned int flags);
-	void addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl, unsigned int flags);
-	void addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CertificationRequest> csr);
-	void addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password);
+	Handle<std::string> addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, unsigned int flags);
+	Handle<std::string> addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl, unsigned int flags);
+	Handle<std::string> addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CertificationRequest> csr);
+	Handle<std::string> addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password);
 
 	std::vector<std::string> getCrlDistPoints(Handle<Certificate> cert);
 	static void bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result);

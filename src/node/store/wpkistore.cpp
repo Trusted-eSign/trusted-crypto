@@ -92,11 +92,13 @@ NAN_METHOD(WPkiStore::AddCert){
 		LOGGER_ARG("cert");
 		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[2]->ToObject());
 
-		UNWRAP_DATA(PkiStore);
+		UNWRAP_DATA(PkiStore);	
 
-		_this->addPkiObject(wProv->data_, new std::string(category), wCert->data_, NULL);
+		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCert->data_, NULL);
 
-		info.GetReturnValue().Set(info.This());
+		v8::Local<v8::String> v8Uri = Nan::New<v8::String>(uri->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Uri);
 		return;
 	}
 
@@ -119,9 +121,11 @@ NAN_METHOD(WPkiStore::AddCrl){
 
 		UNWRAP_DATA(PkiStore);
 
-		_this->addPkiObject(wProv->data_, new std::string(category), wCrl->data_, NULL);
+		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCrl->data_, NULL);
 
-		info.GetReturnValue().Set(info.This());
+		v8::Local<v8::String> v8Uri = Nan::New<v8::String>(uri->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Uri);
 		return;
 	}
 
@@ -143,10 +147,12 @@ NAN_METHOD(WPkiStore::AddCsr){
 		WCertificationRequest * wCsr = WCertificationRequest::Unwrap<WCertificationRequest>(info[2]->ToObject());
 
 		UNWRAP_DATA(PkiStore);
+	
+		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCsr->data_);
 
-		_this->addPkiObject(wProv->data_, new std::string(category), wCsr->data_);
+		v8::Local<v8::String> v8Uri = Nan::New<v8::String>(uri->c_str()).ToLocalChecked();
 
-		info.GetReturnValue().Set(info.This());
+		info.GetReturnValue().Set(v8Uri);
 		return;
 	}
 
@@ -167,11 +173,13 @@ NAN_METHOD(WPkiStore::AddKey){
 		v8::String::Utf8Value v8Pass(info[2]->ToString());
 		char *password = *v8Pass;
 
-		UNWRAP_DATA(PkiStore);
+		UNWRAP_DATA(PkiStore);	
 
-		_this->addPkiObject(wProv->data_, wKey->data_, new std::string(password));
+		Handle<std::string> uri = _this->addPkiObject(wProv->data_, wKey->data_, new std::string(password));
 
-		info.GetReturnValue().Set(info.This());
+		v8::Local<v8::String> v8Uri = Nan::New<v8::String>(uri->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Uri);
 		return;
 	}
 

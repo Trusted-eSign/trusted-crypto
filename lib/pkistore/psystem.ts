@@ -6,4 +6,8 @@ export class Provider_System extends object.BaseObject<native.PKISTORE.Provider_
         super();
         this.handle = new native.PKISTORE.Provider_System(folder);
     }
+
+    objectToPkiItem(path: string): native.PKISTORE.IPkiItem {
+        return this.handle.objectToPkiItem(path);
+    }
 }
