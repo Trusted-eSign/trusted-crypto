@@ -249,6 +249,8 @@ void SignedData::sign(){
 		CMS_set_detached(this->internal(), 0);
 	}
 
+	flags |= CMS_BINARY; /*Don't translate message to text*/
+
 	LOGGER_OPENSSL("CMS_final");
 	if (CMS_final(this->internal(), this->content->internal(), NULL, flags) < 1){
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_final");
