@@ -206,25 +206,31 @@ Handle<Bio> SignedData::getContent(){
 
 bool SignedData::verify(Handle<CertificateCollection> certs){
 	LOGGER_FN();
+	int res;
 
-	stack_st_X509 *pCerts = NULL;
-	if (!certs.isEmpty()){
-		pCerts = certs->internal();
+	try {
+		stack_st_X509 *pCerts = NULL;
+		if (!certs.isEmpty()){
+			pCerts = certs->internal();
+		}
+
+		// Сдвиг курсора на начало
+		content->reset();
+
+		X509_STORE *store = X509_STORE_new();
+
+		LOGGER_OPENSSL("CMS_verify");
+		res = CMS_verify(this->internal(), pCerts, store, content->internal(), NULL, flags);
+		X509_STORE_free(store);
+		if (!res){
+			THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_verify");
+		}
 	}
-
-	// Сдвиг курсора на начало
-	content->reset();
-
-	X509_STORE *store = X509_STORE_new();
-
-	LOGGER_OPENSSL("CMS_verify");
-	int res = CMS_verify(this->internal(), pCerts, store, content->internal(), NULL, flags);
-	X509_STORE_free(store);
-	if (!res){
-		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_verify");
+	catch (Handle<Exception> e){
+		return 0;
 	}
-
-	return res == 1;
+	
+	return 1;
 }
 
 Handle<SignedData> SignedData::sign(Handle<Certificate> cert, Handle<Key> pkey, Handle<CertificateCollection> certs, Handle<Bio> content, unsigned int flags){
