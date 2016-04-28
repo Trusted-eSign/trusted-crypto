@@ -10,6 +10,7 @@
 
 #include "pki/wkey.h"
 #include "pki/wcert.h"
+#include "pki/wpkcs12.h"
 #include "pki/wcerts.h"
 #include "pki/wcrl.h"
 #include "pki/woid.h"
@@ -62,6 +63,7 @@ void init(v8::Handle<v8::Object> target) {
 	WCertificationRequest::Init(Pki);
 	WCipher::Init(Pki);
 	WChain::Init(Pki);
+	WPkcs12::Init(Pki);
 
 
 	v8::Local<v8::Object> Cms = Nan::New<v8::Object>();

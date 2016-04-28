@@ -12,15 +12,16 @@ import * as certReg from "./pki/certReg";
 import * as csr from "./pki/csr";
 import * as cipher from "./pki/cipher";
 import * as chain from "./pki/chain";
+import * as pkcs12 from "./pki/pkcs12";
 
 import * as signed_data from "./cms/signed_data";
-import * as signer from "./cms/signer"
-import * as signercollection from "./cms/signers"
+import * as signer from "./cms/signer";
+import * as signercollection from "./cms/signers";
 
-import * as store from "./pkistore/pkistore"
-import * as provider_system from "./pkistore/psystem"
-import * as provider_microsoft from "./pkistore/pmicrosoft"
-import * as cashjson from "./pkistore/cashjson"
+import * as store from "./pkistore/pkistore";
+import * as provider_system from "./pkistore/psystem";
+import * as provider_microsoft from "./pkistore/pmicrosoft";
+import * as cashjson from "./pkistore/cashjson";
 
 export let DataFormat = dataFormat.DataFormat;
 export let PublicExponent = publicExponent.PublicExponent;
@@ -38,6 +39,7 @@ export namespace pki {
     export let CSR = csr.CSR;
     export let Cipher = cipher.Cipher;
     export let Chain = chain.Chain;
+    export let Pkcs12 = pkcs12.Pkcs12;
 }
 
 export namespace cms {

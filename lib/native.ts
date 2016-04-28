@@ -164,8 +164,15 @@ export namespace PKI {
         buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection;
         verifyChain(chain: CertificateCollection, prvSys: PKISTORE.Provider_System): boolean;
     }
-    
-    
+
+    export declare class Pkcs12 {
+        getCertificate(password: string): Certificate;
+        getKey(password: string): Key;
+        getCACertificates(password: string): CertificateCollection;
+
+        load(filename: string): void;
+        save(filename: string): void;
+    }
 }
 
 export namespace CMS {
