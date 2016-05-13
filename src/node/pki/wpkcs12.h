@@ -23,6 +23,7 @@ public:
 	//Methods
 	static NAN_METHOD(Load);
 	static NAN_METHOD(Save);
+	static NAN_METHOD(Create);
 
 	WRAP_NEW_INSTANCE(Pkcs12);
 };

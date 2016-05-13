@@ -22,6 +22,7 @@ void WPkcs12::Init(v8::Handle<v8::Object> exports) {
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "save", Save);
+	Nan::SetPrototypeMethod(tpl, "create", Create);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -87,6 +88,41 @@ NAN_METHOD(WPkcs12::Save) {
 		out->flush();
 
 		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WPkcs12::Create) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		LOGGER_ARG("key");
+		WKey * wKey = WKey::Unwrap<WKey>(info[1]->ToObject());
+
+		LOGGER_ARG("ca");
+		WCertificateCollection * wCA;
+		if (info[2]->IsTrue()) {
+			wCA = WCertificateCollection::Unwrap<WCertificateCollection>(info[2]->ToObject());
+		}		
+
+		LOGGER_ARG("password");
+		v8::String::Utf8Value v8Pass(info[3]->ToString());
+		char *password = *v8Pass;
+		
+		LOGGER_ARG("name");
+		v8::String::Utf8Value v8Filename(info[4]->ToString());
+		char *filename = *v8Filename;
+
+		UNWRAP_DATA(Pkcs12);
+
+		Handle<Pkcs12> p12 = _this->create(wCert->data_, wKey->data_, wCA->data_, password, filename);
+		v8::Local<v8::Object> v8P12 = WPkcs12::NewInstance(p12);
+		info.GetReturnValue().Set(v8P12);
+
 		return;
 	}
 	TRY_END();

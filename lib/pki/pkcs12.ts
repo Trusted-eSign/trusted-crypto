@@ -65,4 +65,19 @@ export class Pkcs12 extends object.BaseObject<native.PKI.Pkcs12> {
         this.handle.save(filename);
     }
 
+    /**
+     * Create PKCS12 structure
+     * @param  {Certificate} cert
+     * @param  {Key} key
+     * @param  {CertificateCollection} ca
+     * @param  {string} password
+     * @param  {string} name
+     * @returns Pkcs12
+     */
+    create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12 {
+       let p12 = new Pkcs12();
+       p12.handle = this.handle.create(cert.handle, key.handle, ca ? ca.handle : null, password, name);
+       return p12;
+    }
+
 }

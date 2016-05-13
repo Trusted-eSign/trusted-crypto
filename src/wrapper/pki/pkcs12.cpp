@@ -35,6 +35,25 @@ void Pkcs12::write(Handle<Bio> out){
 	}		
 }
 
+Handle<Pkcs12> Pkcs12::create(Handle<Certificate> cert, Handle<Key> key, Handle<CertificateCollection> ca, char *pass, char *name){
+	LOGGER_FN();
+
+	try{
+		PKCS12 *p12 = NULL;
+
+		LOGGER_OPENSSL(PKCS12_create);
+		p12 = PKCS12_create(pass, name, key->internal(), cert->internal(), NULL, 0, 0, 0, 0, 0);
+		if (!p12) {
+			THROW_OPENSSL_EXCEPTION(0, Pkcs12, NULL, "Error creating PKCS#12 structure");
+		}
+
+		return new Pkcs12(p12, this->handle());
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Pkcs12, e, "Error create pkcs12");
+	}
+}
+
 Handle<Certificate> Pkcs12::getCertificate(const char *pass) {
 	LOGGER_FN();
 

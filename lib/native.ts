@@ -172,6 +172,7 @@ export namespace PKI {
 
         load(filename: string): void;
         save(filename: string): void;
+        create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12;
     }
 }
 

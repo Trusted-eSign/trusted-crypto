@@ -28,6 +28,7 @@ public:
 	//Methods
 	void read(Handle<Bio> in);
 	void write(Handle<Bio> out);
+	Handle<Pkcs12> create(Handle<Certificate> cert, Handle<Key> key, Handle<CertificateCollection> ca, char *pass, char *name);
 };
 
 #endif //!CMS_PKI_PKCS12_H_INCLUDED
