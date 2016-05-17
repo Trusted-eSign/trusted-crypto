@@ -104,7 +104,7 @@ NAN_METHOD(WPkcs12::Create) {
 		WKey * wKey = WKey::Unwrap<WKey>(info[1]->ToObject());
 
 		LOGGER_ARG("ca");
-		WCertificateCollection * wCA;
+		WCertificateCollection * wCA = NULL;
 		if (info[2]->IsTrue()) {
 			wCA = WCertificateCollection::Unwrap<WCertificateCollection>(info[2]->ToObject());
 		}		
@@ -119,7 +119,7 @@ NAN_METHOD(WPkcs12::Create) {
 
 		UNWRAP_DATA(Pkcs12);
 
-		Handle<Pkcs12> p12 = _this->create(wCert->data_, wKey->data_, wCA->data_, password, filename);
+		Handle<Pkcs12> p12 = _this->create(wCert->data_, wKey->data_, wCA ? wCA->data_ : NULL, password, filename);
 		v8::Local<v8::Object> v8P12 = WPkcs12::NewInstance(p12);
 		info.GetReturnValue().Set(v8P12);
 
