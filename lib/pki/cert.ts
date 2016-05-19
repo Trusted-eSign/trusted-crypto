@@ -99,6 +99,20 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
     }
 
     /**
+     * возвращает алгоритм подписи
+     */
+    get signatureAlgorithm(): string {
+        return this.handle.getSignatureAlgorithm();
+    }
+
+    /**
+     * возвращает название организации
+     */
+    get organizationName(): string {
+        return this.handle.getOrganizationName();
+    }
+
+    /**
      * сравнение сертификатов
      * @param cert Сертификат для сравнения
      */

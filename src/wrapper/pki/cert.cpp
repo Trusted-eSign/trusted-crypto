@@ -220,6 +220,52 @@ Handle<std::string> Certificate::getSerialNumber()
 	return res;
 }
 
+Handle<std::string> Certificate::getSignatureAlgorithm() {
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(OBJ_obj2nid);
+	int sig_nid = OBJ_obj2nid((this->internal())->sig_alg->algorithm);
+
+	LOGGER_OPENSSL(OBJ_nid2ln);
+	return new std::string(OBJ_nid2ln(sig_nid));
+}
+
+Handle<std::string> Certificate::getOrganizationName(){
+	LOGGER_FN();
+
+	X509_NAME * a = NULL;
+	Handle<std::string> organizationName = new std::string("");
+	if ((a = X509_get_subject_name(this->internal())) == NULL) {
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "Cannot get subject name");
+	}		
+
+	int nid = NID_organizationName;
+	LOGGER_OPENSSL(X509_NAME_get_index_by_NID);
+	int index = X509_NAME_get_index_by_NID(a, nid, -1);
+	if (index >= 0) {
+		LOGGER_OPENSSL(X509_NAME_get_entry);
+		X509_NAME_ENTRY *subjectNameOrganizationName = X509_NAME_get_entry(a, index);
+
+		if (subjectNameOrganizationName) {
+			LOGGER_OPENSSL(X509_NAME_ENTRY_get_data);
+			ASN1_STRING *organizationCNASN1 = X509_NAME_ENTRY_get_data(subjectNameOrganizationName);
+
+			if (organizationCNASN1 != NULL) {
+				unsigned char *utf = NULL;
+				LOGGER_OPENSSL(ASN1_STRING_to_UTF8);
+				ASN1_STRING_to_UTF8(&utf, organizationCNASN1);
+				organizationName = new std::string((char *)utf);
+				OPENSSL_free(utf);
+			}
+		}
+	}
+	else {
+		return new std::string("");
+	}
+
+	return organizationName;
+}
+
 int Certificate::compare(Handle<Certificate> cert){
 	LOGGER_FN();
 

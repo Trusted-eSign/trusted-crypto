@@ -102,6 +102,8 @@ describe('Certificate', function () {
         console.log("version:", cert.version);
         console.log("type:", cert.type);
         console.log("keyUsage:", cert.keyUsage);
+        console.log("signatureAlgorithm:", cert.signatureAlgorithm);
+        console.log("organization:", cert.organizationName);
 
     })
 

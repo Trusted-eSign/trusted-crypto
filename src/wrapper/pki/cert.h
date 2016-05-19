@@ -30,6 +30,8 @@ public:
 	Handle<std::string> getSubjectFriendlyName();
 	Handle<std::string> getSubjectName();
 	Handle<std::string> getThumbprint();
+	Handle<std::string> getSignatureAlgorithm();
+	Handle<std::string> getOrganizationName();
 	Handle<Key> getPublicKey();
 	int getType();
 	int getKeyUsage();

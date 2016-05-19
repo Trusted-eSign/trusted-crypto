@@ -32,6 +32,8 @@ public:
 	static NAN_METHOD(GetVersion);
     static NAN_METHOD(GetType);
 	static NAN_METHOD(GetKeyUsage);
+	static NAN_METHOD(GetSignatureAlgorithm);
+	static NAN_METHOD(GetOrganizationName);
 
 	//Methods
 	static NAN_METHOD(Load);

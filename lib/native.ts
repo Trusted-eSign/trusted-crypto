@@ -69,6 +69,8 @@ export namespace PKI {
         getVersion(): number;
         getType(): number;
         getKeyUsage(): number;
+        getSignatureAlgorithm(): string;
+        getOrganizationName(): string;
 
         load(filename: string, dataFormat: DataFormat): void;
         import(raw: Buffer, dataFormat: DataFormat): void;

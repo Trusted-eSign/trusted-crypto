@@ -27,6 +27,8 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
 	Nan::SetPrototypeMethod(tpl, "getType", GetType);
 	Nan::SetPrototypeMethod(tpl, "getKeyUsage", GetKeyUsage);
+	Nan::SetPrototypeMethod(tpl, "getSignatureAlgorithm", GetSignatureAlgorithm);
+	Nan::SetPrototypeMethod(tpl, "getOrganizationName", GetOrganizationName);
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
@@ -390,6 +392,40 @@ NAN_METHOD(WCertificate::GetKeyUsage)
 		int type = _this->getKeyUsage();
 
 		info.GetReturnValue().Set(Nan::New<v8::Number>(type));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::GetSignatureAlgorithm)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		Handle<std::string> sigAlg = _this->getSignatureAlgorithm();
+
+		v8::Local<v8::String> v8SigAlg = Nan::New<v8::String>(sigAlg->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8SigAlg);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::GetOrganizationName)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		Handle<std::string> orgName = _this->getOrganizationName();
+
+		v8::Local<v8::String> v8OrgName = Nan::New<v8::String>(orgName->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8OrgName);
 		return;
 	}
 	TRY_END();
