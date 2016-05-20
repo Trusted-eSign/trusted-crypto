@@ -83,6 +83,8 @@ public:
 	static NAN_METHOD(SetNextUpdate);
 	static NAN_METHOD(SetKey);
 	static NAN_METHOD(SetKeyEncrypted);
+	static NAN_METHOD(SetOrganizationName);
+	static NAN_METHOD(SetSignatureAlgorithm);
 };
 
 #endif //WPKISTORE_H_INCLUDED

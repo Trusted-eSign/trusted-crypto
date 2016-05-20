@@ -55,7 +55,13 @@ export class CashJson extends object.BaseObject<native.PKISTORE.CashJson> {
             if (items[i].encrypted) {
                 pkiItem.keyEnc = items[i].encrypted;
             }
-            
+            if (items[i].organizationName) {
+                pkiItem.organizationName = items[i].organizationName;
+            }
+            if (items[i].signatureAlgorithm) {
+                pkiItem.signatureAlgorithm = items[i].signatureAlgorithm;
+            }
+
             this.handle.import(pkiItem.handle);
         }
     }

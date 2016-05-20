@@ -52,6 +52,8 @@ public:
 	Handle<std::string> certNotAfter;
 	Handle<std::string> certSerial;
 	Handle<std::string> certKey; /* thumbprint SHA1 */
+	Handle<std::string> certOrganizationName;
+	Handle<std::string> certSignatureAlgorithm; /* thumbprint SHA1 */
 };
 
 class PkiItem : public IPkiCertificate, public IPkiCrl, public IPkiKey, public IPkiRequest{
@@ -84,6 +86,8 @@ public:
 	void setNextUpdate(Handle<std::string> nextUpdate);
 	void setKey(Handle<std::string> keyid);
 	void setKeyEncypted(bool enc);
+	void setOrganizationName(Handle<std::string> organizationName);
+	void setSignatureAlgorithm(Handle<std::string> signatureAlgorithm);
 };
 
 class PkiItemCollection{

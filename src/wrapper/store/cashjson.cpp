@@ -71,6 +71,8 @@ Handle<PkiItemCollection> CashJson::exportJson(){
 					itemTemp->certNotBefore = new std::string(listPkiObj[i]["NotBefore"].asString());
 					itemTemp->certNotAfter = new std::string(listPkiObj[i]["NotAfter"].asString());
 					itemTemp->certKey = new std::string(listPkiObj[i]["Key"].asString());
+					itemTemp->certOrganizationName = new std::string(listPkiObj[i]["OrganizationName"].asString());
+					itemTemp->certSignatureAlgorithm = new std::string(listPkiObj[i]["SignatureAlgorithm"].asString());
 				}
 				else if (strcmp(itemTemp->type->c_str(), "CRL") == 0){
 					itemTemp->crlIssuerName = new std::string(listPkiObj[i]["IssuerName"].asString());
@@ -136,6 +138,8 @@ void CashJson::importJson(Handle<PkiItem> item){
 			jsnBuf["NotBefore"] = item->certNotBefore->c_str();
 			jsnBuf["NotAfter"] = item->certNotAfter->c_str();
 			jsnBuf["Key"] = item->certKey->c_str();
+			jsnBuf["OrganizationName"] = item->certOrganizationName->c_str();
+			jsnBuf["SignatureAlgorithm"] = item->certSignatureAlgorithm->c_str();
 		}
 		else if (strcmp(item->type->c_str(), "CRL") == 0){
 			jsnBuf["IssuerName"] = item->crlIssuerName->c_str();

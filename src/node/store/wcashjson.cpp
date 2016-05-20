@@ -115,6 +115,12 @@ NAN_METHOD(WCashJson::Export) {
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "key"),
 					v8::String::NewFromUtf8(isolate, res->items(i)->certKey->c_str()));
 
+				tempObj->Set(v8::String::NewFromUtf8(isolate, "organizationName"),
+					v8::String::NewFromUtf8(isolate, res->items(i)->certOrganizationName->c_str()));
+
+				tempObj->Set(v8::String::NewFromUtf8(isolate, "signatureAlgorithm"),
+					v8::String::NewFromUtf8(isolate, res->items(i)->certSignatureAlgorithm->c_str()));
+
 				array8->Set(i, tempObj);
 				continue;
 			}

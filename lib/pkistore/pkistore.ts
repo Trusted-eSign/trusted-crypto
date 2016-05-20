@@ -161,6 +161,13 @@ export class PkiItem extends object.BaseObject<native.PKISTORE.PkiItem> implemen
         this.handle.setKeyEncrypted(enc);
     }
 
+    set organizationName(organizationName: string) {
+        this.handle.setOrganizationName(organizationName);
+    }
+
+    set signatureAlgorithm(signatureAlgorithm: string) {
+        this.handle.setSignatureAlgorithm(signatureAlgorithm);
+    }
 }
 
 export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
@@ -339,6 +346,12 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         }
         if (item.encrypted) {
             pkiItem.keyEnc = item.encrypted;
+        }
+        if (item.organizationName) {
+            pkiItem.organizationName = item.organizationName;
+        }
+        if (item.signatureAlgorithm) {
+            pkiItem.signatureAlgorithm = item.signatureAlgorithm;
         }
 
         if (item.type === "CERTIFICATE") {

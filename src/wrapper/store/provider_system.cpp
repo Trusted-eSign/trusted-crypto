@@ -261,6 +261,8 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 			item->certIssuerName = hcert->getIssuerName();
 			item->certIssuerFriendlyName = hcert->getIssuerFriendlyName();
 			item->certSerial = hcert->getSerialNumber();
+			item->certOrganizationName = hcert->getOrganizationName();
+			item->certSignatureAlgorithm = hcert->getSignatureAlgorithm();
 
 			item->certNotBefore = hcert->getNotBefore();
 			item->certNotAfter = hcert->getNotAfter();

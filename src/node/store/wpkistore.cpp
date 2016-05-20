@@ -247,6 +247,12 @@ NAN_METHOD(WPkiStore::Find){
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "key"),
 					v8::String::NewFromUtf8(isolate, res->items(i)->certKey->c_str()));
 
+				tempObj->Set(v8::String::NewFromUtf8(isolate, "organizationName"),
+					v8::String::NewFromUtf8(isolate, res->items(i)->certOrganizationName->c_str()));
+
+				tempObj->Set(v8::String::NewFromUtf8(isolate, "signatureAlgorithm"),
+					v8::String::NewFromUtf8(isolate, res->items(i)->certSignatureAlgorithm->c_str()));
+
 				array8->Set(i, tempObj);
 				continue;
 			}
@@ -639,6 +645,8 @@ void WPkiItem::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "setNextUpdate", SetNextUpdate);
 	Nan::SetPrototypeMethod(tpl, "setKey", SetKey);
 	Nan::SetPrototypeMethod(tpl, "setKeyEncrypted", SetKeyEncrypted);
+	Nan::SetPrototypeMethod(tpl, "setOrganizationName", SetOrganizationName);
+	Nan::SetPrototypeMethod(tpl, "setSignatureAlgorithm", SetSignatureAlgorithm);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -928,6 +936,38 @@ NAN_METHOD(WPkiItem::SetKeyEncrypted) {
 		v8::Local<v8::Boolean> v8Enc = info[0]->ToBoolean();
 
 		_this->setKeyEncypted(v8Enc->BooleanValue());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WPkiItem::SetOrganizationName) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(PkiItem);
+
+		LOGGER_ARG("organizationName");
+		v8::String::Utf8Value v8OrganizationName(info[0]->ToString());
+		char *organizationName = *v8OrganizationName;
+
+		_this->setOrganizationName(new std::string(organizationName));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WPkiItem::SetSignatureAlgorithm) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(PkiItem);
+
+		LOGGER_ARG("signatureAlgorithm");
+		v8::String::Utf8Value v8SignatureAlgorithm(info[0]->ToString());
+		char *signatureAlgorithm = *v8SignatureAlgorithm;
+
+		_this->setSignatureAlgorithm(new std::string(signatureAlgorithm));
 		return;
 	}
 	TRY_END();

@@ -54,6 +54,8 @@ PkiItem::PkiItem(){
 	certNotAfter = new std::string("");
 	certSerial = new std::string("");
 	certKey = new std::string("");
+	certOrganizationName = new std::string("");
+	certSignatureAlgorithm = new std::string("");
 
 	csrSubjectName = new std::string("");
 	csrSubjectFriendlyName = new std::string("");
@@ -172,6 +174,18 @@ void PkiItem::setKeyEncypted(bool enc){
 	LOGGER_FN();
 
 	this->keyEncrypted = enc;
+}
+
+void PkiItem::setOrganizationName(Handle<std::string> organizationName){
+	LOGGER_FN();
+
+	this->certOrganizationName = organizationName;
+}
+
+void PkiItem::setSignatureAlgorithm(Handle<std::string> signatureAlgorithm){
+	LOGGER_FN();
+
+	this->certSignatureAlgorithm = signatureAlgorithm;
 }
 
 PkiItemCollection::PkiItemCollection(){

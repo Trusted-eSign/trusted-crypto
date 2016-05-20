@@ -264,6 +264,8 @@ export namespace PKISTORE {
         notBefore?: string;
         serial?: string;
         key?: string; // thumbprint ket SHA1
+        organizationName?: string;
+        signatureAlgorithm?: string;
     }
 
     export interface IFilter {
@@ -383,6 +385,8 @@ export namespace PKISTORE {
         setNextUpdate(nextUpdate: string): void;
         setKey(key: string): void;
         setKeyEncrypted(enc: boolean): void;
+        setOrganizationName(organizationName: string): void;
+        setSignatureAlgorithm(signatureAlgorithm: string): void;
     }
 }
 
