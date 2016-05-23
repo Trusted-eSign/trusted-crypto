@@ -231,7 +231,7 @@ int Key::pubkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format) {
 	return 1;
 }
 
-int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password){
+int Key::keypairGenerate(Handle<std::string> filename, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password){
 	LOGGER_FN();
 
 	int ok = 1;
@@ -297,8 +297,8 @@ int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, P
 		EVP_PKEY_set1_RSA(evpkey, rsa);
 
 		LOGGER_OPENSSL(BIO_new_file);
-		bp_private = BIO_new_file(filename.c_str(), "w+");
-		if (!bp_private){
+		Handle<Bio> bp_private = new Bio(BIO_TYPE_FILE, filename->c_str(), "wb");
+		if (bp_private.isEmpty()){
 			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BIO_new_file 'Unable creates a new file BIO'");
 		}
 
@@ -306,13 +306,13 @@ int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, P
 		case DataFormat::DER:
 			if ((password).length() > 0){
 				LOGGER_OPENSSL(i2d_PKCS8PrivateKey_bio);
-				if (!i2d_PKCS8PrivateKey_bio(bp_private, evpkey, EVP_aes_256_cbc(), (char *)((password).c_str()), (password).length(), NULL, NULL)){
+				if (!i2d_PKCS8PrivateKey_bio(bp_private->internal(), evpkey, EVP_aes_256_cbc(), (char *)((password).c_str()), (password).length(), NULL, NULL)){
 					THROW_OPENSSL_EXCEPTION(0, Key, NULL, "i2d_PKCS8PrivateKey_bio 'Unable writes PrivateKey to BIO'");
 				}
 			}
 			else{
 				LOGGER_OPENSSL(i2d_PKCS8PrivateKey_bio);
-				if (!i2d_PKCS8PrivateKey_bio(bp_private, evpkey, NULL, NULL, 0, NULL, NULL)){
+				if (!i2d_PKCS8PrivateKey_bio(bp_private->internal(), evpkey, NULL, NULL, 0, NULL, NULL)){
 					THROW_OPENSSL_EXCEPTION(0, Key, NULL, "i2d_PKCS8PrivateKey_bio 'Unable writes PrivateKey to BIO'");
 				}
 			}
@@ -320,13 +320,13 @@ int Key::keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, P
 		case DataFormat::BASE64:
 			if ((password).length() > 0){
 				LOGGER_OPENSSL(PEM_write_bio_PrivateKey);
-				if (!PEM_write_bio_PrivateKey(bp_private, evpkey, EVP_aes_256_cbc(), (unsigned char *)((password).c_str()), (password).length(), NULL, NULL)){
+				if (!PEM_write_bio_PrivateKey(bp_private->internal(), evpkey, EVP_aes_256_cbc(), (unsigned char *)((password).c_str()), (password).length(), NULL, NULL)){
 					THROW_OPENSSL_EXCEPTION(0, Key, NULL, "PEM_write_bio_PrivateKey 'Unable writes PrivateKey to BIO'");
 				}
 			}
 			else{
 				LOGGER_OPENSSL(PEM_write_bio_PrivateKey);
-				if (!PEM_write_bio_PrivateKey(bp_private, evpkey, NULL, NULL, 0, NULL, NULL)){
+				if (!PEM_write_bio_PrivateKey(bp_private->internal(), evpkey, NULL, NULL, 0, NULL, NULL)){
 					THROW_OPENSSL_EXCEPTION(0, Key, NULL, "PEM_write_bio_PrivateKey 'Unable writes PrivateKey to BIO'");
 				}
 			}

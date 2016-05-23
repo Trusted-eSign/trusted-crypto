@@ -52,25 +52,25 @@ public:
 
 	KeyType type;
 
-	int privkeyLoad(std::string filename, DataFormat::DATA_FORMAT format, std::string password); //чтение приватного ключа из файла
-	int privkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password); //чтение приватного ключа из памяти
-	int privkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format, std::string password); //чтение приватного ключа из BIO(OpenSSL)
+	int privkeyLoad(std::string filename, DataFormat::DATA_FORMAT format, std::string password);
+	int privkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password);
+	int privkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format, std::string password);
 
-	int pubkeyLoad(std::string filename, DataFormat::DATA_FORMAT format); //чтение публичного ключа из файла
-	int pubkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format); //чтение приватного ключа из памяти
-	int pubkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format); //чтение приватного ключа из BIO(OpenSSL)
+	int pubkeyLoad(std::string filename, DataFormat::DATA_FORMAT format);
+	int pubkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format);
+	int pubkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format);
 
-	int keypairGenerate(std::string filename, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password); //генерация ключей в файл
-	int keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password); //генерация ключей в память
-	int keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password); //генерация ключей в BIO(OpenSSL)
+	int keypairGenerate(Handle<std::string> filename, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password);
+	int keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password);
+	int keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password);
 
-	int privkeySave(std::string filename, DataFormat::DATA_FORMAT format, std::string password); //сохранение приватного ключа в файл
-	int privkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password); //сохранение приватного ключа в файл
-	int privkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format, std::string password); //сохранение приватного ключа в файл
+	int privkeySave(std::string filename, DataFormat::DATA_FORMAT format, std::string password);
+	int privkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password);
+	int privkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format, std::string password);
 
-	int pubkeySave(std::string filename, DataFormat::DATA_FORMAT format); //сохранение публичного ключа в файл
-	int pubkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format); //сохранение публичного ключа в память
-	int pubkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format); //сохранение публичного ключа в BIO(OpenSSL)
+	int pubkeySave(std::string filename, DataFormat::DATA_FORMAT format);
+	int pubkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format);
+	int pubkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format);
 };
 
 #endif //  comment this --->   CMS_PKI_KEY_H_INCLUDED

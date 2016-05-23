@@ -86,8 +86,6 @@ NAN_METHOD(WKey::keypairGenerate){
 			return;
 		}
 
-		std::string fname(filename);
-
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
@@ -104,7 +102,7 @@ NAN_METHOD(WKey::keypairGenerate){
 		UNWRAP_DATA(Key);
 
 		try{
-			_this->keypairGenerate(fname, DataFormat::get(format), PublicExponent::get(pubExp), keySize, password);
+			_this->keypairGenerate(new std::string(filename), DataFormat::get(format), PublicExponent::get(pubExp), keySize, password);
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError("Error create new key");

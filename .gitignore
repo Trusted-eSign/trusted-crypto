@@ -9,3 +9,6 @@ test/encSym.txt
 test/decSym.txt
 test/testsig.sig
 test/CertStore
+test/privkey.key
+test/privkey_s.key
+test/pubkey_s.key
