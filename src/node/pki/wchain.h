@@ -3,13 +3,11 @@
 
 #include "../../wrapper/pki/chain.h"
 
-#include <node.h>
-#include <v8.h>
-#include <node_object_wrap.h>
 #include <nan.h>
+#include "../utils/wrap.h"
 #include "../helper.h"
 
-class WChain : public node::ObjectWrap{
+WRAP_CLASS(Chain) {
 public:
 	WChain(){};
 	~WChain(){};
@@ -19,13 +17,6 @@ public:
 
 	static NAN_METHOD(BuildChain);
 	static NAN_METHOD(VerifyChain);
-
-	Handle<Chain> data_;
-
-	static inline Nan::Persistent<v8::Function> & constructor() {
-		static Nan::Persistent<v8::Function> my_constructor;
-		return my_constructor;
-	}
 };
 
 #endif //PKI_WCHAIN_H_INCLUDED

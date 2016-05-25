@@ -6,6 +6,7 @@
 #include "wcert.h"
 #include "wcerts.h"
 #include "../store/wsystem.h"
+#include "../store/wpkistore.h"
 
 void WChain::Init(v8::Handle<v8::Object> exports){
 	METHOD_BEGIN();
@@ -18,8 +19,8 @@ void WChain::Init(v8::Handle<v8::Object> exports){
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
-//	Nan::SetPrototypeMethod(tpl, "buildChain", BuildChain);
-//	Nan::SetPrototypeMethod(tpl, "verifyChain", VerifyChain);
+	Nan::SetPrototypeMethod(tpl, "buildChain", BuildChain);
+	Nan::SetPrototypeMethod(tpl, "verifyChain", VerifyChain);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -42,7 +43,7 @@ NAN_METHOD(WChain::New){
 	TRY_END();	
 }
 
-/*NAN_METHOD(WChain::BuildChain) {
+NAN_METHOD(WChain::BuildChain) {
 	METHOD_BEGIN();
 
 	try {
@@ -61,24 +62,24 @@ NAN_METHOD(WChain::New){
 		return;
 	}
 	TRY_END();
-}*/
+}
 
-/*NAN_METHOD(WChain::VerifyChain) {
+NAN_METHOD(WChain::VerifyChain) {
 	METHOD_BEGIN();
 
 	try {
 		LOGGER_ARG("chain");
 		WCertificateCollection * wChain = WCertificateCollection::Unwrap<WCertificateCollection>(info[0]->ToObject());
 
-		LOGGER_ARG("prvSys");
-		WProvider_System * wPrvSys = WProvider_System::Unwrap<WProvider_System>(info[1]->ToObject());
+		LOGGER_ARG("store");
+		WPkiStore * wStore = WPkiStore::Unwrap<WPkiStore>(info[1]->ToObject());
 
 		UNWRAP_DATA(Chain);
 
-		bool res = _this->verifyChain(wChain->data_, wPrvSys->data_);
+		bool res = _this->verifyChain(wChain->data_, wStore->data_);
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
 	}
 	TRY_END();
-}*/
+}

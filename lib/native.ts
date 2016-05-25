@@ -164,7 +164,7 @@ export namespace PKI {
 
     export declare class Chain {
         buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection;
-        verifyChain(chain: CertificateCollection, prvSys: PKISTORE.Provider_System): boolean;
+        verifyChain(chain: CertificateCollection, pkiStore: PKISTORE.PkiStore): boolean;
     }
 
     export declare class Pkcs12 {

@@ -9,7 +9,7 @@ Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, Handle
 		Handle<Certificate> issuer = new Certificate();
 
 		Handle<CertificateCollection> chain = new CertificateCollection();
-		//chain->push(cert);
+		chain->push(cert);
 
 		Handle<Certificate> xtemp = cert;
 
@@ -36,59 +36,42 @@ Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, Handle
 	}
 }
 
-/*Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, ProviderStore::PVD_STORE pvdStore){
-	LOGGER_FN();
-
-	try{
-		switch (pvdStore){
-		case ProviderStore::SYSTEM:
-
-			break;
-		case ProviderStore::MSCRYPTO:
-
-			break;
-		case ProviderStore::CRYPTOPRO:
-
-			break;
-		case ProviderStore::TCL:
-
-			break;
-		default:
-			THROW_EXCEPTION(0, Chain, NULL, "Unknown provider");
-		}
-	}
-	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, Chain, e, "Error build chain (provider store)");
-	}
-}*/
-
-/*bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<ProviderSystem> prvSys){
+bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<PkiStore> pkiStore){
 	LOGGER_FN();
 
 	try{
 		Handle<CRL> crl;
+		Revocation *rv = new Revocation();
+
 		STACK_OF(X509_CRL) *crls = sk_X509_CRL_new_null();
 
-		for (int i = 0, c = chain->length(); i < c; i++){
-			Revocation *rv = new Revocation();
-			crl = rv->getCRL(chain->items(i), prvSys);
+		for (int i = 0, c = chain->length(); i < c; i++){	
+			crl = rv->getCRL(chain->items(i), pkiStore);
 
 			LOGGER_OPENSSL(sk_X509_CRL_push);
-			sk_X509_CRL_push(crls, crl->internal());
+			if (!sk_X509_CRL_push(crls, X509_CRL_dup(crl->internal()))) {
+				THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "Error push CRL to stack");
+			}			
 		}
 
-		X509_STORE_CTX *ctx;
+		LOGGER_OPENSSL(X509_STORE_CTX_new);
+		X509_STORE_CTX *ctx = X509_STORE_CTX_new();
+		if (!ctx) {
+			THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "Error create new store ctx");
+		}
 
+		LOGGER_OPENSSL(X509_STORE_new);
 		X509_STORE *st = X509_STORE_new();
+		if (!st) {
+			THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "Error create new store");
+		}
+
 		for (int i = 0, c = chain->length(); i < c; i++){
-			X509_STORE_add_cert(st, chain->items(0)->internal());
+			LOGGER_OPENSSL(X509_STORE_add_cert);
+			X509_STORE_add_cert(st, X509_dup(chain->items(i)->internal()));
 		}
 
-		for (int i = 0, c = sk_X509_CRL_num(crls); i < c; i++){
-			X509_STORE_add_crl(st, sk_X509_CRL_value(crls, i));
-		}
-
-		
+		X509_CRL *xtempCRL = NULL;
 
 		LOGGER_OPENSSL(X509_STORE_CTX_init);
 		X509_STORE_CTX_init(ctx, st, chain->items(0)->internal(), chain->internal());
@@ -98,17 +81,20 @@ Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, Handle
 
 		LOGGER_OPENSSL(X509_STORE_CTX_set_flags);
 		X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CRL_CHECK);
+		LOGGER_OPENSSL(X509_STORE_CTX_set_flags);
 		X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CRL_CHECK_ALL);
 
 		LOGGER_OPENSSL(X509_verify_cert);
 		if (X509_verify_cert(ctx) <= 0){
-			THROW_OPENSSL_EXCEPTION(0, Chain, NULL, "Bad chain");
+			return false;
 		}
+
+		return true;
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Chain, e, "Error verify chain (provider store)");
 	}	
-}*/
+}
 
 Handle<Certificate> Chain::getIssued(Handle<CertificateCollection> certs, Handle<Certificate> cert){
 	LOGGER_FN();
