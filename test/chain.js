@@ -26,7 +26,7 @@ describe('Chain', function () {
         var certs = new trusted.pki.CertificateCollection();
         assert.equal(certs != null, true);
         
-		var cert1 = trusted.pki.Certificate.load("test/test-ru.crt", trusted.DataFormat.DER);
+        var cert1 = trusted.pki.Certificate.load("test/test-ru.crt", trusted.DataFormat.DER);
         assert.equal(cert1 != null, true);
         certs.push(cert1);
         
