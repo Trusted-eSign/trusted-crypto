@@ -56,6 +56,6 @@ describe('Chain', function () {
         assert.equal(providerSystem != null, true);
         store.addProvider(providerSystem.handle);
          
-        assert.equal(chain.verifyChain(outChain, store) != false, true);
+        assert.equal(chain.verifyChain(outChain, store) === false, true);
     })
 });
