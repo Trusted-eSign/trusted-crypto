@@ -9,8 +9,8 @@
         "install": "tsd install & node-gyp configure build & tsc"
     },
     "dependencies": {
-        "nan": "2.1.0",
-        "mocha": "^2.3.4"
+        "nan": "^2.2.1",
+        "mocha": "^2.4.5"
     },
     "author": "msu",
     "license": "Apache License 2.0"
