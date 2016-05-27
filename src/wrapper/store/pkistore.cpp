@@ -543,51 +543,6 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key
 	}
 }
 
-//std::vector<std::string> PkiStore::getCrlDistPoints(Handle<Certificate> cert){
-//	LOGGER_FN();
-//
-//	std::vector<std::string> res;
-//	const char *crlsUrl = NULL;
-//
-//	try{
-//		STACK_OF(DIST_POINT)* pStack = NULL;
-//		LOGGER_OPENSSL(X509_get_ext_d2i);
-//		pStack = (STACK_OF(DIST_POINT)*) X509_get_ext_d2i(cert->internal(), NID_crl_distribution_points, NULL, NULL);
-//		if (pStack){
-//			LOGGER_OPENSSL(sk_DIST_POINT_num);
-//			for (int j = 0; j < sk_DIST_POINT_num(pStack); j++){
-//				LOGGER_OPENSSL(sk_DIST_POINT_value);
-//				DIST_POINT *pRes = (DIST_POINT *)sk_DIST_POINT_value(pStack, j);
-//				if (pRes != NULL){
-//					STACK_OF(GENERAL_NAME) *pNames = pRes->distpoint->name.fullname;
-//					if (pNames){
-//						LOGGER_OPENSSL(sk_GENERAL_NAME_num);
-//						for (int i = 0; i < sk_GENERAL_NAME_num(pNames); i++){
-//							LOGGER_OPENSSL(sk_GENERAL_NAME_value);
-//							GENERAL_NAME *pName = sk_GENERAL_NAME_value(pNames, i);
-//							if (pName != NULL && pName->type == GEN_URI){
-//								LOGGER_OPENSSL(ASN1_STRING_data);
-//								crlsUrl = (const char *)ASN1_STRING_data(pName->d.uniformResourceIdentifier);
-//								res.push_back(crlsUrl);
-//								break;
-//							}
-//						}
-//						LOGGER_OPENSSL(sk_GENERAL_NAME_free);
-//						sk_GENERAL_NAME_free(pNames);
-//					}
-//				}
-//			}
-//			LOGGER_OPENSSL(sk_DIST_POINT_free);
-//			sk_DIST_POINT_free(pStack);
-//		}
-//	}
-//	catch (Handle<Exception> e){
-//		THROW_EXCEPTION(0, Revocation, e, "Error get DP");
-//	}
-//
-//	return res;
-//}
-
 void PkiStore::bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result){
 	LOGGER_FN();
 
