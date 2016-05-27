@@ -120,6 +120,14 @@ export namespace PKI {
         duplicate(): CRL;
     }
 
+    export declare class CrlCollection {
+        items(index: number): CRL;
+        length(): number;
+        push(crl: CRL): void;
+        pop(): void;
+        removeAt(index: number): void;
+    }
+
     export declare class CertificationRequestInfo {
        setSubject(x509name: string): void;
        setSubjectPublicKey(key: PKI.Key): void;
@@ -164,7 +172,14 @@ export namespace PKI {
 
     export declare class Chain {
         buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection;
-        verifyChain(chain: CertificateCollection, pkiStore: PKISTORE.PkiStore): boolean;
+        verifyChain(chain: CertificateCollection, crls: CrlCollection): boolean;
+    }
+
+    export declare class Revocation {
+        getCrlLocal(crl: CRL, cert: Certificate, store: PKISTORE.PkiStore): any;
+        getCrlDistPoints(cert: Certificate): Array<string>;
+        checkCrlTime(crl: CRL): boolean;
+        downloadCRL(distPoints: Array<string>, path: string, done: Function): void;
     }
 
     export declare class Pkcs12 {
@@ -337,9 +352,6 @@ export namespace PKISTORE {
         addCrl(provider: Provider, category: string, crl: PKI.CRL, flags: number): string;
         addKey(provider: Provider, key: PKI.Key, password: string): string;
         addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
-
-        downloadCRL(cert: PKI.Certificate, path: string, done: Function): void;
-        getCrlDistPoints(cert: PKI.Certificate): Array<string>;
     }
 
     export declare class CashJson {

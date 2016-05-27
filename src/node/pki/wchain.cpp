@@ -5,6 +5,7 @@
 #include "wchain.h"
 #include "wcert.h"
 #include "wcerts.h"
+#include "wcrls.h"
 #include "../store/wsystem.h"
 #include "../store/wpkistore.h"
 
@@ -71,12 +72,12 @@ NAN_METHOD(WChain::VerifyChain) {
 		LOGGER_ARG("chain");
 		WCertificateCollection * wChain = WCertificateCollection::Unwrap<WCertificateCollection>(info[0]->ToObject());
 
-		LOGGER_ARG("store");
-		WPkiStore * wStore = WPkiStore::Unwrap<WPkiStore>(info[1]->ToObject());
+		LOGGER_ARG("crls");
+		WCrlCollection * wCrls = WCrlCollection::Unwrap<WCrlCollection>(info[1]->ToObject());
 
 		UNWRAP_DATA(Chain);
 
-		bool res = _this->verifyChain(wChain->data_, wStore->data_);
+		bool res = _this->verifyChain(wChain->data_, wCrls->data_);
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;

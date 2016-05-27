@@ -12,6 +12,7 @@
 
 #include "certs.h"
 #include "cert.h"
+#include "crls.h"
 #include "revocation.h"
 
 #include "../pki/crl.h"
@@ -29,7 +30,7 @@ public:
 	Handle<CertificateCollection> buildChain(Handle<Certificate> cert, Handle<CertificateCollection> certs);
 
 	/* Check cerificates in chain */
-	bool verifyChain(Handle<CertificateCollection> chain, Handle<PkiStore> pkiStore);
+	bool verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollection> crls);
 
 private:
 	Handle<Certificate> getIssued(Handle<CertificateCollection> certs, Handle<Certificate> cert);

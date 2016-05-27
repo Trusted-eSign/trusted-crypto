@@ -36,24 +36,10 @@ Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, Handle
 	}
 }
 
-bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<PkiStore> pkiStore){
+bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollection> crls){
 	LOGGER_FN();
 
 	try{
-		Handle<CRL> crl;
-		Revocation *rv = new Revocation();
-
-		STACK_OF(X509_CRL) *crls = sk_X509_CRL_new_null();
-
-		for (int i = 0, c = chain->length(); i < c; i++){	
-			crl = rv->getCRL(chain->items(i), pkiStore);
-
-			LOGGER_OPENSSL(sk_X509_CRL_push);
-			if (!sk_X509_CRL_push(crls, X509_CRL_dup(crl->internal()))) {
-				THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "Error push CRL to stack");
-			}			
-		}
-
 		LOGGER_OPENSSL(X509_STORE_CTX_new);
 		X509_STORE_CTX *ctx = X509_STORE_CTX_new();
 		if (!ctx) {
@@ -77,7 +63,7 @@ bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<PkiStore> pk
 		X509_STORE_CTX_init(ctx, st, chain->items(0)->internal(), chain->internal());
 
 		LOGGER_OPENSSL(X509_STORE_CTX_set0_crls);
-		X509_STORE_CTX_set0_crls(ctx, crls);
+		X509_STORE_CTX_set0_crls(ctx, crls->internal());
 
 		LOGGER_OPENSSL(X509_STORE_CTX_set_flags);
 		X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CRL_CHECK);

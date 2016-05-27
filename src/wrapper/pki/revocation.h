@@ -11,9 +11,9 @@ class CTWRAPPER_API CRL;
 
 class Revocation{
 public:	
-	Handle<CRL> getCRL(Handle<Certificate> cert, Handle<PkiStore> pkiStore);
-protected:
 	boolean getCrlLocal(Handle<CRL> &outCrl, Handle<Certificate> cert, Handle<PkiStore> pkiStore);
+	boolean checkCrlTime(Handle<CRL> crl);
+	std::vector<std::string> getCrlDistPoints(Handle<Certificate> cert);
 };
 
 #endif //!PKI_REVOCATION_H_INCLUDED

@@ -22,6 +22,7 @@
 #include "pki/wcsr.h"
 #include "pki/wcipher.h"
 #include "pki/wchain.h"
+#include "pki/wrevocation.h"
 #include "store/wpkistore.h"
 #include "store/wsystem.h"
 #include "store/wmicrosoft.h"
@@ -66,6 +67,7 @@ void init(v8::Handle<v8::Object> target) {
 	WCipher::Init(Pki);
 	WChain::Init(Pki);
 	WPkcs12::Init(Pki);
+	WRevocation::Init(Pki);
 
 
 	v8::Local<v8::Object> Cms = Nan::New<v8::Object>();

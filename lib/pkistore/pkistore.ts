@@ -11,38 +11,7 @@ import {CertificationRequest} from "../pki/certReg";
 import {Key} from "../pki/key";
 import {CashJson} from "./cashjson";
 
-/**
-* Download file
-* @param url  url to remote file
-* @param path path for save in local system
-* @param done callback function
-*/
-function download(url: string, path: string, done: Function): void {
-    let sendReq = request.get(url);
 
-    sendReq.on("response", function(response){
-        switch (response.statusCode) {
-            case 200:
-                let stream = fs.createWriteStream(path);
-
-                response.on("data", function(chunk){
-                    stream.write(chunk);
-                }).on("end", function(){
-                    stream.end();
-                    done(null, url, path);
-                });
-
-                break;
-            default:
-                done(new Error("Server responded with status code" + response.statusCode));
-        }
-    });
-
-     sendReq.on("error", function(err) {
-        fs.unlink(path);
-        done(err.message);
-     });
-}
 
 export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements native.PKISTORE.IFilter {
     constructor() {
@@ -368,51 +337,6 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
 
         if (item.type === "KEY") {
             return Key.wrap<native.PKI.Key, Key>(this.handle.getItem(pkiItem.handle));
-        }
-    }
-    
-    /**
-    * Get array distribution points for certificate
-    * @param cert  Certificate
-    */
-    getCrlDistPoints(cert: Certificate): Array<string> {
-        return this.handle.getCrlDistPoints(cert.handle);
-    }
-    
-    /**
-    * Download CRL
-    * @param cert  Certificate for download crl
-    * @param path path for save in local system
-    * @param done callback function
-    */
-    downloadCRL(cert: Certificate, path: string, done: Function): void {
-        let crl = new Crl();
-        let distPoints = this.getCrlDistPoints(cert);
-        let returnPath;
-
-        try {
-            async.forEachOf(distPoints, function(value, key, callback) {
-                download(value, path + key, function(err, url, goodPath) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    else {
-                        returnPath = goodPath;
-                        callback();
-                    }
-                });
-            }, function(err) {
-                if (err) {
-                    done(err.message, null);
-                }
-                else {
-                    crl.load(returnPath);
-                    done(null, crl);
-                }
-            });
-        }
-       catch (e) {
-            done(e, null);
         }
     }
 }

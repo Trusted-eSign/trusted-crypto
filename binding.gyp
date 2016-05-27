@@ -22,6 +22,7 @@
                 "src/node/pki/wcsr.cpp",
                 "src/node/pki/wcipher.cpp",
                 "src/node/pki/wchain.cpp",
+                "src/node/pki/wrevocation.cpp",
                 "src/node/pki/wpkcs12.cpp",
                 "src/node/store/wcashjson.cpp",
                 "src/node/store/wpkistore.cpp",

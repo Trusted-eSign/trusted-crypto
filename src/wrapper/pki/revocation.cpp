@@ -1,29 +1,6 @@
 #include "../stdafx.h"
 
 #include "revocation.h"
-#include "csr.h"
-
-Handle<CRL> Revocation::getCRL(Handle<Certificate> cert, Handle<PkiStore> pkiStore){
-	LOGGER_FN();
-
-	try{
-		if (cert.isEmpty()){
-			THROW_EXCEPTION(0, Revocation, NULL, ERROR_PARAMETER_NULL, 1);
-		}
-
-		Handle<CRL> hcrl;
-		if (!getCrlLocal(hcrl, cert, pkiStore)) {
-			if (hcrl.isEmpty()){
-				THROW_EXCEPTION(0, Revocation, NULL, "crl is empty");
-			}
-		}	
-
-		return hcrl;
-	}
-	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, Revocation, e, "Error get CRL");
-	}
-}
 
 boolean Revocation::getCrlLocal(Handle<CRL> &outCrl, Handle<Certificate> cert, Handle<PkiStore> pkiStore){
 	LOGGER_FN();
@@ -95,4 +72,97 @@ boolean Revocation::getCrlLocal(Handle<CRL> &outCrl, Handle<Certificate> cert, H
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Revocation, e, "Error get CRL local");
 	}
+}
+
+boolean Revocation::checkCrlTime(Handle<CRL> hcrl) {
+	LOGGER_FN();
+
+	try{
+		X509_CRL *crl = hcrl->internal();
+		if (!crl) {
+			THROW_EXCEPTION(0, Revocation, NULL, "Unable get current machine time");
+		}
+
+		time_t ptime;
+		int i;
+
+		ptime = time(0);
+		if (!ptime){
+			THROW_EXCEPTION(0, Revocation, NULL, "Unable get current machine time");
+		}
+
+		LOGGER_OPENSSL(X509_cmp_time);
+		i = X509_cmp_time(X509_CRL_get_lastUpdate(crl), &ptime);
+		if (i == 0){
+			THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "X509_cmp_time 'Error in CRL last update field'");
+		}
+
+		if (i > 0){
+			THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "X509_cmp_time 'CRL not yet valid'");
+		}
+
+		LOGGER_OPENSSL(X509_CRL_get_nextUpdate);
+		if (X509_CRL_get_nextUpdate(crl)){
+			LOGGER_OPENSSL(X509_cmp_time);
+			i = X509_cmp_time(X509_CRL_get_nextUpdate(crl), &ptime);
+
+			if (i == 0){
+				THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "X509_cmp_time 'Error in CRL next update field'");
+			}
+
+			if (i < 0){
+				THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "X509_cmp_time 'CRL has expired'");
+			}
+		}
+	}
+	catch (Handle<Exception> e){
+		return 0;
+	}
+
+	return 1;
+}
+
+std::vector<std::string> Revocation::getCrlDistPoints(Handle<Certificate> cert){
+	LOGGER_FN();
+
+	std::vector<std::string> res;
+	const char *crlsUrl = NULL;
+
+	try{
+		STACK_OF(DIST_POINT)* pStack = NULL;
+		LOGGER_OPENSSL(X509_get_ext_d2i);
+		pStack = (STACK_OF(DIST_POINT)*) X509_get_ext_d2i(cert->internal(), NID_crl_distribution_points, NULL, NULL);
+		if (pStack){
+			LOGGER_OPENSSL(sk_DIST_POINT_num);
+			for (int j = 0; j < sk_DIST_POINT_num(pStack); j++){
+				LOGGER_OPENSSL(sk_DIST_POINT_value);
+				DIST_POINT *pRes = (DIST_POINT *)sk_DIST_POINT_value(pStack, j);
+				if (pRes != NULL){
+					STACK_OF(GENERAL_NAME) *pNames = pRes->distpoint->name.fullname;
+					if (pNames){
+						LOGGER_OPENSSL(sk_GENERAL_NAME_num);
+						for (int i = 0; i < sk_GENERAL_NAME_num(pNames); i++){
+							LOGGER_OPENSSL(sk_GENERAL_NAME_value);
+							GENERAL_NAME *pName = sk_GENERAL_NAME_value(pNames, i);
+							if (pName != NULL && pName->type == GEN_URI){
+								LOGGER_OPENSSL(ASN1_STRING_data);
+								crlsUrl = (const char *)ASN1_STRING_data(pName->d.uniformResourceIdentifier);
+								res.push_back(crlsUrl);
+								break;
+							}
+						}
+						LOGGER_OPENSSL(sk_GENERAL_NAME_free);
+						sk_GENERAL_NAME_free(pNames);
+					}
+				}
+			}
+			LOGGER_OPENSSL(sk_DIST_POINT_free);
+			sk_DIST_POINT_free(pStack);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Revocation, e, "Error get DP");
+	}
+
+	return res;
 }
