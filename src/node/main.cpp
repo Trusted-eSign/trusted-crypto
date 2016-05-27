@@ -13,6 +13,7 @@
 #include "pki/wpkcs12.h"
 #include "pki/wcerts.h"
 #include "pki/wcrl.h"
+#include "pki/wcrls.h"
 #include "pki/woid.h"
 #include "pki/walg.h"
 #include "pki/wattr.h"
@@ -54,6 +55,7 @@ void init(v8::Handle<v8::Object> target) {
 	WCertificate::Init(Pki);
 	WCertificateCollection::Init(Pki);
 	WCRL::Init(Pki);
+	WCrlCollection::Init(Pki);
 	WOID::Init(Pki);
 	WAlgorithm::Init(Pki);
 	WAttribute::Init(Pki);
