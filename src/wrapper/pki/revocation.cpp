@@ -2,7 +2,7 @@
 
 #include "revocation.h"
 
-boolean Revocation::getCrlLocal(Handle<CRL> &outCrl, Handle<Certificate> cert, Handle<PkiStore> pkiStore){
+Handle<CRL> Revocation::getCrlLocal(Handle<Certificate> cert, Handle<PkiStore> pkiStore){
 	LOGGER_FN();
 
 	try{
@@ -61,13 +61,12 @@ boolean Revocation::getCrlLocal(Handle<CRL> &outCrl, Handle<Certificate> cert, H
 				LOGGER_OPENSSL(X509_check_akid);
 				ret = X509_check_akid(cert->internal(), xtempCRL->akid);
 				if (ret == X509_V_OK){
-					outCrl = new CRL(xtempCRL);
-					return true;
+					return new CRL(xtempCRL);
 				}
 			}
 		}
 
-		return false;
+		return new CRL();
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Revocation, e, "Error get CRL local");

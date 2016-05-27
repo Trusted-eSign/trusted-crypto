@@ -53,9 +53,8 @@ NAN_METHOD(WRevocation::GetCrlLocal) {
 
 		UNWRAP_DATA(Revocation);
 
-		Handle<CRL> outCrl;
-		boolean res = _this->getCrlLocal(outCrl, wCert->data_, wStore->data_);
-		if (res) {
+		Handle<CRL> outCrl = _this->getCrlLocal(wCert->data_, wStore->data_);
+		if (outCrl->issuerName()->length() > 0) {
 			v8::Local<v8::Object> v8Crls = WCRL::NewInstance(outCrl);
 
 			info.GetReturnValue().Set(v8Crls);

@@ -11,7 +11,7 @@ class CTWRAPPER_API CRL;
 
 class Revocation{
 public:	
-	boolean getCrlLocal(Handle<CRL> &outCrl, Handle<Certificate> cert, Handle<PkiStore> pkiStore);
+	Handle<CRL> getCrlLocal(Handle<Certificate> cert, Handle<PkiStore> pkiStore);
 	boolean checkCrlTime(Handle<CRL> crl);
 	std::vector<std::string> getCrlDistPoints(Handle<Certificate> cert);
 };

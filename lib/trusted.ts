@@ -4,6 +4,7 @@ import * as cryptoMethod from "./crypto_method";
 import * as cert from "./pki/cert";
 import * as certs from "./pki/certs";
 import * as crl from "./pki/crl";
+import * as crls from "./pki/crls";
 import * as key from "./pki/key";
 import * as oid from "./pki/oid";
 import * as alg from "./pki/alg";
@@ -12,6 +13,7 @@ import * as certReg from "./pki/certReg";
 import * as csr from "./pki/csr";
 import * as cipher from "./pki/cipher";
 import * as chain from "./pki/chain";
+import * as revocation from "./pki/revocation";
 import * as pkcs12 from "./pki/pkcs12";
 
 import * as signed_data from "./cms/signed_data";
@@ -31,6 +33,7 @@ export namespace pki {
     export let Certificate = cert.Certificate;
     export let CertificateCollection = certs.CertificateCollection;
     export let Crl = crl.Crl;
+    export let CrlCollection = crls.CrlCollection;
     export let Key = key.Key;
     export let Oid = oid.Oid;
     export let Algorithm = alg.Algorithm;
@@ -39,6 +42,7 @@ export namespace pki {
     export let CSR = csr.CSR;
     export let Cipher = cipher.Cipher;
     export let Chain = chain.Chain;
+    export let Revocation = revocation.Revocation;
     export let Pkcs12 = pkcs12.Pkcs12;
 }
 

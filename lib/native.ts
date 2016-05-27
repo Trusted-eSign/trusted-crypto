@@ -176,7 +176,7 @@ export namespace PKI {
     }
 
     export declare class Revocation {
-        getCrlLocal(crl: CRL, cert: Certificate, store: PKISTORE.PkiStore): any;
+        getCrlLocal(cert: Certificate, store: PKISTORE.PkiStore): any;
         getCrlDistPoints(cert: Certificate): Array<string>;
         checkCrlTime(crl: CRL): boolean;
         downloadCRL(distPoints: Array<string>, path: string, done: Function): void;

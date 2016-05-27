@@ -49,16 +49,15 @@ export class Revocation extends object.BaseObject<native.PKI.Revocation> {
 
     /**
     * Search crl for certificate in local store
-    * @param  {Crl} crl
     * @param  {Certificate} cert
     * @param  {PkiStore} store
     */
-    getCrlLocal(crl: Crl, cert: Certificate, store: PkiStore): any {
-        if (this.handle.getCrlLocal(crl.handle, cert.handle, store.handle)) {
-            return crl;
-        } else {
-            return false;
+    getCrlLocal(cert: Certificate, store: PkiStore): any {
+        let res = this.handle.getCrlLocal(cert.handle, store.handle);
+        if (res) {
+            return Crl.wrap<native.PKI.CRL, Crl>(res);
         }
+        return res;
     }
 
     /**
