@@ -76,20 +76,13 @@ export class Revocation extends object.BaseObject<native.PKI.Revocation> {
         return this.handle.checkCrlTime(crl.handle);
     }
 
-    /**
-    * Download CRL
-    * @param cert  Certificate for download crl
-    * @param path path for save in local system
-    * @param done callback function
-    */
-    downloadCRL(cert: Certificate, path: string, done: Function): void {
+    downloadCRL(distPoints: Array<string>, pathForSave: string, done: Function): void {
         let crl = new Crl();
-        let distPoints = this.getCrlDistPoints(cert);
         let returnPath;
 
         try {
             async.forEachOf(distPoints, function (value, key, callback) {
-                download(value, path + key, function (err, url, goodPath) {
+                download(value, pathForSave + key, function (err, url, goodPath) {
                     if (err) {
                         return callback(err);
                     }
