@@ -73,7 +73,7 @@ Handle<CRL> Revocation::getCrlLocal(Handle<Certificate> cert, Handle<PkiStore> p
 	}
 }
 
-boolean Revocation::checkCrlTime(Handle<CRL> hcrl) {
+bool Revocation::checkCrlTime(Handle<CRL> hcrl) {
 	LOGGER_FN();
 
 	try{
