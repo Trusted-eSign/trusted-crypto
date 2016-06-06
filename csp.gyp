@@ -1,5 +1,7 @@
 {
     "targets": [
+        { 
+            "target_name": "csp_trusted",
             "conditions": [
                 [
                     "OS=='win'",
@@ -23,11 +25,14 @@
                         ],
 
                         "libraries": [
+                            "-L<(csp_root) -lcapi20"
                         ],
 
                         "include_dirs": [
                             "/opt/cprocsp/include"
                         ],
+
+                        "defines": [ "CPROCSP" ]
                     }
                 ]
             ]
