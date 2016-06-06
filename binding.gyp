@@ -26,7 +26,7 @@
                 "src/node/pki/wpkcs12.cpp",
                 "src/node/store/wcashjson.cpp",
                 "src/node/store/wpkistore.cpp",
-                "src/node/store/wsystem.cpp",                
+                "src/node/store/wsystem.cpp",
                 "src/node/cms/wsigned_data.cpp",
                 "src/node/cms/wsigner.cpp",
                 "src/node/cms/wsigners.cpp",
@@ -52,7 +52,7 @@
                 "src/wrapper/pki/revocation.cpp",
                 "src/wrapper/store/cashjson.cpp",
                 "src/wrapper/store/pkistore.cpp",
-                "src/wrapper/store/provider_system.cpp",               
+                "src/wrapper/store/provider_system.cpp",
                 "src/wrapper/store/storehelper.cpp",
                 "src/wrapper/pki/x509_name.cpp",
                 "src/wrapper/pki/alg.cpp",
@@ -105,30 +105,12 @@
                         }
                     },
                     {
-                        "conditions": [
-                            [
-                                "target_arch=='x64'",
-                                {
-                                    "variables": {
-                                        "csp_root%": "/opt/cprocsp/lib/amd64"
-                                    }
-                                },
-                                {
-                                    "variables": {
-                                        "csp_root%": "/opt/cprocsp/lib/ia32"
-                                    }
-                                }
-                            ]
-                        ],
-
                         "libraries": [
-                            "-luuid",
-                            "-L<(csp_root) -lcapi20"
+                            "-luuid"
                         ],
 
                         "include_dirs": [
-                            "<(node_root_dir)/deps/openssl/openssl/include",
-                            "/opt/cprocsp/include"
+                            "<(node_root_dir)/deps/openssl/openssl/include"
                         ],
 
                         "defines": [ "UNIX" ]
