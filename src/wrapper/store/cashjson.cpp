@@ -48,7 +48,9 @@ Handle<PkiItemCollection> CashJson::exportJson(){
 
 		std::string listProviders[] = {
 			"SYSTEM",
+#if defined(OPENSSL_SYS_WINDOWS)
 			"MICROSOFT"
+#endif
 		};
 
 		for (int i = 0, c = sizeof(listProviders) / sizeof(*listProviders); i < c; i++){

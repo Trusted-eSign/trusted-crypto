@@ -3,7 +3,9 @@
 #include "pkistore.h"
 
 #include "provider_system.h"
-#include "provider_microsoft.h"
+#if defined(OPENSSL_SYS_WINDOWS)
+	#include "provider_microsoft.h"
+#endif
 
 PkiStore::PkiStore(Handle<std::string> json){
 	LOGGER_FN();
@@ -224,9 +226,11 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 		if (strcmp(item->provider->c_str(), "SYSTEM") == 0){
 			cert = Provider_System::getCertFromURI(item->uri, item->format);
 		}
+#if defined(OPENSSL_SYS_WINDOWS)
 		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0){
 			cert = ProviderMicrosoft::getCert(item->hash, item->category);
 		}
+#endif
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
@@ -247,9 +251,11 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 		if (strcmp(item->provider->c_str(), "SYSTEM") == 0){
 			crl = Provider_System::getCRLFromURI(item->uri, item->format);
 		}
+#if defined(OPENSSL_SYS_WINDOWS)
 		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0){
 			crl = ProviderMicrosoft::getCRL(item->hash, item->category);
 		}
+#endif
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}

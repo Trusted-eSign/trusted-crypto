@@ -25,7 +25,9 @@
 #include "pki/wrevocation.h"
 #include "store/wpkistore.h"
 #include "store/wsystem.h"
-#include "store/wmicrosoft.h"
+#if defined(OPENSSL_SYS_WINDOWS)
+	#include "store/wmicrosoft.h"
+#endif
 #include "store/wcashjson.h"
 
 #include "cms/wsigned_data.h"
@@ -81,7 +83,9 @@ void init(v8::Handle<v8::Object> target) {
 	target->Set(Nan::New("PKISTORE").ToLocalChecked(), PkiStore);
 	WPkiStore::Init(PkiStore);
 	WProvider_System::Init(PkiStore);
-	WProviderMicrosoft::Init(PkiStore);
+	#if defined(OPENSSL_SYS_WINDOWS)
+		WProviderMicrosoft::Init(PkiStore);
+	#endif
 	WFilter::Init(PkiStore);
 	WPkiItem::Init(PkiStore);
 	WCashJson::Init(PkiStore);

@@ -26,8 +26,7 @@
                 "src/node/pki/wpkcs12.cpp",
                 "src/node/store/wcashjson.cpp",
                 "src/node/store/wpkistore.cpp",
-                "src/node/store/wsystem.cpp",
-                "src/node/store/wmicrosoft.cpp",
+                "src/node/store/wsystem.cpp",                
                 "src/node/cms/wsigned_data.cpp",
                 "src/node/cms/wsigner.cpp",
                 "src/node/cms/wsigners.cpp",
@@ -53,8 +52,7 @@
                 "src/wrapper/pki/revocation.cpp",
                 "src/wrapper/store/cashjson.cpp",
                 "src/wrapper/store/pkistore.cpp",
-                "src/wrapper/store/provider_system.cpp",
-                "src/wrapper/store/provider_microsoft.cpp",
+                "src/wrapper/store/provider_system.cpp",               
                 "src/wrapper/store/storehelper.cpp",
                 "src/wrapper/pki/x509_name.cpp",
                 "src/wrapper/pki/alg.cpp",
@@ -73,6 +71,10 @@
                 [
                     "OS=='win'",
                     {
+                        "sources": [
+                            "src/node/store/wmicrosoft.cpp",
+                            "src/wrapper/store/provider_microsoft.cpp"
+                        ],
                         "conditions": [
                             [
                                 "target_arch=='x64'",
