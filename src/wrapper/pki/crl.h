@@ -27,6 +27,7 @@ public:
 	void write(Handle<Bio> out, DataFormat::DATA_FORMAT format);
 	int equals(Handle<CRL> crl);
 	Handle<CRL> duplicate();
+	int compare(Handle<CRL> crl);
 	Handle<std::string> hash(const EVP_MD *md);
 	Handle<std::string> hash(Handle<std::string> algorithm);
 

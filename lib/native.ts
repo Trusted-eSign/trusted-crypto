@@ -97,10 +97,6 @@ export namespace PKI {
     }
 
     export declare class CRL {
-        load(filename: string, dataFormat: DataFormat): void;
-        import(raw: Buffer, dataFormat: DataFormat): void;
-        save(filename: string, dataFormat: DataFormat): void;
-        export(dataFormat: DataFormat): Buffer;
         getEncoded(): Buffer;
         getSignature(): Buffer;
         getVersion(): number;
@@ -115,6 +111,12 @@ export namespace PKI {
         getSigAlgOID(): string;
         getRevokedCertificateCert(cer: Certificate): RevokedCertificate;
         getRevokedCertificateSerial(serial: string): RevokedCertificate;
+
+        load(filename: string, dataFormat: DataFormat): void;
+        import(raw: Buffer, dataFormat: DataFormat): void;
+        save(filename: string, dataFormat: DataFormat): void;
+        export(dataFormat: DataFormat): Buffer;
+        compare(crl: CRL): number;
         equals(crl: CRL): boolean;
         hash(digestName: string): Buffer;
         duplicate(): CRL;

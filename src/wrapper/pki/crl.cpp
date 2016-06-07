@@ -99,6 +99,15 @@ int CRL::equals(Handle<CRL> crl){
 	}	
 }
 
+int CRL::compare(Handle<CRL> crl){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_CRL_cmp);
+	int res = X509_CRL_cmp(this->internal(), crl->internal());
+
+	return res;
+}
+
 Handle<std::string> CRL::getThumbprint()
 {
 	LOGGER_FN();

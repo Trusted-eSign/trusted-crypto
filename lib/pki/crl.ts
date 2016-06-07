@@ -23,35 +23,35 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
     get encoded(): Buffer {
         return this.handle.getEncoded();
     }
-    
+
     /**
      * возвращает значение подписи 
      */
     get signature(): Buffer {
         return this.handle.getSignature();
     }
-	
+
     /**
      * возвращает версию
      */
     get version(): number {
         return this.handle.getVersion();
     }
-	
+
     /**
      * возвращает имя издателя
      */
     get issuerName(): string {
         return this.handle.getIssuerName();
     }
-    
+
     /**
      * возвращает пользовательское имя издателя сертификата
      */
     get issuerFriendlyName(): string {
         return this.handle.getIssuerFriendlyName();
     }
-	
+
     /**
      * возвращает дату последнего обновления
      */
@@ -148,6 +148,19 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
      */
     save(filename: string, dataFormat: DataFormat = DEFAULT_DATA_FORMAT) {
         this.handle.save(filename, dataFormat);
+    }
+
+    /**
+     * сравнение crl
+     * @param crl Crl для сравнения
+     */
+    compare(crl: Crl): number {
+        let cmp = this.handle.compare(crl.handle);
+        if (cmp < 0)
+            return -1;
+        if (cmp > 0)
+            return 1;
+        return 0;
     }
 
     /**
