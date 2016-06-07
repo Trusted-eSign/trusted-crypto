@@ -12,3 +12,4 @@ test/CertStore
 test/privkey.key
 test/privkey_s.key
 test/pubkey_s.key
+.vscode/launch.json
