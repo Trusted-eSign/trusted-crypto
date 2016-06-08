@@ -22,7 +22,7 @@ describe('Store', function () {
     it('add pki objects', function () {
         var cert = trusted.pki.Certificate.load("test/cert1.crt", trusted.DataFormat.PEM);
         var crl = trusted.pki.Crl.load("test/test.crl");
-        var key = trusted.pki.Key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");
+        var key = trusted.pki.Key.readPrivateKey("test/cert1.key", trusted.DataFormat.PEM, "");
         var csr = trusted.pki.CertificationRequest.load("test/test.csr", trusted.DataFormat.PEM, "");
 
         uri = store.addCert(providerSystem.handle, "MY", cert, 0);
@@ -36,7 +36,7 @@ describe('Store', function () {
         var newCrl = trusted.pki.Crl.load("test/CertStore/CRL/1ebb0526075855661c09d7d9b59abd950bdae0ef.crl");
         assert.equal(crl.thumbprint == newCrl.thumbprint, true);
 
-        var newKey = trusted.pki.Key.privkeyLoad("test/CertStore/MY/15b5c91c943cd687ccf6b85a7b28273f281d3eba.key", trusted.DataFormat.PEM, "");
+        var newKey = trusted.pki.Key.readPrivateKey("test/CertStore/MY/15b5c91c943cd687ccf6b85a7b28273f281d3eba.key", trusted.DataFormat.PEM, "");
         assert.equal(newKey != null, true);
     })
 

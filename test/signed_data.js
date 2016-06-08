@@ -6,7 +6,7 @@ describe("SignedData", function () {
     
     before(function(){
         cert = trusted.pki.Certificate.load("test/cert1.crt", trusted.DataFormat.PEM);
-        key = trusted.pki.Key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");
+        key = trusted.pki.Key.readPrivateKey("test/cert1.key", trusted.DataFormat.PEM, "");
     })
     
     it("Sign new data", function(){

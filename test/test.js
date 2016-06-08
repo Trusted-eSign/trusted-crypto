@@ -251,7 +251,7 @@ describe('CSR', function () {
 	var key, csr;
 	
 	it('init', function () {
-		key = trusted.pki.Key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");
+		key = trusted.pki.Key.readPrivateKey("test/cert1.key", trusted.DataFormat.PEM, "");
 		
 		csr = new trusted.pki.CSR("/C=US/O=Test/CN=example.com", key, "SHA1");
         assert.equal(csr != null, true);

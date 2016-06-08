@@ -78,7 +78,7 @@ describe('CipherASSYMETRIC', function () {
         var key = new trusted.pki.Key();       
         assert.equal(key != null, true);
         
-        key.privkeyLoad("test/cert1.key", trusted.DataFormat.PEM, "");
+        key.readPrivateKey("test/cert1.key", trusted.DataFormat.PEM, "");
         
 		cipher.privKey = key;		
     })
