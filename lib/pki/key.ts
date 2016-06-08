@@ -18,37 +18,38 @@ export class Key extends object.BaseObject<native.PKI.Key>{
             this.handle = new native.PKI.Key();
     }
 
-    keypairGenerate(filename: string, format: DataFormat, pubExp: PublicExponent, keySize: number, password: string) {
-        return this.handle.keypairGenerate(filename, format, pubExp, keySize, password);
+    generate(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string) {
+        return Key.wrap<native.PKI.Key, Key>(this.handle.generate(format, pubExp, keySize));
     }
 
-    keypairGenerateMemory(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string) {
-        return this.handle.keypairGenerateMemory(format, pubExp, keySize, password);
+    static readPrivateKey(filename: string, format: DataFormat, password: string) {
+        let key = new Key();
+        key.readPrivateKey.apply(key, arguments);
+        return Key.wrap<native.PKI.Key, Key>(key.handle);
     }
 
-    keypairGenerateBIO(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string) {
-        return this.handle.keypairGenerateBIO(format, pubExp, keySize, password);
+    readPrivateKey(filename: string, format: DataFormat, password: string) {
+        return Key.wrap<native.PKI.Key, Key>(this.handle.readPrivateKey(filename, format, password));
     }
 
-    static privkeyLoad(filename: string, format: DataFormat, password: string) {
-        var key = new Key();
-        key.privkeyLoad.apply(key, arguments);
-        return key;
+    writePrivateKey(filename: string, format: DataFormat, password: string) {
+        return this.handle.writePrivateKey(filename, format, password);
     }
 
-    privkeyLoad(filename: string, format: DataFormat, password: string) {
-        return this.handle.privkeyLoad(filename, format, password);
+    readPublicKey(filename: string, format: DataFormat) {
+        return Key.wrap<native.PKI.Key, Key>(this.handle.readPublicKey(filename, format));
     }
 
-    privkeySave(filename: string, format: DataFormat, password: string) {
-        return this.handle.privkeySave(filename, format, password);
+    writePublicKey(filename: string, format: DataFormat) {
+        return this.handle.writePublicKey(filename, format);
     }
 
-    pubkeyLoad(filename: string, format: DataFormat) {
-        return this.handle.pubkeyLoad(filename, format);
-    }
-
-    pubkeySave(filename: string, format: DataFormat) {
-        return this.handle.pubkeySave(filename, format);
+    compare(key: Key): number {
+        let cmp = this.handle.compare(key.handle);
+        if (cmp < 0)
+            return -1;
+        if (cmp > 0)
+            return 1;
+        return 0;
     }
 }

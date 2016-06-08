@@ -16,25 +16,15 @@ void WKey::Init(v8::Handle<v8::Object> exports){
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
-	Nan::SetPrototypeMethod(tpl, "keypairGenerate", keypairGenerate);
-	Nan::SetPrototypeMethod(tpl, "keypairGenerateMemory", keypairGenerateMemory);
-	Nan::SetPrototypeMethod(tpl, "keypairGenerateBIO", keypairGenerateBIO);
+	Nan::SetPrototypeMethod(tpl, "generate", Generate);
+	Nan::SetPrototypeMethod(tpl, "compare", Compare);
+	Nan::SetPrototypeMethod(tpl, "duplicate", Duplicate);
 
-	Nan::SetPrototypeMethod(tpl, "privkeyLoad", privkeyLoad);
-	Nan::SetPrototypeMethod(tpl, "privkeyLoadMemory", privkeyLoadMemory);
-	//Nan::SetPrototypeMethod(tpl, "privkeyLoadBIO", privkeyLoadBIO);
+	Nan::SetPrototypeMethod(tpl, "readPrivateKey", ReadPrivateKey);
+	Nan::SetPrototypeMethod(tpl, "writePrivateKey", WritePrivateKey);
 
-	Nan::SetPrototypeMethod(tpl, "pubkeyLoad", pubkeyLoad);
-	Nan::SetPrototypeMethod(tpl, "pubkeyLoadMemory", pubkeyLoadMemory);
-	//Nan::SetPrototypeMethod(tpl, "pubkeyLoadBIO", pubkeyLoadBIO);
-
-	Nan::SetPrototypeMethod(tpl, "privkeySave", privkeySave);
-	Nan::SetPrototypeMethod(tpl, "privkeySaveBIO", privkeySaveBIO);
-	Nan::SetPrototypeMethod(tpl, "privkeySaveMemory", privkeySaveMemory);
-
-	Nan::SetPrototypeMethod(tpl, "pubkeySave", pubkeySave);
-	Nan::SetPrototypeMethod(tpl, "pubkeySaveBIO", pubkeySaveBIO);
-	Nan::SetPrototypeMethod(tpl, "pubkeySaveMemory", pubkeySaveMemory);
+	Nan::SetPrototypeMethod(tpl, "readPublicKey", ReadPublicKey);
+	Nan::SetPrototypeMethod(tpl, "writePublicKey", WritePublicKey);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -57,71 +47,10 @@ NAN_METHOD(WKey::New){
 	TRY_END();
 }
 
-NAN_METHOD(WKey::keypairGenerate){
+NAN_METHOD(WKey::Generate){
 	METHOD_BEGIN();
 
 	try{
-		if (info[0]->IsUndefined()){
-			Nan::ThrowError("Parameter 1 is required");
-			return;
-		}
-		if (info[1]->IsUndefined()){
-			Nan::ThrowError("Parameter 2 is required");
-			return;
-		}
-		if (info[2]->IsUndefined()){
-			Nan::ThrowError("Parameter 3 is required");
-			return;
-		}
-		if (info[3]->IsUndefined()){
-			Nan::ThrowError("Parameter 4 is required");
-			return;
-		}
-
-		v8::String::Utf8Value v8Str(info[0]->ToString());
-		char *filename = *v8Str;
-
-		if (filename == NULL) {
-			Nan::ThrowError("Wrong filename");
-			return;
-		}
-
-		LOGGER_ARG("format");
-		int format = info[1]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("pubExp");
-		int pubExp = info[2]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("keySize");
-		int keySize = info[3]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[4]->ToString());
-		char *password = *v8Pass;
-
-		UNWRAP_DATA(Key);
-
-		try{
-			_this->keypairGenerate(new std::string(filename), DataFormat::get(format), PublicExponent::get(pubExp), keySize, password);
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("Error create new key");
-			return;
-		}
-
-
-		info.GetReturnValue().Set(info.This());
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WKey::keypairGenerateMemory){
-	METHOD_BEGIN();
-
-	try{
-		std::string data;
-
 		LOGGER_ARG("format");
 		int format = info[0]->ToNumber()->Int32Value();
 
@@ -131,88 +60,60 @@ NAN_METHOD(WKey::keypairGenerateMemory){
 		LOGGER_ARG("keySize");
 		int keySize = info[2]->ToNumber()->Int32Value();
 
-		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[3]->ToString());
-		char *password = *v8Pass;
-
 		UNWRAP_DATA(Key);
 
-		try{
-			_this->keypairGenerateMemory(data, DataFormat::get(format), PublicExponent::get(pubExp), keySize, password);
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("Error create new key");
-			return;
-		}
+		Handle<Key> key = _this->generate(DataFormat::get(format), PublicExponent::get(pubExp), keySize);
+		v8::Local<v8::Object> v8Key = WKey::NewInstance(key);
+		info.GetReturnValue().Set(v8Key);
 
-
-		info.GetReturnValue().Set(info.This());
 		return;
 	}
 	TRY_END();
 }
 
-NAN_METHOD(WKey::keypairGenerateBIO){
+NAN_METHOD(WKey::Compare) {
 	METHOD_BEGIN();
 
-	try{
-		std::string data;
-		Handle<Bio> out = NULL;
-
-		out = new Bio(BIO_TYPE_MEM, data, "w+");
-
-		LOGGER_ARG("format");
-		int format = info[0]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("pubExp");
-		int pubExp = info[1]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("keySize");
-		int keySize = info[2]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[3]->ToString());
-		char *password = *v8Pass;
-
+	try {
 		UNWRAP_DATA(Key);
 
-		try{
-			_this->keypairGenerateBIO(out, DataFormat::get(format), PublicExponent::get(pubExp), keySize, password);
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("Error create new key");
-			return;
-		}
+		LOGGER_ARG("key");
+		WKey * wKey = WKey::Unwrap<WKey>(info[0]->ToObject());
+		
+		int res = _this->compare(wKey->data_);
 
+		v8::Local<v8::Number> v8Number = Nan::New<v8::Number>(res);
 
-		info.GetReturnValue().Set(info.This());
+		info.GetReturnValue().Set(v8Number);
 		return;
 	}
 	TRY_END();
 }
 
-/*
- * filename: string
- */
-NAN_METHOD(WKey::privkeyLoad){
+NAN_METHOD(WKey::Duplicate)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Key);
+
+		Handle<Key> key = _this->duplicate();
+		v8::Local<v8::Object> v8Key = WKey::NewInstance(key);
+		info.GetReturnValue().Set(v8Key);
+
+		info.GetReturnValue().Set(v8Key);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WKey::ReadPrivateKey){
 	METHOD_BEGIN();
 
 	try{
 		LOGGER_ARG("filename");
-		if (info[0]->IsUndefined()){
-			Nan::ThrowError("Parameter 1 is required");
-			return;
-		}
-
-		v8::String::Utf8Value v8Str(info[0]->ToString());
-		char *filename = *v8Str;
-
-		if (filename == NULL) {
-			Nan::ThrowError("Wrong filename");
-			return;
-		}
-
-		std::string fname(filename);
+		v8::String::Utf8Value v8Name(info[0]->ToString());
+		char *filename = *v8Name;
 
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
@@ -221,9 +122,13 @@ NAN_METHOD(WKey::privkeyLoad){
 		v8::String::Utf8Value v8Pass(info[2]->ToString());
 		char *password = *v8Pass;
 
+		Handle<Bio> in = NULL;
+
+		in = new Bio(BIO_TYPE_FILE, filename, "rb");
+
 		UNWRAP_DATA(Key);
 
-		_this->privkeyLoad(fname, DataFormat::get(format), password);
+		_this->readPrivateKey(in, DataFormat::get(format), new std::string(password));
 
 		info.GetReturnValue().Set(info.This());
 		return;
@@ -231,71 +136,23 @@ NAN_METHOD(WKey::privkeyLoad){
 	TRY_END();
 }
 
-NAN_METHOD(WKey::privkeyLoadMemory){
+NAN_METHOD(WKey::ReadPublicKey){
 	METHOD_BEGIN();
 
 	try{
-		LOGGER_ARG("data");
-		char* buf = node::Buffer::Data(info[0]->ToObject());
-		size_t buflen = node::Buffer::Length(info[0]);
-		std::string buffer(buf, buflen);
-
-		LOGGER_ARG("format");
-		int format = info[1]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[2]->ToString());
-		char *password = *v8Pass;
-
-		UNWRAP_DATA(Key);
-
-		try{
-			_this->privkeyLoadMemory(buffer, DataFormat::get(format), password);
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("Error load key");
-			return;
-		}
-
-
-		info.GetReturnValue().Set(info.This());
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WKey::pubkeyLoad){
-	METHOD_BEGIN();
-
-	try{
-		if (info[0]->IsUndefined()){
-			Nan::ThrowError("Parameter 1 is required");
-			return;
-		}
-
 		v8::String::Utf8Value v8Str(info[0]->ToString());
 		char *filename = *v8Str;
 
-		if (filename == NULL) {
-			Nan::ThrowError("Wrong filename");
-			return;
-		}
-
-		std::string fname(filename);
-
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
+		Handle<Bio> in = NULL;
+
+		in = new Bio(BIO_TYPE_FILE, filename, "rb");
+
 		UNWRAP_DATA(Key);
 
-		try{
-			_this->pubkeyLoad(fname, DataFormat::get(format));
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("Error load key");
-			return;
-		}
-
+		_this->readPublicKey(in, DataFormat::get(format));
 
 		info.GetReturnValue().Set(info.This());
 		return;
@@ -303,36 +160,7 @@ NAN_METHOD(WKey::pubkeyLoad){
 	TRY_END();
 }
 
-NAN_METHOD(WKey::pubkeyLoadMemory){
-	METHOD_BEGIN();
-
-	try{
-		LOGGER_ARG("data");
-		char* buf = node::Buffer::Data(info[0]->ToObject());
-		size_t buflen = node::Buffer::Length(info[0]);
-		std::string buffer(buf, buflen);
-
-		LOGGER_ARG("format");
-		int format = info[1]->ToNumber()->Int32Value();
-
-		UNWRAP_DATA(Key);
-
-		try{
-			_this->pubkeyLoadMemory(buffer, DataFormat::get(format));
-		}
-		catch (Handle<Exception> e){
-			Nan::ThrowError("Error load key");
-			return;
-		}
-
-
-		info.GetReturnValue().Set(info.This());
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WKey::privkeySave) {
+NAN_METHOD(WKey::WritePrivateKey) {
 	METHOD_BEGIN();
 
 	try {
@@ -347,9 +175,11 @@ NAN_METHOD(WKey::privkeySave) {
 		v8::String::Utf8Value v8Pass(info[2]->ToString());
 		char *password = *v8Pass;
 
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
+
 		UNWRAP_DATA(Key);
 
-		_this->privkeySave(filename, DataFormat::get(format), password);
+		_this->writePrivateKey(out, DataFormat::get(format), new std::string(password));
 
 		info.GetReturnValue().Set(info.This());
 		return;
@@ -357,55 +187,7 @@ NAN_METHOD(WKey::privkeySave) {
 	TRY_END();
 }
 
-NAN_METHOD(WKey::privkeySaveBIO) {
-	METHOD_BEGIN();
-
-	try {
-		LOGGER_ARG("format");
-		int format = info[0]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[1]->ToString());
-		char *password = *v8Pass;
-
-		UNWRAP_DATA(Key);
-
-		Handle<Bio> out = new Bio(BIO_TYPE_MEM, "");
-		_this->privkeySaveBIO(out, DataFormat::get(format), password);
-
-		info.GetReturnValue().Set(info.This());
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WKey::privkeySaveMemory) {
-	METHOD_BEGIN();
-
-	try {
-		LOGGER_ARG("data");
-		char* buf = node::Buffer::Data(info[0]->ToObject());
-		size_t buflen = node::Buffer::Length(info[0]);
-		std::string buffer(buf, buflen);
-
-		LOGGER_ARG("format");
-		int format = info[1]->ToNumber()->Int32Value();
-
-		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[2]->ToString());
-		char *password = *v8Pass;
-
-		UNWRAP_DATA(Key);
-
-		_this->privkeySaveMemory(buffer, DataFormat::get(format), password);
-
-		info.GetReturnValue().Set(info.This());
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WKey::pubkeySave) {
+NAN_METHOD(WKey::WritePublicKey) {
 	METHOD_BEGIN();
 
 	try {
@@ -416,49 +198,11 @@ NAN_METHOD(WKey::pubkeySave) {
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
-		UNWRAP_DATA(Key);
-
-		_this->pubkeySave(filename, DataFormat::get(format));
-
-		info.GetReturnValue().Set(info.This());
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WKey::pubkeySaveBIO) {
-	METHOD_BEGIN();
-
-	try {
-		LOGGER_ARG("format");
-		int format = info[0]->ToNumber()->Int32Value();
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
 
 		UNWRAP_DATA(Key);
 
-		Handle<Bio> out = new Bio(BIO_TYPE_MEM, "");
-		_this->pubkeySaveBIO(out, DataFormat::get(format));
-
-		info.GetReturnValue().Set(info.This());
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WKey::pubkeySaveMemory) {
-	METHOD_BEGIN();
-
-	try {
-		LOGGER_ARG("data");
-		char* buf = node::Buffer::Data(info[0]->ToObject());
-		size_t buflen = node::Buffer::Length(info[0]);
-		std::string buffer(buf, buflen);
-
-		LOGGER_ARG("format");
-		int format = info[1]->ToNumber()->Int32Value();
-
-		UNWRAP_DATA(Key);
-
-		_this->pubkeySaveMemory(buffer, DataFormat::get(format));
+		_this->writePublicKey(out, DataFormat::get(format));
 
 		info.GetReturnValue().Set(info.This());
 		return;

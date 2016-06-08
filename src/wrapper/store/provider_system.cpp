@@ -604,7 +604,8 @@ void Provider_System::addPkiObject(Handle<std::string> huri, Handle<Key> key, Ha
 	LOGGER_FN();
 
 	try{
-		key->privkeySave(huri->c_str(), DataFormat::BASE64, password->c_str());
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, huri->c_str(), "wb");
+		key->writePrivateKey(out, DataFormat::BASE64, password);
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error add crl to store");

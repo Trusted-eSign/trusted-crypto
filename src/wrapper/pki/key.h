@@ -9,12 +9,6 @@ class CTWRAPPER_API Key;
 
 #include "pki.h"
 
-enum KeyType {
-	KT_NONE,
-	KT_PRIVATE,
-	KT_PUBLIC //добавлено KT_ во всех 3-х случах
-};
-
 class PublicExponent
 {
 public:
@@ -43,34 +37,17 @@ public:
 	SSLOBJECT_new(Key, EVP_PKEY){}
 	SSLOBJECT_new_null(Key, EVP_PKEY, EVP_PKEY_new){}
 
-	static Handle<Key> generate();
-	void load(std::string filename);
-	void read(Handle<Bio> in);
-	Handle<Key> publicKey();
-	bool compare(Handle<Key>&);
+	//Methods
+	void readPrivateKey(Handle<Bio> in, DataFormat::DATA_FORMAT format, Handle<std::string> password);
+	void writePrivateKey(Handle<Bio> out, DataFormat::DATA_FORMAT format, Handle<std::string> password);
+
+	void readPublicKey(Handle<Bio> in, DataFormat::DATA_FORMAT format);
+	void writePublicKey(Handle<Bio> out, DataFormat::DATA_FORMAT format);
+
+	Handle<Key> generate(DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize);
+	int compare(Handle<Key> key);
 	Handle<Key> duplicate();
-
-	KeyType type;
-
-	int privkeyLoad(std::string filename, DataFormat::DATA_FORMAT format, std::string password);
-	int privkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password);
-	int privkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format, std::string password);
-
-	int pubkeyLoad(std::string filename, DataFormat::DATA_FORMAT format);
-	int pubkeyLoadMemory(std::string data, DataFormat::DATA_FORMAT format);
-	int pubkeyLoadBIO(BIO* bio, DataFormat::DATA_FORMAT format);
-
-	int keypairGenerate(Handle<std::string> filename, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password);
-	int keypairGenerateMemory(std::string data, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password);
-	int keypairGenerateBIO(Handle<Bio> bio, DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize, std::string password);
-
-	int privkeySave(std::string filename, DataFormat::DATA_FORMAT format, std::string password);
-	int privkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format, std::string password);
-	int privkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format, std::string password);
-
-	int pubkeySave(std::string filename, DataFormat::DATA_FORMAT format);
-	int pubkeySaveMemory(std::string data, DataFormat::DATA_FORMAT format);
-	int pubkeySaveBIO(Handle<Bio> out, DataFormat::DATA_FORMAT format);
 };
 
-#endif //  comment this --->   CMS_PKI_KEY_H_INCLUDED
+#endif
+

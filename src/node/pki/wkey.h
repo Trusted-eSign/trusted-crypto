@@ -15,25 +15,15 @@ public:
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
 
-	static NAN_METHOD(keypairGenerate);
-	static NAN_METHOD(keypairGenerateMemory);
-	static NAN_METHOD(keypairGenerateBIO);
+	static NAN_METHOD(Generate);
+	static NAN_METHOD(Compare);
+	static NAN_METHOD(Duplicate);
 
-	static NAN_METHOD(privkeyLoad);	
-	static NAN_METHOD(privkeyLoadMemory);
-	//static NAN_METHOD(privkeyLoadBIO);
+	static NAN_METHOD(ReadPrivateKey);
+	static NAN_METHOD(WritePrivateKey);
 
-	static NAN_METHOD(pubkeyLoad);
-	static NAN_METHOD(pubkeyLoadMemory);
-	//static NAN_METHOD(pubkeyLoadBIO);
-
-	static NAN_METHOD(privkeySave);
-	static NAN_METHOD(privkeySaveBIO);
-	static NAN_METHOD(privkeySaveMemory);
-
-	static NAN_METHOD(pubkeySave);
-	static NAN_METHOD(pubkeySaveBIO);
-	static NAN_METHOD(pubkeySaveMemory);
+	static NAN_METHOD(ReadPublicKey);
+	static NAN_METHOD(WritePublicKey);
 
 	WRAP_NEW_INSTANCE(Key);
 };

@@ -6,19 +6,14 @@ import {CryptoMethod} from "./crypto_method";
 
 export namespace PKI {
     export declare class Key {
-        keypairGenerate(filename: string, format: DataFormat, pubExp: PublicExponent, keySize: number, password: string);
-        keypairGenerateMemory(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string);
-        keypairGenerateBIO(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string);
-        privkeyLoad(filename: string, format: DataFormat, password: string);
-        privkeyLoadMemory(filename: string, format: DataFormat, password: string);
-        pubkeyLoad(filename: string, format: DataFormat);
-        pubkeyLoadMemory();
-        privkeySave(filename: string, format: DataFormat, password: string);
-        privkeySaveBIO();
-        privkeySaveMemory();
-        pubkeySave(filename: string, format: DataFormat);
-        pubkeySaveBIO();
-        pubkeySaveMemory();
+        generate(format: DataFormat, pubExp: PublicExponent, keySize: number): Key;
+        readPrivateKey(filename: string, format: DataFormat, password: string);
+        readPublicKey(filename: string, format: DataFormat);
+        writePrivateKey(filename: string, format: DataFormat, password: string);
+        writePublicKey(filename: string, format: DataFormat);
+
+        compare(key: Key): number;
+        duplicate(): Key;
     }
 
     export declare class Algorithm {
