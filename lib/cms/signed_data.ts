@@ -109,7 +109,6 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
 
 
         for (let i in SignedDataPolicy) {
-            if (isNaN(i)) break;
             if (+i & flags) p.push(SignedDataPolicy[i]);
         }
 
