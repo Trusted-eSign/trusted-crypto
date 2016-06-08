@@ -20,6 +20,7 @@ public:
 	static NAN_METHOD(Save);
 	static NAN_METHOD(Export);
 	static NAN_METHOD(Equals);
+	static NAN_METHOD(Compare);
 	static NAN_METHOD(Duplicate);
 	static NAN_METHOD(Hash);
 

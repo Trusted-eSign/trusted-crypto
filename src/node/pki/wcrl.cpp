@@ -17,6 +17,7 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "save", Save);
 	Nan::SetPrototypeMethod(tpl, "export", Export);
 	Nan::SetPrototypeMethod(tpl, "equals", Equals);
+	Nan::SetPrototypeMethod(tpl, "compare", Compare);
 	Nan::SetPrototypeMethod(tpl, "duplicate", Duplicate);
 	Nan::SetPrototypeMethod(tpl, "hash", Hash);
 
@@ -305,6 +306,26 @@ NAN_METHOD(WCRL::Equals) {
 	TRY_END();
 }
 
+NAN_METHOD(WCRL::Compare) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		LOGGER_ARG("crl")
+		WCRL* obj = (WCRL*)Nan::GetInternalFieldPointer(info[0]->ToObject(), 0);
+		Handle<CRL> crl = obj->data_;
+
+		int res = _this->compare(crl);
+
+		v8::Local<v8::Number> v8Number = Nan::New<v8::Number>(res);
+
+		info.GetReturnValue().Set(v8Number);
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WCRL::Duplicate)
 {
 	METHOD_BEGIN();
@@ -313,15 +334,8 @@ NAN_METHOD(WCRL::Duplicate)
 		UNWRAP_DATA(CRL);
 
 		Handle<CRL> crl = _this->duplicate();
-
-		LOGGER_INFO("Create new instance of JS CRL");
-		v8::Local<v8::Object> v8CrlClass = Nan::New<v8::Object>();
-		WCRL::Init(v8CrlClass);
-		v8::Local<v8::Object> v8CRL = Nan::Get(v8CrlClass, Nan::New("CRL").ToLocalChecked()).ToLocalChecked()->ToObject()->CallAsConstructor(0, NULL)->ToObject();
-
-		LOGGER_INFO("Set internal data for JS CRL");
-		WCRL* wcrl = (WCRL*)Nan::GetInternalFieldPointer(v8CRL, 0);
-		wcrl->data_ = crl;
+		v8::Local<v8::Object> v8CRL = WCRL::NewInstance(crl);
+		info.GetReturnValue().Set(v8CRL);
 
 		info.GetReturnValue().Set(v8CRL);
 		return;
