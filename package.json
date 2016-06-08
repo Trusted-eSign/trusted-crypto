@@ -1,17 +1,18 @@
 {
-    "name": "trusted-ssl",
+    "name": "trusted-crypto",
     "version": "1.0.0",
     "description": "Trusted crypto library",
+	"license": "Apache-2.0",
+	"bugs": "https://github.com/TrustedPlus/trusted-crypto/issues",
+	"homepage": "https://github.com/TrustedPlus/trusted-crypto",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/TrustedPlus/trusted-crypto"
+	},
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
         "build": "node-gyp build && tsc;",
         "install": "tsd install & node-gyp configure build & tsc"
     },
     "dependencies": {
-        "nan": "^2.2.1",
-        "mocha": "^2.4.5"
     },
-    "author": "msu",
-    "license": "Apache License 2.0"
-}
