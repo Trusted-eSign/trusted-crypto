@@ -1,6 +1,7 @@
 "use strict";
 
 var assert = require("assert");
+var os = require("os");
 var trusted = require("../index.js");
 
 var DEFAULT_CERTSTORE_PATH = "test/CertStore";
@@ -11,6 +12,7 @@ describe("Store", function() {
     var providerSystem, providerMicrosoft;
     var certWithKey;
     var uri;
+    var osType = os.type();
 
     it("init", function() {
         providerSystem = new trusted.pkistore.Provider_System(DEFAULT_CERTSTORE_PATH);
@@ -51,9 +53,11 @@ describe("Store", function() {
         assert.equal(providerSystem !== null, true);
         store.addProvider(providerSystem.handle);
 
-        providerMicrosoft = new trusted.pkistore.ProviderMicrosoft();
-        assert.equal(providerMicrosoft !== null, true);
-        store.addProvider(providerMicrosoft.handle);
+        if (osType === "Windows_NT") {
+            providerMicrosoft = new trusted.pkistore.ProviderMicrosoft();
+            assert.equal(providerMicrosoft !== null, true);
+            store.addProvider(providerMicrosoft.handle);
+        }
     });
 
     it("find", function() {
