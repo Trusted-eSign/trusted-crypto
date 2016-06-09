@@ -11,7 +11,8 @@
     },
     "main": "index.js",
     "scripts": {
-        "test": "node_modules/.bin/mocha test && eslint test",
+        "test": "node_modules/.bin/mocha test && npm run lint",
+        "lint": "./node_modules/.bin/eslint test",
         "build": "node-gyp build && tsc;",
         "install": "tsd install && node-gyp configure && node-gyp build && tsc"
     },

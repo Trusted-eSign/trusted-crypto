@@ -89,7 +89,7 @@ describe("Chain", function() {
         }
 
         assert.equal(chain.verifyChain(outChain, crls) === true, true);
-    });
+    }).timeout(5000);
 
     it("download CRL", function(done) {
         var testCert;
