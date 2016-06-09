@@ -2,32 +2,33 @@
     "name": "trusted-crypto",
     "version": "1.0.0",
     "description": "Trusted crypto library",
-	"license": "Apache-2.0",
-	"bugs": "https://github.com/TrustedPlus/trusted-crypto/issues",
-	"homepage": "https://github.com/TrustedPlus/trusted-crypto",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/TrustedPlus/trusted-crypto"
-	},
+    "license": "Apache-2.0",
+    "bugs": "https://github.com/TrustedPlus/trusted-crypto/issues",
+    "homepage": "https://github.com/TrustedPlus/trusted-crypto",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TrustedPlus/trusted-crypto"
+    },
     "main": "index.js",
     "scripts": {
-        "test": "node_modules/.bin/mocha test",
+        "test": "node_modules/.bin/mocha test && eslint test",
         "build": "node-gyp build && tsc;",
-        "install": "tsd install & node-gyp configure build & tsc"
+        "install": "tsd install && node-gyp configure && node-gyp build && tsc"
     },
-	"keywords": [
-		"crypto",
-		"trusted",
-		"pki",
-		"cms"
-	],
+    "keywords": [
+        "crypto",
+        "trusted",
+        "pki",
+        "cms"
+    ],
     "dependencies": {
-		"async": "^1.5.2",
-		"request": "^2.70.0"
+        "async": "^1.5.2",
+        "request": "^2.70.0"
     },
-	"devDependencies": {
-		"mocha": "^2.4.5",
-		"nan": "^2.2.1"
-	},
+    "devDependencies": {
+        "mocha": "^2.4.5",
+        "nan": "^2.2.1",
+        "eslint": "^2.11.1"
+    },
     "author": "Trusted Plus development team"
 }
