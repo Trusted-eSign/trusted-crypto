@@ -1,37 +1,45 @@
-var assert = require('assert');
-var trusted = require("../index.js")
+"use strict";
 
-var DEFAULT_CERTSTORE_PATH = "test/CertStore";
-var OUT_PATH = "test";
+var assert = require("assert");
+var fs = require("fs");
+var trusted = require("../index.js");
 
-describe('Key', function () {
-	var key, privateKey;
-	var keyPair;
+var DEFAULT_OUT_PATH = "test/out";
 
-	it('init', function () {
-		key = new trusted.pki.Key()
-		assert.equal(key != null, true);
-	})
+describe("Key", function() {
+    var key, privateKey;
+    var keyPair;
 
-  it('generate', function () {
-		keyPair = key.generate(trusted.DataFormat.PEM, trusted.PublicExponent.RSA_F4, 1024);
-  });
+    it("init", function() {
+        try {
+            fs.statSync(DEFAULT_OUT_PATH).isDirectory();
+        } catch (err) {
+            fs.mkdirSync(DEFAULT_OUT_PATH);
+        }
 
-	it('save private', function () {
-		keyPair.writePrivateKey(OUT_PATH + "/privkey_s.key", trusted.DataFormat.PEM, "1234");
-  });
-		
-	it('read private', function () {
-		privateKey = key.readPrivateKey(OUT_PATH + "/privkey_s.key", trusted.DataFormat.PEM, "1234");
-		assert.equal(privateKey != null, true);
-  });
-		
-	it('save public', function () {
-		key.writePublicKey(OUT_PATH + "/pubkey_s.key", trusted.DataFormat.PEM);
-  });
-	
-	it('read public', function () {
-		key.readPublicKey(OUT_PATH + "/pubkey_s.key", trusted.DataFormat.PEM);
-		assert.equal(key != null, true);
-  });
+        key = new trusted.pki.Key();
+        assert.equal(key !== null, true);
+    });
+
+    it("generate", function() {
+        keyPair = key.generate(trusted.DataFormat.PEM, trusted.PublicExponent.RSA_F4, 1024);
+    });
+
+    it("save private", function() {
+        keyPair.writePrivateKey(DEFAULT_OUT_PATH + "/privkey_s.key", trusted.DataFormat.PEM, "1234");
+    });
+
+    it("read private", function() {
+        privateKey = key.readPrivateKey(DEFAULT_OUT_PATH + "/privkey_s.key", trusted.DataFormat.PEM, "1234");
+        assert.equal(privateKey !== null, true);
+    });
+
+    it("save public", function() {
+        key.writePublicKey(DEFAULT_OUT_PATH + "/pubkey_s.key", trusted.DataFormat.PEM);
+    });
+
+    it("read public", function() {
+        key.readPublicKey(DEFAULT_OUT_PATH + "/pubkey_s.key", trusted.DataFormat.PEM);
+        assert.equal(key !== null, true);
+    });
 });
