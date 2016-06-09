@@ -81,9 +81,8 @@ describe("Store", function() {
             }
         }
 
-    });
+        assert.equal(!!certWithKey, true, "Error get certificate with key");
 
-    it("findKey", function() {
         var key = store.findKey({
             type: ["CERTIFICATE"],
             provider: ["SYSTEM"],
