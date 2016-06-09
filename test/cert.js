@@ -107,10 +107,3 @@ describe("Certificate", function() {
         assert.equal(hash1 === hash2, true, "Hashes are not equals");
     });
 });
-
-
-
-
-
-
-

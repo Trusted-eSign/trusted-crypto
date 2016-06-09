@@ -41,4 +41,3 @@ describe("CrlCollection", function() {
         assert.equal(typeof (crl.version), "number", "Bad version value");
     });
 });
-
