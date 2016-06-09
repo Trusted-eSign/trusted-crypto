@@ -66,7 +66,7 @@ describe("CRL", function() {
         assert.equal(hash2.length, 40, "SHA1 length 40");
         assert.equal(hash3.length, 64, "SHA256 length 64");
 
-        assert.equal(hash1 === hash2, true, "Hashes no equales");
+        assert.equal(hash1 === hash2, true, "Hashes are not equals");
     });
 
     it("revoked", function() {

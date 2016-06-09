@@ -100,9 +100,9 @@ describe("Certificate", function() {
         var hash2 = cert1.hash("sha1");
         var hash3 = cert1.hash("sha256");
 
-        assert.equal(hash1.length, 40, "Длина хеш SHA1 должна быть 20");
-        assert.equal(hash2.length, 40, "Длина хеш SHA1 должна быть 20");
-        assert.equal(hash3.length, 64, "Длина хеш SHA1 должна быть 32");
+        assert.equal(hash1.length, 40, "SHA1 length 40");
+        assert.equal(hash2.length, 40, "SHA1 length 40");
+        assert.equal(hash3.length, 64, "SHA256 length 64");
 
         assert.equal(hash1 === hash2, true, "Значения хеш не совпадают");
     });
