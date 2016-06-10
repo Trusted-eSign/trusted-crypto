@@ -9,15 +9,18 @@ Trusted crypto library
 > npm install -g mocha
 ```
 
+## Build
 
 ```
 > npm install
 ```
 
+## Run test
 
 ```
 > npm test
 ```
 
+### Read
 
 - [HOW update NodeJS on Linux](https://davidwalsh.name/upgrade-nodejs)
