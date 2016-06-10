@@ -47,7 +47,7 @@ Handle<OID> Attribute::getTypeId() {
 	LOGGER_FN();
 
 	if (this->internal() && this->internal()->object) {
-		Handle<OID> res = new OID(this->internal()->object, false);
+		Handle<OID> res = new OID(this->internal()->object);
 		return res;
 	}
 	return NULL;
