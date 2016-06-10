@@ -2,10 +2,15 @@
 
 var assert = require("assert");
 var os = require("os");
+var fs = require("fs");
 var trusted = require("../index.js");
 
 var DEFAULT_CERTSTORE_PATH = "test/CertStore";
 var DEFAULT_RESOURCES_PATH = "test/resources";
+
+before(function() {
+    fs.unlink(DEFAULT_CERTSTORE_PATH + "/cash.json");
+});
 
 describe("Store", function() {
     var store;
