@@ -25,8 +25,10 @@ function download(url: string, path: string, done: Function): void {
                 response.on("data", function (chunk) {
                     stream.write(chunk);
                 }).on("end", function () {
+                    stream.on("close", function () {
+                        done(null, url, path);
+                    });
                     stream.end();
-                    done(null, url, path);
                 });
 
                 break;
