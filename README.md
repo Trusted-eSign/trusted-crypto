@@ -21,21 +21,6 @@ Trusted crypto library
 ```
 > npm install
 ```
-
-Для сборки необходимо наличие модуля uuid.
-
-__Установка:__
-
-Linux:
-```
-apt-get install uuid-dev
-```
-OS X:
-```
-brew install ossp-uuid
-```
-
-
 ## Сборка TypeScript
 
 ```
