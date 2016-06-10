@@ -2,10 +2,6 @@
 
 #include "provider_system.h"
 
-#if defined(OPENSSL_SYS_WINDOWS) 
-	#include <atlconv.h>
-#endif
-
 Provider_System::Provider_System(Handle<std::string> folder){
 	LOGGER_FN();
 
