@@ -1,7 +1,7 @@
 # trusted-crypto
 Trusted crypto library
 
-# Установка зависимостей
+## Install dependencies
 
 ```
 > npm install -g typescript
@@ -9,18 +9,15 @@ Trusted crypto library
 > npm install -g mocha
 ```
 
-# Сборка проекта
 
 ```
 > npm install
 ```
 
-# Запуск автоматических тестов
 
 ```
 > npm test
 ```
 
-## Полезные ссылки
 
-- [Обновление NodeJS на Linux](https://davidwalsh.name/upgrade-nodejs)
+- [HOW update NodeJS on Linux](https://davidwalsh.name/upgrade-nodejs)
