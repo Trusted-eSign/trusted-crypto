@@ -97,12 +97,12 @@ describe("Chain", function() {
         var pathForSave;
         var distPoints;
 
-        testCert = trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/test-ru.crt", trusted.DataFormat.DER);
+        testCert = trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/github.crt", trusted.DataFormat.PEM);
         assert.equal(testCert !== null, true);
 
         pathForSave = DEFAULT_OUT_PATH + "/temp.crl";
         distPoints = rv.getCrlDistPoints(testCert);
-        assert.equal(distPoints.length === 5, true);
+        assert.equal(distPoints.length === 2, true);
 
         rv.downloadCRL(distPoints, pathForSave, function(err, res) {
             if (err) {
