@@ -67,6 +67,16 @@
                 "src/wrapper/cms/signed_data.cpp",
                 "src/jsoncpp/jsoncpp.cpp"
             ],
+            "xcode_settings": {
+                "OTHER_CPLUSPLUSFLAGS": [
+                    "-std=c++11",
+                    "-stdlib=libc++"
+                ],
+                "OTHER_LDFLAGS": [],
+                "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+                "GCC_ENABLE_CPP_RTTI": "YES",
+                "MACOSX_DEPLOYMENT_TARGET": "10.7"
+            },
             "conditions": [
                 [
                     "OS=='win'",
@@ -109,7 +119,9 @@
                             "<(node_root_dir)/deps/openssl/openssl/include"
                         ],
 
-                        "defines": [ "UNIX" ]
+                        "defines": [ "UNIX" ],
+
+                        "cflags_cc+": [ "-std=c++11" ]
                     }
                 ]
             ],
