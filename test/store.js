@@ -23,7 +23,7 @@ function checkFile(filePath) {
 
 before(function() {
     if (checkFile(DEFAULT_CERTSTORE_PATH + "/cash.json")) {
-        fs.unlink(DEFAULT_CERTSTORE_PATH + "/cash.json");
+        fs.unlinkSync(DEFAULT_CERTSTORE_PATH + "/cash.json");
     }
 });
 
