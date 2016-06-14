@@ -62,7 +62,7 @@ void Provider_System::init(Handle<std::string> folder){
 			if (file_name[0] == '.')
 				continue;
 
-			const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+			const bool is_directory = S_ISDIR(st.st_mode);
 
 			if (is_directory)
 				continue;
