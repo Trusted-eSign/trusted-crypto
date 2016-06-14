@@ -8,8 +8,23 @@ var trusted = require("../index.js");
 var DEFAULT_CERTSTORE_PATH = "test/CertStore";
 var DEFAULT_RESOURCES_PATH = "test/resources";
 
+/**
+* Check file exists
+* @param  {string} filePath Path to file
+* @returns {boolean} file exists?
+*/
+function checkFile(filePath) {
+    try {
+        return fs.statSync(filePath).isFile();
+    } catch (err) {
+        return false;
+    }
+}
+
 before(function() {
-    fs.unlink(DEFAULT_CERTSTORE_PATH + "/cash.json");
+    if (checkFile(DEFAULT_CERTSTORE_PATH + "/cash.json")) {
+        fs.unlink(DEFAULT_CERTSTORE_PATH + "/cash.json");
+    }
 });
 
 describe("Store", function() {
