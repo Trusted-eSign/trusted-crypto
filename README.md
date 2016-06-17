@@ -1,5 +1,5 @@
 # trusted-crypto
-[![Build Status](https://travis-ci.org/TrustedPlus/trusted-crypto.svg?branch=master&style=flat)](https://travis-ci.org/algv/trusted-crypto)
+[![Build Status](https://travis-ci.org/TrustedPlus/trusted-crypto.svg?branch=master&style=flat)](https://travis-ci.org/TrustedPlus/trusted-crypto)
 
 Trusted crypto library
 
