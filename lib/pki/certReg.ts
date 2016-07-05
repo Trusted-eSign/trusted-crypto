@@ -1,20 +1,29 @@
 import * as native from "../native";
 import * as object from "../object";
 import {Key} from "./key";
-import {CertificationRequestInfo} from "./certRegInfo";
 import {DataFormat} from "../data_format";
 
-const DEFAULT_DATA_FORMAT = DataFormat.PEM;
+const DEFAULT_DATA_FORMAT: DataFormat = DataFormat.PEM;
 
 export class CertificationRequest extends object.BaseObject<native.PKI.CertificationRequest> {
+    /**
+     * чтение запроса из файла
+     * @param filename Путь к файлу
+     * @param format Формат данных. Опционально. По умолчанию DER
+     */
+    public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): CertificationRequest {
+        let req: CertificationRequest = new CertificationRequest();
+        req.handle.load(filename, format);
+        return req;
+    }
+
     constructor();
     constructor(handle: native.PKI.CertificationRequest);
-    constructor(param?) {
+    constructor(param?: any) {
         super();
-        if (param instanceof native.PKI.CertificationRequestInfo){
+        if (param instanceof native.PKI.CertificationRequestInfo) {
              this.handle = new native.PKI.CertificationRequest(param);
-        }
-        else{
+        } else {
             this.handle = new native.PKI.CertificationRequest();
         }
     }
@@ -24,26 +33,15 @@ export class CertificationRequest extends object.BaseObject<native.PKI.Certifica
      * @param filename Путь к файлу
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.load(filename, format);
     }
 
-    /**
-     * чтение запроса из файла
-     * @param filename Путь к файлу
-     * @param format Формат данных. Опционально. По умолчанию DER
-     */
-    static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): CertificationRequest {
-        let req = new CertificationRequest();
-        req.handle.load(filename, format);
-        return req;
-    }
-
-    sign(key: Key){
+    public sign(key: Key): void {
         this.handle.sign(key.handle);
     }
 
-    verify(): boolean{
+    public verify(): boolean {
          return this.handle.verify();
     }
 

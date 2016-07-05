@@ -1,3 +1,5 @@
+/* tslint:disable:no-namespace */
+/* tslint:disable:no-var-requires */
 let native = require("../build/Release/trusted.node");
 
 import {DataFormat} from "./data_format";
@@ -6,230 +8,229 @@ import {CryptoMethod} from "./crypto_method";
 
 export namespace PKI {
     export declare class Key {
-        generate(format: DataFormat, pubExp: PublicExponent, keySize: number): Key;
-        readPrivateKey(filename: string, format: DataFormat, password: string);
-        readPublicKey(filename: string, format: DataFormat);
-        writePrivateKey(filename: string, format: DataFormat, password: string);
-        writePublicKey(filename: string, format: DataFormat);
+        public generate(format: DataFormat, pubExp: PublicExponent, keySize: number): Key;
+        public readPrivateKey(filename: string, format: DataFormat, password: string);
+        public readPublicKey(filename: string, format: DataFormat);
+        public writePrivateKey(filename: string, format: DataFormat, password: string);
+        public writePublicKey(filename: string, format: DataFormat);
 
-        compare(key: Key): number;
-        duplicate(): Key;
+        public compare(key: Key): number;
+        public duplicate(): Key;
     }
 
     export declare class Algorithm {
         constructor();
         constructor(name: string);
-        getTypeId(): OID;
-        getName(): string;
-        duplicate(): Algorithm;
-        isDigest(): boolean;
+        public getTypeId(): OID;
+        public getName(): string;
+        public duplicate(): Algorithm;
+        public isDigest(): boolean;
     }
 
     export declare class Attribute {
-        duplicate(): Attribute;
-        export(): Buffer;
-        values(): AttributeValueCollection;
-        getAsnType(): number;
-        setAsnType(type: number): void;
-        getTypeId(): OID;
-        setTypeId(oid: OID): void;
+        public duplicate(): Attribute;
+        public export(): Buffer;
+        public values(): AttributeValueCollection;
+        public getAsnType(): number;
+        public setAsnType(type: number): void;
+        public getTypeId(): OID;
+        public setTypeId(oid: OID): void;
     }
 
     export declare class AttributeValueCollection {
         constructor(alg: Algorithm);
-        push(val: Buffer): void;
-        pop(): void;
-        removeAt(index: number): void;
-        items(index: number): Buffer;
-        length(): number;
+        public push(val: Buffer): void;
+        public pop(): void;
+        public removeAt(index: number): void;
+        public items(index: number): Buffer;
+        public length(): number;
     }
 
     export declare class OID {
         constructor();
         constructor(value: string);
-        getLongName(): string;
-        getShortName(): string;
-        getValue(): string;
+        public getLongName(): string;
+        public getShortName(): string;
+        public getValue(): string;
     }
 
     export declare class Certificate {
-        getSubjectFriendlyName(): string;
-        getIssuerFriendlyName(): string;
-        getSubjectName(): string;
-        getIssuerName(): string;
-        getNotAfter(): string;
-        getNotBefore(): string;
-        getSerialNumber(): Buffer;
-        getThumbprint(): Buffer;
-        getVersion(): number;
-        getType(): number;
-        getKeyUsage(): number;
-        getSignatureAlgorithm(): string;
-        getOrganizationName(): string;
+        public getSubjectFriendlyName(): string;
+        public getIssuerFriendlyName(): string;
+        public getSubjectName(): string;
+        public getIssuerName(): string;
+        public getNotAfter(): string;
+        public getNotBefore(): string;
+        public getSerialNumber(): Buffer;
+        public getThumbprint(): Buffer;
+        public getVersion(): number;
+        public getType(): number;
+        public getKeyUsage(): number;
+        public getSignatureAlgorithm(): string;
+        public getOrganizationName(): string;
 
-        load(filename: string, dataFormat: DataFormat): void;
-        import(raw: Buffer, dataFormat: DataFormat): void;
-        save(filename: string, dataFormat: DataFormat): void;
-        export(dataFormat: DataFormat): Buffer;
-        compare(cert: Certificate): number;
-        equals(cert: Certificate): boolean;
-        duplicate(): Certificate;
-        hash(digestName: string): Buffer;
-
+        public load(filename: string, dataFormat: DataFormat): void;
+        public import(raw: Buffer, dataFormat: DataFormat): void;
+        public save(filename: string, dataFormat: DataFormat): void;
+        public export(dataFormat: DataFormat): Buffer;
+        public compare(cert: Certificate): number;
+        public equals(cert: Certificate): boolean;
+        public duplicate(): Certificate;
+        public hash(digestName: string): Buffer;
     }
 
     export declare class RevokedCertificate {
-        revocationDate(): string;
-        reason(): number;
+        public revocationDate(): string;
+        public reason(): number;
     }
 
     export declare class CertificateCollection {
-        items(index: number): Certificate;
-        length(): number;
-        push(cer: Certificate): void;
-        pop(): void;
-        removeAt(index: number): void;
+        public items(index: number): Certificate;
+        public length(): number;
+        public push(cer: Certificate): void;
+        public pop(): void;
+        public removeAt(index: number): void;
     }
 
     export declare class CRL {
-        getEncoded(): Buffer;
-        getSignature(): Buffer;
-        getVersion(): number;
-        getIssuerName(): string;
-        getIssuerFriendlyName(): string;
-        getLastUpdate(): string;
-        getNextUpdate(): string;
-        getCertificate(): Certificate;
-        getThumbprint(): Buffer;
-        getSigAlgName(): string;
-        getSigAlgShortName(): string;
-        getSigAlgOID(): string;
-        getRevokedCertificateCert(cer: Certificate): RevokedCertificate;
-        getRevokedCertificateSerial(serial: string): RevokedCertificate;
+        public getEncoded(): Buffer;
+        public getSignature(): Buffer;
+        public getVersion(): number;
+        public getIssuerName(): string;
+        public getIssuerFriendlyName(): string;
+        public getLastUpdate(): string;
+        public getNextUpdate(): string;
+        public getCertificate(): Certificate;
+        public getThumbprint(): Buffer;
+        public getSigAlgName(): string;
+        public getSigAlgShortName(): string;
+        public getSigAlgOID(): string;
+        public getRevokedCertificateCert(cer: Certificate): RevokedCertificate;
+        public getRevokedCertificateSerial(serial: string): RevokedCertificate;
 
-        load(filename: string, dataFormat: DataFormat): void;
-        import(raw: Buffer, dataFormat: DataFormat): void;
-        save(filename: string, dataFormat: DataFormat): void;
-        export(dataFormat: DataFormat): Buffer;
-        compare(crl: CRL): number;
-        equals(crl: CRL): boolean;
-        hash(digestName: string): Buffer;
-        duplicate(): CRL;
+        public load(filename: string, dataFormat: DataFormat): void;
+        public import(raw: Buffer, dataFormat: DataFormat): void;
+        public save(filename: string, dataFormat: DataFormat): void;
+        public export(dataFormat: DataFormat): Buffer;
+        public compare(crl: CRL): number;
+        public equals(crl: CRL): boolean;
+        public hash(digestName: string): Buffer;
+        public duplicate(): CRL;
     }
 
     export declare class CrlCollection {
-        items(index: number): CRL;
-        length(): number;
-        push(crl: CRL): void;
-        pop(): void;
-        removeAt(index: number): void;
+        public  items(index: number): CRL;
+        public length(): number;
+        public push(crl: CRL): void;
+        public pop(): void;
+        public removeAt(index: number): void;
     }
 
     export declare class CertificationRequestInfo {
-       setSubject(x509name: string): void;
-       setSubjectPublicKey(key: PKI.Key): void;
-       setVersion(version: number): void;
+       public setSubject(x509name: string): void;
+       public setSubjectPublicKey(key: PKI.Key): void;
+       public setVersion(version: number): void;
     }
 
     export declare class CertificationRequest {
        constructor();
        constructor(csrinfo: PKI.CertificationRequestInfo);
-       load(filename: string, dataFormat: DataFormat): void;
-       sign(key: Key): void;
-       verify(): boolean;
-       getPEMString(): Buffer;
+       public load(filename: string, dataFormat: DataFormat): void;
+       public sign(key: Key): void;
+       public verify(): boolean;
+       public getPEMString(): Buffer;
     }
 
     export declare class CSR {
         constructor(name: string, key: PKI.Key, digest: string);
-        save(filename: string, dataFormat: DataFormat): void;
-        getEncodedHEX(): Buffer;
+        public save(filename: string, dataFormat: DataFormat): void;
+        public getEncodedHEX(): Buffer;
     }
 
     export declare class Cipher {
         constructor(cipherName: string);
-        setCryptoMethod(method: CryptoMethod): void;
-        encrypt(filenameSource: string, filenameEnc: string, format: DataFormat): void;
-        decrypt(filenameEnc: string, filenameDec: string, format: DataFormat): void;
-        addRecipientsCerts(certs: CertificateCollection): void;
-        setPrivKey(rkey: Key): void;
-        setRecipientCert(rcert: Certificate): void;
-        setPass(password: string): void;
-        setDigest(digest: string): void;
-        setIV(iv: string): void;
-        setKey(key: string): void;
-        setSalt(salt: string): void;
-        getSalt(): Buffer;
-        getIV(): Buffer;
-        getKey(): Buffer;
-        getAlgorithm(): string;
-        getMode(): string;
-        getDigestAlgorithm(): string;
+        public setCryptoMethod(method: CryptoMethod): void;
+        public encrypt(filenameSource: string, filenameEnc: string, format: DataFormat): void;
+        public decrypt(filenameEnc: string, filenameDec: string, format: DataFormat): void;
+        public addRecipientsCerts(certs: CertificateCollection): void;
+        public setPrivKey(rkey: Key): void;
+        public setRecipientCert(rcert: Certificate): void;
+        public setPass(password: string): void;
+        public setDigest(digest: string): void;
+        public setIV(iv: string): void;
+        public setKey(key: string): void;
+        public setSalt(salt: string): void;
+        public getSalt(): Buffer;
+        public getIV(): Buffer;
+        public getKey(): Buffer;
+        public getAlgorithm(): string;
+        public getMode(): string;
+        public getDigestAlgorithm(): string;
     }
 
     export declare class Chain {
-        buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection;
-        verifyChain(chain: CertificateCollection, crls: CrlCollection): boolean;
+        public buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection;
+        public verifyChain(chain: CertificateCollection, crls: CrlCollection): boolean;
     }
 
     export declare class Revocation {
-        getCrlLocal(cert: Certificate, store: PKISTORE.PkiStore): any;
-        getCrlDistPoints(cert: Certificate): Array<string>;
-        checkCrlTime(crl: CRL): boolean;
-        downloadCRL(distPoints: Array<string>, path: string, done: Function): void;
+        public getCrlLocal(cert: Certificate, store: PKISTORE.PkiStore): any;
+        public getCrlDistPoints(cert: Certificate): Array<string>;
+        public checkCrlTime(crl: CRL): boolean;
+        public downloadCRL(distPoints: Array<string>, path: string, done: Function): void;
     }
 
     export declare class Pkcs12 {
-        getCertificate(password: string): Certificate;
-        getKey(password: string): Key;
-        getCACertificates(password: string): CertificateCollection;
+        public getCertificate(password: string): Certificate;
+        public getKey(password: string): Key;
+        public getCACertificates(password: string): CertificateCollection;
 
-        load(filename: string): void;
-        save(filename: string): void;
-        create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12;
+        public load(filename: string): void;
+        public save(filename: string): void;
+        public create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12;
     }
 }
 
 export namespace CMS {
     export declare class SignedData {
         constructor();
-        getContent(): Buffer;
-        setContent(v: Buffer): void;
-        getFlags(): number;
-        setFlags(v: number): void;
-        load(filename: string, dataFormat: DataFormat): void;
-        import(raw: Buffer, dataFormat: DataFormat): void;
-        save(filename: string, dataFormat: DataFormat): void;
-        export(dataFormat: DataFormat): Buffer;
-        getCertificates(): PKI.CertificateCollection;
-        getSigners(): SignerCollection;
-        isDetached(): boolean;
-        createSigner(cert: PKI.Certificate, key: PKI.Key, digestNAme: string): Signer;
-        addCertificate(cert: PKI.Certificate): void;
-        verify(certs: PKI.CertificateCollection): boolean;
-        sign(): void;
+        public getContent(): Buffer;
+        public setContent(v: Buffer): void;
+        public getFlags(): number;
+        public setFlags(v: number): void;
+        public load(filename: string, dataFormat: DataFormat): void;
+        public import(raw: Buffer, dataFormat: DataFormat): void;
+        public save(filename: string, dataFormat: DataFormat): void;
+        public export(dataFormat: DataFormat): Buffer;
+        public getCertificates(): PKI.CertificateCollection;
+        public getSigners(): SignerCollection;
+        public isDetached(): boolean;
+        public createSigner(cert: PKI.Certificate, key: PKI.Key, digestNAme: string): Signer;
+        public  addCertificate(cert: PKI.Certificate): void;
+        public verify(certs: PKI.CertificateCollection): boolean;
+        public sign(): void;
     }
 
     export declare class SignerCollection {
-        items(index: number): Signer;
-        length(): number;
+        public items(index: number): Signer;
+        public length(): number;
     }
 
     export declare class Signer {
-        setCertificate(cert: PKI.Certificate): void;
-        getCertificate(): PKI.Certificate;
-        getSignature(): Buffer;
-        getSignatureAlgorithm(): PKI.Algorithm;
-        getDigestAlgorithm(): PKI.Algorithm;
-        getSignedAttributes(): SignerAttributeCollection;
-        getUnsignedAttributes(): SignerAttributeCollection;
+        public setCertificate(cert: PKI.Certificate): void;
+        public getCertificate(): PKI.Certificate;
+        public getSignature(): Buffer;
+        public getSignatureAlgorithm(): PKI.Algorithm;
+        public getDigestAlgorithm(): PKI.Algorithm;
+        public getSignedAttributes(): SignerAttributeCollection;
+        public getUnsignedAttributes(): SignerAttributeCollection;
     }
 
     export declare class SignerAttributeCollection {
-        length(): number;
-        push(attr: PKI.Attribute): void;
-        removeAt(index: number): void;
-        items(index: number): PKI.Attribute;
+        public length(): number;
+        public push(attr: PKI.Attribute): void;
+        public removeAt(index: number): void;
+        public items(index: number): PKI.Attribute;
     }
 
 }
@@ -237,12 +238,12 @@ export namespace CMS {
 export namespace PKISTORE {
     export interface IPkiItem extends IPkiCrl, IPkiCertificate, IPkiRequest, IPkiKey {
         /**
-        * DER | PEM
-        */
+         * DER | PEM
+         */
         format: string;
         /**
-        * CRL | CERTIFICATE | KEY | REQUEST
-        */
+         * CRL | CERTIFICATE | KEY | REQUEST
+         */
         type: string;
         uri: string;
         provider: string;
@@ -250,24 +251,24 @@ export namespace PKISTORE {
         hash: string;
     }
 
-    export interface IPkiKey{
+    export interface IPkiKey {
         encrypted?: boolean;
     }
 
-    export interface IPkiCrl{
+    export interface IPkiCrl {
         issuerName?: string;
         issuerFriendlyName?: string;
         lastUpdate?: string;
         nextUpdate?: string;
     }
 
-    export interface IPkiRequest{
+    export interface IPkiRequest {
         subjectName?: string;
         subjectFriendlyName?: string;
         key?: string; // thumbprint ket SHA1
     }
 
-    export interface IPkiCertificate{
+    export interface IPkiCertificate {
         subjectName?: string;
         subjectFriendlyName?: string;
         issuerName?: string;
@@ -283,17 +284,17 @@ export namespace PKISTORE {
     export interface IFilter {
         /**
          * PkiItem
-        * CRL | CERTIFICATE | KEY | REQUEST
-        */
+         * CRL | CERTIFICATE | KEY | REQUEST
+         */
         type?: string[];
         /**
-        * Provider
-        * SYSTEM, MICROSOFT, CRYPTOPRO, TSL, PKCS11, TRUSTEDNET 
-        */
+         * Provider
+         * SYSTEM, MICROSOFT, CRYPTOPRO, TSL, PKCS11, TRUSTEDNET
+         */
         provider?: string[];
         /**
-        * MY, OTHERS, TRUST, CRL
-        */
+         * MY, OTHERS, TRUST, CRL
+         */
         category?: string[];
         hash?: string;
         subjectName?: string;
@@ -305,12 +306,13 @@ export namespace PKISTORE {
     }
 
     export declare abstract class Provider {
-        type: string;
+        public type: string;
     }
 
+    /* tslint:disable-next-line:class-name */
     export declare class Provider_System extends Provider {
         constructor(folder: string);
-        objectToPkiItem(pathr: string): IPkiItem;
+        public  objectToPkiItem(pathr: string): IPkiItem;
     }
 
     export declare class ProviderMicrosoft extends Provider {
@@ -324,78 +326,78 @@ export namespace PKISTORE {
     export declare class PkiStore {
         constructor(json: string);
 
-        getCash(): CashJson;
+        public getCash(): CashJson;
 
         /**
-        * Возвращает набор элементов по фильтру
-        * - если фильтр пустой, возвращает все элементы
-        */
-        find(filter?: Filter): IPkiItem[];
+         * Возвращает набор элементов по фильтру
+         * - если фильтр пустой, возвращает все элементы
+         */
+        public find(filter?: Filter): IPkiItem[];
 
         /**
-        * Возвращает ключ по фильтру
-        * - фильтр задается относительно элементов, которые могут быть связаны с ключом
-        */
-        findKey(filter: IFilter): IPkiItem;
+         * Возвращает ключ по фильтру
+         * - фильтр задается относительно элементов, которые могут быть связаны с ключом
+         */
+        public findKey(filter: IFilter): IPkiItem;
 
         /**
-        * Возвращает объект из структуры
-        */
-        getItem(item: PkiItem): any;
+         * Возвращает объект из структуры
+         */
+        public getItem(item: PkiItem): any;
 
-        addProvider(provider: Provider): void;
+        public addProvider(provider: Provider): void;
 
-        addCert(provider: Provider, category: string, cert: PKI.Certificate, flags: number): string;
-        addCrl(provider: Provider, category: string, crl: PKI.CRL, flags: number): string;
-        addKey(provider: Provider, key: PKI.Key, password: string): string;
-        addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
+        public addCert(provider: Provider, category: string, cert: PKI.Certificate, flags: number): string;
+        public addCrl(provider: Provider, category: string, crl: PKI.CRL, flags: number): string;
+        public addKey(provider: Provider, key: PKI.Key, password: string): string;
+        public addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
     }
 
     export declare class CashJson {
+        public filenName: string;
         constructor(fileName: string);
-        filenName: string;
-        save(fileName: string);
-        load(fileName: string);
-        export(): IPkiItem[];
-        import(items: IPkiItem[]);
-        import(item: PkiItem);
+        public save(fileName: string);
+        public load(fileName: string);
+        public export(): IPkiItem[];
+        public import(items: IPkiItem[]);
+        public import(item: PkiItem);
     }
 
     export declare class Filter {
         constructor();
-        setType(type: string): void;
-        setProvider(provider: string): void;
-        setCategory(category: string): void;
-        setHash(hash: string): void;
-        setSubjectName(subjectName: string): void;
-        setSubjectFriendlyName(subjectFriendlyName: string): void;
-        setIssuerName(issuerName: string): void;
-        setIssuerFriendlyName(issuerFriendlyName: string): void;
-        setIsValid(valid: boolean): void;
-        setSerial(serial: string): void;
+        public setType(type: string): void;
+        public setProvider(provider: string): void;
+        public setCategory(category: string): void;
+        public setHash(hash: string): void;
+        public setSubjectName(subjectName: string): void;
+        public setSubjectFriendlyName(subjectFriendlyName: string): void;
+        public setIssuerName(issuerName: string): void;
+        public setIssuerFriendlyName(issuerFriendlyName: string): void;
+        public setIsValid(valid: boolean): void;
+        public setSerial(serial: string): void;
     }
 
     export declare class PkiItem {
         constructor();
-        setFormat(type: string): void;
-        setType(type: string): void;
-        setProvider(provider: string): void;
-        setCategory(category: string): void;
-        setURI(category: string): void;
-        setHash(hash: string): void;
-        setSubjectName(subjectName: string): void;
-        setSubjectFriendlyName(subjectFriendlyName: string): void;
-        setIssuerName(issuerName: string): void;
-        setIssuerFriendlyName(issuerFriendlyName: string): void;
-        setSerial(serial: string): void;
-        setNotBefore(before: string): void;
-        setNotAfter(after: string): void;
-        setLastUpdate(lastUpdate: string): void;
-        setNextUpdate(nextUpdate: string): void;
-        setKey(key: string): void;
-        setKeyEncrypted(enc: boolean): void;
-        setOrganizationName(organizationName: string): void;
-        setSignatureAlgorithm(signatureAlgorithm: string): void;
+        public setFormat(type: string): void;
+        public setType(type: string): void;
+        public setProvider(provider: string): void;
+        public setCategory(category: string): void;
+        public setURI(category: string): void;
+        public setHash(hash: string): void;
+        public setSubjectName(subjectName: string): void;
+        public setSubjectFriendlyName(subjectFriendlyName: string): void;
+        public setIssuerName(issuerName: string): void;
+        public setIssuerFriendlyName(issuerFriendlyName: string): void;
+        public setSerial(serial: string): void;
+        public setNotBefore(before: string): void;
+        public setNotAfter(after: string): void;
+        public setLastUpdate(lastUpdate: string): void;
+        public setNextUpdate(nextUpdate: string): void;
+        public setKey(key: string): void;
+        public setKeyEncrypted(enc: boolean): void;
+        public setOrganizationName(organizationName: string): void;
+        public setSignatureAlgorithm(signatureAlgorithm: string): void;
     }
 }
 

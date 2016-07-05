@@ -1,4 +1,4 @@
-export enum CryptoMethod{
+export enum CryptoMethod {
     SYMMETRIC = 0,
-	ASSYMETRIC = 1
+    ASSYMETRIC = 1
 }

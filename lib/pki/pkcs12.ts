@@ -5,14 +5,23 @@ import {CertificateCollection} from "../pki/certs";
 import {Key} from "../pki/key";
 
 export class Pkcs12 extends object.BaseObject<native.PKI.Pkcs12> {
+    /**
+     * чтение сертификата из файла
+     * @param filename Путь к файлу
+     */
+    public static load(filename: string): Pkcs12 {
+        let p12: Pkcs12 = new Pkcs12();
+        p12.handle.load(filename);
+        return p12;
+    }
+
     constructor();
     constructor(handle: native.PKI.Pkcs12);
-    constructor(param?) {
+    constructor(param?: any) {
         super();
-        if (param instanceof native.PKI.Pkcs12){
+        if (param instanceof native.PKI.Pkcs12) {
             this.handle = param;
-        }
-        else{
+        } else {
             this.handle = new native.PKI.Pkcs12();
         }
     }
@@ -20,21 +29,21 @@ export class Pkcs12 extends object.BaseObject<native.PKI.Pkcs12> {
     /**
      * возвращает  сертификат
      */
-    certificate(password: string): Certificate {
+    public certificate(password: string): Certificate {
         return  Certificate.wrap<native.PKI.Certificate, Certificate>(this.handle.getCertificate(password));
     }
 
     /**
      * возвращает приватный ключ
      */
-    key(password: string): Key {
+    public key(password: string): Key {
         return Key.wrap<native.PKI.Key, Key>(this.handle.getKey(password));
     }
 
     /**
      * возвращает цепочку сертификатов
      */
-    ca(password: string): CertificateCollection {
+    public ca(password: string): CertificateCollection {
        let caCerts: CertificateCollection = new CertificateCollection(this.handle.getCACertificates(password));
        return caCerts;
     }
@@ -43,25 +52,15 @@ export class Pkcs12 extends object.BaseObject<native.PKI.Pkcs12> {
      * чтение pkcs12 из файла
      * @param filename Путь к файлу
      */
-    load(filename: string): void {
+    public load(filename: string): void {
         this.handle.load(filename);
-    }
-
-    /**
-     * чтение сертификата из файла
-     * @param filename Путь к файлу
-     */
-    static load(filename: string): Pkcs12 {
-        let p12 = new Pkcs12();
-        p12.handle.load(filename);
-        return p12;
     }
 
     /**
      * сохранение pkcs12 в файл
      * @param filename Путь к файлу
      */
-    save(filename: string): void {
+    public save(filename: string): void {
         this.handle.save(filename);
     }
 
@@ -74,10 +73,9 @@ export class Pkcs12 extends object.BaseObject<native.PKI.Pkcs12> {
      * @param  {string} name
      * @returns Pkcs12
      */
-    create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12 {
-       let p12 = new Pkcs12();
-       p12.handle = this.handle.create(cert.handle, key.handle, ca ? ca.handle : null, password, name);
+    public create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12 {
+       let p12: Pkcs12 = new Pkcs12();
+       p12.handle = this.handle.create(cert.handle, key.handle, ca ? ca.handle : undefined, password, name);
        return p12;
     }
-
 }

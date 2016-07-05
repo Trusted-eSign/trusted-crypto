@@ -11,8 +11,9 @@
     },
     "main": "index.js",
     "scripts": {
-        "test": "node_modules/.bin/mocha test && npm run lint",
+        "test": "node_modules/.bin/mocha test && npm run lint && npm run lintTS",
         "lint": "./node_modules/.bin/eslint test",
+        "lintTS": "./node_modules/.bin/tslint lib/**/*.ts",
         "build": "node-gyp build && tsc;",
         "install": "tsd install && node-gyp configure && node-gyp build && tsc"
     },
@@ -29,7 +30,8 @@
     "devDependencies": {
         "mocha": "^2.4.5",
         "nan": "^2.2.1",
-        "eslint": "^2.11.1"
+        "eslint": "^2.11.1",
+        "tslint": "^3.13.0"
     },
     "author": "Trusted Plus development team"
 }

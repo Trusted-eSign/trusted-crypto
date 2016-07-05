@@ -2,25 +2,45 @@ import * as native from "../native";
 import * as object from "../object";
 import {DataFormat} from "../data_format";
 
-const DEFAULT_DATA_FORMAT = DataFormat.DER;
+const DEFAULT_DATA_FORMAT: DataFormat  = DataFormat.DER;
 
 /**
  * Представление `X509` сертификата
  */
 export class Certificate extends object.BaseObject<native.PKI.Certificate> {
+     /**
+      * чтение сертификата из файла
+      * @param filename Путь к файлу
+      * @param format Формат данных. Опционально. По умолчанию DER
+      */
+    public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
+        let cert: Certificate = new Certificate();
+        cert.handle.load(filename, format);
+        return cert;
+    }
+
+    /**
+     * чтение сертификата из памяти
+     * @param buffer Буфер памяти
+     * @param format Формат данных. Опционально. По умолчанию DER
+     */
+    public static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
+        let cert: Certificate = new Certificate();
+        cert.handle.import(buffer, format);
+        return cert;
+    }
 
     constructor();
     constructor(handle: native.PKI.Certificate);
-    constructor(param?) {
+    constructor(param?: any) {
         super();
-        if (param instanceof native.PKI.Certificate){
+        if (param instanceof native.PKI.Certificate) {
             this.handle = param;
-        }
-        else{
+        } else {
             this.handle = new native.PKI.Certificate();
         }
     }
-    
+
     /**
      * возвращает версию сертификата
      */
@@ -116,12 +136,15 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
      * сравнение сертификатов
      * @param cert Сертификат для сравнения
      */
-    compare(cert: Certificate): number {
-        let cmp = this.handle.compare(cert.handle);
-        if (cmp < 0)
+    public compare(cert: Certificate): number {
+        let cmp: any = this.handle.compare(cert.handle);
+        if (cmp < 0) {
             return -1;
-        if (cmp > 0)
+        }
+        if (cmp > 0) {
             return 1;
+        }
+
         return 0;
     }
 
@@ -129,7 +152,7 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
      * сравнение сертификатов
      * @param cert Сертификат для сравнения
      */
-    equals(cert: Certificate): boolean {
+    public equals(cert: Certificate): boolean {
         return this.handle.equals(cert.handle);
     }
 
@@ -137,15 +160,15 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
      * вычисление значения хэша сертификата
      * @param algorithm Имя хэш алгоритма. Опционально. По умолчанию sha1
      */
-    hash(algorithm: string = "sha1"): String {
+    public hash(algorithm: string = "sha1"): String {
         return this.handle.hash(algorithm).toString("hex");
     }
-    
+
     /**
      * Создает копию сертификата
      */
-    duplicate(): Certificate {
-        let cert = new Certificate();
+    public duplicate(): Certificate {
+        let cert: Certificate = new Certificate();
         cert.handle = this.handle.duplicate();
         return cert;
     }
@@ -155,46 +178,24 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
      * @param filename Путь к файлу
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.load(filename, format);
     }
 
     /**
-     * чтение сертификата из файла
-     * @param filename Путь к файлу
-     * @param format Формат данных. Опционально. По умолчанию DER
-     */
-    static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
-        let cert = new Certificate();
-        cert.handle.load(filename, format);
-        return cert;
-    }
-
-    /**
      * чтение сертификата из памяти
      * @param buffer Буфер памяти
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.import(buffer, format);
-    }
-
-    /**
-     * чтение сертификата из памяти
-     * @param buffer Буфер памяти
-     * @param format Формат данных. Опционально. По умолчанию DER
-     */
-    static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
-        let cert = new Certificate();
-        cert.handle.import(buffer, format);
-        return cert;
     }
 
     /**
      * сохранение сертификата в память
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    export(format: DataFormat = DEFAULT_DATA_FORMAT): Buffer {
+    public export(format: DataFormat = DEFAULT_DATA_FORMAT): Buffer {
         return this.handle.export(format);
     }
 
@@ -203,8 +204,7 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
      * @param filename Путь к файлу
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    save(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public save(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.save(filename, format);
     }
-
 }

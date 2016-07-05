@@ -1,3 +1,5 @@
+/* tslint:disable:no-namespace */
+
 import * as dataFormat from "./data_format";
 import * as publicExponent from "./public_exponent";
 import * as cryptoMethod from "./crypto_method";
@@ -55,6 +57,7 @@ export namespace cms {
 
 export namespace pkistore {
     export let PkiStore = store.PkiStore;
+    /* tslint:disable-next-line:variable-name */
     export let Provider_System = provider_system.Provider_System;
     export let ProviderMicrosoft = provider_microsoft.ProviderMicrosoft;
     export let CashJson = cashjson.CashJson;

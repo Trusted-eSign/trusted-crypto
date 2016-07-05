@@ -3,19 +3,38 @@ import * as object from "../object";
 import {DataFormat} from "../data_format";
 import {Certificate} from "./cert";
 
+const DEFAULT_DATA_FORMAT: DataFormat = DataFormat.DER;
 
-const DEFAULT_DATA_FORMAT = DataFormat.DER;
+export class Crl extends object.BaseObject<native.PKI.CRL> {
+    /**
+     * чтение структуры из файла
+     * @param filename Путь к файлу
+     * @param format Формат данных. Опционально. По умолчанию DER
+     */
+    public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Crl {
+        let crl: Crl = new Crl();
+        crl.load(filename, format);
+        return crl;
+    }
 
-export class Crl extends object.BaseObject<native.PKI.CRL>{
+    /**
+     * чтение структуры из памяти
+     * @param buffer Буфер памяти
+     * @param format Формат данных. Опционально. По умолчанию DER
+     */
+    public static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): Crl {
+        let crl: Crl = new Crl();
+        crl.import(buffer, format);
+        return crl;
+    }
 
     constructor();
     constructor(handle: native.PKI.CRL);
-    constructor(param?) {
+    constructor(param?: any) {
         super();
         if (param instanceof native.PKI.CRL) {
             this.handle = param;
-        }
-        else {
+        } else {
             this.handle = new native.PKI.CRL();
         }
     }
@@ -25,7 +44,7 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
     }
 
     /**
-     * возвращает значение подписи 
+     * возвращает значение подписи
      */
     get signature(): Buffer {
         return this.handle.getSignature();
@@ -85,11 +104,11 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
         return this.handle.getSigAlgOID();
     }
 
-    getRevokedCertificateCert(cer: Certificate): native.PKI.RevokedCertificate {
+    public getRevokedCertificateCert(cer: Certificate): native.PKI.RevokedCertificate {
         return this.handle.getRevokedCertificateCert(cer.handle);
     }
 
-    getRevokedCertificateSerial(serial: string): native.PKI.RevokedCertificate {
+    public getRevokedCertificateSerial(serial: string): native.PKI.RevokedCertificate {
         return this.handle.getRevokedCertificateSerial(serial);
     }
 
@@ -98,46 +117,24 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
      * @param filename Путь к файлу
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.load(filename, format);
     }
 
     /**
-     * чтение структуры из файла
-     * @param filename Путь к файлу
-     * @param format Формат данных. Опционально. По умолчанию DER
-     */
-    static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Crl {
-        let crl = new Crl();
-        crl.load(filename, format);
-        return crl;
-    }
-
-    /**
      * чтение структуры из памяти
      * @param buffer Буфер памяти
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.import(buffer, format);
-    }
-
-    /**
-     * чтение структуры из памяти
-     * @param buffer Буфер памяти
-     * @param format Формат данных. Опционально. По умолчанию DER
-     */
-    static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): Crl {
-        let crl = new Crl();
-        crl.import(buffer, format);
-        return crl;
     }
 
     /**
      * сохранение структуры в память
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    export(format: DataFormat = DEFAULT_DATA_FORMAT) {
+    public export(format: DataFormat = DEFAULT_DATA_FORMAT): Buffer {
         return this.handle.export(format);
     }
 
@@ -146,7 +143,7 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
      * @param filename Путь к файлу
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    save(filename: string, dataFormat: DataFormat = DEFAULT_DATA_FORMAT) {
+    public save(filename: string, dataFormat: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.save(filename, dataFormat);
     }
 
@@ -154,12 +151,15 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
      * сравнение crl
      * @param crl Crl для сравнения
      */
-    compare(crl: Crl): number {
-        let cmp = this.handle.compare(crl.handle);
-        if (cmp < 0)
+    public compare(crl: Crl): number {
+        let cmp: number = this.handle.compare(crl.handle);
+        if (cmp < 0) {
             return -1;
-        if (cmp > 0)
+        }
+        if (cmp > 0) {
             return 1;
+        }
+
         return 0;
     }
 
@@ -167,7 +167,7 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
      * сравнение
      * @param crl Список отзыва сертификтов
      */
-    equals(crl: Crl): boolean {
+    public equals(crl: Crl): boolean {
         return this.handle.equals(crl.handle);
     }
 
@@ -175,17 +175,16 @@ export class Crl extends object.BaseObject<native.PKI.CRL>{
      * возвращает хэш структуры по заданному алгоритму
      * @param algorithm название хэш алгоритма
      */
-    hash(algorithm: string = "sha1"): String {
+    public hash(algorithm: string = "sha1"): String {
         return this.handle.hash(algorithm).toString("hex");
     }
 
     /**
      * создает копию элемента
      */
-    duplicate(): Crl {
-        let crl = new Crl();
+    public duplicate(): Crl {
+        let crl: Crl = new Crl();
         crl.handle = this.handle.duplicate();
         return crl;
     }
-
 }

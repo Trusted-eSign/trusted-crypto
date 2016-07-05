@@ -9,13 +9,15 @@ import {Crl} from "./crl";
 import {PkiStore} from "../pkistore/pkistore";
 
 /**
-* Download file
-* @param url  url to remote file
-* @param path path for save in local system
-* @param done callback function
-*/
+ * Download file
+ * @param url  url to remote file
+ * @param path path for save in local system
+ * @param done callback function
+ */
 function download(url: string, path: string, done: Function): void {
-    let sendReq = request.get(url);
+    "use strict";
+
+    let sendReq: any = request.get(url);
 
     sendReq.on("response", function (response) {
         switch (response.statusCode) {
@@ -50,11 +52,11 @@ export class Revocation extends object.BaseObject<native.PKI.Revocation> {
     }
 
     /**
-    * Search crl for certificate in local store
-    * @param  {Certificate} cert
-    * @param  {PkiStore} store
-    */
-    getCrlLocal(cert: Certificate, store: PkiStore): any {
+     * Search crl for certificate in local store
+     * @param  {Certificate} cert
+     * @param  {PkiStore} store
+     */
+    public getCrlLocal(cert: Certificate, store: PkiStore): any {
         let res = this.handle.getCrlLocal(cert.handle, store.handle);
         if (res) {
             return Crl.wrap<native.PKI.CRL, Crl>(res);
@@ -63,22 +65,22 @@ export class Revocation extends object.BaseObject<native.PKI.Revocation> {
     }
 
     /**
-    * Get array distribution points for certificate
-    * @param {Certificate} cert
-    */
-    getCrlDistPoints(cert: Certificate): Array<string> {
+     * Get array distribution points for certificate
+     * @param {Certificate} cert
+     */
+    public getCrlDistPoints(cert: Certificate): Array<string> {
         return this.handle.getCrlDistPoints(cert.handle);
     }
 
     /**
-    * Check validate CRL time
-    * @param {Crl} crl
-    */
-    checkCrlTime(crl: Crl): boolean {
+     * Check validate CRL time
+     * @param {Crl} crl
+     */
+    public checkCrlTime(crl: Crl): boolean {
         return this.handle.checkCrlTime(crl.handle);
     }
 
-    downloadCRL(distPoints: Array<string>, pathForSave: string, done: Function): void {
+    public downloadCRL(distPoints: Array<string>, pathForSave: string, done: Function): void {
         let crl = new Crl();
         let returnPath;
 
@@ -87,8 +89,7 @@ export class Revocation extends object.BaseObject<native.PKI.Revocation> {
                 download(value, pathForSave + key, function (err, url, goodPath) {
                     if (err) {
                         return callback(err);
-                    }
-                    else {
+                    } else {
                         returnPath = goodPath;
                         callback();
                     }
@@ -96,19 +97,13 @@ export class Revocation extends object.BaseObject<native.PKI.Revocation> {
             }, function (err) {
                 if (err) {
                     done(err.message, null);
-                }
-                else {
+                } else {
                     crl.load(returnPath);
                     done(null, crl);
                 }
             });
-        }
-        catch (e) {
+        } catch (e) {
             done(e, null);
         }
     }
 }
-
-
-
-

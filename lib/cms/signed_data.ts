@@ -1,3 +1,5 @@
+/* tslint:disable:no-bitwise */
+
 import * as native from "../native";
 import * as object from "../object";
 import {DataFormat} from "../data_format";
@@ -7,7 +9,7 @@ import {Certificate} from "../pki/cert";
 import {CertificateCollection} from "../pki/certs";
 import {Key} from "../pki/key";
 
-const DEFAULT_DATA_FORMAT = DataFormat.DER;
+const DEFAULT_DATA_FORMAT: DataFormat = DataFormat.DER;
 
 export enum SignedDataContentType {
     url,
@@ -45,19 +47,44 @@ enum SignedDataPolicy {
     debugDecrypt = 0x20000
 }
 
-function EnumGetName(e: any, name: string) {
+function EnumGetName(e: any, name: string): any {
+    "use strict";
+
     for (let i in e) {
         if (i.toString().toLowerCase() === name.toLowerCase()) {
             return { name: i, value: e[i] };
         }
     }
-    return null;
+    return undefined;
 }
 
 /**
  * Представление `CMS SignedData`
  */
 export class SignedData extends object.BaseObject<native.CMS.SignedData> {
+    /**
+     * чтение подписи из файла
+     * @param filename Путь к файлу
+     * @param format Формат данных. Опционально. По умолчанию DER
+     */
+    public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): SignedData {
+        let cms: SignedData = new SignedData();
+        cms.handle.load(filename, format);
+        return cms;
+    }
+
+    /**
+     * чтение подписи из памяти
+     * @param buffer Буфер памяти
+     * @param format Формат данных. Опционально. По умолчанию DER
+     */
+    public static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): SignedData {
+        let cms: SignedData = new SignedData();
+        cms.handle.import(buffer, format);
+        return cms;
+    }
+
+    private prContent: ISignedDataContent = undefined;
 
     constructor() {
         super();
@@ -65,51 +92,48 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         this.handle = new native.CMS.SignedData();
     }
 
-    private content_: ISignedDataContent = null;
-    
     /**
      * Возвращает содержимое подписи
      */
     get content(): ISignedDataContent {
-        if (!this.content_ && !this.isDetached()) {
+        if (!this.prContent && !this.isDetached()) {
             // Извлечь содержимое из подписи
             let buf: Buffer = this.handle.getContent();
-            this.content_ = {
+            this.prContent = {
+                data: buf,
                 type: SignedDataContentType.buffer,
-                data: buf
-            }
+            };
         }
-        return this.content_;
+        return this.prContent;
     }
 
     /**
      * Задает содержимое подписи
-     * @param содержимое 
+     * @param содержимое
      */
     set content(v: ISignedDataContent) {
-        let data;
+        let data: any;
         if (v.type === SignedDataContentType.url) {
             data = v.data.toString();
+        } else {
+            data = new Buffer(<any> v.data);
         }
-        else {
-            data = new Buffer(<any>v.data);
-        }
-        this.handle.setContent(data)
-        this.content_ = v;
+        this.handle.setContent(data);
+        this.prContent = v;
     }
-    
+
     /**
      * Возвращает политики подписи
      */
     get policies(): Array<string> {
-        let p = new Array<string>();
+        let p: Array<string> = new Array<string>();
 
-        let flags = this.handle.getFlags();
-
-
+        let flags: number = this.handle.getFlags();
 
         for (let i in SignedDataPolicy) {
-            if (+i & flags) p.push(SignedDataPolicy[i]);
+            if (+i & flags) {
+                p.push(SignedDataPolicy[i]);
+            }
         }
 
         return p;
@@ -120,9 +144,9 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * @param Набор политик
      */
     set policies(v: string[]) {
-        let flags = 0;
-        for (let i in v) {
-            let flag = EnumGetName(SignedDataPolicy, v[i]);
+        let flags: number = 0;
+        for (let i: number = 0; i < v.length; i++) {
+            let flag: any = EnumGetName(SignedDataPolicy, v[i]);
             if (flag) {
                 flags |= +flag.value;
             }
@@ -134,7 +158,7 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
     /**
      * Возвращает true если подпись открепленная
      */
-    isDetached(): boolean {
+    public isDetached(): boolean {
         return this.handle.isDetached();
     }
 
@@ -142,14 +166,14 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * Возвращает сертификат по индексу
      * @param index Индекс элемента в коллекции
      */
-    certificates(index: number): Certificate;
+    public certificates(index: number): Certificate;
     /**
      * Возвращает коллекцию сертификатов
      */
-    certificates(): CertificateCollection;
-    certificates(index?: number): any {
+    public certificates(): CertificateCollection;
+    public certificates(index?: number): any {
         let certs: CertificateCollection = new CertificateCollection(this.handle.getCertificates());
-        if (index !== undefined){
+        if (index !== undefined) {
             return certs.items(index);
         }
         return certs;
@@ -159,14 +183,14 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * Возвращает подписчика по индексу
      * @param index индекс элемента в коллекции
      */
-    signers(index: number): Signer;
+    public signers(index: number): Signer;
     /**
      * Возвращает коллекцию подписчиков
      */
-    signers(): SignerCollection;
-    signers(index?: number): any {
-        let signers = new SignerCollection (this.handle.getSigners());
-        if (index !== undefined){
+    public signers(): SignerCollection;
+    public signers(index?: number): any {
+        let signers: SignerCollection = new SignerCollection (this.handle.getSigners());
+        if (index !== undefined) {
             return signers.items(index);
         }
         return signers;
@@ -177,46 +201,24 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * @param filename Путь к файлу
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.load(filename, format);
     }
 
     /**
-     * чтение подписи из файла
-     * @param filename Путь к файлу
-     * @param format Формат данных. Опционально. По умолчанию DER
-     */
-    static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): SignedData {
-        let cms = new SignedData();
-        cms.handle.load(filename, format);
-        return cms;
-    }
-
-    /**
      * чтение подписи из памяти
      * @param buffer Буфер памяти
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.import(buffer, format);
     }
 
     /**
-     * чтение подписи из памяти
-     * @param buffer Буфер памяти
+     * сохранение подписи в память
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): SignedData {
-        let cms = new SignedData();
-        cms.handle.import(buffer, format);
-        return cms;
-    }
-    
-    /**
-    * сохранение подписи в память
-    * @param format Формат данных. Опционально. По умолчанию DER
-    */
-    export(format: DataFormat = DEFAULT_DATA_FORMAT): Buffer {
+    public export(format: DataFormat = DEFAULT_DATA_FORMAT): Buffer {
         return this.handle.export(format);
     }
 
@@ -225,7 +227,7 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * @param filename Путь к файлу
      * @param format Формат данных. Опционально. По умолчанию DER
      */
-    save(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+    public save(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.save(filename, format);
     }
 
@@ -235,27 +237,27 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * @param key Закрытый ключ подписчика
      * @param digestName имя хэш алгоритма
      */
-    createSigner(cert: Certificate, key: Key, digestName: string): Signer {
-        let signer:any = this.handle.createSigner(cert.handle, key.handle, digestName);
+    public createSigner(cert: Certificate, key: Key, digestName: string): Signer {
+        let signer: any = this.handle.createSigner(cert.handle, key.handle, digestName);
         return new Signer(signer);
     }
-    
+
     /**
      * Проверяет подпись
      * @param certs Коллекция дополнительных сертификатов
      */
-    verify(certs?: CertificateCollection): boolean {
-        let certs_ = certs;
+    public verify(certs?: CertificateCollection): boolean {
+        let certsD: CertificateCollection  = certs;
         if (!certs) {
-            certs_ = new CertificateCollection();
+            certsD = new CertificateCollection();
         }
-            return this.handle.verify(certs_.handle);
+        return this.handle.verify(certsD.handle);
     }
 
     /**
      * Создает подпись
      */
-    sign(): void {
+    public sign(): void {
         this.handle.sign();
     }
 }

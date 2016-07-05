@@ -10,12 +10,13 @@ export class Oid extends object.BaseObject<native.PKI.OID> {
     constructor(oid: string);
     constructor(param: any) {
         super();
-        if (typeof (param) === "string")
+        if (typeof (param) === "string") {
             this.handle = new native.PKI.OID(param);
-        else if (param instanceof native.PKI.OID)
+        } else if (param instanceof native.PKI.OID) {
             this.handle = param;
-        else
+        } else {
             throw new TypeError("Oid::constructor: Wrong input param");
+        }
     }
 
     /**
@@ -38,5 +39,4 @@ export class Oid extends object.BaseObject<native.PKI.OID> {
     get shortName(): string {
         return this.handle.getShortName();
     }
-
 }

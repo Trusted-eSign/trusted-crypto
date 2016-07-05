@@ -1,18 +1,17 @@
-export interface IBaseObject{
+export interface IBaseObject {
     handle;
 }
 
-export class BaseObject <T> implements IBaseObject{
-	public handle: T;
-
-    static wrap<TIn, TOut extends IBaseObject>(obj: TIn): TOut{
-        let cast_obj = obj;
-        if (!obj){
+export class BaseObject <T> implements IBaseObject {
+    public static wrap<TIn, TOut extends IBaseObject>(obj: TIn): TOut {
+        if (!obj) {
             throw TypeError("BaseObjectCheck::Wrong incoming object for wrap function");
         }
-        
-        let new_obj = new this();
-        new_obj.handle = obj;
-        return <TOut> new_obj;
+
+        let newObj: any = new this();
+        newObj.handle = obj;
+        return <TOut> newObj;
     }
+
+    public handle: T;
 }

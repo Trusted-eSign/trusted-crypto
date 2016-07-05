@@ -1,4 +1,4 @@
-export interface ICollection{
+export interface ICollection {
     /**
      * возвращает количество элементов в коллекции
      */
@@ -7,11 +7,11 @@ export interface ICollection{
      * возвращает элемент коллекции по заданному индексу
      * @param index индекс элемента в коллекции [0..n]
      */
-    items(index:number): any
+    items(index: number): any;
 }
 
-export interface ICollectionWrite extends ICollection{
-    push(item: any);
-    pop();
-    removeAt(index: number);
+export interface ICollectionWrite extends ICollection {
+    push(item: any): void;
+    pop(): void;
+    removeAt(index: number): void;
 }

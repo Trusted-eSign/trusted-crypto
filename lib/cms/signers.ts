@@ -18,7 +18,7 @@ export class SignerCollection extends object.BaseObject<native.CMS.SignerCollect
      * Возвращает элемент из коллекции по заданному индексу
      * @param index Индекс элемента в коллекции
      */
-    items(index: number): Signer {
+    public items(index: number): Signer {
         return new Signer(this.handle.items(index));
     }
 

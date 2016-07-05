@@ -1,17 +1,11 @@
 import * as native from "../native";
 import * as object from "../object";
-import * as fs  from "fs";
-import * as request  from "request";
-import * as async  from "async";
 
-import {DataFormat} from "../data_format";
 import {Certificate} from "../pki/cert";
 import {Crl} from "../pki/crl";
 import {CertificationRequest} from "../pki/certReg";
 import {Key} from "../pki/key";
 import {CashJson} from "./cashjson";
-
-
 
 export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements native.PKISTORE.IFilter {
     constructor() {
@@ -142,59 +136,60 @@ export class PkiItem extends object.BaseObject<native.PKISTORE.PkiItem> implemen
 export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
     constructor(handle: native.PKISTORE.PkiStore);
     constructor(folder: string);
-    constructor(param) {
+    constructor(param: any) {
         super();
-        if (param instanceof native.PKISTORE.PkiStore)
+        if (param instanceof native.PKISTORE.PkiStore) {
             this.handle = param;
-        else
+        } else {
             this.handle = new native.PKISTORE.PkiStore(param);
+        }
     }
 
     get cash(): CashJson {
         return CashJson.wrap<native.PKISTORE.CashJson, CashJson>(this.handle.getCash());
     }
 
-    addProvider(provider: native.PKISTORE.Provider) {
+    public addProvider(provider: native.PKISTORE.Provider): void {
         this.handle.addProvider(provider);
     }
 
-    addCert(provider: native.PKISTORE.Provider, category: string, cert: Certificate, flags: number): string {
+    public addCert(provider: native.PKISTORE.Provider, category: string, cert: Certificate, flags: number): string {
         return this.handle.addCert(provider, category, cert.handle, flags);
     }
 
-    addCrl(provider: native.PKISTORE.Provider, category: string, crl: Crl, flags: number): string {
+    public addCrl(provider: native.PKISTORE.Provider, category: string, crl: Crl, flags: number): string {
         return this.handle.addCrl(provider, category, crl.handle, flags);
     }
 
-    addKey(provider: native.PKISTORE.Provider, key: Key, password: string): string {
+    public addKey(provider: native.PKISTORE.Provider, key: Key, password: string): string {
         return this.handle.addKey(provider, key.handle, password);
     }
 
-    addCsr(provider: native.PKISTORE.Provider, category: string, csr: CertificationRequest): string {
+    public addCsr(provider: native.PKISTORE.Provider, category: string, csr: CertificationRequest): string {
         return this.handle.addCsr(provider, category, csr.handle);
     }
 
-    find(ifilter?: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem[] {
-        let filter = new Filter();
+    public find(ifilter?: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem[] {
+        let filter: Filter = new Filter();
 
         if (!ifilter) {
             return this.handle.find(filter.handle);
         }
 
         if (ifilter.type) {
-            for (let i in ifilter.type) {
+            for (let i: number = 0; i < ifilter.type.length; i++) {
                 filter.types = ifilter.type[i];
             }
         }
 
         if (ifilter.provider) {
-            for (let i in ifilter.provider) {
+            for (let i: number = 0; i <  ifilter.provider.length; i++) {
                 filter.providers = ifilter.provider[i];
             }
         }
 
         if (ifilter.category) {
-            for (let i in ifilter.category) {
+            for (let i: number = 0; i < ifilter.category.length; i++) {
                 filter.categorys = ifilter.category[i];
             }
         }
@@ -226,23 +221,23 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         return this.handle.find(filter.handle);
     }
 
-    findKey(ifilter: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem {
-        let filter = new Filter();
+    public findKey(ifilter: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem {
+        let filter: Filter = new Filter();
 
         if (ifilter.type) {
-            for (let i in ifilter.type) {
+            for (let i: number = 0; i < ifilter.type.length; i++) {
                 filter.types = ifilter.type[i];
             }
         }
 
         if (ifilter.provider) {
-            for (let i in ifilter.provider) {
+            for (let i: number = 0; i < ifilter.provider.length; i++) {
                 filter.providers = ifilter.provider[i];
             }
         }
 
         if (ifilter.category) {
-            for (let i in ifilter.category) {
+            for (let i: number = 0; i < ifilter.category.length; i++) {
                 filter.categorys = ifilter.category[i];
             }
         }
@@ -274,8 +269,8 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         return this.handle.findKey(filter.handle);
     }
 
-    getItem(item: native.PKISTORE.IPkiItem): any {
-        let pkiItem = new PkiItem();
+    public getItem(item: native.PKISTORE.IPkiItem): any {
+        let pkiItem: PkiItem = new PkiItem();
 
         pkiItem.format = item.format;
         pkiItem.type = item.type;
@@ -332,7 +327,8 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         }
 
         if (item.type === "REQUEST") {
-            return CertificationRequest.wrap<native.PKI.CertificationRequest, CertificationRequest>(this.handle.getItem(pkiItem.handle));
+            return CertificationRequest.wrap<native.PKI.CertificationRequest,
+             CertificationRequest>(this.handle.getItem(pkiItem.handle));
         }
 
         if (item.type === "KEY") {

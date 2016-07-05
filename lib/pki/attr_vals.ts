@@ -5,11 +5,12 @@ import * as Collection from "../core/collection";
 /**
  * Представляет коллекцию значений атрибута X509_ATTR
  */
-export class AttributeValueCollection extends object.BaseObject<native.PKI.AttributeValueCollection> implements Collection.ICollectionWrite {
-    
-    constructor(handle: native.PKI.AttributeValueCollection){
+export class AttributeValueCollection extends object.BaseObject<native.PKI.AttributeValueCollection>
+ implements Collection.ICollectionWrite {
+
+    constructor(handle: native.PKI.AttributeValueCollection) {
         super();
-        
+
         this.handle = handle;
     }
 
@@ -24,31 +25,30 @@ export class AttributeValueCollection extends object.BaseObject<native.PKI.Attri
      * добавляет новый элемент в коллекцию
      * @param val новое значение коллекции
      */
-    push(val: Buffer) {
+    public push(val: Buffer): void {
         this.handle.push(val);
     }
 
     /**
      * удаляет последний элемент из коллекции
      */
-    pop() {
+    public pop(): void {
         this.handle.pop();
     }
 
     /**
      * удаляет элемент коллекции по заданному индексу
-     * @param index индекс элемента в коллекции 
+     * @param index индекс элемента в коллекции
      */
-    removeAt(index: number) {
+    public removeAt(index: number): void {
         this.handle.removeAt(index);
     }
 
     /**
-     * возвращает элемент из коллекции по заданному индексу 
+     * возвращает элемент из коллекции по заданному индексу
      * @param index индекс элемента в коллекции
      */
-    items(index: number): Buffer { 
+    public items(index: number): Buffer {
         return this.handle.items(index);
     }
-
 }

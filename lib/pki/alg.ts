@@ -5,21 +5,20 @@ import {Oid} from "./oid";
 /**
  * Представление X509_ALGOR
  */
-export class Algorithm extends object.BaseObject<native.PKI.Algorithm>{
-
+export class Algorithm extends object.BaseObject<native.PKI.Algorithm> {
     constructor();
     constructor(handle: native.PKI.Algorithm);
     constructor(name: string);
     constructor(param?: any) {
         super();
 
-        if (param instanceof native.PKI.Algorithm){
+        if (param instanceof native.PKI.Algorithm) {
             this.handle = param;
-        }
-        else if (param)
+        } else if (param) {
             this.handle = new native.PKI.Algorithm(param);
-        else
+        } else {
             this.handle = new native.PKI.Algorithm();
+        }
     }
 
     /**
@@ -39,18 +38,17 @@ export class Algorithm extends object.BaseObject<native.PKI.Algorithm>{
     /**
      * возвращает копию алгоритма
      */
-    duplicate(): Algorithm {
-        let walg = this.handle.duplicate();
-        let alg = new Algorithm();
+    public duplicate(): Algorithm {
+        let walg: any = this.handle.duplicate();
+        let alg: any = new Algorithm();
         alg.handle = walg;
         return alg;
     }
-    
+
     /**
      * возвращает true если алгоритм предназначен для вычисления хэш
      */
-    isDigest(): boolean{
+    public  isDigest(): boolean {
         return this.handle.isDigest();
     }
-
 }

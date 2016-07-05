@@ -1,24 +1,21 @@
 import * as native from "../native";
 import * as object from "../object";
-import {DataFormat} from "../data_format";
 import * as Collection from "../core/collection";
 import {Certificate} from "./cert";
-
-const DEFAULT_DATA_FORMAT = DataFormat.DER;
 
 /**
  * Представление коллекции `X509` сертификатов
  */
-export class CertificateCollection extends object.BaseObject<native.PKI.CertificateCollection> implements Collection.ICollectionWrite {
+export class CertificateCollection extends object.BaseObject<native.PKI.CertificateCollection>
+ implements Collection.ICollectionWrite {
 
     constructor(handle: native.PKI.CertificateCollection);
     constructor();
-    constructor(param?) {
+    constructor(param?: any) {
         super();
         if (param instanceof native.PKI.CertificateCollection) {
             this.handle = param;
-        }
-        else{
+        } else {
             this.handle = new native.PKI.CertificateCollection();
         }
     }
@@ -27,7 +24,7 @@ export class CertificateCollection extends object.BaseObject<native.PKI.Certific
      * Возвращает элемент из коллекции по заданному индексу
      * @param index Индекс элемента в коллекции
      */
-    items(index: number): Certificate {
+    public items(index: number): Certificate {
         return  Certificate.wrap<native.PKI.Certificate, Certificate>(this.handle.items(index));
     }
 
@@ -42,14 +39,14 @@ export class CertificateCollection extends object.BaseObject<native.PKI.Certific
      * Добавляет новый элемент в коллекцию
      * @param cert Элемент для добавления в коллекцию
      */
-    push(cert: Certificate): void {
+    public push(cert: Certificate): void {
         this.handle.push(cert.handle);
     }
 
     /**
      * Удаляет последний элемент их коллекции
      */
-    pop(): void {
+    public pop(): void {
         this.handle.pop();
     }
 
@@ -57,8 +54,7 @@ export class CertificateCollection extends object.BaseObject<native.PKI.Certific
      * Удаляет элемент из коллекции по заданному индексу
      * @param index Индекс элемента в коллекции
      */
-    removeAt(index: number): void {
+    public removeAt(index: number): void {
         this.handle.removeAt(index);
     }
-
 }

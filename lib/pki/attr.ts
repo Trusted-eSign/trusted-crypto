@@ -9,28 +9,27 @@ import {AttributeValueCollection} from "./attr_vals";
 export class Attribute extends object.BaseObject<native.PKI.Attribute> {
 
     constructor(handle: native.PKI.Attribute);
-    constructor(param?) {
+    constructor(param?: any) {
         super();
-        if (param instanceof native.PKI.Attribute){
+        if (param instanceof native.PKI.Attribute) {
             this.handle = param;
-        }
-        else
+        } else {
             this.handle = new native.PKI.Attribute();
+        }
     }
 
     /**
      * Возвращает ASN1 тип атрибута
      */
     get asnType(): number {
-        // TODO: Создать enum с перечислением возможных типов ASN1 
         return this.handle.getAsnType();
     }
-    
+
     /**
      * Задает ASN1 тип атрибута
      * @param value ASN1 тип
      */
-    set asnType(value: number) { 
+    set asnType(value: number) {
         this.handle.setAsnType(value);
     }
 
@@ -52,17 +51,17 @@ export class Attribute extends object.BaseObject<native.PKI.Attribute> {
     /**
      * возвращает копию атрибута
      */
-    dupicate(): Attribute {
-        let nattr = this.handle.duplicate();
-        let attr = Attribute.wrap<native.PKI.Attribute, Attribute>(nattr);
+    public dupicate(): Attribute {
+        let nattr: any = this.handle.duplicate();
+        let attr: Attribute = Attribute.wrap<native.PKI.Attribute, Attribute>(nattr);
 
         return attr;
     }
 
     /**
-     * возвращает атрибут в DER кодировке 
+     * возвращает атрибут в DER кодировке
      */
-    export() {
+    public export(): any {
         return this.handle.export();
     }
 
@@ -70,16 +69,17 @@ export class Attribute extends object.BaseObject<native.PKI.Attribute> {
      * возвращает коллекцию значений атрибута. Значения представляются в DER формате
      * @param index индекс элемента в коллекции
      */
-    values(index: number): Buffer;
-    values(): AttributeValueCollection;
-    values(index?: number): any {
-        let vals = this.handle.values();
-        let attr_vals: AttributeValueCollection = AttributeValueCollection.wrap<native.PKI.AttributeValueCollection, AttributeValueCollection>(vals);
+    public values(index: number): Buffer;
+    public values(): AttributeValueCollection;
+    public values(index?: number): any {
+        let vals: any = this.handle.values();
+        let attrVals: AttributeValueCollection =
+         AttributeValueCollection.wrap<native.PKI.AttributeValueCollection, AttributeValueCollection>(vals);
 
-        if (index === undefined)
-            return attr_vals;
-        else
-            return attr_vals.items(index);
+        if (index === undefined) {
+            return attrVals;
+        } else {
+            return attrVals.items(index);
+        }
     }
-
 }

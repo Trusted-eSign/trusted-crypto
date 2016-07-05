@@ -8,13 +8,13 @@ export class CashJson extends object.BaseObject<native.PKISTORE.CashJson> {
         this.handle = new native.PKISTORE.CashJson(fileName);
     }
 
-    export(): native.PKISTORE.IPkiItem[] {
+    public export(): native.PKISTORE.IPkiItem[] {
         return this.handle.export();
     }
 
-    import(items: native.PKISTORE.IPkiItem[]): void {
-        for(let i in items){
-            let pkiItem = new PkiItem();
+    public import(items: native.PKISTORE.IPkiItem[]): void {
+        for (let i: number = 0; i < items.length; i++) {
+            let pkiItem: PkiItem = new PkiItem();
 
             pkiItem.format = items[i].format;
             pkiItem.type = items[i].type;
@@ -65,5 +65,4 @@ export class CashJson extends object.BaseObject<native.PKISTORE.CashJson> {
             this.handle.import(pkiItem.handle);
         }
     }
-
 }

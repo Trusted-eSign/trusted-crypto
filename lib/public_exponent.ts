@@ -1,4 +1,4 @@
-export enum PublicExponent{
+export enum PublicExponent {
     RSA_3 = 0,
-	RSA_F4 = 1
+    RSA_F4 = 1
 }

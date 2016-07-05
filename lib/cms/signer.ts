@@ -1,6 +1,5 @@
 import * as native from "../native";
 import * as object from "../object";
-import {DataFormat} from "../data_format";
 import {Algorithm} from "../pki/alg";
 import {Attribute} from "../pki/attr";
 import {Certificate} from "../pki/cert";
@@ -27,39 +26,35 @@ export class Signer extends object.BaseObject<native.CMS.Signer> {
     /**
      * Задает сертификат подписчика
      * @param val Сертификат
-     * - если сенртификат не является сертификатом подписчика, то возникнет ошибка 
+     * - если сенртификат не является сертификатом подписчика, то возникнет ошибка
      */
     set certificate(val: Certificate) {
         this.handle.setCertificate(val.handle);
     }
 
     /**
-     * возвращает хэш алгоритм проверки содержимого 
+     * возвращает хэш алгоритм проверки содержимого
      */
     get digestAlgorithm(): Algorithm {
-        let alg = new Algorithm(this.handle.getDigestAlgorithm());
+        let alg: Algorithm = new Algorithm(this.handle.getDigestAlgorithm());
         return alg;
     }
 
     /**
      * возвращает коллекцию подписанных атрибутов
      */
-    signedAttributes(): SignerAttributeCollection;
+    public signedAttributes(): SignerAttributeCollection;
     /**
      * возвращает атрибут из коллекции по заданному индексу
      * @param index индекс элемента в коллекции
      */
-    signedAttributes(index: number): Attribute;
-    signedAttributes(index?: number): any {
-        //get collection
-        let attrs = new SignerAttributeCollection(this.handle.getSignedAttributes());
+    public signedAttributes(index: number): Attribute;
+    public signedAttributes(index?: number): any {
+        let attrs: SignerAttributeCollection = new SignerAttributeCollection(this.handle.getSignedAttributes());
 
         if (index === undefined) {
-            // return collection
-            return attrs
-        }
-        else {
-            // return item
+            return attrs;
+        } else {
             return attrs.items(index);
         }
     }
@@ -67,24 +62,19 @@ export class Signer extends object.BaseObject<native.CMS.Signer> {
     /**
      * возвращает коллекцию неподписанных подписанных атрибутов
      */
-    unsignedAttributes(): SignerAttributeCollection;
+    public unsignedAttributes(): SignerAttributeCollection;
     /**
      * возвращает атрибут из коллекции по заданному индексу
      * @param index индекс элемента в коллекции
      */
-    unsignedAttributes(index: number): Attribute;
-    unsignedAttributes(index?: number): any {
-        //get collection
-        let attrs = new SignerAttributeCollection(this.handle.getUnsignedAttributes());
+    public unsignedAttributes(index: number): Attribute;
+    public unsignedAttributes(index?: number): any {
+        let attrs: SignerAttributeCollection = new SignerAttributeCollection(this.handle.getUnsignedAttributes());
 
         if (index === undefined) {
-            // return collection
-            return attrs
-        }
-        else {
-            // return item
+            return attrs;
+        } else {
             return attrs.items(index);
         }
     }
-
 }
