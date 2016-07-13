@@ -319,6 +319,10 @@ export namespace PKISTORE {
         constructor();
     }
 
+    export declare class ProviderCryptopro extends Provider {
+        constructor();
+    }
+
     export declare class ProviderTSL extends Provider {
         constructor(url: string);
     }

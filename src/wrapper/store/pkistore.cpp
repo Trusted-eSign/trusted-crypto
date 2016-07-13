@@ -6,6 +6,9 @@
 #if defined(OPENSSL_SYS_WINDOWS)
 	#include "provider_microsoft.h"
 #endif
+#if defined(CPROCSP)
+	#include "provider_cryptopro.h"
+#endif
 
 PkiStore::PkiStore(Handle<std::string> json){
 	LOGGER_FN();
@@ -231,6 +234,11 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 			cert = ProviderMicrosoft::getCert(item->hash, item->category);
 		}
 #endif
+#if defined(CPROCSP)
+		else  if (strcmp(item->provider->c_str(), "CRYPTOPRO") == 0){
+			cert = ProviderCryptopro::getCert(item->hash, item->category);
+		}
+#endif
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
@@ -254,6 +262,11 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 #if defined(OPENSSL_SYS_WINDOWS)
 		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0){
 			crl = ProviderMicrosoft::getCRL(item->hash, item->category);
+		}
+#endif
+#if defined(CPROCSP)
+		else  if (strcmp(item->provider->c_str(), "CRYPTOPRO") == 0){
+			crl = ProviderCryptopro::getCRL(item->hash, item->category);
 		}
 #endif
 		else{

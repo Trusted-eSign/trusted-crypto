@@ -28,6 +28,9 @@
 #if defined(OPENSSL_SYS_WINDOWS)
 	#include "store/wmicrosoft.h"
 #endif
+#if defined(CPROCSP)
+	#include "store/wcryptopro.h"
+#endif
 #include "store/wcashjson.h"
 
 #include "cms/wsigned_data.h"
@@ -85,6 +88,9 @@ void init(v8::Handle<v8::Object> target) {
 	WProvider_System::Init(PkiStore);
 	#if defined(OPENSSL_SYS_WINDOWS)
 		WProviderMicrosoft::Init(PkiStore);
+	#endif
+	#if defined(CPROCSP)
+		WProviderCryptopro::Init(PkiStore);
 	#endif
 	WFilter::Init(PkiStore);
 	WPkiItem::Init(PkiStore);

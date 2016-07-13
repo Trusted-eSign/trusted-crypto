@@ -7,6 +7,7 @@ var trusted = require("../index.js");
 
 var DEFAULT_CERTSTORE_PATH = "test/CertStore";
 var DEFAULT_RESOURCES_PATH = "test/resources";
+var CPROCSP = 0;
 
 /**
 * Check file exists
@@ -29,7 +30,7 @@ before(function() {
 
 describe("Store", function() {
     var store;
-    var providerSystem, providerMicrosoft;
+    var providerSystem, providerMicrosoft, providerCryptopro;
     var certWithKey;
     var uri;
     var osType = os.type();
@@ -77,6 +78,10 @@ describe("Store", function() {
             providerMicrosoft = new trusted.pkistore.ProviderMicrosoft();
             assert.equal(providerMicrosoft !== null, true);
             store.addProvider(providerMicrosoft.handle);
+        } else if (CPROCSP) {
+            providerCryptopro = new trusted.pkistore.ProviderCryptopro();
+            assert.equal(providerCryptopro !== null, true);
+            store.addProvider(providerCryptopro.handle);
         }
     });
 

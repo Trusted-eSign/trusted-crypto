@@ -115,6 +115,10 @@
                         }
                     },
                     {
+                        "sources": [
+                            "src/node/store/wcryptopro.cpp",
+                            "src/wrapper/store/provider_cryptopro.cpp"
+                        ],
                         "conditions": [
                             [
                                 "target_arch=='x64'",

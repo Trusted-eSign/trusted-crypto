@@ -25,6 +25,7 @@ import * as signercollection from "./cms/signers";
 import * as store from "./pkistore/pkistore";
 import * as provider_system from "./pkistore/psystem";
 import * as provider_microsoft from "./pkistore/pmicrosoft";
+import * as provider_cryptopro from "./pkistore/pcryptopro";
 import * as cashjson from "./pkistore/cashjson";
 
 export let DataFormat = dataFormat.DataFormat;
@@ -60,5 +61,6 @@ export namespace pkistore {
     /* tslint:disable-next-line:variable-name */
     export let Provider_System = provider_system.Provider_System;
     export let ProviderMicrosoft = provider_microsoft.ProviderMicrosoft;
+    export let ProviderCryptopro = provider_cryptopro.ProviderCryptopro;
     export let CashJson = cashjson.CashJson;
 }

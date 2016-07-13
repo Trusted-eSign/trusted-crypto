@@ -49,7 +49,10 @@ Handle<PkiItemCollection> CashJson::exportJson(){
 		std::string listProviders[] = {
 			"SYSTEM",
 #if defined(OPENSSL_SYS_WINDOWS)
-			"MICROSOFT"
+			"MICROSOFT",
+#endif
+#if defined(CPROCSP)
+			"CRYPTOPRO"
 #endif
 		};
 
