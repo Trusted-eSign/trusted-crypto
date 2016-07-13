@@ -2,7 +2,7 @@
 
 ##Документация
 [Trusted API 0.1 (JS).pdf](https://github.com/TrustedPlus/trusted-crypto/raw/master/docs/TRUSTED%20API%200.1%20(JS).pdf )
- 
+
 
 ##Карта совместимости
 Версия NodeJS | Linux | MacOS | Windows |

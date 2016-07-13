@@ -25,7 +25,7 @@ export class Key extends object.BaseObject<native.PKI.Key> {
         return Key.wrap<native.PKI.Key, Key>(this.handle.generate(format, pubExp, keySize));
     }
 
-   public readPrivateKey(filename: string, format: DataFormat, password: string): Key {
+    public readPrivateKey(filename: string, format: DataFormat, password: string): Key {
         return Key.wrap<native.PKI.Key, Key>(this.handle.readPrivateKey(filename, format, password));
     }
 
@@ -37,11 +37,11 @@ export class Key extends object.BaseObject<native.PKI.Key> {
         return Key.wrap<native.PKI.Key, Key>(this.handle.readPublicKey(filename, format));
     }
 
-   public writePublicKey(filename: string, format: DataFormat): any {
+    public writePublicKey(filename: string, format: DataFormat): any {
         return this.handle.writePublicKey(filename, format);
     }
 
-   public compare(key: Key): number {
+    public compare(key: Key): number {
         let cmp: number = this.handle.compare(key.handle);
         if (cmp < 0) {
             return -1;
