@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 
 #include "openssl.h"
+#include "common.h"
 
 void OpenSSL::run()
 {
@@ -13,10 +14,13 @@ void OpenSSL::run()
 	ERR_load_crypto_strings();
 	LOGGER_OPENSSL(OpenSSL_add_all_algorithms);
 	OpenSSL_add_all_algorithms();
-    /*
+    
 	LOGGER_OPENSSL(ENGINE_load_builtin_engines);
 	ENGINE_load_builtin_engines();
-    */
+
+#ifndef OPENSSL_NO_CTGOSTCP
+	ENGINE_CTGOST_init();
+#endif
 }
 
 void OpenSSL::stop(){

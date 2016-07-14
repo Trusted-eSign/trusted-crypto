@@ -145,7 +145,7 @@
                             "/opt/cprocsp/include"
                         ],
 
-                        "defines": [ "UNIX", "CPROCSP" ],
+                        "defines": [ "UNIX", "CPROCSP", "OPENSSL_NO_CTGOSTCP" ],
 
                         "cflags_cc+": [ "-std=c++11" ]
                     }

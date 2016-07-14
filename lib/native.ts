@@ -317,10 +317,12 @@ export namespace PKISTORE {
 
     export declare class ProviderMicrosoft extends Provider {
         constructor();
+        public getKey(cert: PKI.Certificate): PKI.Key;
     }
 
     export declare class ProviderCryptopro extends Provider {
         constructor();
+        public getKey(cert: PKI.Certificate): PKI.Key;
     }
 
     export declare class ProviderTSL extends Provider {

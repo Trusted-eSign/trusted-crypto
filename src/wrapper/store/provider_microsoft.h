@@ -4,6 +4,13 @@
 
 #include <string.h>
 
+#ifndef OPENSSL_NO_CTGOSTCP
+	#include <openssl/opensslconf.h>
+	#include <openssl/crypto.h>
+	#include <openssl/ctgostcp.h>
+	#include <openssl/ctcrypto.h>
+#endif
+
 #include "pkistore.h"
 
 class ProviderMicrosoft : public Provider{
@@ -14,6 +21,7 @@ public:
 public:
 	Handle<Certificate> static getCert(Handle<std::string> hash, Handle<std::string> category);
 	Handle<CRL> static getCRL(Handle<std::string> hash, Handle<std::string> category);
+	Handle<Key> static getKey(Handle<Certificate> cert);
 
 private:
 	void init();

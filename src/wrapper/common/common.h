@@ -40,4 +40,7 @@ extern CTWRAPPER_API Logger logger;
 Handle<std::string> ASN1_TIME_toString(ASN1_TIME* time);
 std::string X509_NAME_oneline_ex(X509_NAME *a);
 
+CTWRAPPER_API ENGINE *ENGINE_CTGOST_init();
+CTWRAPPER_API ENGINE *ENGINE_CTGOST_get_ptr();
+
 #endif  //!CMS_COMMON_H_INCLUDED

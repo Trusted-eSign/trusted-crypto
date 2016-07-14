@@ -7,6 +7,9 @@
 #include "../utils/wrap.h"
 #include "../helper.h"
 
+#include "../pki/wcert.h"
+#include "../pki/wkey.h"
+
 WRAP_CLASS(ProviderMicrosoft){
 public:
 	WProviderMicrosoft(){};
@@ -14,6 +17,7 @@ public:
 
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
+	static NAN_METHOD(GetKey);
 };
 
 #endif //WMICROSOFT_H_INCLUDED

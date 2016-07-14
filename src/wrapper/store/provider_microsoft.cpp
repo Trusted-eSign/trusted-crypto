@@ -337,6 +337,57 @@ Handle<CRL> ProviderMicrosoft::getCRL(Handle<std::string> hash, Handle<std::stri
 	}
 }
 
+Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
+	LOGGER_FN();
+
+	try{
+#ifndef OPENSSL_NO_CTGOSTCP
+		EVP_PKEY_CTX *pctx = NULL;
+		EVP_PKEY *pkey = NULL;
+
+		ENGINE *e = ENGINE_by_id("ctgostcp");
+		if (e == NULL) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "CTGSOTCP is not loaded");
+		}			
+
+		LOGGER_OPENSSL(EVP_PKEY_CTX_new_id);
+		pctx = EVP_PKEY_CTX_new_id(NID_id_GostR3410_2001, e);
+
+		LOGGER_OPENSSL(EVP_PKEY_keygen_init);
+		if (EVP_PKEY_keygen_init(pctx) <= 0){
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "EVP_PKEY_keygen_init");
+		}
+
+		LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
+		if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_KEYSET, "all") <= 0){
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "EVP_PKEY_CTX_ctrl_str CTGOSTCP_PKEY_CTRL_STR_PARAM_KEYSET 'all'");
+		}
+
+		LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
+		if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_EXISTING, "true") <= 0){
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "EVP_PKEY_CTX_ctrl_str CTGOSTCP_PKEY_CTRL_STR_PARAM_EXISTING 'true'");
+		}
+
+		LOGGER_OPENSSL(CTGOSTCP_EVP_PKEY_CTX_init_key_by_cert);
+		if (CTGOSTCP_EVP_PKEY_CTX_init_key_by_cert(pctx, cert->internal()) <= 0){
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Can not init key context by certificate");
+		}
+
+		LOGGER_OPENSSL(EVP_PKEY_keygen);
+		if (EVP_PKEY_keygen(pctx, &pkey) <= 0){
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Can not init key by certificate");
+		}
+
+		return new Key(pkey);
+#else
+		THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Only with CTGSOTCP");
+#endif
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error get key");
+	}
+}
+
 int ProviderMicrosoft::char2int(char input) {
 	LOGGER_FN();
 
