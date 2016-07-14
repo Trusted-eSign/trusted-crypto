@@ -119,7 +119,7 @@
                             "<(node_root_dir)/deps/openssl/openssl/include"
                         ],
 
-                        "defines": [ "UNIX" ],
+                        "defines": [ "UNIX", "OPENSSL_NO_CTGOSTCP" ],
 
                         "cflags_cc+": [ "-std=c++11" ]
                     }
