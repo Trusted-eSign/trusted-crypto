@@ -340,8 +340,17 @@ Handle<CRL> ProviderCryptopro::getCRL(Handle<std::string> hash, Handle<std::stri
 Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 	LOGGER_FN();
 
+	EVP_PKEY_CTX *pctx = NULL;
+	EVP_PKEY *pkey = NULL;
+	EVP_MD_CTX *mctx = NULL;
+
 	try{
 #ifndef OPENSSL_NO_CTGOSTCP
+#define MAX_SIGNATURE_LEN 128
+
+		size_t len;
+		unsigned char buf[MAX_SIGNATURE_LEN];
+
 		EVP_PKEY_CTX *pctx = NULL;
 		EVP_PKEY *pkey = NULL;
 
@@ -373,9 +382,38 @@ Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Can not init key context by certificate");
 		}
 
+		LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
+		if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_EXISTING, "true") <= 0){
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Parameter 'existing' setting error");
+		}
+
 		LOGGER_OPENSSL(EVP_PKEY_keygen);
 		if (EVP_PKEY_keygen(pctx, &pkey) <= 0){
 			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Can not init key by certificate");
+		}
+
+		int md_type = 0;
+		const EVP_MD *md = NULL;
+
+		LOGGER_OPENSSL(EVP_PKEY_get_default_digest_nid);
+		if (EVP_PKEY_get_default_digest_nid(pkey, &md_type) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "default digest for key type not found");
+		}
+
+		LOGGER_OPENSSL(EVP_get_digestbynid);
+		md = EVP_get_digestbynid(md_type);
+
+		LOGGER_OPENSSL(EVP_MD_CTX_create);
+		if (!(mctx = EVP_MD_CTX_create())) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Error creating digest context");
+		}
+
+		len = sizeof(buf);
+		LOGGER_OPENSSL(EVP_DigestSignInit);
+		if (!EVP_DigestSignInit(mctx, NULL, md, e, pkey)
+			|| (EVP_DigestSignUpdate(mctx, "123", 3) <= 0)
+			|| !EVP_DigestSignFinal(mctx, buf, &len)) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Error testing private key (via signing data)");
 		}
 
 		return new Key(pkey);
@@ -386,6 +424,10 @@ Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error get key");
 	}
+
+	if (mctx) EVP_MD_CTX_destroy(mctx);
+	if (pkey) EVP_PKEY_free(pkey);
+	if (pctx) EVP_PKEY_CTX_free(pctx);
 }
 
 int ProviderCryptopro::char2int(char input) {

@@ -86,12 +86,12 @@ void ProviderMicrosoft::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 				BOOL * pfCallerFreeProv;
 				HCRYPTPROV m_hProv;
 
-				if (CryptAcquireCertificatePrivateKey(pCertContext, NULL, NULL, &m_hProv, pdwKeySpec, pfCallerFreeProv)){
-					item->certKey = new std::string("1");
-				}
+				//if (CryptAcquireCertificatePrivateKey(pCertContext, NULL, NULL, &m_hProv, pdwKeySpec, pfCallerFreeProv)){
+				//	item->certKey = new std::string("1");
+				//}
 
 				providerItemCollection->push(item);
-			}			
+			}
 		} while (pCertContext != NULL);
 
 		if (pCertContext){
@@ -340,10 +340,16 @@ Handle<CRL> ProviderMicrosoft::getCRL(Handle<std::string> hash, Handle<std::stri
 Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 	LOGGER_FN();
 
+	EVP_PKEY_CTX *pctx = NULL;
+	EVP_PKEY *pkey = NULL;
+	EVP_MD_CTX *mctx = NULL;
+
 	try{
 #ifndef OPENSSL_NO_CTGOSTCP
-		EVP_PKEY_CTX *pctx = NULL;
-		EVP_PKEY *pkey = NULL;
+#define MAX_SIGNATURE_LEN 128
+		
+		size_t len;
+		unsigned char buf[MAX_SIGNATURE_LEN];
 
 		ENGINE *e = ENGINE_by_id("ctgostcp");
 		if (e == NULL) {
@@ -373,9 +379,38 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Can not init key context by certificate");
 		}
 
+		LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
+		if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_EXISTING, "true") <= 0){
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Parameter 'existing' setting error");
+		}
+
 		LOGGER_OPENSSL(EVP_PKEY_keygen);
 		if (EVP_PKEY_keygen(pctx, &pkey) <= 0){
 			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Can not init key by certificate");
+		}
+
+		int md_type = 0;
+		const EVP_MD *md = NULL;
+
+		LOGGER_OPENSSL(EVP_PKEY_get_default_digest_nid);
+		if (EVP_PKEY_get_default_digest_nid(pkey, &md_type) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "default digest for key type not found");
+		}
+
+		LOGGER_OPENSSL(EVP_get_digestbynid);
+		md = EVP_get_digestbynid(md_type);
+
+		LOGGER_OPENSSL(EVP_MD_CTX_create);
+		if (!(mctx = EVP_MD_CTX_create())) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error creating digest context");
+		}
+
+		len = sizeof(buf);
+		LOGGER_OPENSSL(EVP_DigestSignInit);
+		if (!EVP_DigestSignInit(mctx, NULL, md, e, pkey)
+			|| (EVP_DigestSignUpdate(mctx, "123", 3) <= 0)
+			|| !EVP_DigestSignFinal(mctx, buf, &len)) {
+				THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error testing private key (via signing data)");
 		}
 
 		return new Key(pkey);
@@ -386,6 +421,10 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error get key");
 	}
+
+	if (mctx) EVP_MD_CTX_destroy(mctx);
+	if (pkey) EVP_PKEY_free(pkey);
+	if (pctx) EVP_PKEY_CTX_free(pctx);
 }
 
 int ProviderMicrosoft::char2int(char input) {
