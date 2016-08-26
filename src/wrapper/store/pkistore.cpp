@@ -483,7 +483,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 				if (pkey->type == EVP_PKEY_DSA)
 					BN_print(bioBN, pkey->pkey.dsa->pub_key);
 				else
-					#endif
+			#endif
 
 					LOGGER_OPENSSL(EVP_PKEY_free);
 			EVP_PKEY_free(pkey);
@@ -524,31 +524,40 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key
 		if (strcmp(provider->type->c_str(), "SYSTEM") == 0){
 			std::string uri = (std::string)provider->path->c_str() + CROSSPLATFORM_SLASH + "MY" + CROSSPLATFORM_SLASH;
 
-			RSA *rsa = NULL;
-			LOGGER_OPENSSL(EVP_PKEY_get1_RSA);
-			rsa = EVP_PKEY_get1_RSA(key->internal());
+			char * hexHash;
+			int contlen;
+			char * cont;
 
 			LOGGER_OPENSSL(BIO_new);
 			BIO * bioBN = BIO_new(BIO_s_mem());
-			BN_print(bioBN, rsa->n);
 
-			int contlen;
-			char * cont;
+#ifndef OPENSSL_NO_RSA
+			if (key->internal()->type == EVP_PKEY_RSA)
+				BN_print(bioBN, key->internal()->pkey.rsa->n);
+			else
+#endif
+#ifndef OPENSSL_NO_DSA
+			if (key->internal()->type == EVP_PKEY_DSA)
+				BN_print(bioBN, key->internal()->pkey.dsa->pub_key);
+			else
+#endif
+
 			LOGGER_OPENSSL(BIO_get_mem_data);
 			contlen = BIO_get_mem_data(bioBN, &cont);
 
-			char * hexHash;
 			unsigned char tmphash[SHA_DIGEST_LENGTH];
 			LOGGER_OPENSSL(SHA1);
 			SHA1((const unsigned char *)cont, contlen, tmphash);
 			bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
-									
-			uri = uri + std::string(hexHash) + ".key";
 
-			Handle<std::string> huri = new std::string(uri);
+			Handle<std::string> res = new std::string(reinterpret_cast<char*>(hexHash));
 
 			LOGGER_OPENSSL(BIO_free_all);
 			BIO_free_all(bioBN);
+
+			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".key";
+
+			Handle<std::string> huri = new std::string(uri);
 
 			Provider_System::addPkiObject(huri, key, password);
 			return huri;
