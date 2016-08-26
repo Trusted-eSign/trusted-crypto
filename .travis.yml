@@ -21,7 +21,7 @@ addons:
 
 before_install:
   - npm install -g typescript
-  - npm install -g tsd
+  - npm install -g typings
   - npm install -g mocha
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
       export CC="gcc-4.7";

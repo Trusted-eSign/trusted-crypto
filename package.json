@@ -15,7 +15,7 @@
     "lint": "./node_modules/.bin/eslint test",
     "lintTS": "./node_modules/.bin/tslint lib/**/*.ts",
     "build": "node-gyp build && tsc;",
-    "install": "tsd install && node-gyp configure && node-gyp build && tsc"
+    "install": "typings install && node-gyp configure && node-gyp build && tsc"
   },
   "keywords": [
     "crypto",
