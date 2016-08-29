@@ -10,6 +10,12 @@ export class Key extends object.BaseObject<native.PKI.Key> {
         return Key.wrap<native.PKI.Key, Key>(key.handle);
     }
 
+    public static readPublicKey(filename: string, format: DataFormat): Key {
+        let key: Key = new Key();
+        key.readPublicKey.apply(key, arguments);
+        return Key.wrap<native.PKI.Key, Key>(key.handle);
+    }
+
     constructor();
     constructor(handle: native.PKI.Key);
     constructor(param?: any) {
