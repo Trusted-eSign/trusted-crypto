@@ -370,6 +370,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 			EVP_PKEY *pkey;
 			LOGGER_OPENSSL(BIO_new);
 			BIO * bioBN = BIO_new(BIO_s_mem());
+			BIO * bioBN2 = BIO_new(BIO_s_mem());
 			LOGGER_OPENSSL(X509_get_pubkey);
 			pkey = X509_get_pubkey(cert->internal());
 			if (pkey == NULL) {
@@ -385,8 +386,53 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 				if (pkey->type == EVP_PKEY_DSA)
 					BN_print(bioBN, pkey->pkey.dsa->pub_key);
 				else
-			#endif
+#ifndef OPENSSL_NO_CTGOSTCP
+					if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001
+						|| pkey->type == NID_id_tc26_gost3410_12_256 || pkey->type == NID_id_tc26_gost3410_12_512)
+					{
+						EC_KEY *tkey;
+						const EC_POINT *pubkey = NULL;
+						LOGGER_OPENSSL(BN_CTX_new);
+						BN_CTX *ctx = BN_CTX_new();
+						if (!ctx) {
+							THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Allocating memory failed", NULL);
+						}
+						BIGNUM *X = NULL, *Y = NULL;
+						const EC_GROUP *group = NULL;
+						EC_POINT *pub_key;
 
+						LOGGER_OPENSSL(BN_CTX_start);
+						BN_CTX_start(ctx);
+						LOGGER_OPENSSL(BN_CTX_get);
+						X = BN_CTX_get(ctx);
+						LOGGER_OPENSSL(BN_CTX_get);
+						Y = BN_CTX_get(ctx);
+
+						tkey = pkey->pkey.ec;
+						LOGGER_OPENSSL(EC_KEY_get0_public_key);
+						pubkey = EC_KEY_get0_public_key(tkey);
+						LOGGER_OPENSSL(EC_KEY_get0_group);
+						group = EC_KEY_get0_group(tkey);
+						LOGGER_OPENSSL(EC_POINT_get_affine_coordinates_GFp);
+						if (!EC_POINT_get_affine_coordinates_GFp(group, pubkey, X, Y, ctx)) {
+							THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Key is absent(not set)", NULL); 
+						}
+						LOGGER_OPENSSL(BN_print);
+						BN_print(bioBN, X);
+						LOGGER_OPENSSL(BN_print);
+						BN_print(bioBN, Y);
+
+						LOGGER_OPENSSL(BN_CTX_end);
+						BN_CTX_end(ctx);
+					}
+					else{
+						THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
+					}
+#endif
+#ifdef OPENSSL_NO_CTGOSTCP
+			THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
+#endif
+#endif
 			LOGGER_OPENSSL(EVP_PKEY_free);
 			EVP_PKEY_free(pkey);
 			
@@ -485,7 +531,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 				else
 			#endif
 
-					LOGGER_OPENSSL(EVP_PKEY_free);
+			LOGGER_OPENSSL(EVP_PKEY_free);
 			EVP_PKEY_free(pkey);
 
 			int contlen;
@@ -521,7 +567,9 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key
 	LOGGER_FN();
 
 	try{
-		if (strcmp(provider->type->c_str(), "SYSTEM") == 0){
+		EVP_PKEY *pkey = key->internal();
+
+		if (strcmp(provider->type->c_str(), "SYSTEM") == 0) {
 			std::string uri = (std::string)provider->path->c_str() + CROSSPLATFORM_SLASH + "MY" + CROSSPLATFORM_SLASH;
 
 			char * hexHash;
@@ -532,35 +580,91 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key
 			BIO * bioBN = BIO_new(BIO_s_mem());
 
 #ifndef OPENSSL_NO_RSA
-			if (key->internal()->type == EVP_PKEY_RSA)
+			if (pkey->type == EVP_PKEY_RSA)
 				BN_print(bioBN, key->internal()->pkey.rsa->n);
 			else
 #endif
 #ifndef OPENSSL_NO_DSA
-			if (key->internal()->type == EVP_PKEY_DSA)
-				BN_print(bioBN, key->internal()->pkey.dsa->pub_key);
-			else
+				if (key->internal()->type == EVP_PKEY_DSA)
+					BN_print(bioBN, pkey->pkey.dsa->pub_key);
+				else
+#ifndef OPENSSL_NO_CTGOSTCP
+					if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001
+						|| pkey->type == NID_id_tc26_gost3410_12_256 || pkey->type == NID_id_tc26_gost3410_12_512)
+					{
+						Handle<Bio> pPub = new Bio(BIO_TYPE_MEM, "");
+
+						LOGGER_OPENSSL(PEM_write_bio_PUBKEY);
+						if (!PEM_write_bio_PUBKEY(pPub->internal(), pkey)){
+							THROW_OPENSSL_EXCEPTION(0, Key, NULL, "PEM_write_bio_PUBKEY 'Unable writes PUBKEY to BIO'");
+						}
+
+						EVP_PKEY *pubEvpPkey = PEM_read_bio_PUBKEY(pPub->internal(), NULL, 0, NULL);
+
+						EC_KEY *tkey;
+						const EC_POINT *pubkey = NULL;
+						LOGGER_OPENSSL(BN_CTX_new);
+						BN_CTX *ctx = BN_CTX_new();
+						if (!ctx) {
+							THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Allocating memory failed", NULL);
+						}
+						BIGNUM *X = NULL, *Y = NULL;
+						const EC_GROUP *group = NULL;
+						EC_POINT *pub_key;
+
+						LOGGER_OPENSSL(BN_CTX_start);
+						BN_CTX_start(ctx);
+						LOGGER_OPENSSL(BN_CTX_get);
+						X = BN_CTX_get(ctx);
+						LOGGER_OPENSSL(BN_CTX_get);
+						Y = BN_CTX_get(ctx);
+
+						tkey = pubEvpPkey->pkey.ec;
+						LOGGER_OPENSSL(EC_KEY_get0_public_key);
+						pubkey = EC_KEY_get0_public_key(tkey);
+						LOGGER_OPENSSL(EC_KEY_get0_group);
+						group = EC_KEY_get0_group(tkey);
+						LOGGER_OPENSSL(EC_POINT_get_affine_coordinates_GFp);
+						if (!EC_POINT_get_affine_coordinates_GFp(group, pubkey, X, Y, ctx)) {
+							THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Key is absent(not set)", NULL);
+						}
+						LOGGER_OPENSSL(BN_print);
+						BN_print(bioBN, X);
+						LOGGER_OPENSSL(BN_print);
+						BN_print(bioBN, Y);
+
+						LOGGER_OPENSSL(BN_CTX_end);
+						BN_CTX_end(ctx);
+					}
+					else {
+						THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
+					}
+
+					
 #endif
+#ifdef OPENSSL_NO_CTGOSTCP
+				THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
+#endif
+#endif
+				LOGGER_OPENSSL(BIO_get_mem_data);
+				contlen = BIO_get_mem_data(bioBN, &cont);
 
-			LOGGER_OPENSSL(BIO_get_mem_data);
-			contlen = BIO_get_mem_data(bioBN, &cont);
+				unsigned char tmphash[SHA_DIGEST_LENGTH];
+				LOGGER_OPENSSL(SHA1);
+				SHA1((const unsigned char *)cont, contlen, tmphash);
+				bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
 
-			unsigned char tmphash[SHA_DIGEST_LENGTH];
-			LOGGER_OPENSSL(SHA1);
-			SHA1((const unsigned char *)cont, contlen, tmphash);
-			bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+				Handle<std::string> res = new std::string(reinterpret_cast<char*>(hexHash));
 
-			Handle<std::string> res = new std::string(reinterpret_cast<char*>(hexHash));
+				LOGGER_OPENSSL(BIO_free_all);
+				BIO_free_all(bioBN);
 
-			LOGGER_OPENSSL(BIO_free_all);
-			BIO_free_all(bioBN);
+				uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".key";
 
-			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".key";
+				Handle<std::string> huri = new std::string(uri);
 
-			Handle<std::string> huri = new std::string(uri);
-
-			Provider_System::addPkiObject(huri, key, password);
-			return huri;
+				Provider_System::addPkiObject(huri, key, password);
+				return huri;
 		}
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
