@@ -15,7 +15,9 @@
     "lint": "./node_modules/.bin/eslint test",
     "lintTS": "./node_modules/.bin/tslint lib/**/*.ts",
     "build": "node-gyp build && tsc;",
-    "install": "typings install && node-gyp configure && node-gyp build && tsc"
+    "install": "typings install && node-gyp configure && node-gyp build && tsc",
+    "cover": "istanbul cover _mocha",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
   "keywords": [
     "crypto",
@@ -29,6 +31,8 @@
   },
   "devDependencies": {
     "mocha": "^2.5.3",
+    "istanbul": "^0.4.3",
+    "mocha-lcov-reporter": "^1.2.0",
     "nan": "^2.4.0",
     "eslint": "^3.0.1",
     "tslint": "^3.13.0",

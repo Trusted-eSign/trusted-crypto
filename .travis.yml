@@ -43,3 +43,5 @@ cache:
     - $HOME/.node-gyp
     - $HOME/.npm
     - node_modules
+after_success:
+- npm run coveralls
