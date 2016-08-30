@@ -1,5 +1,5 @@
 # trusted-crypto
-[![Build Status](https://travis-ci.org/TrustedPlus/trusted-crypto.svg?branch=master&style=flat)](https://travis-ci.org/TrustedPlus/trusted-crypto)
+[![Build Status](https://travis-ci.org/TrustedPlus/trusted-crypto.svg?branch=master&style=flat)](https://travis-ci.org/TrustedPlus/trusted-crypto) [![Coverage Status](https://coveralls.io/repos/github/TrustedPlus/trusted-crypto/badge.svg?branch=master)](https://coveralls.io/github/TrustedPlus/trusted-crypto?branch=master)
 
 Trusted crypto library
 
