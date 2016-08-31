@@ -89,9 +89,6 @@ void ProviderMicrosoft::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 				if (CryptAcquireCertificatePrivateKey(pCertContext, NULL, NULL, &m_hProv, pdwKeySpec, pfCallerFreeProv)){
 					item->certKey = new std::string("1");
 				}
-				else {
-					THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Error during CryptAcquireCertificatePrivateKey");
-				}
 
 				providerItemCollection->push(item);
 			}
