@@ -89,6 +89,9 @@ void ProviderCryptopro::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 				if (CryptAcquireCertificatePrivateKey(pCertContext, NULL, NULL, &m_hProv, pdwKeySpec, pfCallerFreeProv)){
 					item->certKey = new std::string("1");
 				}
+				else {
+					THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Error during CryptAcquireCertificatePrivateKey");
+				}
 
 				providerItemCollection->push(item);
 			}			
@@ -351,9 +354,6 @@ Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 		size_t len;
 		unsigned char buf[MAX_SIGNATURE_LEN];
 
-		EVP_PKEY_CTX *pctx = NULL;
-		EVP_PKEY *pkey = NULL;
-
 		ENGINE *e = ENGINE_by_id("ctgostcp");
 		if (e == NULL) {
 			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "CTGSOTCP is not loaded");
@@ -368,8 +368,8 @@ Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 		}
 
 	    LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
-		if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_KEYSET, "user") <= 0){
-			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "EVP_PKEY_CTX_ctrl_str CTGOSTCP_PKEY_CTRL_STR_PARAM_KEYSET 'user'");
+		if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_KEYSET, "all") <= 0){
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "EVP_PKEY_CTX_ctrl_str CTGOSTCP_PKEY_CTRL_STR_PARAM_KEYSET 'all'");
 		}
 
 	    LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);

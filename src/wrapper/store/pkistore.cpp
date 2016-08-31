@@ -370,7 +370,6 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 			EVP_PKEY *pkey;
 			LOGGER_OPENSSL(BIO_new);
 			BIO * bioBN = BIO_new(BIO_s_mem());
-			BIO * bioBN2 = BIO_new(BIO_s_mem());
 			LOGGER_OPENSSL(X509_get_pubkey);
 			pkey = X509_get_pubkey(cert->internal());
 			if (pkey == NULL) {
