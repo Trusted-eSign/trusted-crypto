@@ -34,7 +34,7 @@ describe("SignedData", function() {
         sd.policies = ["noAttributes", "noSignerCertificateVerify", "wrongPolicy"];
 
         signer = sd.createSigner(cert, key);
-        assert.equal(signer.digestAlgorithm.name, "sha1");
+        assert.equal(signer.digestAlgorithm.name, "sha256");
         assert.equal(sd.signers().length, 1);
 
         sd.content = {
@@ -70,7 +70,7 @@ describe("SignedData", function() {
         signers = cms.signers();
         for (var i = 0; i < signers.length; i++) {
             signer = cms.signers(i);
-            assert.equal(signer.digestAlgorithm.name, "sha1", "Wrong digest algorithm");
+            assert.equal(signer.digestAlgorithm.name, "sha256", "Wrong digest algorithm");
         }
     });
 });
