@@ -46,7 +46,7 @@ public:
 	static Handle<SignedData> sign(Handle<Certificate> cert, Handle<Key> pkey, Handle<CertificateCollection> certs, Handle<Bio> content, unsigned int flags); // Подписывает данные и формирует новый CMS пакет
 	void sign();
 
-	Handle<Signer> createSigner(Handle<Certificate> cert, Handle<Key> pkey, Handle<std::string> digestname);
+	Handle<Signer> createSigner(Handle<Certificate> cert, Handle<Key> pkey);
 
 protected:
 	Handle<Bio> content;

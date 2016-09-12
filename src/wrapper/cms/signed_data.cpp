@@ -162,12 +162,18 @@ void SignedData::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
 	}
 }
 
-Handle<Signer> SignedData::createSigner(Handle<Certificate> cert, Handle<Key> pkey, Handle<std::string> digestname){
+Handle<Signer> SignedData::createSigner(Handle<Certificate> cert, Handle<Key> pkey){
 	LOGGER_FN();
 
-	const EVP_MD* md = EVP_get_digestbyname(digestname->c_str());
-	if (!md){
-		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown digest name '%s'", digestname->c_str());
+	int def_nid;
+	LOGGER_OPENSSL("EVP_PKEY_get_default_digest_nid");
+	if (EVP_PKEY_get_default_digest_nid(pkey->internal(), &def_nid) <= 0) {
+		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown digest name");
+	}
+	LOGGER_OPENSSL("EVP_PKEY_get_default_digest_nid");
+	const EVP_MD *md = EVP_get_digestbynid(def_nid);
+	if (md == NULL) {
+		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "No default digest");
 	}
 
 	LOGGER_OPENSSL("CMS_add1_signer");

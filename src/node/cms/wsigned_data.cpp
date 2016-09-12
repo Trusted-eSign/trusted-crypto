@@ -230,11 +230,7 @@ NAN_METHOD(WSignedData::CreateSigner) {
 		LOGGER_ARG("privateKey");
 		WKey *wKey = Wrapper::Unwrap<WKey>(info[1]->ToObject());
 
-		LOGGER_ARG("digestName");
-		v8::String::Utf8Value v8DigestName(info[2]->ToString());
-		Handle<std::string> digestName = new std::string(*v8DigestName);
-
-		Handle<Signer> signer = _this->createSigner(wCert->data_, wKey->data_, digestName);
+		Handle<Signer> signer = _this->createSigner(wCert->data_, wKey->data_);
 
 		v8::Local<v8::Object> v8Signer = WSigner::NewInstance(signer);
 

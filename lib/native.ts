@@ -67,6 +67,7 @@ export namespace PKI {
         public getType(): number;
         public getKeyUsage(): number;
         public getSignatureAlgorithm(): string;
+        public getSignatureDigest(): string;
         public getOrganizationName(): string;
 
         public load(filename: string, dataFormat: DataFormat): void;
@@ -205,9 +206,9 @@ export namespace CMS {
         public getCertificates(): PKI.CertificateCollection;
         public getSigners(): SignerCollection;
         public isDetached(): boolean;
-        public createSigner(cert: PKI.Certificate, key: PKI.Key, digestNAme: string): Signer;
+        public createSigner(cert: PKI.Certificate, key: PKI.Key): Signer;
         public  addCertificate(cert: PKI.Certificate): void;
-        public verify(certs: PKI.CertificateCollection): boolean;
+        public verify(certs?: PKI.CertificateCollection): boolean;
         public sign(): void;
     }
 

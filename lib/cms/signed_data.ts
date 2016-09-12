@@ -235,10 +235,9 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
      * создает нового подписчика
      * @param cert Сертификат подписчика
      * @param key Закрытый ключ подписчика
-     * @param digestName имя хэш алгоритма
      */
-    public createSigner(cert: Certificate, key: Key, digestName: string): Signer {
-        let signer: any = this.handle.createSigner(cert.handle, key.handle, digestName);
+    public createSigner(cert: Certificate, key: Key): Signer {
+        let signer: any = this.handle.createSigner(cert.handle, key.handle);
         return new Signer(signer);
     }
 

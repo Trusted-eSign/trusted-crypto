@@ -31,9 +31,9 @@ describe("SignedData", function() {
         assert.equal(sd.signers().length, 0, "Init: signers != 0");
         assert.equal(sd.certificates().length, 0, "Init: certificates != 0");
 
-        sd.policies = ["noattributes", "noSignerCertificateVerify", "wrongPolicy"];
+        sd.policies = ["noAttributes", "noSignerCertificateVerify", "wrongPolicy"];
 
-        signer = sd.createSigner(cert, key, "sha1");
+        signer = sd.createSigner(cert, key);
         assert.equal(signer.digestAlgorithm.name, "sha1");
         assert.equal(sd.signers().length, 1);
 
@@ -51,8 +51,8 @@ describe("SignedData", function() {
 
         sd.save(DEFAULT_OUT_PATH + "/testsig.sig", trusted.DataFormat.PEM);
 
-        assert.equal(sd.export() !== null, true);
-        assert.equal(sd.verify() !== null, true);
+        assert.equal(sd.export() !== null, true, "sd.export()");
+        assert.equal(sd.verify() !== false, true, "Verify signature");
     });
 
     it("load", function() {
