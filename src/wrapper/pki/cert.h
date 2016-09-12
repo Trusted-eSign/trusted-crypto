@@ -31,6 +31,7 @@ public:
 	Handle<std::string> getSubjectName();
 	Handle<std::string> getThumbprint();
 	Handle<std::string> getSignatureAlgorithm();
+	Handle<std::string> getSignatureDigest();
 	Handle<std::string> getOrganizationName();
 	Handle<Key> getPublicKey();
 	int getType();

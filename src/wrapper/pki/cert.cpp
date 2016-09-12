@@ -223,11 +223,38 @@ Handle<std::string> Certificate::getSerialNumber()
 Handle<std::string> Certificate::getSignatureAlgorithm() {
 	LOGGER_FN();
 
-	LOGGER_OPENSSL(OBJ_obj2nid);
-	int sig_nid = OBJ_obj2nid((this->internal())->sig_alg->algorithm);
+	LOGGER_OPENSSL(X509_get_signature_nid);
+	int sig_nid = X509_get_signature_nid(this->internal());
+	if (!sig_nid){
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "Unknown signature nid");
+	}
 
 	LOGGER_OPENSSL(OBJ_nid2ln);
 	return new std::string(OBJ_nid2ln(sig_nid));
+}
+
+Handle<std::string> Certificate::getSignatureDigest() {
+	LOGGER_FN();
+
+	int signature_nid = 0, md_nid = 0;
+	const EVP_MD *type;
+
+	LOGGER_OPENSSL("X509_get_signature_nid");
+	signature_nid = X509_get_signature_nid(this->internal());
+	if (!signature_nid){
+		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown signature nid");
+	}
+
+	LOGGER_OPENSSL("OBJ_find_sigid_algs");
+	if (!OBJ_find_sigid_algs(signature_nid, &md_nid, NULL)) {
+		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Error find sigid algs");
+	}
+
+	if (!md_nid){
+		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown digest name");
+	}
+
+	return new std::string(OBJ_nid2sn(md_nid));
 }
 
 Handle<std::string> Certificate::getOrganizationName(){

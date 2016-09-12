@@ -126,6 +126,13 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
     }
 
     /**
+     * возвращает хэш алгоритм подписи
+     */
+    get signatureDigest(): string {
+        return this.handle.getSignatureDigest();
+    }
+
+    /**
      * возвращает название организации
      */
     get organizationName(): string {
