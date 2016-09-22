@@ -189,12 +189,13 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 				THROW_EXCEPTION(0, Cipher, NULL, "Error get first recipient certificate");
 			}
 
-#ifndef OPENSSL_NO_CTGOSTCP
 			LOGGER_OPENSSL(X509_get_pubkey);
 			pkey = X509_get_pubkey(firstRecipientCertificate);
 			if (pkey == NULL) {
 				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error get pubkey");
 			}
+
+#ifndef OPENSSL_NO_CTGOSTCP
 			if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001
 				|| pkey->type == NID_id_tc26_gost3410_12_256 || pkey->type == NID_id_tc26_gost3410_12_512)
 			{
