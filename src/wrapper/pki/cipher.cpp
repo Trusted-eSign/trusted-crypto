@@ -2,18 +2,15 @@
 
 #include "cipher.h"
 
-Cipher::Cipher(Handle<std::string> CipherAlgorithm){
+Cipher::Cipher(){
 	LOGGER_FN();
 
-	if (CipherAlgorithm.isEmpty()){
-		THROW_EXCEPTION(0, Cipher, NULL, "Cipher algorithm null");
-	}
-
 	try{
-		/*Cipher by name*/
+		/*Default cipher. In asymmetric mode will be overwrite for GOST*/
 		LOGGER_OPENSSL(EVP_get_cipherbyname);
-		if ((cipher = EVP_get_cipherbyname(CipherAlgorithm->c_str())) == NULL){
-			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_get_cipherbyname 'return NULL'");
+		cipher = EVP_get_cipherbyname(SN_des_ede3_cbc);
+		if (cipher == NULL) {
+			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error get cipher by name");
 		}
 
 		/*Default digest*/
@@ -94,6 +91,9 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 	LOGGER_FN();
 
 	try{
+		X509 *firstRecipientCertificate = NULL;
+		EVP_PKEY *pkey = NULL;
+
 		switch (hmethod){
 		//***************************************************************************************
 		// Symmetric encrypt
@@ -181,7 +181,35 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 		case CryptoMethod::ASSYMETRIC:
 			if (!encerts){
 				THROW_EXCEPTION(0, Cipher, NULL, "Recipients certs undefined");
-			}			
+			}
+
+			LOGGER_OPENSSL(sk_X509_value);
+			firstRecipientCertificate = sk_X509_value(encerts, 0);
+			if (!firstRecipientCertificate){
+				THROW_EXCEPTION(0, Cipher, NULL, "Error get first recipient certificate");
+			}
+
+#ifndef OPENSSL_NO_CTGOSTCP
+			LOGGER_OPENSSL(X509_get_pubkey);
+			pkey = X509_get_pubkey(firstRecipientCertificate);
+			if (pkey == NULL) {
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error get pubkey");
+			}
+			if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001
+				|| pkey->type == NID_id_tc26_gost3410_12_256 || pkey->type == NID_id_tc26_gost3410_12_512)
+			{
+				LOGGER_OPENSSL(EVP_get_cipherbyname);
+				cipher = EVP_get_cipherbyname(SN_id_Gost28147_89);
+			}
+#endif
+			if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001) {
+				LOGGER_OPENSSL(EVP_get_cipherbyname);
+				cipher = EVP_get_cipherbyname(SN_id_Gost28147_89);
+			}
+
+			if (cipher == NULL) {
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error get cipher by name");
+			}
 
 			flags |= CMS_BINARY; /*Don't translate message to text*/
 

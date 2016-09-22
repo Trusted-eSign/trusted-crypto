@@ -17,7 +17,7 @@ describe("CipherSYMMETRIC", function() {
             fs.mkdirSync(DEFAULT_OUT_PATH);
         }
 
-        cipher = new trusted.pki.Cipher("aes256");
+        cipher = new trusted.pki.Cipher();
         assert.equal(cipher !== null, true);
 
     });
@@ -41,7 +41,7 @@ describe("CipherASSYMETRIC", function() {
     var cipher;
 
     it("init", function() {
-        cipher = new trusted.pki.Cipher("aes256");
+        cipher = new trusted.pki.Cipher();
         assert.equal(cipher !== null, true);
     });
 

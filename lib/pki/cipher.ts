@@ -8,9 +8,9 @@ import {Certificate} from "./cert";
 
 export class Cipher extends object.BaseObject<native.PKI.Cipher> {
 
-    constructor(cipherName: string) {
+    constructor() {
         super();
-        this.handle = new native.PKI.Cipher(cipherName);
+        this.handle = new native.PKI.Cipher();
     }
 
     /**

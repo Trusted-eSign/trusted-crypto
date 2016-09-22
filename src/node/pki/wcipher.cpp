@@ -51,13 +51,8 @@ NAN_METHOD(WCipher::New){
 	METHOD_BEGIN();
 	try{		
 		WCipher *obj = new WCipher();
-			
-		LOGGER_ARG("cipher");
-		v8::String::Utf8Value v8Ciph(info[0]->ToString());
-		char *ciph = *v8Ciph;
-		std::string strCiph(ciph);
-		Handle<std::string> res = new std::string(strCiph);
-		obj->data_ = new Cipher(res);
+		
+		obj->data_ = new Cipher();
 		
 		obj->Wrap(info.This());
 		

@@ -48,7 +48,7 @@ static const char magic[] = "Salted__";
 class Cipher{
 
 public:
-	Cipher(Handle<std::string> CipherAlgorithm);
+	Cipher();
 
 	/*Symetric or assymetric(default)*/
 	void setCryptoMethod(CryptoMethod::Crypto_Method method);

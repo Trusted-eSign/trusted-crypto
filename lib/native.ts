@@ -149,7 +149,7 @@ export namespace PKI {
     }
 
     export declare class Cipher {
-        constructor(cipherName: string);
+        constructor();
         public setCryptoMethod(method: CryptoMethod): void;
         public encrypt(filenameSource: string, filenameEnc: string, format: DataFormat): void;
         public decrypt(filenameEnc: string, filenameDec: string, format: DataFormat): void;
