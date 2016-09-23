@@ -7,7 +7,7 @@
 
 #include "../common/common.h"
 
-class CTWRAPPER_API Certificate;
+class CTWRAPPER_API Pkcs12;
 
 #include "pki.h"
 #include "key.h"
