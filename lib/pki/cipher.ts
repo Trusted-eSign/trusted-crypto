@@ -5,6 +5,7 @@ import {CryptoMethod} from "../crypto_method";
 import {Key} from "./key";
 import {CertificateCollection} from "./certs";
 import {Certificate} from "./cert";
+import {CmsRecipientInfoCollection} from "../cms/recipientInfos";
 
 export class Cipher extends object.BaseObject<native.PKI.Cipher> {
 
@@ -93,5 +94,10 @@ export class Cipher extends object.BaseObject<native.PKI.Cipher> {
 
     get dgst(): String {
         return this.handle.getDigestAlgorithm();
+    }
+
+    public getRecipientInfos(filenameEnc: string, format: DataFormat): CmsRecipientInfoCollection {
+        return CmsRecipientInfoCollection.wrap<native.CMS.CmsRecipientInfoCollection, CmsRecipientInfoCollection>
+            (this.handle.getRecipientInfos(filenameEnc, format));
     }
 }

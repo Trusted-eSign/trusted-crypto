@@ -25,6 +25,7 @@ public:
 	static NAN_METHOD(AddRecipientsCerts);
 	static NAN_METHOD(SetPrivKey);
 	static NAN_METHOD(SetRecipientCert);
+	static NAN_METHOD(GetRecipientInfos);
 
 	static NAN_METHOD(SetDigest);
 	static NAN_METHOD(SetSalt);

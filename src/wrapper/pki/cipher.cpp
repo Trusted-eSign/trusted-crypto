@@ -398,6 +398,47 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 	}
 }
 
+Handle<CmsRecipientInfoCollection> Cipher::getRecipientInfos(Handle<Bio> inEnc, DataFormat::DATA_FORMAT format) {
+	LOGGER_FN();
+
+	try {
+		STACK_OF(CMS_RecipientInfo) *ris = NULL;
+
+		/* Parse message */
+		switch (format){
+		case DataFormat::DER:
+			LOGGER_OPENSSL(d2i_CMS_bio);
+			if ((cms = d2i_CMS_bio(inEnc->internal(), NULL)) == NULL) {
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "d2i_CMS_bio");
+			}
+			break;
+
+		case DataFormat::BASE64:
+			LOGGER_OPENSSL(PEM_read_bio_CMS);
+			if ((cms = PEM_read_bio_CMS(inEnc->internal(), NULL, NULL, NULL)) == NULL) {
+				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "PEM_read_bio_CMS");
+			}
+			break;
+
+		default:
+			THROW_EXCEPTION(0, Cipher, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
+		}
+
+		LOGGER_OPENSSL(CMS_get0_RecipientInfos);
+		ris = CMS_get0_RecipientInfos(cms);
+
+		if (!ris){
+			return new CmsRecipientInfoCollection();
+		}
+		else {
+			return new  CmsRecipientInfoCollection(ris);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Cipher, e, "Error get recipients");
+	}
+}
+
 void Cipher::setDigest(Handle<std::string> md){
 	LOGGER_FN();
 

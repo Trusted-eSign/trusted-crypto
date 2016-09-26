@@ -6,6 +6,7 @@
 #include "wcerts.h"
 #include "wcert.h"
 #include "wkey.h"
+#include "../cms/wcmsRecipientInfos.h"
 
 void WCipher::Init(v8::Handle<v8::Object> exports){
 	METHOD_BEGIN();
@@ -26,6 +27,7 @@ void WCipher::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "addRecipientsCerts", AddRecipientsCerts);
 	Nan::SetPrototypeMethod(tpl, "setPrivKey", SetPrivKey);
 	Nan::SetPrototypeMethod(tpl, "setRecipientCert", SetRecipientCert);
+	Nan::SetPrototypeMethod(tpl, "getRecipientInfos", GetRecipientInfos);
 
 	Nan::SetPrototypeMethod(tpl, "setDigest", SetDigest);
 	Nan::SetPrototypeMethod(tpl, "setSalt", SetSalt);
@@ -170,6 +172,31 @@ NAN_METHOD(WCipher::SetRecipientCert) {
 		_this->setRecipientCert(wCert->data_);
 
 		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCipher::GetRecipientInfos) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("filenameEnc");
+		v8::String::Utf8Value v8FilenameEnc(info[0]->ToString());
+		char *filenameEnc = *v8FilenameEnc;
+
+		LOGGER_ARG("format");
+		int format = info[1]->ToNumber()->Int32Value();
+
+		Handle<Bio> inEnc = NULL;
+
+		inEnc = new Bio(BIO_TYPE_FILE, filenameEnc, "rb");
+
+		UNWRAP_DATA(Cipher);
+
+		Handle<CmsRecipientInfoCollection> ris = _this->getRecipientInfos(inEnc, DataFormat::get(format));
+		v8::Local<v8::Object> v8Ris = WCmsRecipientInfoCollection::NewInstance(ris);
+		info.GetReturnValue().Set(v8Ris);
 		return;
 	}
 	TRY_END();

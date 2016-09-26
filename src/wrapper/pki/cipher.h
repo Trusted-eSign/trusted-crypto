@@ -14,6 +14,7 @@
 #include "certs.h"
 #include "cert.h"
 #include "key.h"
+#include "../cms/cmsRecipientInfos.h"
 
 #undef SIZE
 #undef BSIZE
@@ -72,6 +73,9 @@ public:
 
 	/*Set recipient certificate for decrypted*/
 	void setRecipientCert(Handle<Certificate> cert);
+
+	/*Get recipients*/
+	Handle<CmsRecipientInfoCollection> getRecipientInfos(Handle<Bio> inEnc, DataFormat::DATA_FORMAT format);
 
 //*********************************************************************
 // Functions for symetric method

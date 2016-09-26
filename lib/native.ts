@@ -120,7 +120,7 @@ export namespace PKI {
     }
 
     export declare class CrlCollection {
-        public  items(index: number): CRL;
+        public items(index: number): CRL;
         public length(): number;
         public push(crl: CRL): void;
         public pop(): void;
@@ -167,6 +167,7 @@ export namespace PKI {
         public getAlgorithm(): string;
         public getMode(): string;
         public getDigestAlgorithm(): string;
+        public getRecipientInfos(filenameEnc: string, format: DataFormat): CMS.CmsRecipientInfoCollection;
     }
 
     export declare class Chain {
@@ -207,7 +208,7 @@ export namespace CMS {
         public getSigners(): SignerCollection;
         public isDetached(): boolean;
         public createSigner(cert: PKI.Certificate, key: PKI.Key): Signer;
-        public  addCertificate(cert: PKI.Certificate): void;
+        public addCertificate(cert: PKI.Certificate): void;
         public verify(certs?: PKI.CertificateCollection): boolean;
         public sign(): void;
     }
@@ -232,6 +233,20 @@ export namespace CMS {
         public push(attr: PKI.Attribute): void;
         public removeAt(index: number): void;
         public items(index: number): PKI.Attribute;
+    }
+
+    export declare class CmsRecipientInfo {
+        public getIssuerName(): string;
+        public getSerialNumber(): Buffer;
+        public ktriCertCmp(cert: PKI.Certificate): number;
+    }
+
+    export declare class CmsRecipientInfoCollection {
+        public length(): number;
+        public push(ri: CmsRecipientInfo): void;
+        public removeAt(index: number): void;
+        public pop(): void;
+        public items(index: number): CmsRecipientInfo;
     }
 
 }
