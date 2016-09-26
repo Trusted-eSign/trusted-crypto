@@ -31,6 +31,8 @@
                 "src/node/cms/wsigner.cpp",
                 "src/node/cms/wsigners.cpp",
                 "src/node/cms/wsigner_attrs.cpp",
+                "src/node/cms/wcmsRecipientInfo.cpp",
+                "src/node/cms/wcmsRecipientInfos.cpp",
                 "src/wrapper/stdafx.cpp",
                 "src/wrapper/common/bio.cpp",
                 "src/wrapper/common/common.cpp",
@@ -65,6 +67,8 @@
                 "src/wrapper/cms/signers.cpp",
                 "src/wrapper/cms/signer_attrs.cpp",
                 "src/wrapper/cms/signed_data.cpp",
+                "src/wrapper/cms/cmsRecipientInfo.cpp",
+                "src/wrapper/cms/cmsRecipientInfos.cpp",
                 "src/jsoncpp/jsoncpp.cpp"
             ],
             "xcode_settings": {
