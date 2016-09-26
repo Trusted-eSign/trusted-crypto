@@ -33,14 +33,10 @@ Handle<std::string> CmsRecipientInfo::getIssuerName() {
 			THROW_EXCEPTION(0, CmsRecipientInfo, NULL, "X509_NAME is NULL");
 		}
 
-		LOGGER_OPENSSL(X509_NAME_oneline);
-		char *str_name = X509_NAME_oneline(issuer, NULL, 0);
-		if (!str_name) {
-			THROW_EXCEPTION(0, CmsRecipientInfo, NULL, "X509_NAME_oneline");
-		}
+		LOGGER_OPENSSL(X509_NAME_oneline_ex);
+		std::string str_name = X509_NAME_oneline_ex(issuer);
 
-		Handle<std::string> res = new std::string(str_name);
-		OPENSSL_free(str_name);
+		Handle<std::string> res = new std::string(str_name.c_str(), str_name.length());
 
 		return res;
 	}
