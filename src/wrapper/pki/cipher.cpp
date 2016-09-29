@@ -386,6 +386,11 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "CMS_decrypt 'Error decrypt cms'");
 			}
 
+			LOGGER_OPENSSL(BIO_flush);
+			if (!BIO_flush(outDec->internal())){
+				THROW_EXCEPTION(0, Cipher, NULL, "bad decrypt");
+			}
+
 			break;
 		default:
 			THROW_EXCEPTION(0, Cipher, NULL, "Unknown crypto method");
