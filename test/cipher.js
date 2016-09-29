@@ -35,6 +35,11 @@ describe("CipherSYMMETRIC", function() {
 
     it("decrypt", function() {
         cipher.decrypt(DEFAULT_OUT_PATH + "/encSym.txt", DEFAULT_OUT_PATH + "/decSym.txt");
+
+        var res = fs.readFileSync(DEFAULT_RESOURCES_PATH + "/test.txt");
+        var out = fs.readFileSync(DEFAULT_OUT_PATH + "/decSym.txt");
+
+        assert.equal(res.toString() === out.toString(), true, "Resource and decrypt file diff");
     });
 });
 
@@ -155,5 +160,10 @@ describe("CipherASSYMETRIC", function() {
         cipher.privKey = store.getItem(key);
 
         cipher.decrypt(DEFAULT_OUT_PATH + "/encAssym.txt", DEFAULT_OUT_PATH + "/decAssym.txt", trusted.DataFormat.PEM);
+
+        var res = fs.readFileSync(DEFAULT_RESOURCES_PATH + "/test.txt");
+        var out = fs.readFileSync(DEFAULT_OUT_PATH + "/decAssym.txt");
+
+        assert.equal(res.toString() === out.toString(), true, "Resource and decrypt file diff");
     });
 });
