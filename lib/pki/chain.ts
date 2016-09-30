@@ -23,6 +23,10 @@ export class Chain extends object.BaseObject<native.PKI.Chain> {
     }
 
     public verifyChain(chain: CertificateCollection, crls: CrlCollection): boolean {
-        return this.handle.verifyChain(chain.handle, crls.handle);
+        let crlsD: CrlCollection  = crls;
+        if (!crls) {
+            crlsD = new CrlCollection();
+        }
+        return this.handle.verifyChain(chain.handle, crlsD.handle);
     }
 }

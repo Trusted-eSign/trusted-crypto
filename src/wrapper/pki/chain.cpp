@@ -57,18 +57,18 @@ bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollectio
 			X509_STORE_add_cert(st, X509_dup(chain->items(i)->internal()));
 		}
 
-		X509_CRL *xtempCRL = NULL;
-
 		LOGGER_OPENSSL(X509_STORE_CTX_init);
 		X509_STORE_CTX_init(ctx, st, chain->items(0)->internal(), chain->internal());
 
-		LOGGER_OPENSSL(X509_STORE_CTX_set0_crls);
-		X509_STORE_CTX_set0_crls(ctx, crls->internal());
+		if (crls->length()) {
+			LOGGER_OPENSSL(X509_STORE_CTX_set0_crls);
+			X509_STORE_CTX_set0_crls(ctx, crls->internal());
 
-		LOGGER_OPENSSL(X509_STORE_CTX_set_flags);
-		X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CRL_CHECK);
-		LOGGER_OPENSSL(X509_STORE_CTX_set_flags);
-		X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CRL_CHECK_ALL);
+			LOGGER_OPENSSL(X509_STORE_CTX_set_flags);
+			X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CRL_CHECK);
+			LOGGER_OPENSSL(X509_STORE_CTX_set_flags);
+			X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CRL_CHECK_ALL);
+		}
 
 		LOGGER_OPENSSL(X509_verify_cert);
 		if (X509_verify_cert(ctx) <= 0){
