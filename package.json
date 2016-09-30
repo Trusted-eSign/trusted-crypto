@@ -17,7 +17,7 @@
     "build": "node-gyp build && tsc;",
     "install": "typings install && node-gyp configure && node-gyp build && tsc",
     "cover": "istanbul cover _mocha",
-    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
+    "coveralls": "npm run cover -- --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "keywords": [
     "crypto",
