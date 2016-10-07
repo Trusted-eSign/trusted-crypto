@@ -3,7 +3,7 @@
   "globalDependencies": {
     "async": "registry:dt/async#2.0.1+20160804113311",
     "form-data": "registry:dt/form-data#0.0.0+20160724024111",
-    "node": "registry:dt/node#6.0.0+20160925070332",
+    "node": "registry:dt/node#6.0.0+20161006230116",
     "request": "registry:dt/request#0.0.0+20160726020908"
   }
 }
