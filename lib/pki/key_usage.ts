@@ -1,5 +1,8 @@
 /**
- * Предназначение (применимость) ключа
+ * Key usage flags
+ *
+ * @export
+ * @enum {number}
  */
 export enum KeyUsageFlags {
     DigitalSignature = 0x0080,

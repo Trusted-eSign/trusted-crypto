@@ -5,14 +5,23 @@ import {DataFormat} from "../data_format";
 const DEFAULT_DATA_FORMAT: DataFormat  = DataFormat.DER;
 
 /**
- * Представление `X509` сертификата
+ * Wrap X509
+ *
+ * @export
+ * @class Certificate
+ * @extends {object.BaseObject<native.PKI.Certificate>}
  */
 export class Certificate extends object.BaseObject<native.PKI.Certificate> {
-     /**
-      * чтение сертификата из файла
-      * @param filename Путь к файлу
-      * @param format Формат данных. Опционально. По умолчанию DER
-      */
+    /**
+     * Load certificate from file
+     *
+     * @static
+     * @param {string} filename File location
+     * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+     * @returns {Certificate}
+     *
+     * @memberOf Certificate
+     */
     public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
         let cert: Certificate = new Certificate();
         cert.handle.load(filename, format);
@@ -20,9 +29,14 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
     }
 
     /**
-     * чтение сертификата из памяти
-     * @param buffer Буфер памяти
-     * @param format Формат данных. Опционально. По умолчанию DER
+     * Load certificate from memory
+     *
+     * @static
+     * @param {Buffer} buffer
+     * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+     * @returns {Certificate}
+     *
+     * @memberOf Certificate
      */
     public static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
         let cert: Certificate = new Certificate();
@@ -30,8 +44,30 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
         return cert;
     }
 
+    /**
+     * Creates an instance of Certificate.
+     *
+     *
+     * @memberOf Certificate
+     */
     constructor();
+
+    /**
+     * Creates an instance of Certificate.
+     *
+     * @param {native.PKI.Certificate} handle
+     *
+     * @memberOf Certificate
+     */
     constructor(handle: native.PKI.Certificate);
+
+    /**
+     * Creates an instance of Certificate.
+     *
+     * @param {*} [param]
+     *
+     * @memberOf Certificate
+     */
     constructor(param?: any) {
         super();
         if (param instanceof native.PKI.Certificate) {
@@ -42,106 +78,166 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
     }
 
     /**
-     * возвращает версию сертификата
+     * Return version of certificate
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf Certificate
      */
     get version(): number {
         return this.handle.getVersion();
     }
 
     /**
-     * возвращает серийный номер сертификата
+     * Return serial number of certificate
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get serialNumber(): string {
         return this.handle.getSerialNumber().toString();
     }
 
     /**
-     * возвращает тип сертификата
+     * Return type of certificate
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf Certificate
      */
     get type(): number {
         return this.handle.getType();
     }
 
     /**
-     * возвращает набор флагов KeyUsageFlags, задающих назначение ключа сертификата
+     * Return KeyUsageFlags collection
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf Certificate
      */
     get keyUsage(): number {
         return this.handle.getKeyUsage();
     }
 
     /**
-     * возвращает пользовательское имя издателя сертификата
+     * Return CN from issuer name
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get issuerFriendlyName(): string {
         return this.handle.getIssuerFriendlyName();
     }
 
     /**
-     * возвращает полное имя издателя сертификата
+     * Return issuer name
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get issuerName(): string {
         return this.handle.getIssuerName();
     }
 
     /**
-     * возвращает пользовательское имя владельца сертификата
+     * Return CN from subject name
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get subjectFriendlyName(): string {
         return this.handle.getSubjectFriendlyName();
     }
 
     /**
-     * возвращает полное имя владельца сертификата
+     * Return subject name
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get subjectName(): string {
         return this.handle.getSubjectName();
     }
 
     /**
-     * возвращает время с которого сертификат считается действительным
+     * Return Not Before date
+     *
+     * @readonly
+     * @type {Date}
+     * @memberOf Certificate
      */
     get notBefore(): Date {
         return new Date(this.handle.getNotBefore());
     }
 
     /**
-     * возвращает время до которого сертификат считается действительным
+     * Return Not After date
+     *
+     * @readonly
+     * @type {Date}
+     * @memberOf Certificate
      */
     get notAfter(): Date {
         return new Date(this.handle.getNotAfter());
     }
 
     /**
-     * возвращает отпечаток сертификата SHA-1
+     * Return SHA-1 thumbprint
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get thumbprint(): string {
         return this.handle.getThumbprint().toString("hex");
     }
 
     /**
-     * возвращает алгоритм подписи
+     * Return signature algorithm
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get signatureAlgorithm(): string {
         return this.handle.getSignatureAlgorithm();
     }
 
     /**
-     * возвращает хэш алгоритм подписи
+     * Return signature digest algorithm
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get signatureDigest(): string {
         return this.handle.getSignatureDigest();
     }
 
     /**
-     * возвращает название организации
+     * Return organization name
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Certificate
      */
     get organizationName(): string {
         return this.handle.getOrganizationName();
     }
 
     /**
-     * сравнение сертификатов
-     * @param cert Сертификат для сравнения
+     * Compare certificates
+     *
+     * @param {Certificate} cert Certificate for compare
+     * @returns {number}
+     *
+     * @memberOf Certificate
      */
     public compare(cert: Certificate): number {
         let cmp: any = this.handle.compare(cert.handle);
@@ -156,23 +252,35 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
     }
 
     /**
-     * сравнение сертификатов
-     * @param cert Сертификат для сравнения
+     * Compare certificates
+     *
+     * @param {Certificate} cert Certificate for compare
+     * @returns {boolean}
+     *
+     * @memberOf Certificate
      */
     public equals(cert: Certificate): boolean {
         return this.handle.equals(cert.handle);
     }
 
     /**
-     * вычисление значения хэша сертификата
-     * @param algorithm Имя хэш алгоритма. Опционально. По умолчанию sha1
+     * Return certificate hash
+     *
+     * @param {string} [algorithm="sha1"]
+     * @returns {String}
+     *
+     * @memberOf Certificate
      */
     public hash(algorithm: string = "sha1"): String {
         return this.handle.hash(algorithm).toString("hex");
     }
 
     /**
-     * Создает копию сертификата
+     * Return certificate duplicat
+     *
+     * @returns {Certificate}
+     *
+     * @memberOf Certificate
      */
     public duplicate(): Certificate {
         let cert: Certificate = new Certificate();
@@ -181,35 +289,48 @@ export class Certificate extends object.BaseObject<native.PKI.Certificate> {
     }
 
     /**
-     * чтение сертификата из файла
-     * @param filename Путь к файлу
-     * @param format Формат данных. Опционально. По умолчанию DER
+     * Load certificate from file location
+     *
+     * @param {string} filename File location
+     * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
+     *
+     * @memberOf Certificate
      */
     public load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.load(filename, format);
     }
 
     /**
-     * чтение сертификата из памяти
-     * @param buffer Буфер памяти
-     * @param format Формат данных. Опционально. По умолчанию DER
+     * Load certificate from memory
+     *
+     * @param {Buffer} buffer
+     * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
+     *
+     * @memberOf Certificate
      */
     public import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.import(buffer, format);
     }
 
     /**
-     * сохранение сертификата в память
-     * @param format Формат данных. Опционально. По умолчанию DER
+     * Save certificate to memory
+     *
+     * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
+     * @returns {Buffer}
+     *
+     * @memberOf Certificate
      */
     public export(format: DataFormat = DEFAULT_DATA_FORMAT): Buffer {
         return this.handle.export(format);
     }
 
     /**
-     * сохранение сертификата в файл
-     * @param filename Путь к файлу
-     * @param format Формат данных. Опционально. По умолчанию DER
+     * Write certificate to file
+     *
+     * @param {string} filename File location
+     * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+     *
+     * @memberOf Certificate
      */
     public save(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
         this.handle.save(filename, format);

@@ -2,12 +2,39 @@ import * as native from "../native";
 import * as object from "../object";
 
 /**
- * Представление идентификатора объектов ASN1_OBJECT_IDENTIFIER
+ * Wrap ASN1_OBJECT
+ *
+ * @export
+ * @class Oid
+ * @extends {object.BaseObject<native.PKI.OID>}
  */
 export class Oid extends object.BaseObject<native.PKI.OID> {
 
+    /**
+     * Creates an instance of Oid.
+     *
+     * @param {native.PKI.OID} handle
+     *
+     * @memberOf Oid
+     */
     constructor(handle: native.PKI.OID);
+
+    /**
+     * Creates an instance of Oid.
+     *
+     * @param {string} oid
+     *
+     * @memberOf Oid
+     */
     constructor(oid: string);
+
+    /**
+     * Creates an instance of Oid.
+     *
+     * @param {*} param
+     *
+     * @memberOf Oid
+     */
     constructor(param: any) {
         super();
         if (typeof (param) === "string") {
@@ -20,21 +47,33 @@ export class Oid extends object.BaseObject<native.PKI.OID> {
     }
 
     /**
-     * возвращает текстовое значение идентификатора
+     * Return text value for OID
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Oid
      */
     get value(): string {
         return this.handle.getValue();
     }
 
     /**
-     * возвращает полное имя идентификатора
+     * Return OID long name
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Oid
      */
     get longName(): string {
         return this.handle.getLongName();
     }
 
     /**
-     * возвращает короткое имя идентификатора
+     * Return OID short name
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Oid
      */
     get shortName(): string {
         return this.handle.getShortName();

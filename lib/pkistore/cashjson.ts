@@ -2,16 +2,44 @@ import * as native from "../native";
 import * as object from "../object";
 import {PkiItem} from "./pkistore";
 
+/**
+ * Work with json files
+ *
+ * @export
+ * @class CashJson
+ * @extends {object.BaseObject<native.PKISTORE.CashJson>}
+ */
 export class CashJson extends object.BaseObject<native.PKISTORE.CashJson> {
+    /**
+     * Creates an instance of CashJson.
+     *
+     * @param {string} fileName File path
+     *
+     * @memberOf CashJson
+     */
     constructor(fileName: string) {
         super();
         this.handle = new native.PKISTORE.CashJson(fileName);
     }
 
+    /**
+     * Return PkiItems from json
+     *
+     * @returns {native.PKISTORE.IPkiItem[]}
+     *
+     * @memberOf CashJson
+     */
     public export(): native.PKISTORE.IPkiItem[] {
         return this.handle.export();
     }
 
+    /**
+     * Import PkiItems to json
+     *
+     * @param {native.PKISTORE.IPkiItem[]} items
+     *
+     * @memberOf CashJson
+     */
     public import(items: native.PKISTORE.IPkiItem[]): void {
         for (let i: number = 0; i < items.length; i++) {
             let pkiItem: PkiItem = new PkiItem();

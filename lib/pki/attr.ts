@@ -4,11 +4,30 @@ import {Oid} from "./oid";
 import {AttributeValueCollection} from "./attr_vals";
 
 /**
- * Представление X509_ATTR
+ * Wrap X509_ATTRIBUTE
+ *
+ * @export
+ * @class Attribute
+ * @extends {object.BaseObject<native.PKI.Attribute>}
  */
 export class Attribute extends object.BaseObject<native.PKI.Attribute> {
 
+    /**
+     * Creates an instance of Attribute.
+     *
+     * @param {native.PKI.Attribute} handle
+     *
+     * @memberOf Attribute
+     */
     constructor(handle: native.PKI.Attribute);
+
+    /**
+     * Creates an instance of Attribute.
+     *
+     * @param {*} [param]
+     *
+     * @memberOf Attribute
+     */
     constructor(param?: any) {
         super();
         if (param instanceof native.PKI.Attribute) {
@@ -19,37 +38,53 @@ export class Attribute extends object.BaseObject<native.PKI.Attribute> {
     }
 
     /**
-     * Возвращает ASN1 тип атрибута
+     * Return ASN1 type of attribute
+     *
+     * @type {number}
+     * @memberOf Attribute
      */
     get asnType(): number {
         return this.handle.getAsnType();
     }
 
     /**
-     * Задает ASN1 тип атрибута
-     * @param value ASN1 тип
+     * Set ASN1 type
+     *
+     * @param {number} value ASN1 type
+     *
+     * @memberOf Attribute
      */
     set asnType(value: number) {
         this.handle.setAsnType(value);
     }
 
     /**
-     * возвращает идентификатор атрибута
+     * Return attribute OID
+     *
+     * @type {Oid}
+     * @memberOf Attribute
      */
     get typeId(): Oid {
         return new Oid(this.handle.getTypeId());
     }
 
     /**
-     * задает идентификатор атрибута
-     * @param oid идентификатор
+     * Set attribute OID
+     *
+     * @param {Oid} oid
+     *
+     * @memberOf Attribute
      */
     set typeId(oid: Oid) {
         this.handle.setTypeId(oid.handle);
     }
 
     /**
-     * возвращает копию атрибута
+     * Return attribute duplicat
+     *
+     * @returns {Attribute}
+     *
+     * @memberOf Attribute
      */
     public dupicate(): Attribute {
         let nattr: any = this.handle.duplicate();
@@ -59,18 +94,43 @@ export class Attribute extends object.BaseObject<native.PKI.Attribute> {
     }
 
     /**
-     * возвращает атрибут в DER кодировке
+     * Return attribute in DER
+     *
+     * @returns {*}
+     *
+     * @memberOf Attribute
      */
     public export(): any {
         return this.handle.export();
     }
 
     /**
-     * возвращает коллекцию значений атрибута. Значения представляются в DER формате
-     * @param index индекс элемента в коллекции
+     * Return attribute by index
+     *
+     * @param {number} index
+     * @returns {Buffer}
+     *
+     * @memberOf Attribute
      */
     public values(index: number): Buffer;
+
+    /**
+     * Return attributes collection
+     *
+     * @returns {AttributeValueCollection}
+     *
+     * @memberOf Attribute
+     */
     public values(): AttributeValueCollection;
+
+    /**
+     * Return attributes collection or attribute by index (if request)
+     *
+     * @param {number} [index]
+     * @returns {*}
+     *
+     * @memberOf Attribute
+     */
     public values(index?: number): any {
         let vals: any = this.handle.values();
         let attrVals: AttributeValueCollection =

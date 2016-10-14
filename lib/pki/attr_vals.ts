@@ -3,11 +3,23 @@ import * as object from "../object";
 import * as Collection from "../core/collection";
 
 /**
- * Представляет коллекцию значений атрибута X509_ATTR
+ * Collection of Attribute
+ *
+ * @export
+ * @class AttributeValueCollection
+ * @extends {object.BaseObject<native.PKI.AttributeValueCollection>}
+ * @implements {Collection.ICollectionWrite}
  */
 export class AttributeValueCollection extends object.BaseObject<native.PKI.AttributeValueCollection>
  implements Collection.ICollectionWrite {
 
+    /**
+     * Creates an instance of AttributeValueCollection.
+     *
+     * @param {native.PKI.AttributeValueCollection} handle
+     *
+     * @memberOf AttributeValueCollection
+     */
     constructor(handle: native.PKI.AttributeValueCollection) {
         super();
 
@@ -15,38 +27,55 @@ export class AttributeValueCollection extends object.BaseObject<native.PKI.Attri
     }
 
     /**
-     * возвращает количество элементов в коллекции
+     * Return collection length
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf AttributeValueCollection
      */
     get length(): number {
         return this.handle.length();
     }
 
     /**
-     * добавляет новый элемент в коллекцию
-     * @param val новое значение коллекции
+     * Add new element to collection
+     *
+     * @param {Buffer} val
+     *
+     * @memberOf AttributeValueCollection
      */
     public push(val: Buffer): void {
         this.handle.push(val);
     }
 
     /**
-     * удаляет последний элемент из коллекции
+     * Remove last element from collection
+     *
+     *
+     * @memberOf AttributeValueCollection
      */
     public pop(): void {
         this.handle.pop();
     }
 
     /**
-     * удаляет элемент коллекции по заданному индексу
-     * @param index индекс элемента в коллекции
+     * Remove element by index from collection
+     *
+     * @param {number} index
+     *
+     * @memberOf AttributeValueCollection
      */
     public removeAt(index: number): void {
         this.handle.removeAt(index);
     }
 
     /**
-     * возвращает элемент из коллекции по заданному индексу
-     * @param index индекс элемента в коллекции
+     * Return element by index from collection
+     *
+     * @param {number} index
+     * @returns {Buffer}
+     *
+     * @memberOf AttributeValueCollection
      */
     public items(index: number): Buffer {
         return this.handle.items(index);

@@ -56,7 +56,7 @@ export interface IFilter {
     type?: string[];
     /**
      * Provider
-     * SYSTEM, MICROSOFT, CRYPTOPRO, TSL, PKCS11, TRUSTEDNET 
+     * SYSTEM, MICROSOFT, CRYPTOPRO, TSL, PKCS11, TRUSTEDNET
      */
     provider?: string[];
     /**
@@ -81,7 +81,7 @@ export declare abstract class Provider {
     items: IPkiItem[];
 
     /**
-     * Возвращает коллекцию элементов по заданным критериям 
+     * Возвращает коллекцию элементов по заданным критериям
      */
     find(filter: IFilter): IPkiItem[];
     toJSON();

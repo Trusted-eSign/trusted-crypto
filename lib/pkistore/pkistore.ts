@@ -7,6 +7,14 @@ import {CertificationRequest} from "../pki/certReg";
 import {Key} from "../pki/key";
 import {CashJson} from "./cashjson";
 
+/**
+ * Filter for search objects
+ *
+ * @export
+ * @class Filter
+ * @extends {object.BaseObject<native.PKISTORE.Filter>}
+ * @implements {native.PKISTORE.IFilter}
+ */
 export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements native.PKISTORE.IFilter {
     constructor() {
         super();
@@ -50,7 +58,21 @@ export class Filter extends object.BaseObject<native.PKISTORE.Filter> implements
     }
 }
 
+/**
+ * Wrap pki objects (certificate, key, crl, csr)
+ *
+ * @export
+ * @class PkiItem
+ * @extends {object.BaseObject<native.PKISTORE.PkiItem>}
+ * @implements {native.PKISTORE.IPkiItem}
+ */
 export class PkiItem extends object.BaseObject<native.PKISTORE.PkiItem> implements native.PKISTORE.IPkiItem {
+    /**
+     * Creates an instance of PkiItem.
+     *
+     *
+     * @memberOf PkiItem
+     */
     constructor() {
         super();
         this.handle = new native.PKISTORE.PkiItem();
@@ -134,8 +156,31 @@ export class PkiItem extends object.BaseObject<native.PKISTORE.PkiItem> implemen
 }
 
 export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
+    /**
+     * Creates an instance of PkiStore.
+     *
+     * @param {native.PKISTORE.PkiStore} handle
+     *
+     * @memberOf PkiStore
+     */
     constructor(handle: native.PKISTORE.PkiStore);
+
+    /**
+     * Creates an instance of PkiStore.
+     *
+     * @param {string} folder Path for create store
+     *
+     * @memberOf PkiStore
+     */
     constructor(folder: string);
+
+    /**
+     * Creates an instance of PkiStore.
+     *
+     * @param {*} param
+     *
+     * @memberOf PkiStore
+     */
     constructor(param: any) {
         super();
         if (param instanceof native.PKISTORE.PkiStore) {
@@ -145,30 +190,94 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         }
     }
 
+    /**
+     * Return cash json
+     *
+     * @readonly
+     * @type {CashJson}
+     * @memberOf PkiStore
+     */
     get cash(): CashJson {
         return CashJson.wrap<native.PKISTORE.CashJson, CashJson>(this.handle.getCash());
     }
 
+    /**
+     * Add provider (system, microsoft | cryptopro)
+     *
+     * @param {native.PKISTORE.Provider} provider
+     *
+     * @memberOf PkiStore
+     */
     public addProvider(provider: native.PKISTORE.Provider): void {
         this.handle.addProvider(provider);
     }
 
+    /**
+     * Import certificste to local store
+     *
+     * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+     * @param {string} category MY, OTHERS, TRUST, CRL
+     * @param {Certificate} cert Certificate
+     * @param {number} flags
+     * @returns {string}
+     *
+     * @memberOf PkiStore
+     */
     public addCert(provider: native.PKISTORE.Provider, category: string, cert: Certificate, flags: number): string {
         return this.handle.addCert(provider, category, cert.handle, flags);
     }
 
+    /**
+     * Import CRL to local store
+     *
+     * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+     * @param {string} category MY, OTHERS, TRUST, CRL
+     * @param {Crl} crl CRL
+     * @param {number} flags
+     * @returns {string}
+     *
+     * @memberOf PkiStore
+     */
     public addCrl(provider: native.PKISTORE.Provider, category: string, crl: Crl, flags: number): string {
         return this.handle.addCrl(provider, category, crl.handle, flags);
     }
 
+    /**
+     * Import key to local store
+     *
+     * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+     * @param {Key} key
+     * @param {string} password
+     * @returns {string}
+     *
+     * @memberOf PkiStore
+     */
     public addKey(provider: native.PKISTORE.Provider, key: Key, password: string): string {
         return this.handle.addKey(provider, key.handle, password);
     }
 
+    /**
+     * Import certificate request to local store
+     *
+     * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+     * @param {string} category MY, OTHERS, TRUST, CRL
+     * @param {CertificationRequest} csr
+     * @returns {string}
+     *
+     * @memberOf PkiStore
+     */
     public addCsr(provider: native.PKISTORE.Provider, category: string, csr: CertificationRequest): string {
         return this.handle.addCsr(provider, category, csr.handle);
     }
 
+    /**
+     * Find items in local store
+     *
+     * @param {native.PKISTORE.IFilter} [ifilter]
+     * @returns {native.PKISTORE.IPkiItem[]}
+     *
+     * @memberOf PkiStore
+     */
     public find(ifilter?: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem[] {
         let filter: Filter = new Filter();
 
@@ -221,6 +330,14 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         return this.handle.find(filter.handle);
     }
 
+    /**
+     * Find key in local store
+     *
+     * @param {native.PKISTORE.IFilter} ifilter
+     * @returns {native.PKISTORE.IPkiItem}
+     *
+     * @memberOf PkiStore
+     */
     public findKey(ifilter: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem {
         let filter: Filter = new Filter();
 
@@ -269,6 +386,14 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
         return this.handle.findKey(filter.handle);
     }
 
+    /**
+     * Return pki object (certificate, crl, request, key) by PkiItem
+     *
+     * @param {native.PKISTORE.IPkiItem} item
+     * @returns {*}
+     *
+     * @memberOf PkiStore
+     */
     public getItem(item: native.PKISTORE.IPkiItem): any {
         let pkiItem: PkiItem = new PkiItem();
 

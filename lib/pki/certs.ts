@@ -4,13 +4,40 @@ import * as Collection from "../core/collection";
 import {Certificate} from "./cert";
 
 /**
- * Представление коллекции `X509` сертификатов
+ * Collection of Certificate
+ *
+ * @export
+ * @class CertificateCollection
+ * @extends {object.BaseObject<native.PKI.CertificateCollection>}
+ * @implements {Collection.ICollectionWrite}
  */
 export class CertificateCollection extends object.BaseObject<native.PKI.CertificateCollection>
  implements Collection.ICollectionWrite {
 
+    /**
+     * Creates an instance of CertificateCollection.
+     *
+     * @param {native.PKI.CertificateCollection} handle
+     *
+     * @memberOf CertificateCollection
+     */
     constructor(handle: native.PKI.CertificateCollection);
+
+    /**
+     * Creates an instance of CertificateCollection.
+     *
+     *
+     * @memberOf CertificateCollection
+     */
     constructor();
+
+    /**
+     * Creates an instance of CertificateCollection.
+     *
+     * @param {*} [param]
+     *
+     * @memberOf CertificateCollection
+     */
     constructor(param?: any) {
         super();
         if (param instanceof native.PKI.CertificateCollection) {
@@ -21,38 +48,55 @@ export class CertificateCollection extends object.BaseObject<native.PKI.Certific
     }
 
     /**
-     * Возвращает элемент из коллекции по заданному индексу
-     * @param index Индекс элемента в коллекции
+     * Return element by index from collection
+     *
+     * @param {number} index
+     * @returns {Certificate}
+     *
+     * @memberOf CertificateCollection
      */
     public items(index: number): Certificate {
         return  Certificate.wrap<native.PKI.Certificate, Certificate>(this.handle.items(index));
     }
 
     /**
-     * Возвращает размер коллекции
+     * Return collection length
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf CertificateCollection
      */
     get length(): number {
         return this.handle.length();
     }
 
-    /**
-     * Добавляет новый элемент в коллекцию
-     * @param cert Элемент для добавления в коллекцию
-     */
-    public push(cert: Certificate): void {
+     /**
+      * Add new element to collection
+      *
+      * @param {Certificate} cert
+      *
+      * @memberOf CertificateCollection
+      */
+     public push(cert: Certificate): void {
         this.handle.push(cert.handle);
     }
 
     /**
-     * Удаляет последний элемент их коллекции
+     * Remove last element from collection
+     *
+     *
+     * @memberOf CertificateCollection
      */
     public pop(): void {
         this.handle.pop();
     }
 
     /**
-     * Удаляет элемент из коллекции по заданному индексу
-     * @param index Индекс элемента в коллекции
+     * Remove element by index from collection
+     *
+     * @param {number} index
+     *
+     * @memberOf CertificateCollection
      */
     public removeAt(index: number): void {
         this.handle.removeAt(index);

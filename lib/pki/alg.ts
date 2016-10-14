@@ -3,12 +3,46 @@ import * as object from "../object";
 import {Oid} from "./oid";
 
 /**
- * Представление X509_ALGOR
+ * Wrap X509_ALGOR
+ *
+ * @export
+ * @class Algorithm
+ * @extends {object.BaseObject<native.PKI.Algorithm>}
  */
 export class Algorithm extends object.BaseObject<native.PKI.Algorithm> {
+    /**
+     * Creates an instance of Algorithm.
+     *
+     *
+     * @memberOf Algorithm
+     */
     constructor();
+
+    /**
+     * Creates an instance of Algorithm.
+     *
+     * @param {native.PKI.Algorithm} handle
+     *
+     * @memberOf Algorithm
+     */
     constructor(handle: native.PKI.Algorithm);
+
+    /**
+     * Creates an instance of Algorithm.
+     *
+     * @param {string} name
+     *
+     * @memberOf Algorithm
+     */
     constructor(name: string);
+
+    /**
+     * Creates an instance of Algorithm.
+     *
+     * @param {*} [param]
+     *
+     * @memberOf Algorithm
+     */
     constructor(param?: any) {
         super();
 
@@ -22,21 +56,33 @@ export class Algorithm extends object.BaseObject<native.PKI.Algorithm> {
     }
 
     /**
-     * возвращает название алгоритма
+     * Return algorithm name
+     *
+     * @readonly
+     * @type {string}
+     * @memberOf Algorithm
      */
     get name(): string {
         return this.handle.getName();
     }
 
     /**
-     * возвращает идентификатор алгоритма
+     * Return algorithm OID
+     *
+     * @readonly
+     * @type {Oid}
+     * @memberOf Algorithm
      */
     get typeId(): Oid {
         return new Oid(this.handle.getTypeId());
     }
 
     /**
-     * возвращает копию алгоритма
+     * Return algorithm duplicat
+     *
+     * @returns {Algorithm}
+     *
+     * @memberOf Algorithm
      */
     public duplicate(): Algorithm {
         let walg: any = this.handle.duplicate();
@@ -46,7 +92,11 @@ export class Algorithm extends object.BaseObject<native.PKI.Algorithm> {
     }
 
     /**
-     * возвращает true если алгоритм предназначен для вычисления хэш
+     * Return true if it digest algorithm
+     *
+     * @returns {boolean}
+     *
+     * @memberOf Algorithm
      */
     public  isDigest(): boolean {
         return this.handle.isDigest();
