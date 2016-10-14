@@ -287,7 +287,6 @@ export class SignedData extends object.BaseObject<native.CMS.SignedData> {
         this.handle.load(filename, format);
     }
 
-
     /**
      * Load sign from memory
      *

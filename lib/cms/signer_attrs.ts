@@ -37,7 +37,6 @@ export class SignerAttributeCollection extends object.BaseObject<native.CMS.Sign
         return this.handle.length();
     }
 
-
     /**
      * Add new element to collection
      *

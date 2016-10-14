@@ -1,7 +1,7 @@
 import * as native from "../native";
 import * as object from "../object";
 
-/* tslint:disable-next-line:class-name */
+/* tslint:disable:class-name */
 /**
  * Native crypto provider (work in local folders)
  *

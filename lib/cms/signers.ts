@@ -3,7 +3,6 @@ import * as object from "../object";
 import * as Collection from "../core/collection";
 import {Signer} from "./signer";
 
-
 /**
  * Collection of Signer
  *

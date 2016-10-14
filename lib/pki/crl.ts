@@ -62,7 +62,6 @@ export class Crl extends object.BaseObject<native.PKI.CRL> {
      */
     constructor(handle: native.PKI.CRL);
 
-
     /**
      * Creates an instance of Crl.
      *

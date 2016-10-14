@@ -36,7 +36,6 @@ export interface ICollectionWrite extends ICollection {
      */
     pop(): void;
 
-
     /**
      * Remove element by index from collection
      *
