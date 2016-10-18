@@ -289,23 +289,9 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 					THROW_EXCEPTION(0, Cipher, NULL, "bad magic number");
 				}
 
-				if (!hkey){
-					LOGGER_OPENSSL(EVP_BytesToKey);
-					if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, NULL) == 0){
-						THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
-					}
-				}
-				else if (!hiv){
-					LOGGER_OPENSSL(EVP_BytesToKey);
-					if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, NULL, iv) == 0){
-						THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
-					}
-				}
-				else if (!hkey && !hiv){
-					LOGGER_OPENSSL(EVP_BytesToKey);
-					if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, iv) == 0){
-						THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
-					}
+				LOGGER_OPENSSL(EVP_BytesToKey);
+				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, iv) == 0){
+					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
 				}
 			}
 
