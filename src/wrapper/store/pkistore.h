@@ -24,8 +24,6 @@ public:
 	~PkiStore(){};
 
 public:
-	Handle<CashJson> cash;
-
 	Handle<PkiItemCollection> getItems();
 
 	Handle<ProviderCollection> providers;

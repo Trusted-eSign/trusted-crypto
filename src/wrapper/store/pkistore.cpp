@@ -18,7 +18,6 @@ PkiStore::PkiStore(Handle<std::string> json){
 			THROW_EXCEPTION(0, PkiStore, NULL, "json empty");
 		}
 		
-		cash = new CashJson(json);
 		providers = new ProviderCollection();
 	}
 	catch (Handle<Exception> e){

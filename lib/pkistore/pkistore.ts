@@ -156,6 +156,8 @@ export class PkiItem extends object.BaseObject<native.PKISTORE.PkiItem> implemen
 }
 
 export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
+    private cashJson: CashJson;
+
     /**
      * Creates an instance of PkiStore.
      *
@@ -187,6 +189,7 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
             this.handle = param;
         } else {
             this.handle = new native.PKISTORE.PkiStore(param);
+            this.cashJson = new CashJson(param);
         }
     }
 
@@ -198,7 +201,7 @@ export class PkiStore extends object.BaseObject<native.PKISTORE.PkiStore> {
      * @memberOf PkiStore
      */
     get cash(): CashJson {
-        return CashJson.wrap<native.PKISTORE.CashJson, CashJson>(this.handle.getCash());
+        return this.cashJson;
     }
 
     /**

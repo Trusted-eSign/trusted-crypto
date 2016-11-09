@@ -11,8 +11,8 @@
 
 class CashJson {
 public:
-	CashJson(){};
 	CashJson(Handle<std::string> fileName);
+	~CashJson(){};
 
 public:
 	Handle<std::string> jsonFileName;

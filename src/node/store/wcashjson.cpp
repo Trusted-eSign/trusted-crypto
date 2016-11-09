@@ -29,15 +29,21 @@ NAN_METHOD(WCashJson::New){
 	try{
 		WCashJson *obj = new WCashJson();
 
-		v8::String::Utf8Value v8Str(info[0]->ToString());
-		char *json = *v8Str;
+		if (info[0]->IsUndefined()){
+			Nan::ThrowError("Parameter 1 is required");
+			return;
+		}
+		else {
+			v8::String::Utf8Value v8Str(info[0]->ToString());
+			char *json = *v8Str;
 
-		obj->data_ = new CashJson(new std::string(json));
+			obj->data_ = new CashJson(new std::string(json));
 
-		obj->Wrap(info.This());
+			obj->Wrap(info.This());
 
-		info.GetReturnValue().Set(info.This());
-		return;
+			info.GetReturnValue().Set(info.This());
+			return;
+		}
 	}
 	TRY_END();
 }

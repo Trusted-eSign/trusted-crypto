@@ -32,7 +32,6 @@ void WPkiStore::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "find", Find);
 	Nan::SetPrototypeMethod(tpl, "findKey", FindKey);
 	Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
-	Nan::SetPrototypeMethod(tpl, "getCash", GetCash);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -372,23 +371,6 @@ NAN_METHOD(WPkiStore::GetItem){
 			v8::Local<v8::Object> v8Key = WKey::NewInstance(key);
 			info.GetReturnValue().Set(v8Key);
 		}
-
-		return;
-	}
-
-	TRY_END();
-}
-
-NAN_METHOD(WPkiStore::GetCash){
-	METHOD_BEGIN();
-
-	try{
-		UNWRAP_DATA(PkiStore);
-
-		Handle<CashJson> cash = _this->cash;
-		
-		v8::Local<v8::Object> v8Cash = WCashJson::NewInstance(cash);
-		info.GetReturnValue().Set(v8Cash);
 
 		return;
 	}

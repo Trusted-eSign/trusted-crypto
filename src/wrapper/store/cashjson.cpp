@@ -125,7 +125,7 @@ void CashJson::importJson(Handle<PkiItem> item){
 		LOGGER_TRACE("Json::Reader::parse");
 		bool parsingSuccessful = jsnReader.parse(fileJSON, jsnRoot, false);
 		if (!parsingSuccessful){
-			THROW_EXCEPTION(0, ProviderSystem, NULL, "Error parse JSON");
+			THROW_EXCEPTION(0, CashJson, NULL, "Error parse JSON");
 		}
 		jsnBuf["Format"] = item->format->c_str();
 		jsnBuf["Type"] = item->type->c_str();
