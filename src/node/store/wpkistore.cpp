@@ -9,7 +9,6 @@
 #include "../pki/wcertReg.h"
 #include "../pki/wkey.h"
 
-#include <nan.h>
 #include "../../wrapper/common/common.h"
 #include "../helper.h"
 
