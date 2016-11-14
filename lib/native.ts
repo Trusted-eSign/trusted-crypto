@@ -423,6 +423,13 @@ export namespace PKISTORE {
     }
 }
 
+export namespace UTILS {
+     export declare class Jwt {
+        public checkLicense(): boolean;
+     }
+}
+
 module.exports.PKI = native.PKI;
 module.exports.CMS = native.CMS;
 module.exports.PKISTORE = native.PKISTORE;
+module.exports.UTILS = native.UTILS;

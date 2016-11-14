@@ -3,6 +3,7 @@
 import * as dataFormat from "./data_format";
 import * as publicExponent from "./public_exponent";
 import * as cryptoMethod from "./crypto_method";
+import * as jwt from "./utils/jwt";
 import * as cert from "./pki/cert";
 import * as certs from "./pki/certs";
 import * as crl from "./pki/crl";
@@ -31,6 +32,10 @@ import * as cashjson from "./pkistore/cashjson";
 export let DataFormat = dataFormat.DataFormat;
 export let PublicExponent = publicExponent.PublicExponent;
 export let CryptoMethod = cryptoMethod.CryptoMethod;
+
+export namespace utils {
+    export let Jwt = jwt.Jwt;
+}
 
 export namespace pki {
     export let Certificate = cert.Certificate;

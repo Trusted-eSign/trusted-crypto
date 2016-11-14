@@ -7,6 +7,7 @@
 #include <nan.h>
 
 #include "utils/wlog.h"
+#include "utils/wjwt.h"
 
 #include "pki/wkey.h"
 #include "pki/wcert.h"
@@ -56,6 +57,11 @@ void init(v8::Handle<v8::Object> target) {
 	// LOGGER_TRACE("OpenSSL init");
 
 	OpenSSL::run();
+
+	v8::Local<v8::Object> Jwt = Nan::New<v8::Object>();
+
+	target->Set(Nan::New("UTILS").ToLocalChecked(), Jwt);
+	WJwt::Init(Jwt);
 
 	v8::Local<v8::Object> Pki = Nan::New<v8::Object>();
 
