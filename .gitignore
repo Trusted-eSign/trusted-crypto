@@ -2,6 +2,7 @@
 /typings
 /build
 /buildjs
+/types
 logger.txt
 test/CertStore
 test/out

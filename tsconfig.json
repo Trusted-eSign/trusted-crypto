@@ -1,15 +1,18 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es5",
-		"rootDir": "lib",
-		"outDir": "buildjs",
+    "compilerOptions": {
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es5",
+        "rootDir": "lib",
+        "outDir": "buildjs",
         "declaration": true,
+        "declarationDir": "types",
         "sourceMap": true
-	},
-	"exclude":[
-		"node_modules",
-		"buildjs",
-		"inrefaces"
-	]
+    },
+    "exclude": [
+        "node_modules",
+        "buildjs",
+        "inrefaces",
+        "types"
+    ]
 }

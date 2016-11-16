@@ -10,6 +10,7 @@
     "url": "https://github.com/TrustedPlus/trusted-crypto"
   },
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "node_modules/.bin/mocha test && npm run lint && npm run lintTS",
     "lint": "./node_modules/.bin/eslint test",
