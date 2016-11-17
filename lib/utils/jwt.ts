@@ -1,47 +1,49 @@
-import * as native from "../native";
-import * as object from "../object";
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
-/**
- * JSON Web Token (JWT)
- * Uses only with CTGOSTCP
- *
- * @export
- * @class Jwt
- * @extends {object.BaseObject<native.JWT.Jwt>}
- */
-export class Jwt extends object.BaseObject<native.UTILS.Jwt> {
+namespace trusted.utils {
     /**
-     * Verify jwt license file
+     * JSON Web Token (JWT)
+     * Uses only with CTGOSTCP
      *
-     * @static
-     * @returns {boolean}
-     *
-     * @memberOf Jwt
+     * @export
+     * @class Jwt
+     * @extends {BaseObject<native.JWT.Jwt>}
      */
-    public static ckeckLicense(): boolean {
-        let jwt = new native.UTILS.Jwt();
-        return jwt.checkLicense();
-    }
+    export class Jwt extends BaseObject<native.UTILS.Jwt> {
+        /**
+         * Verify jwt license file
+         *
+         * @static
+         * @returns {boolean}
+         *
+         * @memberOf Jwt
+         */
+        public static ckeckLicense(): boolean {
+            let jwt = new native.UTILS.Jwt();
+            return jwt.checkLicense();
+        }
 
-    /**
-     * Creates an instance of Jwt.
-     *
-     *
-     * @memberOf Jwt
-     */
-    constructor() {
-        super();
-        this.handle = new native.UTILS.Jwt();
-    };
+        /**
+         * Creates an instance of Jwt.
+         *
+         *
+         * @memberOf Jwt
+         */
+        constructor() {
+            super();
+            this.handle = new native.UTILS.Jwt();
+        };
 
-    /**
-     * Verify jwt license file
-     *
-     * @returns {boolean}
-     *
-     * @memberOf Jwt
-     */
-    public ckeckLicense(): boolean {
-        return this.handle.checkLicense();
+        /**
+         * Verify jwt license file
+         *
+         * @returns {boolean}
+         *
+         * @memberOf Jwt
+         */
+        public ckeckLicense(): boolean {
+            return this.handle.checkLicense();
+        }
     }
 }

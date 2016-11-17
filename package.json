@@ -16,7 +16,7 @@
     "lint": "./node_modules/.bin/eslint test",
     "lintTS": "./node_modules/.bin/tslint lib/**/*.ts",
     "build": "node-gyp build && tsc;",
-    "install": "typings install && node-gyp configure && node-gyp build && tsc",
+    "install": "node-gyp configure && node-gyp build && tsc",
     "cover": "istanbul cover _mocha",
     "coveralls": "npm run cover -- --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
@@ -31,11 +31,14 @@
     "request": "^2.73.0"
   },
   "devDependencies": {
+    "@types/async": "^2.0.33",
+    "@types/node": "^6.0.48",
+    "@types/request": "0.0.33",
+    "coveralls": "^2.11.12",
+    "eslint": "^3.0.1",
     "istanbul": "^0.4.3",
     "mocha-lcov-reporter": "^1.2.0",
-    "coveralls": "^2.11.12",
     "nan": "^2.4.0",
-    "eslint": "^3.0.1",
     "tslint": "^3.13.0",
     "typescript": "^2.0.8"
   },

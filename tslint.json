@@ -1,3 +1,7 @@
 {
-  "extends": "tslint:recommended"
+  "extends": "tslint:recommended",
+  "rules": {
+        "no-namespace": false,
+        "no-reference": false
+  }
 }
