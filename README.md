@@ -23,6 +23,13 @@ Trusted crypto library
 
 ```
 
+## Compile TS definition
+
+```
+> tsc --declaration
+
+```
+
 ## Run test
 
 ```
