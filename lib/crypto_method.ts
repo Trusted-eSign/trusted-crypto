@@ -1,9 +1,12 @@
-/**
- *
- * @export
- * @enum {number}
- */
-export enum CryptoMethod {
-    SYMMETRIC = 0,
-    ASSYMETRIC = 1
+namespace trusted {
+    /**
+     *
+     * @export
+     * @enum {number}
+     */
+    export enum CryptoMethod {
+        SYMMETRIC = 0,
+        ASSYMETRIC = 1
+    }
+
 }

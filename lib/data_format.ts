@@ -1,9 +1,13 @@
-/**
- *
- * @export
- * @enum {number}
- */
-export enum DataFormat {
-    DER = 0,
-    PEM = 1
+namespace trusted {
+
+    /**
+     *
+     * @export
+     * @enum {number}
+     */
+    export enum DataFormat {
+        DER = 0,
+        PEM = 1
+    }
+
 }
