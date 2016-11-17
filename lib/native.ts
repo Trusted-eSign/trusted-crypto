@@ -1,4 +1,6 @@
 /// <reference types="node" />
+/* tslint:disable:no-namespace */
+/* tslint:disable:no-var-requires */
 
 declare namespace native {
     namespace PKI {
@@ -184,7 +186,8 @@ declare namespace native {
 
             public load(filename: string): void;
             public save(filename: string): void;
-            public create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12;
+            public create(cert: Certificate, key: Key, ca: CertificateCollection,
+                          password: string, name: string): Pkcs12;
         }
     }
 
@@ -424,5 +427,3 @@ declare namespace native {
         }
     }
 }
-
-    // const native: typeof NATIVE = require("../build/Release/trusted.node");

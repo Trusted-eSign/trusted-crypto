@@ -1,3 +1,6 @@
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
+
 namespace trusted.pkistore {
 
     /* tslint:disable:class-name */
@@ -33,5 +36,4 @@ namespace trusted.pkistore {
             return this.handle.objectToPkiItem(path);
         }
     }
-
 }

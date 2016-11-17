@@ -11,10 +11,9 @@ namespace trusted {
 
             let newObj: any = new this();
             newObj.handle = obj;
-            return <TOut>newObj;
+            return <TOut> newObj;
         }
 
         public handle: T;
     }
-
 }

@@ -1,5 +1,7 @@
-namespace trusted.pki {
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
+namespace trusted.pki {
     /**
      * Collection of Certificate
      *
@@ -99,5 +101,4 @@ namespace trusted.pki {
             this.handle.removeAt(index);
         }
     }
-
 }

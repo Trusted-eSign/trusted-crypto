@@ -1,4 +1,3 @@
-
 namespace trusted {
     /**
      * Public exponent values
@@ -10,5 +9,4 @@ namespace trusted {
         RSA_3 = 0,
         RSA_F4 = 1
     }
-
 }

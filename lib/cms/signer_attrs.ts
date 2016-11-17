@@ -1,5 +1,7 @@
-namespace trusted.cms {
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
+namespace trusted.cms {
     /**
      * Collection of SignerAttribute
      *
@@ -65,15 +67,14 @@ namespace trusted.cms {
          */
         /**
          * Return element by index from collection
-         * 
+         *
          * @param {number} index
          * @returns
-         * 
+         *
          * @memberOf SignerAttributeCollection
          */
         public items(index: number) {
             return new pki.Attribute(this.handle.items(index));
         }
     }
-
 }

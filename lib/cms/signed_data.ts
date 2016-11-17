@@ -1,3 +1,7 @@
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
+/* tslint:disable:no-bitwise */
+
 namespace trusted.cms {
 
     const DEFAULT_DATA_FORMAT: DataFormat = DataFormat.DER;
@@ -141,7 +145,7 @@ namespace trusted.cms {
             if (v.type === SignedDataContentType.url) {
                 data = v.data.toString();
             } else {
-                data = new Buffer(<any>v.data);
+                data = new Buffer(<any> v.data);
             }
             this.handle.setContent(data);
             this.prContent = v;
@@ -354,5 +358,4 @@ namespace trusted.cms {
             this.handle.sign();
         }
     }
-
 }

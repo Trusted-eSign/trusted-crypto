@@ -9,5 +9,4 @@ namespace trusted {
         DER = 0,
         PEM = 1
     }
-
 }

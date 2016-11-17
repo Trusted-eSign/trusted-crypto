@@ -1,6 +1,8 @@
 /// <reference types="node" />
 /// <reference types="request" />
 /// <reference types="async" />
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
 namespace trusted.pki {
 
@@ -142,5 +144,4 @@ namespace trusted.pki {
             }
         }
     }
-
 }

@@ -1,5 +1,7 @@
-namespace trusted.pkistore {
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
+namespace trusted.pkistore {
     /**
      * Filter for search objects
      *
@@ -219,7 +221,8 @@ namespace trusted.pkistore {
          *
          * @memberOf PkiStore
          */
-        public addCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate, flags: number): string {
+        public addCert(provider: native.PKISTORE.Provider, category: string,
+                       cert: pki.Certificate, flags: number): string {
             return this.handle.addCert(provider, category, cert.handle, flags);
         }
 
@@ -440,7 +443,8 @@ namespace trusted.pkistore {
             }
 
             if (item.type === "CERTIFICATE") {
-                return pki.Certificate.wrap<native.PKI.Certificate, pki.Certificate>(this.handle.getItem(pkiItem.handle));
+                return pki.Certificate.wrap<native.PKI.Certificate, pki.Certificate>
+                    (this.handle.getItem(pkiItem.handle));
             }
 
             if (item.type === "CRL") {
@@ -457,5 +461,4 @@ namespace trusted.pkistore {
             }
         }
     }
-
 }

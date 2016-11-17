@@ -1,3 +1,6 @@
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
+
 namespace trusted.pki {
 
     const DEFAULT_DATA_FORMAT: DataFormat = DataFormat.PEM;
@@ -47,5 +50,4 @@ namespace trusted.pki {
             this.handle.save(filename, dataFormat);
         }
     }
-
 }

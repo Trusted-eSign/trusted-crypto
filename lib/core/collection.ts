@@ -47,5 +47,4 @@ namespace trusted.core {
          */
         removeAt(index: number): void;
     }
-
 }

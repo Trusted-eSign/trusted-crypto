@@ -16,5 +16,4 @@ namespace trusted.pki {
         EncipherOnly = 0x0001,
         DecipherOnly = 0x8000
     }
-
 }

@@ -1,5 +1,7 @@
-namespace trusted.pki {
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
+namespace trusted.pki {
     /**
      * Encrypt and decrypt operations
      *
@@ -144,9 +146,9 @@ namespace trusted.pki {
          * @memberOf Cipher
          */
         public getRecipientInfos(filenameEnc: string, format: DataFormat): cms.CmsRecipientInfoCollection {
-            return cms.CmsRecipientInfoCollection.wrap<native.CMS.CmsRecipientInfoCollection, cms.CmsRecipientInfoCollection>
-                (this.handle.getRecipientInfos(filenameEnc, format));
+            return cms.CmsRecipientInfoCollection.wrap
+                <native.CMS.CmsRecipientInfoCollection, cms.CmsRecipientInfoCollection>
+                    (this.handle.getRecipientInfos(filenameEnc, format));
         }
     }
-
 }

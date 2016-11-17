@@ -1,5 +1,7 @@
-namespace trusted.cms {
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
+namespace trusted.cms {
     /**
      * Wrap CMS_SignerInfo
      *
@@ -130,5 +132,4 @@ namespace trusted.cms {
             }
         }
     }
-
 }

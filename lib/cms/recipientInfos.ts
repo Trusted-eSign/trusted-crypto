@@ -1,5 +1,7 @@
-namespace trusted.cms {
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
+namespace trusted.cms {
     /**
      * Collection of CmsRecipientInfo
      *
@@ -98,5 +100,4 @@ namespace trusted.cms {
             this.handle.removeAt(index);
         }
     }
-
 }

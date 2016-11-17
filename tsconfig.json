@@ -3,8 +3,9 @@
         "target": "es5",
         "rootDir": "lib",
         "outDir": "buildjs",
-        "declaration": true,
+        "declaration": false,
         "outFile": "buildjs/trusted.js",
+        "allowJs": true,
         "sourceMap": true
     },
     "files": [
@@ -14,6 +15,7 @@
         "lib/native.ts",
         "lib/object.ts",
         "lib/core/collection.ts",
+        "lib/utils/jwt.ts",
         "lib/pki/key_usage.ts",
         "lib/pki/key.ts",
         "lib/pki/oid.ts",
@@ -41,6 +43,8 @@
         "lib/pkistore/pcryptopro.ts",
         "lib/pkistore/pmicrosoft.ts",
         "lib/pkistore/psystem.ts",
-        "lib/pkistore/pkistore.ts"
+        "lib/pkistore/pkistore.ts",
+        "lib/native.js",
+        "lib/trusted.ts"
     ]
 }

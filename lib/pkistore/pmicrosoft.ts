@@ -1,3 +1,6 @@
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
+
 namespace trusted.pkistore {
 
     /**
@@ -31,5 +34,4 @@ namespace trusted.pkistore {
             return pki.Key.wrap<native.PKI.Key, pki.Key>(this.handle.getKey(cert.handle));
         }
     }
-
 }

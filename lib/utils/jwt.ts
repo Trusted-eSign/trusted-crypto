@@ -1,15 +1,15 @@
 /// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
-/**
- * JSON Web Token (JWT)
- * Uses only with CTGOSTCP
- *
- * @export
- * @class Jwt
- * @extends {BaseObject<native.JWT.Jwt>}
- */
 namespace trusted.utils {
-
+    /**
+     * JSON Web Token (JWT)
+     * Uses only with CTGOSTCP
+     *
+     * @export
+     * @class Jwt
+     * @extends {BaseObject<native.JWT.Jwt>}
+     */
     export class Jwt extends BaseObject<native.UTILS.Jwt> {
         /**
          * Verify jwt license file
@@ -46,5 +46,4 @@ namespace trusted.utils {
             return this.handle.checkLicense();
         }
     }
-
 }

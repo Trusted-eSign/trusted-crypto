@@ -1,3 +1,6 @@
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
+
 namespace trusted.pki {
 
     /**
@@ -41,7 +44,7 @@ namespace trusted.pki {
          *
          * @memberOf Algorithm
          */
-        constructor(param?: any) {
+        constructor (param?: any) {
             super();
 
             if (param instanceof native.PKI.Algorithm) {

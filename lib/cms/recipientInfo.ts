@@ -1,5 +1,7 @@
-namespace trusted.cms {
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
+namespace trusted.cms {
     /**
      * Wrap CMS_RecipientInfo
      *
@@ -83,5 +85,4 @@ namespace trusted.cms {
             return 0;
         }
     }
-
 }

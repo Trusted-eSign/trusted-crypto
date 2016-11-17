@@ -8,5 +8,4 @@ namespace trusted {
         SYMMETRIC = 0,
         ASSYMETRIC = 1
     }
-
 }

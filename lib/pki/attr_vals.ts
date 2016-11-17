@@ -1,3 +1,6 @@
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
+
 namespace trusted.pki {
 
     /**
@@ -79,5 +82,4 @@ namespace trusted.pki {
             return this.handle.items(index);
         }
     }
-
 }

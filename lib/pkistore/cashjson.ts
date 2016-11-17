@@ -1,8 +1,7 @@
+/// <reference path="../native.ts" />
+/// <reference path="../object.ts" />
 
 namespace trusted.pkistore {
-
-
-
     /**
      * Work with json files
      *
@@ -95,5 +94,4 @@ namespace trusted.pkistore {
             }
         }
     }
-
 }
