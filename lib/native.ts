@@ -423,7 +423,7 @@ declare namespace native {
 
     namespace UTILS {
         class Jwt {
-            public checkLicense(): boolean;
+            public checkLicense(data?: string): boolean;
         }
     }
 }

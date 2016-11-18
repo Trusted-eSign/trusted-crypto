@@ -42,7 +42,17 @@ NAN_METHOD(WJwt::CheckLicense) {
 	try {
 		UNWRAP_DATA(Jwt);
 
-		info.GetReturnValue().Set(_this->checkLicense());
+		if (info[0]->IsUndefined()){
+			info.GetReturnValue().Set(_this->checkLicense());
+		}
+		else {
+			LOGGER_ARG("lic");
+			v8::String::Utf8Value v8Lic(info[0]->ToString());
+			char *lic = *v8Lic;
+
+			info.GetReturnValue().Set(_this->checkLicense(new std::string(lic)));
+		}
+		
 		return;
 	}
 	TRY_END();

@@ -19,9 +19,9 @@ namespace trusted.utils {
          *
          * @memberOf Jwt
          */
-        public static ckeckLicense(): boolean {
+        public static ckeckLicense(data?: string): boolean {
             let jwt = new native.UTILS.Jwt();
-            return jwt.checkLicense();
+            return (data ? jwt.checkLicense(data) : jwt.checkLicense());
         }
 
         /**
@@ -42,8 +42,8 @@ namespace trusted.utils {
          *
          * @memberOf Jwt
          */
-        public ckeckLicense(): boolean {
-            return this.handle.checkLicense();
+        public ckeckLicense(data?: string): boolean {
+            return (data ? this.handle.checkLicense(data) : this.handle.checkLicense());
         }
     }
 }
