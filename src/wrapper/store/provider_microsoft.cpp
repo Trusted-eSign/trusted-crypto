@@ -82,14 +82,6 @@ void ProviderMicrosoft::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 				Handle<PkiItem> item = objectToPKIItem(new Certificate(cert));
 				item->category = new std::string(*category);
 
-				DWORD * pdwKeySpec;
-				BOOL * pfCallerFreeProv;
-				HCRYPTPROV m_hProv;
-
-				if (CryptAcquireCertificatePrivateKey(pCertContext, NULL, NULL, &m_hProv, pdwKeySpec, pfCallerFreeProv)){
-					item->certKey = new std::string("1");
-				}
-
 				providerItemCollection->push(item);
 			}
 		} while (pCertContext != NULL);
