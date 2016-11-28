@@ -148,40 +148,59 @@ bool Signer::verify(Handle<Bio> content){
 	return res == 1;
 }
 
-Handle<CertificateId> Signer::getCertificateId(){
+Handle<SignerId> Signer::getSignerId(){
 	LOGGER_FN();
 
 	ASN1_OCTET_STRING *keyid = NULL;
 	ASN1_INTEGER *sn = NULL;
 	X509_NAME *issuerName = NULL;
 
-	LOGGER_OPENSSL("CMS_SignerInfo_get0_signer_id");
-	if (CMS_SignerInfo_get0_signer_id(this->internal(), &keyid, &issuerName, &sn) < 1){
-		THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_get0_signer_id");
+	try {
+		LOGGER_OPENSSL("CMS_SignerInfo_get0_signer_id");
+		if (CMS_SignerInfo_get0_signer_id(this->internal(), &keyid, &issuerName, &sn) < 1){
+			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_get0_signer_id");
+		}
+
+		Handle<SignerId> certId = new SignerId();
+		if (keyid){
+			Handle<std::string> keyid_str = new std::string((char*)keyid->data, keyid->length);
+
+			certId->setKeyId(keyid_str);
+		}
+		if (sn){
+			LOGGER_OPENSSL(BIO_new);
+			BIO * bioSerial = BIO_new(BIO_s_mem());
+			LOGGER_OPENSSL(i2a_ASN1_INTEGER);
+			if (i2a_ASN1_INTEGER(bioSerial, sn) < 0){
+				THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "i2a_ASN1_INTEGER", NULL);
+			}
+
+			int contlen;
+			char * cont;
+			LOGGER_OPENSSL(BIO_get_mem_data);
+			contlen = BIO_get_mem_data(bioSerial, &cont);
+
+			Handle<std::string> sn_str = new std::string(cont, contlen);
+
+			BIO_free(bioSerial);
+
+			certId->setSerialNumber(sn_str);
+		}
+
+		if (issuerName){
+			LOGGER_OPENSSL(X509_NAME_oneline_ex);
+			std::string str_name = X509_NAME_oneline_ex(issuerName);
+
+			Handle<std::string> res = new std::string(str_name.c_str(), str_name.length());
+
+			certId->setIssuerName(res);
+		}
+
+		return certId;
 	}
-
-	Handle<CertificateId> certId = new CertificateId();
-	if (keyid){
-		//convert ASN1_OCTET_STRING to String
-		Handle<std::string> keyid_str = new std::string((char*)keyid->data, keyid->length);
-
-		certId->setKeyId(keyid_str);
-	}
-	if (sn){
-		//convert ASN1_INTEGER to String
-		Handle<std::string> sn_str = new std::string((char*)sn->data, sn->length);
-
-		certId->setSerialNumber(sn_str);
-	}
-
-	if (issuerName){
-		//wrap X509_NAME to X509Name
-		Handle<X509Name> name = new X509Name(issuerName, this->handle());
-
-		certId->setIssuerName(name);
-	}
-
-	return certId;
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Signer, e, "Error get signer identifier information");
+	}	
 }
 
 Handle<Algorithm> Signer::getSignatureAlgorithm(){

@@ -35,6 +35,7 @@
         "lib/pki/pkcs12.ts",
         "lib/cms/recipientInfo.ts",
         "lib/cms/recipientInfos.ts",
+        "lib/cms/signer_id.ts",
         "lib/cms/signer.ts",
         "lib/cms/signer_attrs.ts",
         "lib/cms/signers.ts",

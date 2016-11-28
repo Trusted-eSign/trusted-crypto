@@ -5,6 +5,7 @@
 #include "wsigned_data.h"
 #include "wsigner_attrs.h"
 #include "wsigner.h"
+#include "wsigner_id.h"
 
 const char* WSigner::className = "Signer";
 
@@ -24,6 +25,7 @@ void WSigner::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getSignature", GetSignature);
 	Nan::SetPrototypeMethod(tpl, "getSignatureAlgorithm", GetSignatureAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "getDigestAlgorithm", GetDigestAlgorithm);
+	Nan::SetPrototypeMethod(tpl, "getSignerId", GetSignerId);
 
 	Nan::SetPrototypeMethod(tpl, "getSignedAttributes", GetSignedAttributes);
 	Nan::SetPrototypeMethod(tpl, "getUnsignedAttributes", GetUnsignedAttributes);
@@ -119,6 +121,21 @@ NAN_METHOD(WSigner::GetDigestAlgorithm){
 		v8::Local<v8::Object> v8Alg = WAlgorithm::NewInstance(alg);
 
 		info.GetReturnValue().Set(v8Alg);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSigner::GetSignerId){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Signer);
+
+		Handle<SignerId> id = _this->getSignerId();
+		v8::Local<v8::Object> v8Id = WSignerId::NewInstance(id);
+
+		info.GetReturnValue().Set(v8Id);
 		return;
 	}
 	TRY_END();

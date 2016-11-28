@@ -37,6 +37,7 @@
 #include "cms/wsigned_data.h"
 #include "cms/wsigner.h"
 #include "cms/wsigners.h"
+#include "cms/wsigner_id.h"
 #include "cms/wsigner_attrs.h"
 #include "cms/wcmsRecipientInfo.h"
 #include "cms/wcmsRecipientInfos.h"
@@ -88,6 +89,7 @@ void init(v8::Handle<v8::Object> target) {
 	WSignedData::Init(Cms);
 	WSigner::Init(Cms);
 	WSignerCollection::Init(Cms);
+	WSignerId::Init(Cms);
 	WSignerAttributeCollection::Init(Cms);
 	WCmsRecipientInfo::Init(Cms);
 	WCmsRecipientInfoCollection::Init(Cms);

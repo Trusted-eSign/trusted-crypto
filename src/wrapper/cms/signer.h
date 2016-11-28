@@ -2,6 +2,7 @@
 #define  CMS_SIGNER_H_INCLUDED
 
 #include "common.h"
+#include "./signer_id.h"
 
 static void CMS_SignerInfo_free_ex(void *si){};
 
@@ -32,7 +33,7 @@ public:
 	void sign();
 	bool verify();
 	bool verify(Handle<Bio> content);
-	Handle<CertificateId> getCertificateId();
+	Handle<SignerId> getSignerId();
 
 protected:
 

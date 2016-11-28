@@ -58,6 +58,10 @@ namespace trusted.cms {
             return alg;
         }
 
+        get signerId(): SignerId {
+            return new cms.SignerId(this.handle.getSignerId());
+        }
+
         /**
          * Return signed attributes collection
          *

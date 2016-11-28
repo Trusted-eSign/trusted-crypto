@@ -59,6 +59,7 @@ describe("SignedData", function() {
         var cms;
         var signers;
         var signer;
+        var signerId;
 
         cms = new trusted.cms.SignedData();
         cms.load(DEFAULT_OUT_PATH + "/testsig.sig", trusted.DataFormat.PEM);
@@ -72,5 +73,9 @@ describe("SignedData", function() {
             signer = cms.signers(i);
             assert.equal(signer.digestAlgorithm.name, "sha256", "Wrong digest algorithm");
         }
+
+        signerId = signer.signerId;
+        assert.equal(typeof signerId.issuerName, "string", "Wrong issuer name");
+        assert.equal(typeof signerId.serialNumber, "string", "Wrong serial number");
     });
 });

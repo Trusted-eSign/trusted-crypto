@@ -222,8 +222,15 @@ declare namespace native {
             public getSignature(): Buffer;
             public getSignatureAlgorithm(): PKI.Algorithm;
             public getDigestAlgorithm(): PKI.Algorithm;
+            public getSignerId(): SignerId;
             public getSignedAttributes(): SignerAttributeCollection;
             public getUnsignedAttributes(): SignerAttributeCollection;
+        }
+
+        class SignerId {
+            public getSerialNumber(): string;
+            public getIssuerName(): string;
+            public getKeyId(): string;
         }
 
         class SignerAttributeCollection {
