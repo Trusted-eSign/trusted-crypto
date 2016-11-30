@@ -146,7 +146,6 @@ Handle<std::string> CRL::hash(const EVP_MD *md) {
 long CRL::getVersion()
 {
 	LOGGER_FN();
-	std::string strBuf;
 
 	LOGGER_OPENSSL(X509_CRL_get_version);
 	long ver = X509_CRL_get_version(this->internal());
