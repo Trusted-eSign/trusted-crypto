@@ -208,8 +208,6 @@ Handle<Key> Key::generate(DataFormat::DATA_FORMAT format, PublicExponent::Public
 
 		LOGGER_OPENSSL(EVP_PKEY_set1_RSA);
 		EVP_PKEY_set1_RSA(evpkey, rsa);
-
-		return new Key(evpkey);
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Key, e, "Can not keypair generate and save to file");
@@ -230,10 +228,7 @@ Handle<Key> Key::generate(DataFormat::DATA_FORMAT format, PublicExponent::Public
 			BN_free(bn);
 	}
 
-	if (evpkey){
-		LOGGER_OPENSSL(EVP_PKEY_free);
-		EVP_PKEY_free(evpkey);
-	}
+	return new Key(evpkey);
 }
 
 int Key::compare(Handle<Key> key) {
