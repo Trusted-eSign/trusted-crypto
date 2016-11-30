@@ -11,7 +11,6 @@ Trusted crypto library
 
 ```
 > npm install -g typescript
-> npm install -g typings
 > npm install -g mocha
 
 ```
