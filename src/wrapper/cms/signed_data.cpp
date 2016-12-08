@@ -125,7 +125,7 @@ void SignedData::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, SignedData, e, "Error read cms");
-	}	
+	}
 }
 
 void SignedData::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
@@ -207,6 +207,7 @@ void SignedData::setContent(Handle<Bio> value){
 Handle<Bio> SignedData::getContent(){
 	LOGGER_FN();
 
+	this->content->reset();
 	return this->content;
 }
 
@@ -227,15 +228,17 @@ bool SignedData::verify(Handle<CertificateCollection> certs){
 
 		LOGGER_OPENSSL("CMS_verify");
 		res = CMS_verify(this->internal(), pCerts, store, content->internal(), NULL, flags);
+		LOGGER_OPENSSL("X509_STORE_free");
 		X509_STORE_free(store);
 		if (!res){
 			THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_verify");
 		}
 	}
 	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, SignedData, e, "Error CMS verify");
 		return 0;
 	}
-	
+
 	return 1;
 }
 

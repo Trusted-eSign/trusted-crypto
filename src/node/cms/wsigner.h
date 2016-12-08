@@ -29,6 +29,8 @@ public:
 	// Methods
 	static NAN_METHOD(GetSignedAttributes);
 	static NAN_METHOD(GetUnsignedAttributes);
+	static NAN_METHOD(Verify);
+	static NAN_METHOD(VerifyContent);
 
 	WRAP_NEW_INSTANCE(Signer);
 };

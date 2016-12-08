@@ -225,6 +225,8 @@ declare namespace native {
             public getSignerId(): SignerId;
             public getSignedAttributes(): SignerAttributeCollection;
             public getUnsignedAttributes(): SignerAttributeCollection;
+            public verify(): boolean;
+            public verifyContent(v: Buffer): boolean;
         }
 
         class SignerId {
@@ -371,6 +373,8 @@ declare namespace native {
              * Возвращает объект из структуры
              */
             public getItem(item: PkiItem): any;
+
+            public getCerts(): PKI.CertificateCollection;
 
             public addProvider(provider: Provider): void;
 

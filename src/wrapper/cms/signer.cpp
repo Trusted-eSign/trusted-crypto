@@ -31,9 +31,7 @@ Handle<Certificate> Signer::getCertificate(){
 
 Handle<std::string> Signer::getSignature(){
 	LOGGER_FN();
-/*
-#if OPENSSL_VERSION_NUMBER > 0x1000200fL
-	// Ìåòîä ïîääåðæèâàåòñÿ íà÷èíàÿ ñ âåðñèè OpenSSL v1.0.2
+
 	LOGGER_OPENSSL("CMS_SignerInfo_get0_signature");
 	ASN1_OCTET_STRING *sign = CMS_SignerInfo_get0_signature(this->internal());
 	if (!sign){
@@ -43,12 +41,6 @@ Handle<std::string> Signer::getSignature(){
 	char *buf = reinterpret_cast<char*>(sign->data);
 
 	return new std::string(buf, sign->length);
-#else
-*/
-	THROW_EXCEPTION(0, Signer, NULL, "Mehtod is not implemented for current version of OpenSSL");
-/*
-#endif 
-*/
 }
 
 Handle<SignerAttributeCollection> Signer::signedAttributes(){
@@ -127,25 +119,89 @@ void Signer::sign(){
 bool Signer::verify(){
 	LOGGER_FN();
 
-	LOGGER_OPENSSL("CMS_SignerInfo_verify");
-	int res = CMS_SignerInfo_verify(this->internal());
-	if (res == -1){
-		THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_verify");
-	}
+	try {
+		LOGGER_OPENSSL("CMS_signed_get_attr_count");
+		if (CMS_signed_get_attr_count(this->internal()) < 0) {
+			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "No sign attributes");
+		}
 
-	return res == 1;
+		LOGGER_OPENSSL("CMS_SignerInfo_verify");
+		int res = CMS_SignerInfo_verify(this->internal());
+		if (res == -1){
+			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_verify");
+		}
+
+		return res == 1;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Signer, e, "Error verify signer info");
+	}
 }
 
 bool Signer::verify(Handle<Bio> content){
 	LOGGER_FN();
 
-	LOGGER_OPENSSL("CMS_SignerInfo_verify_content");
-	int res = CMS_SignerInfo_verify_content(this->internal(), content->internal());
-	if (res == -1){
-		THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_verify_content");
-	}
+	try {
+		EVP_PKEY *pkey = NULL;
+		EVP_MD_CTX *mctx = NULL;
+		EVP_PKEY_CTX* pctx = NULL;
+		const EVP_MD *md = NULL;
+		const char * digestName;
+		Handle<std::string> signature;
+		char *data;
+		long datalen;
+		int res = 0;
+		
+		if ( !(pkey = this->getCertificate()->getPublicKey()->internal()) ) {
+			THROW_EXCEPTION(0, Signer, NULL, "Error get public key");
+		}
+		if (!(digestName = this->getDigestAlgorithm()->getName()->c_str())) {
+			THROW_EXCEPTION(0, Signer, NULL, "Error get digest name");
+		}
 
-	return res == 1;
+		LOGGER_OPENSSL("EVP_get_digestbyobj");
+		if ( !(md = EVP_get_digestbyobj(this->getDigestAlgorithm()->getTypeId()->internal())) ) {
+			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "EVP_get_digestbyobj");
+		}
+
+		LOGGER_OPENSSL("EVP_MD_CTX_create");
+		mctx = EVP_MD_CTX_create();
+		pctx = nullptr;
+
+		LOGGER_OPENSSL("EVP_DigestVerifyInit");
+		if (!mctx || !EVP_DigestVerifyInit(mctx, &pctx, md, nullptr, pkey)) {
+			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "EVP_DigestVerifyInit");
+		}
+
+		if ((signature = this->getSignature()).isEmpty()) {
+			THROW_EXCEPTION(0, Signer, NULL, "Error get signature");
+		}
+
+		LOGGER_OPENSSL("BIO_get_mem_data");
+		datalen = BIO_get_mem_data(content->internal(), &data);
+
+		LOGGER_OPENSSL("EVP_DigestVerifyUpdate");
+		if (!EVP_DigestVerifyUpdate(mctx, data, datalen)) {
+			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "EVP_DigestVerifyUpdate");
+		}
+
+		LOGGER_OPENSSL("EVP_DigestVerifyFinal");
+		res = EVP_DigestVerifyFinal(mctx, (byte *)signature->c_str(), signature->length());
+
+		if (res < 0) {
+			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_verify_content");
+		}
+
+		if (pctx) {
+			LOGGER_OPENSSL("EVP_PKEY_CTX_free");
+			EVP_PKEY_CTX_free(pctx);
+		}
+
+		return res == 1;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Signer, e, "Error verify signer content");
+	}	
 }
 
 Handle<SignerId> Signer::getSignerId(){

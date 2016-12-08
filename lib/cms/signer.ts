@@ -58,8 +58,46 @@ namespace trusted.cms {
             return alg;
         }
 
+        /**
+         * Return signer identifier information
+         *
+         * @readonly
+         * @type {SignerId}
+         * @memberOf Signer
+         */
         get signerId(): SignerId {
             return new cms.SignerId(this.handle.getSignerId());
+        }
+
+        /**
+         * Verify signer content
+         *
+         * @param {ISignedDataContent} v
+         * @returns {boolean}
+         *
+         * @memberOf Signer
+         */
+        public verifyContent(v: ISignedDataContent): boolean {
+            let data: any;
+            if (v) {
+                if (v.type === SignedDataContentType.url) {
+                    data = v.data.toString();
+                } else {
+                    data = new Buffer(<any> v.data);
+                }
+            }
+            return this.handle.verifyContent(data);
+        }
+
+        /**
+         * Verify sign attributes
+         *
+         * @returns {boolean}
+         *
+         * @memberOf Signer
+         */
+        public verify(): boolean {
+            return this.handle.verify();
         }
 
         /**

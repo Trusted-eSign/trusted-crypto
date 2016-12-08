@@ -29,6 +29,8 @@ void WSigner::Init(v8::Handle<v8::Object> exports){
 
 	Nan::SetPrototypeMethod(tpl, "getSignedAttributes", GetSignedAttributes);
 	Nan::SetPrototypeMethod(tpl, "getUnsignedAttributes", GetUnsignedAttributes);
+	Nan::SetPrototypeMethod(tpl, "verify", Verify);
+	Nan::SetPrototypeMethod(tpl, "verifyContent", VerifyContent);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -39,11 +41,62 @@ void WSigner::Init(v8::Handle<v8::Object> exports){
 NAN_METHOD(WSigner::New){
 	METHOD_BEGIN();
 	try{
-		WSigner*obj = new WSigner();
+		WSigner *obj = new WSigner();
+		obj->data_ = NULL;
 
 		obj->Wrap(info.This());
 
 		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSigner::VerifyContent) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Signer);
+
+		Handle<Bio> buffer;
+		bool res;
+		WSignedData *wSd = NULL;
+
+		if (info[0]->IsString()){
+			LOGGER_INFO("Set content from file");
+			v8::String::Utf8Value v8Filename(info[0]->ToString());
+
+			BIO *pBuffer = BIO_new_file(*v8Filename, "r");
+			if (!pBuffer){
+				Nan::ThrowError("File not found");
+				return;
+			}
+
+			buffer = new Bio(pBuffer);
+		}
+		else{
+			LOGGER_INFO("Set content from buffer");
+			v8::Local<v8::Object> v8Buffer = info[0]->ToObject();
+
+			BIO *pBuffer = BIO_new_mem_buf(node::Buffer::Data(v8Buffer), node::Buffer::Length(v8Buffer));
+			buffer = new Bio(pBuffer);
+		}
+
+		res = _this->verify(buffer);
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSigner::Verify) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Signer);
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(_this->verify()));
 		return;
 	}
 	TRY_END();

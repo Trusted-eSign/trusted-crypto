@@ -43,13 +43,15 @@ public:
 	void addCertificate(Handle<Certificate> cert);
 	bool verify(Handle<CertificateCollection> certs);
 
+	int cms_copy_content(BIO *out, BIO *in, unsigned int flags);
+
 	static Handle<SignedData> sign(Handle<Certificate> cert, Handle<Key> pkey, Handle<CertificateCollection> certs, Handle<Bio> content, unsigned int flags); // Подписывает данные и формирует новый CMS пакет
 	void sign();
 
 	Handle<Signer> createSigner(Handle<Certificate> cert, Handle<Key> pkey);
 
 protected:
-	Handle<Bio> content;
+	Handle<Bio> content = NULL;
 	unsigned int flags;
 };
 

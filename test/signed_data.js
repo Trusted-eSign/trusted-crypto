@@ -72,6 +72,9 @@ describe("SignedData", function() {
         for (var i = 0; i < signers.length; i++) {
             signer = cms.signers(i);
             assert.equal(signer.digestAlgorithm.name, "sha256", "Wrong digest algorithm");
+
+            signer.certificate = cert;
+            assert.equal(signer.verifyContent(cms.content) === true, true, "Verify signer content");
         }
 
         signerId = signer.signerId;
