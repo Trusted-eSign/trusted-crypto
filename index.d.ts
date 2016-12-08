@@ -229,8 +229,16 @@ declare namespace native {
             getSignature(): Buffer;
             getSignatureAlgorithm(): PKI.Algorithm;
             getDigestAlgorithm(): PKI.Algorithm;
+            getSignerId(): SignerId;
             getSignedAttributes(): SignerAttributeCollection;
             getUnsignedAttributes(): SignerAttributeCollection;
+            verify(): boolean;
+            verifyContent(v: Buffer): boolean;
+        }
+        class SignerId {
+            getSerialNumber(): string;
+            getIssuerName(): string;
+            getKeyId(): string;
         }
         class SignerAttributeCollection {
             length(): number;
@@ -350,6 +358,7 @@ declare namespace native {
              * Возвращает объект из структуры
              */
             getItem(item: PkiItem): any;
+            getCerts(): PKI.CertificateCollection;
             addProvider(provider: Provider): void;
             addCert(provider: Provider, category: string, cert: PKI.Certificate, flags: number): string;
             addCrl(provider: Provider, category: string, crl: PKI.CRL, flags: number): string;
@@ -403,7 +412,7 @@ declare namespace native {
     }
     namespace UTILS {
         class Jwt {
-            checkLicense(): boolean;
+            checkLicense(data?: string): boolean;
         }
     }
 }
@@ -479,7 +488,7 @@ declare namespace trusted.utils {
          *
          * @memberOf Jwt
          */
-        static ckeckLicense(): boolean;
+        static checkLicense(data?: string): boolean;
         /**
          * Creates an instance of Jwt.
          *
@@ -494,7 +503,7 @@ declare namespace trusted.utils {
          *
          * @memberOf Jwt
          */
-        ckeckLicense(): boolean;
+        checkLicense(data?: string): boolean;
     }
 }
 declare namespace trusted.pki {
@@ -2030,6 +2039,48 @@ declare namespace trusted.cms {
 }
 declare namespace trusted.cms {
     /**
+     * Wrap signer identifier information (keyidentifier, issuer name and serial number)
+     *
+     * @export
+     * @class SignerId
+     * @extends {BaseObject<native.CMS.SignerId>}
+     */
+    class SignerId extends BaseObject<native.CMS.SignerId> {
+        /**
+         * Creates an instance of SignerId.
+         *
+         *
+         * @memberOf SignerId
+         */
+        constructor(param?: any);
+        /**
+         * Return full issuer name
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf SignerId
+         */
+        readonly issuerName: string;
+        /**
+         * Return serial number
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf SignerId
+         */
+        readonly serialNumber: string;
+        /**
+         * Return keyidentifier
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf SignerId
+         */
+        readonly keyId: string;
+    }
+}
+declare namespace trusted.cms {
+    /**
      * Wrap CMS_SignerInfo
      *
      * @export
@@ -2068,6 +2119,31 @@ declare namespace trusted.cms {
          * @memberOf Signer
          */
         readonly digestAlgorithm: Algorithm;
+        /**
+         * Return signer identifier information
+         *
+         * @readonly
+         * @type {SignerId}
+         * @memberOf Signer
+         */
+        readonly signerId: SignerId;
+        /**
+         * Verify signer content
+         *
+         * @param {ISignedDataContent} v
+         * @returns {boolean}
+         *
+         * @memberOf Signer
+         */
+        verifyContent(v: ISignedDataContent): boolean;
+        /**
+         * Verify sign attributes
+         *
+         * @returns {boolean}
+         *
+         * @memberOf Signer
+         */
+        verify(): boolean;
         /**
          * Return signed attributes collection
          *
@@ -2655,6 +2731,7 @@ declare namespace trusted.pkistore {
          * @memberOf PkiStore
          */
         getItem(item: native.PKISTORE.IPkiItem): any;
+        readonly certs: pki.CertificateCollection;
     }
 }
 declare module "trusted-crypto" {
