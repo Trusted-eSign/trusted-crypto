@@ -186,7 +186,7 @@ bool Signer::verify(Handle<Bio> content){
 		}
 
 		LOGGER_OPENSSL("EVP_DigestVerifyFinal");
-		res = EVP_DigestVerifyFinal(mctx, (byte *)signature->c_str(), signature->length());
+		res = EVP_DigestVerifyFinal(mctx, (const unsigned char *)signature->c_str(), signature->length());
 
 		if (res < 0) {
 			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_verify_content");
