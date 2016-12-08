@@ -460,5 +460,9 @@ namespace trusted.pkistore {
                 return pki.Key.wrap<native.PKI.Key, pki.Key>(this.handle.getItem(pkiItem.handle));
             }
         }
+
+        public get certs(): pki.CertificateCollection {
+            return new pki.CertificateCollection(this.handle.getCerts());
+        }
     }
 }

@@ -24,6 +24,7 @@ public:
 	~PkiStore(){};
 
 public:
+	Handle<CertificateCollection> getCerts();
 	Handle<PkiItemCollection> getItems();
 
 	Handle<ProviderCollection> providers;

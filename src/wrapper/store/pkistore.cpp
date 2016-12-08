@@ -347,6 +347,36 @@ Handle<PkiItemCollection> PkiStore::getItems(){
 	}	
 }
 
+Handle<CertificateCollection> PkiStore::getCerts(){
+	LOGGER_FN();
+
+	try{
+		Handle<CertificateCollection> result = new CertificateCollection();
+
+		if (providers->length() == 0){
+			THROW_EXCEPTION(0, PkiStore, NULL, "Collection providers empty");
+		}
+
+		for (int i = 0; i < providers->length(); i++){
+			Handle<PkiItemCollection> tempColl;
+
+			tempColl = providers->items(i)->getProviderItemCollection();
+
+			for (int j = 0; j < tempColl->length(); j++){
+				if (strcmp(tempColl->items(j)->type->c_str(), "CERTIFICATE") == 0){
+					Handle<Certificate> cert = getItemCert(tempColl->items(j));
+					result->push(cert);
+				}
+			}
+		}
+
+		return result;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, PkiStore, e, "Error get certs from store");
+	}
+}
+
 void PkiStore::addProvider(Handle<Provider> provider){
 	LOGGER_FN();
 	

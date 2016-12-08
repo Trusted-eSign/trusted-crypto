@@ -23,6 +23,7 @@ public:
 	static NAN_METHOD(Find);
 	static NAN_METHOD(FindKey);
 	static NAN_METHOD(GetItem);
+	static NAN_METHOD(GetCerts);
 };
 
 WRAP_CLASS(Provider){

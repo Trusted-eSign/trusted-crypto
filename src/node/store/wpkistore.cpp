@@ -5,6 +5,7 @@
 #include "wcashjson.h"
 
 #include "../pki/wcert.h"
+#include "../pki/wcerts.h"
 #include "../pki/wcrl.h"
 #include "../pki/wcertReg.h"
 #include "../pki/wkey.h"
@@ -31,6 +32,7 @@ void WPkiStore::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "find", Find);
 	Nan::SetPrototypeMethod(tpl, "findKey", FindKey);
 	Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
+	Nan::SetPrototypeMethod(tpl, "getCerts", GetCerts);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -371,6 +373,19 @@ NAN_METHOD(WPkiStore::GetItem){
 			info.GetReturnValue().Set(v8Key);
 		}
 
+		return;
+	}
+
+	TRY_END();
+}
+
+NAN_METHOD(WPkiStore::GetCerts){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(PkiStore);
+		
+		info.GetReturnValue().Set(WCertificateCollection::NewInstance(_this->getCerts()));
 		return;
 	}
 
