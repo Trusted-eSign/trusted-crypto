@@ -46,7 +46,7 @@ Handle<std::string> Signer::getSignature(){
 Handle<SignerAttributeCollection> Signer::signedAttributes(){
 	LOGGER_FN();
 
-	Handle<SignerAttributeCollection> attrs = new SignerAttributeCollection(this, true);
+	Handle<SignerAttributeCollection> attrs = new SignerAttributeCollection(new Signer(this->internal(), this->handle()), true);
 
 	return attrs;
 }
