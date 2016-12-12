@@ -72,7 +72,8 @@ NAN_METHOD(WSigner::VerifyContent) {
 				return;
 			}
 
-			buffer = new Bio(pBuffer);
+			Handle<std::string> in = (new Bio(pBuffer))->read();
+			buffer = new Bio(BIO_TYPE_MEM, in->c_str());
 		}
 		else{
 			LOGGER_INFO("Set content from buffer");
