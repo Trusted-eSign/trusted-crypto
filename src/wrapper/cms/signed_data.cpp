@@ -230,16 +230,12 @@ bool SignedData::verify(Handle<CertificateCollection> certs){
 		res = CMS_verify(this->internal(), pCerts, store, content->internal(), NULL, flags);
 		LOGGER_OPENSSL("X509_STORE_free");
 		X509_STORE_free(store);
-		if (!res){
-			THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "CMS_verify");
-		}
+		
+		return res == 1;
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, SignedData, e, "Error CMS verify");
-		return 0;
 	}
-
-	return 1;
 }
 
 Handle<SignedData> SignedData::sign(Handle<Certificate> cert, Handle<Key> pkey, Handle<CertificateCollection> certs, Handle<Bio> content, unsigned int flags){
