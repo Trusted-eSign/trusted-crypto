@@ -142,15 +142,29 @@ bool Signer::verify(Handle<Bio> content){
 	LOGGER_FN();
 
 	try {
+		ASN1_OCTET_STRING *os = NULL;
 		EVP_PKEY *pkey = NULL;
 		EVP_MD_CTX *mctx = NULL;
 		EVP_PKEY_CTX* pctx = NULL;
+		unsigned char mval[EVP_MAX_MD_SIZE];
+		unsigned int mlen;
 		const EVP_MD *md = NULL;
 		const char * digestName;
 		Handle<std::string> signature;
 		char *data;
 		long datalen;
 		int res = 0;
+
+		LOGGER_OPENSSL("CMS_signed_get_attr_count");
+		if (CMS_signed_get_attr_count(this->internal()) >= 0) {
+			LOGGER_OPENSSL("CMS_signed_get0_data_by_OBJ");
+			os = (ASN1_OCTET_STRING *)CMS_signed_get0_data_by_OBJ(this->internal(),
+				OBJ_nid2obj(NID_pkcs9_messageDigest),
+				-3, V_ASN1_OCTET_STRING);
+			if (!os) {
+				THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "Error reading messagedigest attribute");
+			}
+		}
 		
 		if ( !(pkey = this->getCertificate()->getPublicKey()->internal()) ) {
 			THROW_EXCEPTION(0, Signer, NULL, "Error get public key");
@@ -185,11 +199,30 @@ bool Signer::verify(Handle<Bio> content){
 			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "EVP_DigestVerifyUpdate");
 		}
 
-		LOGGER_OPENSSL("EVP_DigestVerifyFinal");
-		res = EVP_DigestVerifyFinal(mctx, (const unsigned char *)signature->c_str(), signature->length());
+		if (EVP_DigestFinal_ex(mctx, mval, &mlen) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "Unable to finalize context");
+		}
 
-		if (res < 0) {
-			THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_verify_content");
+		if (os) {
+			if (mlen != (unsigned int)os->length) {
+				THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "Messagedigest attribute wrong length");
+			}
+
+			if (memcmp(mval, os->data, mlen)) {
+				CMSerr(CMS_F_CMS_SIGNERINFO_VERIFY_CONTENT,
+					CMS_R_VERIFICATION_FAILURE);
+				res = 0;
+			}
+			else
+				res = 1;
+		}
+		else {
+			LOGGER_OPENSSL("EVP_PKEY_verify");
+			res = EVP_PKEY_verify(pctx, (const unsigned char *)signature->c_str(), signature->length(), mval, mlen);
+
+			if (res < 0) {
+				THROW_OPENSSL_EXCEPTION(0, Signer, NULL, "CMS_SignerInfo_verify_content");
+			}	
 		}
 
 		if (pctx) {
