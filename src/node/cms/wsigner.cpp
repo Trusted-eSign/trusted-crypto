@@ -66,14 +66,16 @@ NAN_METHOD(WSigner::VerifyContent) {
 			LOGGER_INFO("Set content from file");
 			v8::String::Utf8Value v8Filename(info[0]->ToString());
 
-			BIO *pBuffer = BIO_new_file(*v8Filename, "r");
+			BIO *pBuffer = BIO_new_file(*v8Filename, "rb");
 			if (!pBuffer){
 				Nan::ThrowError("File not found");
 				return;
 			}
 
 			Handle<std::string> in = (new Bio(pBuffer))->read();
-			buffer = new Bio(BIO_TYPE_MEM, in->c_str());
+			BIO *mem = BIO_new(BIO_s_mem());
+			BIO_write(mem, in->c_str(), in->length());
+			buffer = new Bio(mem);
 		}
 		else{
 			LOGGER_INFO("Set content from buffer");

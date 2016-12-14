@@ -289,7 +289,7 @@ NAN_METHOD(WSignedData::SetContent) {
 			LOGGER_INFO("Set content from file");
 			v8::String::Utf8Value v8Filename(info[0]->ToString());
 
-			BIO *pBuffer = BIO_new_file(*v8Filename, "r");
+			BIO *pBuffer = BIO_new_file(*v8Filename, "rb");
 			if (!pBuffer){
 				Nan::ThrowError("File not found");
 				return;
