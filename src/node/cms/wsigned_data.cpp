@@ -325,6 +325,7 @@ NAN_METHOD(WSignedData::Verify) {
 		WCertificateCollection *wcerts = WCertificateCollection::Unwrap<WCertificateCollection>(info[0]->ToObject());
 
 		bool res = _this->verify(wcerts->data_);
+		_this->getContent()->reset();
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
