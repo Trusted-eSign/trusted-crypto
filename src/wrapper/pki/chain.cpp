@@ -70,6 +70,9 @@ bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollectio
 			X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CRL_CHECK_ALL);
 		}
 
+		LOGGER_OPENSSL(X509_STORE_CTX_set_flags);
+		X509_STORE_CTX_set_flags(ctx, X509_V_FLAG_CHECK_SS_SIGNATURE);
+
 		LOGGER_OPENSSL(X509_verify_cert);
 		if (X509_verify_cert(ctx) <= 0){
 			return false;
