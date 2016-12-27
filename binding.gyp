@@ -116,7 +116,7 @@
                         "include_dirs": [
                             "<(openssl_root)/include"
                         ],
-                        "defines": [ "CTWRAPPER_STATIC", "TRUSTED_ESIGN=1" ],
+                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP" ],
                         "msbuild_settings": {
                             "Link": {
                                 "ImageHasSafeExceptionHandlers": "false"
