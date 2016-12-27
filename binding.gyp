@@ -6,6 +6,7 @@
                 "src/node/main.cpp",
                 "src/node/helper.cpp",
                 "src/node/stdafx.cpp",
+                "src/node/pkcs11/wslot.cpp",
                 "src/node/utils/wlog.cpp",
                 "src/node/utils/wrap.cpp",
                 "src/node/utils/wjwt.cpp",
@@ -37,6 +38,7 @@
                 "src/node/cms/wcmsRecipientInfos.cpp",
                 "src/wrapper/stdafx.cpp",
                 "src/wrapper/utils/jwt.cpp",
+                "src/wrapper/pkcs11/slot.cpp",
                 "src/wrapper/common/bio.cpp",
                 "src/wrapper/common/common.cpp",
                 "src/wrapper/common/excep.cpp",
@@ -114,7 +116,7 @@
                         "include_dirs": [
                             "<(openssl_root)/include"
                         ],
-                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP" ],
+                        "defines": [ "CTWRAPPER_STATIC", "TRUSTED_ESIGN=1" ],
                         "msbuild_settings": {
                             "Link": {
                                 "ImageHasSafeExceptionHandlers": "false"
