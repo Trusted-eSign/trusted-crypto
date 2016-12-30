@@ -2,7 +2,9 @@
 /build
 /buildjs
 /types
+/.nyc_output
 logger.txt
 test/CertStore
 test/out
 .vscode/launch.json
+npm-debug.log
