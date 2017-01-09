@@ -45,7 +45,6 @@
         "lib/pkistore/pmicrosoft.ts",
         "lib/pkistore/psystem.ts",
         "lib/pkistore/pkistore.ts",
-        "lib/pkcs11/slot.ts",
         "lib/native.js",
         "lib/trusted.ts"
     ]

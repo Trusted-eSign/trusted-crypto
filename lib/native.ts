@@ -437,10 +437,4 @@ declare namespace native {
             public checkLicense(data?: string): boolean;
         }
     }
-
-    namespace PKCS11 {
-        class Slot {
-            public findToken(): string;
-        }
-    }
 }

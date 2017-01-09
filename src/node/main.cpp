@@ -42,8 +42,6 @@
 #include "cms/wcmsRecipientInfo.h"
 #include "cms/wcmsRecipientInfos.h"
 
-#include "pkcs11/wslot.h"
-
 #include <node_object_wrap.h>
 
 void init(v8::Handle<v8::Object> target) {
@@ -109,11 +107,6 @@ void init(v8::Handle<v8::Object> target) {
 	WFilter::Init(PkiStore);
 	WPkiItem::Init(PkiStore);
 	WCashJson::Init(PkiStore);
-
-	v8::Local<v8::Object> Pkcs11 = Nan::New<v8::Object>();
-
-	target->Set(Nan::New("PKCS11").ToLocalChecked(), Pkcs11);
-	WSlot::Init(Pkcs11);
 
 	// target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
 	// WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());
