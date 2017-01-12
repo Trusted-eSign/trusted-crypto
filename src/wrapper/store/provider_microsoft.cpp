@@ -47,9 +47,7 @@ void ProviderMicrosoft::init(){
 			enumCertificates(hCertStore, &listStore[i]);
 			enumCrls(hCertStore, &listStore[i]);
 
-			if (hCertStore) {
-				CertCloseStore(hCertStore, 0);
-			}
+			CertCloseStore(hCertStore, 0);
 		}
 	}
 	catch (Handle<Exception> e){
@@ -248,13 +246,9 @@ Handle<Certificate> ProviderMicrosoft::getCert(Handle<std::string> hash, Handle<
 				THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "'d2i_X509' Error decode len bytes");
 			}
 
-			if (pCertContext){
-				CertFreeCertificateContext(pCertContext);
-			}
+			CertFreeCertificateContext(pCertContext);
 				
-			if (hCertStore) {
-				CertCloseStore(hCertStore, 0);
-			}
+			CertCloseStore(hCertStore, 0);
 
 			return new Certificate(hcert);
 		}
@@ -318,9 +312,7 @@ Handle<CRL> ProviderMicrosoft::getCRL(Handle<std::string> hash, Handle<std::stri
 			CertFreeCRLContext(pCrlContext);
 		}
 
-		if (hCertStore) {
-			CertCloseStore(hCertStore, 0);
-		}
+		CertCloseStore(hCertStore, 0);
 
 		THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Cannot find CRL in store");
 	}
@@ -414,9 +406,9 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error get key");
 	}
 
-	if (mctx) EVP_MD_CTX_destroy(mctx);
-	if (pkey) EVP_PKEY_free(pkey);
-	if (pctx) EVP_PKEY_CTX_free(pctx);
+	EVP_MD_CTX_destroy(mctx);
+	EVP_PKEY_free(pkey);
+	EVP_PKEY_CTX_free(pctx);
 }
 
 int ProviderMicrosoft::char2int(char input) {
