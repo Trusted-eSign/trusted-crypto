@@ -19,8 +19,9 @@ public:
 
 	//Properties
 public:
-	Handle<std::string> revocationDate();
-	int reason();
+	Handle<std::string> getSerialNumber();
+	Handle<std::string> getRevocationDate();
+	int getReason();
 };
 
 #endif //!CMS_PKI_REVOKED_H_INCLUDED

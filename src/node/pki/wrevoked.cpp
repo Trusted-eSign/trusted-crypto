@@ -13,6 +13,7 @@ void WRevoked::Init(v8::Handle<v8::Object> exports){
 
 	Nan::SetPrototypeMethod(tpl, "duplicate", Duplicate);
 
+	Nan::SetPrototypeMethod(tpl, "getSerialNumber", GetSerialNumber);
 	Nan::SetPrototypeMethod(tpl, "getRevocationDate", GetRevocationDate);
 	Nan::SetPrototypeMethod(tpl, "getReason", GetReason);
 
@@ -48,13 +49,29 @@ NAN_METHOD(WRevoked::Duplicate)
 	TRY_END();
 }
 
+NAN_METHOD(WRevoked::GetSerialNumber)
+{
+	try{
+
+		UNWRAP_DATA(Revoked);
+
+		Handle<std::string> buf = _this->getSerialNumber();
+
+		info.GetReturnValue().Set(
+			stringToBuffer(buf)
+		);
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WRevoked::GetRevocationDate)
 {
 	try{
 
 		UNWRAP_DATA(Revoked);
 
-		Handle<std::string> time = _this->revocationDate();
+		Handle<std::string> time = _this->getRevocationDate();
 		v8::Local<v8::String> v8Time = Nan::New<v8::String>(time->c_str()).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8Time);
@@ -70,7 +87,7 @@ NAN_METHOD(WRevoked::GetReason)
 	try {
 		UNWRAP_DATA(Revoked);
 
-		int reason = _this->reason();
+		int reason = _this->getReason();
 
 		info.GetReturnValue().Set(
 			Nan::New<v8::Number>(reason)

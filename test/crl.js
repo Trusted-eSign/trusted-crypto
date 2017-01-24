@@ -78,6 +78,7 @@ describe("CRL", function() {
         assert.equal(rvst.length === 17, true, "Incorrect length");
 
         rv = rvst.items(0);
+        assert.equal(rv.duplicate().serialNumber === "782533159C9BDAC24414B6D0C478E0C0E06C6FBF", true, "Error get serial number");
         assert.equal(rv.duplicate().revocationDate === "Apr  7 20:43:24 2011 GMT", true, "Error duplicate");
         assert.equal(rv.revocationDate === "Apr  7 20:43:24 2011 GMT", true, "Error revocation date");
         assert.equal(rv.reason === 0, true, "Error revocation reason");

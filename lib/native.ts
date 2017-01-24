@@ -78,6 +78,7 @@ declare namespace native {
         }
 
         class Revoked {
+            public getSerialNumber(): string;
             public getRevocationDate(): string;
             public getReason(): number;
 

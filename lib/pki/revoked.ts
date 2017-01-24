@@ -45,6 +45,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Return serial nuber
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Revoked
+         */
+        get serialNumber(): string {
+            return this.handle.getSerialNumber().toString();
+        }
+
+        /**
          * Return revocation date
          *
          * @readonly

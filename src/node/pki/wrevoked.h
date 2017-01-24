@@ -16,6 +16,8 @@ public:
 	static NAN_METHOD(New);
 
 	static NAN_METHOD(Duplicate);
+
+	static NAN_METHOD(GetSerialNumber);
 	static NAN_METHOD(GetRevocationDate);
 	static NAN_METHOD(GetReason);
 
