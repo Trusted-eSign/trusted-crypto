@@ -2,7 +2,7 @@
 
 #include <node_buffer.h>
 
-#include "wcertRegInfo.h"
+#include "wcert_request_info.h"
 #include "wkey.h"
 
 void WCertificationRequestInfo::Init(v8::Handle<v8::Object> exports){

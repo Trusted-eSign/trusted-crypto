@@ -1,6 +1,6 @@
 #include "../stdafx.h"
 
-#include "certReg.h"
+#include "cert_request.h"
 #include "key.h"
 
 CertificationRequest::CertificationRequest(Handle<CertificationRequestInfo> csrinfo) :SSLObject<X509_REQ>(X509_REQ_new(), &so_X509_REQ_free){

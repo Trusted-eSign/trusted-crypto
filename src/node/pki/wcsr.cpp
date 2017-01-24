@@ -3,7 +3,7 @@
 #include <node_buffer.h>
 
 #include "wcsr.h"
-#include "wcertReg.h"
+#include "wcert_request.h"
 #include "wkey.h"
 
 void WCSR::Init(v8::Handle<v8::Object> exports){

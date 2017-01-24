@@ -10,7 +10,7 @@
 #include "../pki/crl.h"
 #include "../pki/key.h"
 #include "../pki/csr.h"
-#include "../pki/certReg.h"
+#include "../pki/cert_request.h"
 
 #include "storehelper.h"
 #include "cashjson.h"

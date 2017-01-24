@@ -7,7 +7,7 @@
 #include "../pki/wcert.h"
 #include "../pki/wcerts.h"
 #include "../pki/wcrl.h"
-#include "../pki/wcertReg.h"
+#include "../pki/wcert_request.h"
 #include "../pki/wkey.h"
 
 #include "../../wrapper/common/common.h"

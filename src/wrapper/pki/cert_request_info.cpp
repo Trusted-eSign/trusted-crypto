@@ -1,6 +1,6 @@
 #include "../stdafx.h"
 
-#include "certRegInfo.h"
+#include "cert_request_info.h"
 #include "key.h"
 
 void CertificationRequestInfo::setSubject(Handle<std::string> xName) {

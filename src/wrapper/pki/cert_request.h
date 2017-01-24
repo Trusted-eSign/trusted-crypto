@@ -8,7 +8,7 @@
 class CTWRAPPER_API CertificationRequest;
 
 #include "pki.h"
-#include "certRegInfo.h"
+#include "cert_request_info.h"
 
 SSLOBJECT_free(X509_REQ, X509_REQ_free)
 

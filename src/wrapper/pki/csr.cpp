@@ -2,8 +2,8 @@
 
 #include "csr.h"
 #include "key.h"
-#include "certRegInfo.h"
-#include "certReg.h"
+#include "cert_request_info.h"
+#include "cert_request.h"
 
 CSR::CSR(Handle<std::string> x509Name, Handle<Key> key, const char* digest){
 	LOGGER_FN();
