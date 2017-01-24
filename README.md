@@ -18,7 +18,7 @@ Trusted crypto library
 ## Build
 
 ```
-> npm install
+> npm run build
 
 ```
 
