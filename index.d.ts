@@ -100,9 +100,18 @@ declare namespace native {
             duplicate(): Certificate;
             hash(digestName: string): Buffer;
         }
-        class RevokedCertificate {
-            revocationDate(): string;
-            reason(): number;
+        class Revoked {
+            getSerialNumber(): string;
+            getRevocationDate(): string;
+            getReason(): number;
+            duplicate(): Revoked;
+        }
+        class RevokedCollection {
+            items(index: number): Revoked;
+            length(): number;
+            push(rv: Revoked): void;
+            pop(): void;
+            removeAt(index: number): void;
         }
         class CertificateCollection {
             items(index: number): Certificate;
@@ -124,8 +133,7 @@ declare namespace native {
             getSigAlgName(): string;
             getSigAlgShortName(): string;
             getSigAlgOID(): string;
-            getRevokedCertificateCert(cer: Certificate): RevokedCertificate;
-            getRevokedCertificateSerial(serial: string): RevokedCertificate;
+            getRevoked(): RevokedCollection;
             load(filename: string, dataFormat: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
@@ -806,7 +814,7 @@ declare namespace trusted.pki {
          *
          * @memberOf Attribute
          */
-        dupicate(): Attribute;
+        duplicate(): Attribute;
         /**
          * Return attribute in DER
          *
@@ -1503,23 +1511,13 @@ declare namespace trusted.pki {
          */
         readonly sigAlgOID: string;
         /**
-         * Return revoked certificate
+         * Return revoced collection
          *
-         * @param {Certificate} cer
-         * @returns {native.PKI.RevokedCertificate}
-         *
+         * @readonly
+         * @type {native.PKI.RevokedCollection}
          * @memberOf Crl
          */
-        getRevokedCertificateCert(cer: Certificate): native.PKI.RevokedCertificate;
-        /**
-         * Return revoked certificates serial number
-         *
-         * @param {string} serial
-         * @returns {native.PKI.RevokedCertificate}
-         *
-         * @memberOf Crl
-         */
-        getRevokedCertificateSerial(serial: string): native.PKI.RevokedCertificate;
+        readonly revoked: RevokedCollection;
         /**
          * Load CRL from file
          *
@@ -1591,6 +1589,131 @@ declare namespace trusted.pki {
          * @memberOf Crl
          */
         duplicate(): Crl;
+    }
+}
+declare namespace trusted.pki {
+    /**
+     * Wrap X509_REVOKED
+     *
+     * @export
+     * @class Revoked
+     * @extends {BaseObject<native.PKI.Revoked>}
+     */
+    class Revoked extends BaseObject<native.PKI.Revoked> {
+        /**
+         * Creates an instance of Revoked.
+         *
+         *
+         * @memberOf Revoked
+         */
+        constructor();
+        /**
+         * Creates an instance of Revoked.
+         *
+         * @param {native.PKI.Revoked} handle
+         *
+         * @memberOf Revoked
+         */
+        constructor(handle: native.PKI.Revoked);
+        /**
+         * Return serial nuber
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Revoked
+         */
+        readonly serialNumber: string;
+        /**
+         * Return revocation date
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Revoked
+         */
+        readonly revocationDate: string;
+        /**
+         * Return reason
+         *
+         * @readonly
+         * @type {number}
+         * @memberOf Revoked
+         */
+        readonly reason: number;
+        /**
+         * Return Revoked duplicat
+         *
+         * @returns {Revoked}
+         *
+         * @memberOf Revoked
+         */
+        duplicate(): Revoked;
+    }
+}
+declare namespace trusted.pki {
+    /**
+     * Collection of Revoked
+     *
+     * @export
+     * @class RevokedCollection
+     * @extends {BaseObject<native.PKI.RevokedCollection>}
+     * @implements {core.ICollectionWrite}
+     */
+    class RevokedCollection extends BaseObject<native.PKI.RevokedCollection> implements core.ICollectionWrite {
+        /**
+         * Creates an instance of RevokedCollection.
+         *
+         * @param {native.PKI.RevokedCollection} handle
+         *
+         * @memberOf RevokedCollection
+         */
+        constructor(handle: native.PKI.RevokedCollection);
+        /**
+         * Creates an instance of RevokedCollection.
+         *
+         *
+         * @memberOf RevokedCollection
+         */
+        constructor();
+        /**
+         * Return element by index from collection
+         *
+         * @param {number} index
+         * @returns {Revoked}
+         *
+         * @memberOf RevokedCollection
+         */
+        items(index: number): Revoked;
+        /**
+         * Return collection length
+         *
+         * @readonly
+         * @type {number}
+         * @memberOf RevokedCollection
+         */
+        readonly length: number;
+        /**
+         * Add new element to collection
+         *
+         * @param {Revoked} revoked
+         *
+         * @memberOf RevokedCollection
+         */
+        push(rv: Revoked): void;
+        /**
+         * Remove last element from collection
+         *
+         *
+         * @memberOf RevokedCollection
+         */
+        pop(): void;
+        /**
+         * Remove element by index from collection
+         *
+         * @param {number} index
+         *
+         * @memberOf RevokedCollection
+         */
+        removeAt(index: number): void;
     }
 }
 declare namespace trusted.pki {
