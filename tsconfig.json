@@ -28,6 +28,8 @@
         "lib/pki/certReqInfo.ts",
         "lib/pki/revocation.ts",
         "lib/pki/crl.ts",
+        "lib/pki/revoked.ts",
+        "lib/pki/revokeds.ts",
         "lib/pki/crls.ts",
         "lib/pki/csr.ts",
         "lib/pki/chain.ts",

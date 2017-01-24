@@ -37,8 +37,7 @@ public:
 	static NAN_METHOD(GetSigAlgShortName);
 	static NAN_METHOD(GetSigAlgOID);
 
-	static NAN_METHOD(GetRevokedCertificateCert);
-	static NAN_METHOD(GetRevokedCertificateSerial);
+	static NAN_METHOD(GetRevoked);
 
 	WRAP_NEW_INSTANCE(CRL);
 };

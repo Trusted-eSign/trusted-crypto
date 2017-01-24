@@ -1,10 +1,12 @@
-#ifndef CMS_PKI_CRL_H_INCLUDED
-#define  CMS_PKI_CRL_H_INCLUDED
+#ifndef PKI_CRL_H_INCLUDED
+#define PKI_CRL_H_INCLUDED
 
 #include <openssl/x509v3.h>
 #include <openssl/pem.h>
 
 #include "../common/common.h"
+
+#include "revokeds.h"
 
 #define ERROR_CRL_BAD_INPUT_DATA "Input data is not CRL"
 #define ERROR_CRL_BAD_DIR_INPUT_DATA "Input data is not binary CRL format"
@@ -41,8 +43,7 @@ public:
 	Handle<std::string> getSigAlgShortName();
 	Handle<std::string> getSigAlgOID();
 	long getVersion();
-	Handle<RevokedCertificate> getRevokedCertificate(Handle<Certificate> cert);
-	Handle<RevokedCertificate> getRevokedCertificate(Handle<std::string> serial);
+	Handle<RevokedCollection> getRevoked();
 public:
 	Handle<std::string> issuerName();
 	Handle<std::string> issuerFriendlyName();
@@ -50,17 +51,4 @@ protected:
 	static Handle<std::string> GetCommonName(X509_NAME *a);
 };
 
-
-SSLOBJECT_free(X509_REVOKED, X509_REVOKED_free);
-class RevokedCertificate : public SSLObject < X509_REVOKED > {
-public:
-	SSLOBJECT_new(RevokedCertificate, X509_REVOKED){}
-	SSLOBJECT_new_null(RevokedCertificate, X509_REVOKED, X509_REVOKED_new){}
-
-	//Properties
-public:
-	Handle<std::string> revocationDate();
-	int reason();
-};
-
-#endif //!CMS_PKI_CRL_H_INCLUDED
+#endif // PKI_CRL_H_INCLUDED

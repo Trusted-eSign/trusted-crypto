@@ -70,9 +70,22 @@ describe("CRL", function() {
     });
 
     it("revoked", function() {
-        var crl1;
+        var crl1, rvst, rv;
 
         crl1 = trusted.pki.Crl.load(DEFAULT_RESOURCES_PATH + "/test.crl");
-        crl1.getRevokedCertificateCert(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/test.crt"));
+        rvst = crl1.revoked;
+
+        assert.equal(rvst.length === 17, true, "Incorrect length");
+
+        rv = rvst.items(0);
+        assert.equal(rv.duplicate().revocationDate === "Apr  7 20:43:24 2011 GMT", true, "Error duplicate");
+        assert.equal(rv.revocationDate === "Apr  7 20:43:24 2011 GMT", true, "Error revocation date");
+        assert.equal(rv.reason === 0, true, "Error revocation reason");
+
+        rvst.removeAt(0);
+        assert.equal(rvst.length === 16, true, "Error remove revoked");
+
+        rvst.push(rv);
+        assert.equal(rvst.length === 17 && rvst.items(16).revocationDate === "Apr  7 20:43:24 2011 GMT", true, "Error push revoked");
     });
 });

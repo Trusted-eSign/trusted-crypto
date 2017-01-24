@@ -1,7 +1,7 @@
 #include "../stdafx.h"
 
 #include "wcrl.h"
-#include "wcert.h"
+#include "wrevokeds.h"
 
 void WCRL::Init(v8::Handle<v8::Object> exports){
 	v8::Local<v8::String> className = Nan::New("CRL").ToLocalChecked();
@@ -34,8 +34,7 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getSigAlgShortName", GetSigAlgShortName);
 	Nan::SetPrototypeMethod(tpl, "getSigAlgOID", GetSigAlgOID);
 
-	Nan::SetPrototypeMethod(tpl, "getRevokedCertificateCert", GetRevokedCertificateCert);
-	Nan::SetPrototypeMethod(tpl, "getRevokedCertificateSerial", GetRevokedCertificateSerial);
+	Nan::SetPrototypeMethod(tpl, "getRevoked", GetRevoked);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -456,37 +455,15 @@ NAN_METHOD(WCRL::GetSigAlgOID) {
 	TRY_END();
 }
 
-NAN_METHOD(WCRL::GetRevokedCertificateCert) {
-	METHOD_BEGIN();
-
-	try {
-		UNWRAP_DATA(CRL);
-		
-		LOGGER_ARG("certificate")
-		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
-
-		_this->getRevokedCertificate(wCert->data_);
-
-		info.GetReturnValue().Set(info.This());
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WCRL::GetRevokedCertificateSerial) {
+NAN_METHOD(WCRL::GetRevoked) {
 	METHOD_BEGIN();
 
 	try {
 		UNWRAP_DATA(CRL);
 
-		LOGGER_ARG("serial")
-		v8::String::Utf8Value v8serial(info[0]->ToString());
-		char *serial = *v8serial;
-		std::string strSerial(serial);
-
-		_this->getRevokedCertificate(&strSerial);
-
-		info.GetReturnValue().Set(info.This());
+		Handle<RevokedCollection> rv = _this->getRevoked();
+		v8::Local<v8::Object> v8Rv = WRevokedCollection::NewInstance(rv);
+		info.GetReturnValue().Set(v8Rv);
 		return;
 	}
 	TRY_END();

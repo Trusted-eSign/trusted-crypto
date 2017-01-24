@@ -77,9 +77,19 @@ declare namespace native {
             public hash(digestName: string): Buffer;
         }
 
-        class RevokedCertificate {
-            public revocationDate(): string;
-            public reason(): number;
+        class Revoked {
+            public getRevocationDate(): string;
+            public getReason(): number;
+
+            public duplicate(): Revoked;
+        }
+
+        class RevokedCollection {
+            public items(index: number): Revoked;
+            public length(): number;
+            public push(rv: Revoked): void;
+            public pop(): void;
+            public removeAt(index: number): void;
         }
 
         class CertificateCollection {
@@ -103,8 +113,7 @@ declare namespace native {
             public getSigAlgName(): string;
             public getSigAlgShortName(): string;
             public getSigAlgOID(): string;
-            public getRevokedCertificateCert(cer: Certificate): RevokedCertificate;
-            public getRevokedCertificateSerial(serial: string): RevokedCertificate;
+            public getRevoked(): RevokedCollection;
 
             public load(filename: string, dataFormat: trusted.DataFormat): void;
             public import(raw: Buffer, dataFormat: trusted.DataFormat): void;

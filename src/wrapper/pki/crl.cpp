@@ -333,57 +333,9 @@ Handle<std::string> CRL::getThisUpdate(){
 	return ASN1_TIME_toString(time);
 }
 
-
-Handle<RevokedCertificate> CRL::getRevokedCertificate(Handle<Certificate> cert){
+Handle<RevokedCollection> CRL::getRevoked(){
 	LOGGER_FN();
 
-	if (cert.isEmpty()){
-		THROW_EXCEPTION(0, CRL, NULL, ERROR_PARAMETER_NULL, 1);
-	}		
-	X509_REVOKED *rc = NULL;
-	LOGGER_OPENSSL(X509_CRL_get0_by_cert);
-	if (X509_CRL_get0_by_cert(this->internal(), &rc, cert->internal())){
-		return new RevokedCertificate(rc, this->handle());
-	}
-	else{
-		return NULL;
-	}
-}
-
-Handle<RevokedCertificate> CRL::getRevokedCertificate(Handle<std::string> serial){
-	LOGGER_FN();
-
-	if (serial.isEmpty()){
-		THROW_EXCEPTION(0, CRL, NULL, ERROR_PARAMETER_NULL, 1);
-	}	
-	
-	BIGNUM* bn = BN_new();
-	BN_bin2bn((const unsigned char *)serial->data(), serial->length(), bn);
-
-	ASN1_INTEGER* asnInt = ASN1_INTEGER_new();
-	BN_to_ASN1_INTEGER(bn, asnInt);
-
-	X509_REVOKED *rc = NULL;	
-	LOGGER_OPENSSL(X509_CRL_get0_by_serial);
-	if (X509_CRL_get0_by_serial(this->internal(), &rc, asnInt)){
-		return new RevokedCertificate(rc, this->handle());
-	}
-	else{
-		return NULL;
-	}
-}
-
-Handle<std::string> RevokedCertificate::revocationDate()
-{
-	LOGGER_FN();
-
-	ASN1_TIME *time = this->internal()->revocationDate;
-	return ASN1_TIME_toString(time);
-}
-
-int RevokedCertificate::reason()
-{
-	LOGGER_FN();
-
-	return this->internal()->reason;
+	LOGGER_OPENSSL(X509_CRL_get_REVOKED);
+	return new RevokedCollection(X509_CRL_get_REVOKED(this->internal()), this->handle());
 }

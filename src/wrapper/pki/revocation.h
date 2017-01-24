@@ -8,6 +8,7 @@ class CTWRAPPER_API CRL;
 
 #include "crl.h"
 #include "cert.h"
+#include "../store/pkistore.h"
 
 class Revocation{
 public:	

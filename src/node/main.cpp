@@ -14,6 +14,8 @@
 #include "pki/wpkcs12.h"
 #include "pki/wcerts.h"
 #include "pki/wcrl.h"
+#include "pki/wrevoked.h"
+#include "pki/wrevokeds.h"
 #include "pki/wcrls.h"
 #include "pki/woid.h"
 #include "pki/walg.h"
@@ -71,6 +73,8 @@ void init(v8::Handle<v8::Object> target) {
 	WCertificateCollection::Init(Pki);
 	WCRL::Init(Pki);
 	WCrlCollection::Init(Pki);
+	WRevoked::Init(Pki);
+	WRevokedCollection::Init(Pki);
 	WOID::Init(Pki);
 	WAlgorithm::Init(Pki);
 	WAttribute::Init(Pki);

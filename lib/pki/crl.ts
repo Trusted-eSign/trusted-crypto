@@ -200,27 +200,14 @@ namespace trusted.pki {
         }
 
         /**
-         * Return revoked certificate
+         * Return revoced collection
          *
-         * @param {Certificate} cer
-         * @returns {native.PKI.RevokedCertificate}
-         *
+         * @readonly
+         * @type {native.PKI.RevokedCollection}
          * @memberOf Crl
          */
-        public getRevokedCertificateCert(cer: Certificate): native.PKI.RevokedCertificate {
-            return this.handle.getRevokedCertificateCert(cer.handle);
-        }
-
-        /**
-         * Return revoked certificates serial number
-         *
-         * @param {string} serial
-         * @returns {native.PKI.RevokedCertificate}
-         *
-         * @memberOf Crl
-         */
-        public getRevokedCertificateSerial(serial: string): native.PKI.RevokedCertificate {
-            return this.handle.getRevokedCertificateSerial(serial);
+        get revoked(): RevokedCollection {
+            return RevokedCollection.wrap<native.PKI.RevokedCollection, RevokedCollection>(this.handle.getRevoked());
         }
 
         /**
