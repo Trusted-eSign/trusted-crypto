@@ -86,7 +86,7 @@ namespace trusted.pki {
          *
          * @memberOf Attribute
          */
-        public dupicate(): Attribute {
+        public duplicate(): Attribute {
             let nattr: any = this.handle.duplicate();
             let attr: Attribute = Attribute.wrap<native.PKI.Attribute, Attribute>(nattr);
 
