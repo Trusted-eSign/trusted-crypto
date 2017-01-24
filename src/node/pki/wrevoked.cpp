@@ -87,11 +87,10 @@ NAN_METHOD(WRevoked::GetReason)
 	try {
 		UNWRAP_DATA(Revoked);
 
-		int reason = _this->getReason();
+		Handle<std::string> reason = _this->getReason();
+		v8::Local<v8::String> v8Reason = Nan::New<v8::String>(reason->c_str()).ToLocalChecked();
 
-		info.GetReturnValue().Set(
-			Nan::New<v8::Number>(reason)
-			);
+		info.GetReturnValue().Set(v8Reason);
 		return;
 	}
 	TRY_END();

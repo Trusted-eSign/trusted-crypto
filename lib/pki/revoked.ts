@@ -73,7 +73,7 @@ namespace trusted.pki {
          * @type {number}
          * @memberOf Revoked
          */
-        get reason(): number {
+        get reason(): string {
             return this.handle.getReason();
         }
 

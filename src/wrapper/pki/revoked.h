@@ -21,7 +21,7 @@ public:
 public:
 	Handle<std::string> getSerialNumber();
 	Handle<std::string> getRevocationDate();
-	int getReason();
+	Handle<std::string> getReason();
 };
 
 #endif //!CMS_PKI_REVOKED_H_INCLUDED

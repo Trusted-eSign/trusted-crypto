@@ -39,11 +39,22 @@ Handle<std::string> Revoked::getSerialNumber() {
 	return sn_str;
 }
 
-int Revoked::getReason()
+Handle<std::string> Revoked::getReason()
 {
 	LOGGER_FN();
 
-	return this->internal()->reason;
+	Handle<Bio> out = new Bio(BIO_TYPE_MEM, "");
+	STACK_OF(X509_EXTENSION) *exts = this->internal()->extensions;
+	LOGGER_OPENSSL(sk_X509_EXTENSION_num);
+	for (int i = 0; i < sk_X509_EXTENSION_num(exts); i++) {
+		X509_EXTENSION *ex;
+		LOGGER_OPENSSL(sk_X509_EXTENSION_value);
+        ex = sk_X509_EXTENSION_value(exts, i);
+		LOGGER_OPENSSL(X509V3_EXT_print);
+		X509V3_EXT_print(out->internal(), ex, NULL, 0);
+	}
+	
+	return out->read();
 }
 
 Handle<Revoked> Revoked::duplicate(){
