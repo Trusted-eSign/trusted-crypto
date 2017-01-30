@@ -92,7 +92,7 @@ namespace trusted.pki {
          *
          * @memberOf Revocation
          */
-        public getCrlDistPoints(cert: Certificate): Array<string> {
+        public getCrlDistPoints(cert: Certificate): string[] {
             return this.handle.getCrlDistPoints(cert.handle);
         }
 
@@ -117,7 +117,7 @@ namespace trusted.pki {
          *
          * @memberOf Revocation
          */
-        public downloadCRL(distPoints: Array<string>, pathForSave: string, done: Function): void {
+        public downloadCRL(distPoints: string[], pathForSave: string, done: Function): void {
             let crl = new Crl();
             let returnPath;
 

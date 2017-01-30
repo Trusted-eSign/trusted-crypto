@@ -8,7 +8,7 @@ namespace trusted.cms {
 
     export enum SignedDataContentType {
         url,
-        buffer
+        buffer,
     }
 
     export interface ISignedDataContent {
@@ -41,7 +41,7 @@ namespace trusted.cms {
         partial = 0x4000,
         reuseDigest = 0x8000,
         useKeyId = 0x10000,
-        debugDecrypt = 0x20000
+        debugDecrypt = 0x20000,
     }
 
     /**
@@ -157,8 +157,8 @@ namespace trusted.cms {
          * @type {Array<string>}
          * @memberOf SignedData
          */
-        get policies(): Array<string> {
-            let p: Array<string> = new Array<string>();
+        get policies(): string[] {
+            let p: string[] = new Array<string>();
 
             let flags: number = this.handle.getFlags();
 

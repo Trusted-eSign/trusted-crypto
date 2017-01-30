@@ -14,6 +14,6 @@ namespace trusted.pki {
         KeyCertSign = 0x0004,
         CrlSign = 0x0002,
         EncipherOnly = 0x0001,
-        DecipherOnly = 0x8000
+        DecipherOnly = 0x8000,
     }
 }

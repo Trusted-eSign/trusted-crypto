@@ -1,6 +1,7 @@
 /// <reference types="node" />
 /* tslint:disable:no-namespace */
 /* tslint:disable:no-var-requires */
+/* tslint:disable:max-classes-per-file */
 
 declare namespace native {
     namespace PKI {
@@ -184,9 +185,9 @@ declare namespace native {
 
         class Revocation {
             public getCrlLocal(cert: Certificate, store: PKISTORE.PkiStore): any;
-            public getCrlDistPoints(cert: Certificate): Array<string>;
+            public getCrlDistPoints(cert: Certificate): string[];
             public checkCrlTime(crl: CRL): boolean;
-            public downloadCRL(distPoints: Array<string>, path: string, done: Function): void;
+            public downloadCRL(distPoints: string[], path: string, done: Function): void;
         }
 
         class Pkcs12 {

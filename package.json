@@ -27,6 +27,7 @@
   ],
   "dependencies": {
     "async": "^2.0.0",
+    "commander": "^2.9.0",
     "request": "^2.73.0"
   },
   "devDependencies": {
@@ -37,7 +38,7 @@
     "eslint": "^3.0.1",
     "nyc": "^9.0.0",
     "nan": "^2.4.0",
-    "tslint": "^3.13.0",
+    "tslint": "^4.4.2",
     "typescript": "^2.0.8"
   },
   "author": "Trusted Plus development team"

@@ -7,6 +7,6 @@ namespace trusted {
      */
     export enum DataFormat {
         DER = 0,
-        PEM = 1
+        PEM = 1,
     }
 }

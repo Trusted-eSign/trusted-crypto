@@ -2,6 +2,7 @@
   "extends": "tslint:recommended",
   "rules": {
         "no-namespace": false,
-        "no-reference": false
+        "no-reference": false,
+        "only-arrow-functions": [false]
   }
 }

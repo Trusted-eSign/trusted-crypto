@@ -1,5 +1,6 @@
 /// <reference path="../native.ts" />
 /// <reference path="../object.ts" />
+/* tslint:disable:max-classes-per-file */
 
 namespace trusted.pkistore {
     /**
