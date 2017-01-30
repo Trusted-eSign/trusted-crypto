@@ -9,6 +9,9 @@
     "type": "git",
     "url": "https://github.com/TrustedPlus/trusted-crypto"
   },
+  "bin": {
+	"trusted-crypto": "./bin/trusted-crypto"
+  },
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {

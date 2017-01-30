@@ -447,5 +447,10 @@ declare namespace native {
         class Jwt {
             public checkLicense(data?: string): boolean;
         }
+
+        class Cerber {
+            public sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
+            public verify(modulePath: string, cacerts?: PKI.CertificateCollection): boolean;
+        }
     }
 }

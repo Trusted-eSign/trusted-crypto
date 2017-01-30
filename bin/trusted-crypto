@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+/* eslint-disable no-console */
+
+"use strict";
+
+var program = require("commander");
+var path = require("path");
+var fs = require("fs");
+var trusted = require("../");
+
+var cert, key, chain;
+var certs;
+var certBuf = [];
+var ca = [];
+
+program
+  .version(JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")).version)
+  .usage("[command] [options]");
+
+program
+  .command("cerber <package>")
+  .description("sign or verify package")
+  .option("-s, --sign", "sign package")
+  .option("-v, --verify", "verify package")
+  .option("-k, --key <key>", "path to PEM-formatted private key")
+  .option("-c, --cert <cert>", "path to PEM-formatted certificate")
+  .option("--cacerts <cacerts>", "path to PEM-formatted CA budle")
+  .action(function(env, options) {
+      if (options.sign) {
+          if (!options.key) {
+              program.missingArgument("key");
+          }
+
+          if (!options.cert) {
+              program.missingArgument("cert");
+          }
+
+          cert = trusted.pki.Certificate.load(options.cert, trusted.DataFormat.PEM);
+          key = trusted.pki.Key.readPrivateKey(options.key, trusted.DataFormat.PEM);
+          trusted.utils.Cerber.sign(env, cert, key);
+          return;
+      }
+
+      if (options.verify) {
+          if (options.cacerts) {
+              chain = fs.readFileSync(options.cacerts, "binary").split("\n");
+              chain.forEach(function(line) {
+                  certBuf.push(line);
+                  if (line.match(/-END CERTIFICATE-/)) {
+                      ca.push(certBuf.join("\n"));
+                      certBuf = [];
+                  }
+              });
+
+              certs = new trusted.pki.CertificateCollection();
+              for (var i = 0; i < ca.length; i++) {
+                  var raw = ca[i];
+                  var rawLength = raw.length * 2;
+                  var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+                  for (var j = 0; j < rawLength; j++) {
+                      array[j] = raw.charCodeAt(j);
+                  }
+
+                  certs.push(trusted.pki.Certificate.import(array, trusted.DataFormat.PEM));
+              }
+          }
+
+          if (trusted.utils.Cerber.verify(env, certs)) {
+              console.log("Package: %s have correct signature", path.win32.basename(env));
+          } else {
+              console.error("Warning: Signature of %s incorrect or modules changed", path.win32.basename(env));
+          }
+
+          return;
+      }
+
+      console.error("Error: No input operation --sign or --verify");
+      return;
+  }).on("--help", function() {
+      console.log("  Examples:");
+      console.log();
+      console.log("    trusted-crypto cerber --sign --key /pki/key.pem --cert /pki/cert.pem  /node_modules/mymodule");
+      console.log("    trusted-crypto cerber --verify /node_modules/mymodule --cacerts /pki/ca-bundle.pem");
+      console.log();
+  });
+
+program.parse(process.argv);
+
+/* eslint-enable no-console */
