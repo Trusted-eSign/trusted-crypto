@@ -16,7 +16,7 @@ function chekOutputFiles() {
 
     filebuf = fs.readFileSync(CERBER_PACKAGE_PATH + "/cerber.lock", "binary");
     cstr = JSON.parse(filebuf);
-    assert.equal(JSON.stringify(cstr) === JSON.stringify(["index.js#90e90dc8d37f8911d8cfba0549b2394cd02b3866",
+    assert.equal(JSON.stringify(cstr) === JSON.stringify(["index.js#ab0b2e3846514bc4649834eb4252cd39e831572a",
         "package.json#8e3237ad673e7b8c5851c55d6ef9d49c6ef0d5ab"
     ]), true, "output file (cerber.lock)");
 
