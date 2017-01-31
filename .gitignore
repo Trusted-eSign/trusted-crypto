@@ -6,5 +6,7 @@
 logger.txt
 test/CertStore
 test/out
+test/resources/cerber/cerber.lock
+test/resources/cerber/cerber.lock.sig
 .vscode/launch.json
 npm-debug.log
