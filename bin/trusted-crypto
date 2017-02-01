@@ -72,6 +72,21 @@ program
               console.error("Warning: Signature of %s incorrect or modules changed", path.win32.basename(env));
           }
 
+          var signersInfo;
+
+          signersInfo = trusted.utils.Cerber.getSignersInfo(env);
+          if (signersInfo) {
+              for (i = 0; i < signersInfo.length; i++) {
+                  console.log();
+                  console.log("  Signer certificate info:");
+                  console.log("    subject name: %s", signersInfo[i].subject);
+                  console.log("    organization: %s", signersInfo[i].organization);
+                  console.log("    issuer: %s", signersInfo[i].issuer);
+                  console.log("    thumbprint: %s", signersInfo[i].thumbprint);
+                  console.log();
+              }
+          }
+
           return;
       }
 

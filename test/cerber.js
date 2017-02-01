@@ -58,5 +58,22 @@ describe("Cerber", function() {
         res = trusted.utils.Cerber.verify(CERBER_PACKAGE_PATH);
         assert.equal(res === false, true, "verify package");
     });
-});
 
+    it("signers info", function() {
+        var info;
+
+        info = cerber.getSignersInfo(CERBER_PACKAGE_PATH);
+        assert.equal(info.length === 1, true, "signers info length");
+        assert.equal(typeof (info[0].subject), "string", "Bad subjectName value");
+        assert.equal(typeof (info[0].issuer), "string", "Bad issuerName value");
+        assert.equal(typeof (info[0].organization), "string", "Bad organizationName value");
+        assert.equal(typeof (info[0].thumbprint), "string", "Bad thumbprint value");
+
+        info = trusted.utils.Cerber.getSignersInfo(CERBER_PACKAGE_PATH);
+        assert.equal(info.length === 1, true, "static signers info length");
+        assert.equal(typeof (info[0].subject), "string", "Bad subjectName value");
+        assert.equal(typeof (info[0].issuer), "string", "Bad issuerName value");
+        assert.equal(typeof (info[0].organization), "string", "Bad organizationName value");
+        assert.equal(typeof (info[0].thumbprint), "string", "Bad thumbprint value");
+    });
+});

@@ -69,6 +69,21 @@ namespace trusted.utils {
         }
 
         /**
+         * Return signer certificate info:
+         * issuername, organization, subjectname, thumbprint
+         *
+         * @static
+         * @param {string} modulePath
+         * @returns {string[]}
+         *
+         * @memberOf Cerber
+         */
+        public static getSignersInfo(modulePath: string): string[] {
+            const cerber = new Cerber();
+            return cerber.getSignersInfo(modulePath);
+        }
+
+        /**
          * Creates an instance of Cerber.
          *
          *
@@ -94,8 +109,8 @@ namespace trusted.utils {
             }
             const cerberLockPath = path.join(modulePath, DEFAULT_OUT_FILENAME);
 
-            let sd;
-            let signer;
+            let sd: cms.SignedData;
+            let signer: cms.Signer;
             let policies;
 
             let str = JSON.stringify(modules, null, 2);
@@ -129,7 +144,7 @@ namespace trusted.utils {
             const buffer = fs2.readFileSync(cerberLockPath, "binary");
             const ccerber = JSON.parse(buffer);
 
-            let cms;
+            let cms: cms.SignedData;
             let policies;
 
             let certsD: pki.CertificateCollection = cacerts;
@@ -153,6 +168,57 @@ namespace trusted.utils {
             }
 
             return cms.verify(certsD);
+        }
+
+        /**
+         * Return signer certificate info:
+         * issuername, organization, subjectname, thumbprint
+         *
+         * @param {string} modulePath
+         * @returns {string[]}
+         *
+         * @memberOf Cerber
+         */
+        public getSignersInfo(modulePath: string): string[] {
+            const cerberLockPath = path.join(modulePath, DEFAULT_OUT_FILENAME);
+
+            let signers: cms.SignerCollection;
+            let signer: cms.Signer;
+            let signerId: cms.SignerId;
+            let certs: pki.CertificateCollection;
+            let signerCert: pki.Certificate;
+            let cms: cms.SignedData;
+            let res = [];
+
+            cms = new trusted.cms.SignedData();
+            cms.load(cerberLockPath + ".sig", trusted.DataFormat.PEM);
+
+            signers = cms.signers();
+            certs = cms.certificates();
+
+            for (let i = 0; i < signers.length; i++) {
+                signer = cms.signers(i);
+                signerId = signer.signerId;
+
+                for (let j = 0; j < certs.length; j++) {
+                    let tmpCert: trusted.pki.Certificate = certs.items(j);
+                    if ((tmpCert.issuerName === signerId.issuerName) &&
+                    (tmpCert.serialNumber === signerId.serialNumber)) {
+                        signer.certificate = tmpCert;
+                        break;
+                    }
+                }
+
+                signerCert = signer.certificate;
+                res.push({
+                    issuer: signerCert.issuerFriendlyName,
+                    organization: signerCert.organizationName,
+                    subject: signerCert.subjectFriendlyName,
+                    thumbprint: signerCert.thumbprint,
+                });
+            }
+
+            return res;
         }
 
         /**
