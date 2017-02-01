@@ -8,6 +8,10 @@ var path = require("path");
 var fs = require("fs");
 var trusted = require("../");
 
+var ANSI_RED = "\u001B[31m";
+var ANSI_GREEN = "\u001B[32m";
+var ANSI_RESET = "\u001B[0m";
+
 var cert, key, chain;
 var certs;
 var certBuf = [];
@@ -74,9 +78,9 @@ program
           }
 
           if (trusted.utils.Cerber.verify(env, certs, policies)) {
-              console.log("Package: %s have correct signature", path.win32.basename(env));
+              console.log(ANSI_GREEN + "Package: %s have correct signature" + ANSI_RESET, path.win32.basename(env));
           } else {
-              console.error("Warning: Signature of %s incorrect or modules changed", path.win32.basename(env));
+              console.error(ANSI_RED + "Signature of %s incorrect or modules changed" + ANSI_RESET, path.win32.basename(env));
           }
 
           var signersInfo;
