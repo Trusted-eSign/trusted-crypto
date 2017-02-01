@@ -56,7 +56,10 @@ describe("Cerber", function() {
         assert.equal(res === false, true, "verify package");
 
         res = trusted.utils.Cerber.verify(CERBER_PACKAGE_PATH);
-        assert.equal(res === false, true, "verify package");
+        assert.equal(res === false, true, "static verify package");
+
+        res = cerber.verify(CERBER_PACKAGE_PATH, null, ["noSignerCertificateVerify"]);
+        assert.equal(res === true, true, "verify package with noSignerCertificateVerify");
     });
 
     it("signers info", function() {

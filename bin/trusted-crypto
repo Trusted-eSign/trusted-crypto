@@ -12,6 +12,7 @@ var cert, key, chain;
 var certs;
 var certBuf = [];
 var ca = [];
+var policies = [];
 
 program
   .version(JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")).version)
@@ -24,7 +25,9 @@ program
   .option("-v, --verify", "verify package")
   .option("-k, --key <key>", "path to PEM-formatted private key")
   .option("-c, --cert <cert>", "path to PEM-formatted certificate")
-  .option("--cacerts <cacerts>", "path to PEM-formatted CA budle")
+  .option("--cacerts <cacerts>", "path to PEM-formatted CA budle. only used with --verify")
+  .option("--no_signer_cert_verify", "do not verify the signers certificate")
+
   .action(function(env, options) {
       if (options.sign) {
           if (!options.key) {
@@ -66,7 +69,11 @@ program
               }
           }
 
-          if (trusted.utils.Cerber.verify(env, certs)) {
+          if (options.no_signer_cert_verify) {
+              policies.push("noSignerCertificateVerify");
+          }
+
+          if (trusted.utils.Cerber.verify(env, certs, policies)) {
               console.log("Package: %s have correct signature", path.win32.basename(env));
           } else {
               console.error("Warning: Signature of %s incorrect or modules changed", path.win32.basename(env));

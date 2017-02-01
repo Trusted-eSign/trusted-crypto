@@ -63,9 +63,9 @@ namespace trusted.utils {
          *
          * @memberOf Cerber
          */
-        public static verify(modulePath: string, cacerts?: pki.CertificateCollection): boolean {
+        public static verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): boolean {
             const cerber = new Cerber();
-            return cerber.verify(modulePath, cacerts);
+            return cerber.verify(modulePath, cacerts, policies);
         }
 
         /**
@@ -138,14 +138,13 @@ namespace trusted.utils {
          *
          * @memberOf Cerber
          */
-        public verify(modulePath: string, cacerts?: pki.CertificateCollection): boolean {
+        public verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): boolean {
             const cerberLockPath = path.join(modulePath, DEFAULT_OUT_FILENAME);
             const modules = this.rehash(modulePath);
-            const buffer = fs2.readFileSync(cerberLockPath, "binary");
+            const buffer = fs2.readFileSync(cerberLockPath, "utf8");
             const ccerber = JSON.parse(buffer);
 
             let cms: cms.SignedData;
-            let policies;
 
             let certsD: pki.CertificateCollection = cacerts;
             if (!certsD) {
@@ -157,6 +156,10 @@ namespace trusted.utils {
             }
 
             cms = new trusted.cms.SignedData();
+            if (policies) {
+                cms.policies = policies;
+            }
+
             cms.load(cerberLockPath + ".sig", trusted.DataFormat.PEM);
 
             if (cms.isDetached()) {
