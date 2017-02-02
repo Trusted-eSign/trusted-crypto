@@ -41,15 +41,14 @@ script:
       npm run lint || exit 1;
     fi
 
-after_success:
-  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $TRAVIS_NODE_VERSION == "4" ]; then
-      npm run coverage;
-    fi
-
 cache:
   directories:
     - $HOME/.node-gyp
     - $HOME/.npm
     - node_modules
+
 after_success:
-- npm run coveralls
+  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $TRAVIS_NODE_VERSION == "4" ]; then
+      npm run coverage;
+      npm run coveralls;
+    fi
