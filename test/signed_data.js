@@ -9,6 +9,7 @@ var DEFAULT_OUT_PATH = "test/out";
 
 describe("SignedData", function() {
     var cert, key;
+    var cms;
 
     before(function() {
         try {
@@ -56,7 +57,6 @@ describe("SignedData", function() {
     });
 
     it("load", function() {
-        var cms;
         var signers;
         var signer;
         var signerId;
@@ -80,5 +80,41 @@ describe("SignedData", function() {
         signerId = signer.signerId;
         assert.equal(typeof signerId.issuerName, "string", "Wrong issuer name");
         assert.equal(typeof signerId.serialNumber, "string", "Wrong serial number");
+    });
+
+    it("export PEM", function() {
+        var buf = cms.export(trusted.DataFormat.PEM);
+
+        assert.equal(Buffer.isBuffer(buf), true);
+        assert.equal(buf.length > 0, true);
+        assert.equal(buf.toString().indexOf("-----BEGIN CMS-----") === -1, false);
+    });
+
+    it("export Default", function() {
+        var buf = cms.export();
+
+        assert.equal(Buffer.isBuffer(buf), true);
+        assert.equal(buf.length > 0, true);
+        assert.equal(buf.toString("hex").indexOf("06092a864886f70d010702") === -1, false);
+    });
+
+    it("export DER", function() {
+        var buf = cms.export(trusted.DataFormat.DER);
+
+        assert.equal(Buffer.isBuffer(buf), true);
+        assert.equal(buf.length > 0, true);
+        assert.equal(buf.toString("hex").indexOf("06092a864886f70d010702") === -1, false);
+    });
+
+    it("import", function() {
+        var tmpCms;
+
+        var buf = cms.export(trusted.DataFormat.PEM);
+
+        tmpCms = new trusted.cms.SignedData();
+        tmpCms.import(buf, trusted.DataFormat.PEM);
+        assert.equal(tmpCms.signers().length, 1, "Wrong signers length");
+        assert.equal(tmpCms.certificates().length, 1, "Wrong certificates length");
+        assert.equal(tmpCms.isDetached(), false, "Detached");
     });
 });
