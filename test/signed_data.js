@@ -22,7 +22,7 @@ describe("SignedData", function() {
         key = trusted.pki.Key.readPrivateKey(DEFAULT_RESOURCES_PATH + "/cert1.key", trusted.DataFormat.PEM, "");
     });
 
-    it("Sign new data", function() {
+    it("Sign new data", function(done) {
         var sd;
         var signer;
         var policies;
@@ -54,9 +54,11 @@ describe("SignedData", function() {
 
         assert.equal(sd.export() !== null, true, "sd.export()");
         assert.equal(sd.verify() !== false, true, "Verify signature");
+
+        done();
     });
 
-    it("load", function() {
+    it("load", function(done) {
         var signers;
         var signer;
         var signerId;
@@ -80,33 +82,41 @@ describe("SignedData", function() {
         signerId = signer.signerId;
         assert.equal(typeof signerId.issuerName, "string", "Wrong issuer name");
         assert.equal(typeof signerId.serialNumber, "string", "Wrong serial number");
+
+        done();
     });
 
-    it("export PEM", function() {
+    it("export PEM", function(done) {
         var buf = cms.export(trusted.DataFormat.PEM);
 
         assert.equal(Buffer.isBuffer(buf), true);
         assert.equal(buf.length > 0, true);
         assert.equal(buf.toString().indexOf("-----BEGIN CMS-----") === -1, false);
+
+        done();
     });
 
-    it("export Default", function() {
+    it("export Default", function(done) {
         var buf = cms.export();
 
         assert.equal(Buffer.isBuffer(buf), true);
         assert.equal(buf.length > 0, true);
         assert.equal(buf.toString("hex").indexOf("06092a864886f70d010702") === -1, false);
+
+        done();
     });
 
-    it("export DER", function() {
+    it("export DER", function(done) {
         var buf = cms.export(trusted.DataFormat.DER);
 
         assert.equal(Buffer.isBuffer(buf), true);
         assert.equal(buf.length > 0, true);
         assert.equal(buf.toString("hex").indexOf("06092a864886f70d010702") === -1, false);
+
+        done();
     });
 
-    it("import", function() {
+    it("import", function(done) {
         var tmpCms;
 
         var buf = cms.export(trusted.DataFormat.PEM);
@@ -116,5 +126,7 @@ describe("SignedData", function() {
         assert.equal(tmpCms.signers().length, 1, "Wrong signers length");
         assert.equal(tmpCms.certificates().length, 1, "Wrong certificates length");
         assert.equal(tmpCms.isDetached(), false, "Detached");
+
+        done();
     });
 });
