@@ -16,7 +16,8 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "node_modules/.bin/mocha test && npm run lint && npm run lintTS",
-    "lint": "./node_modules/.bin/eslint test",
+    "lint": "npm run lintES && npm run lintTS",
+    "lintES": "./node_modules/.bin/eslint test",
     "lintTS": "./node_modules/.bin/tslint lib/**/*.ts",
     "build": "node-gyp configure && node-gyp build && tsc",
     "coverage": "nyc npm test",
