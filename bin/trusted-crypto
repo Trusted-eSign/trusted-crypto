@@ -78,8 +78,10 @@ program
           }
 
           if (trusted.utils.Cerber.verify(env, certs, policies)) {
-              console.log(ANSI_GREEN + "Package: %s have correct signature" + ANSI_RESET, path.win32.basename(env));
+              console.log();
+              console.log(ANSI_GREEN + "Package %s have correct signature" + ANSI_RESET, path.win32.basename(env));
           } else {
+              console.log();
               console.error(ANSI_RED + "Signature of %s incorrect or modules changed" + ANSI_RESET, path.win32.basename(env));
           }
 

@@ -6,6 +6,9 @@
 const path = require("path");
 const crypto2 = require("crypto");
 const fs2 = require("fs");
+const os = require("os");
+
+const OS_TYPE = os.type();
 
 const DEFAULT_IGNORE = ([
   ".DS_Store",
@@ -257,6 +260,11 @@ namespace trusted.utils {
                     if (stat.isFile()) {
                         let buffer = fs2.readFileSync(loc, "binary");
                         let hash = crypto2.createHash("sha1").update(buffer).digest("hex");
+
+                        if (OS_TYPE === "Windows_NT") {
+                            rel = rel.replace(/\\/g, "/");
+                        }
+
                         modules.push(rel + "#" + hash);
                     }
                 }
