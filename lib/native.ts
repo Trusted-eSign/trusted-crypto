@@ -450,7 +450,7 @@ declare namespace native {
 
         class Cerber {
             public sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
-            public verify(modulePath: string, cacerts?: PKI.CertificateCollection): boolean;
+            public verify(modulePath: string, cacerts?: PKI.CertificateCollection): Object;
         }
     }
 }

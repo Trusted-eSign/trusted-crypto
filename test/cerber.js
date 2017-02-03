@@ -53,13 +53,14 @@ describe("Cerber", function() {
         var res;
 
         res = cerber.verify(CERBER_PACKAGE_PATH);
-        assert.equal(res === false, true, "verify package");
+        assert.equal(res.signature === false, true, "verify package");
 
         res = trusted.utils.Cerber.verify(CERBER_PACKAGE_PATH);
-        assert.equal(res === false, true, "static verify package");
+        assert.equal(res.signature === false, true, "static verify package");
 
         res = cerber.verify(CERBER_PACKAGE_PATH, null, ["noSignerCertificateVerify"]);
-        assert.equal(res === true, true, "verify package with noSignerCertificateVerify");
+        assert.equal(res.signature === true, true, "verify package with noSignerCertificateVerify");
+        assert.equal(typeof (res.difModules), "object", "Bad difmodules value");
     });
 
     it("signers info", function() {

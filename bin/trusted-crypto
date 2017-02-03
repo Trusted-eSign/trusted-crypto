@@ -17,6 +17,7 @@ var certs;
 var certBuf = [];
 var ca = [];
 var policies = [];
+var verifyResult = {signature: false, difModules: []};
 
 program
   .version(JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")).version)
@@ -77,12 +78,14 @@ program
               policies.push("noSignerCertificateVerify");
           }
 
-          if (trusted.utils.Cerber.verify(env, certs, policies)) {
+          verifyResult = trusted.utils.Cerber.verify(env, certs, policies);
+
+          if (verifyResult.signature) {
               console.log();
               console.log(ANSI_GREEN + "Package %s have correct signature" + ANSI_RESET, path.win32.basename(env));
           } else {
               console.log();
-              console.error(ANSI_RED + "Signature of %s incorrect or modules changed" + ANSI_RESET, path.win32.basename(env));
+              console.error(ANSI_RED + "Signature of %s incorrect" + ANSI_RESET, path.win32.basename(env));
           }
 
           var signersInfo;
@@ -97,6 +100,22 @@ program
                   console.log("    issuer: %s", signersInfo[i].issuer);
                   console.log("    thumbprint: %s", signersInfo[i].thumbprint);
                   console.log();
+              }
+          }
+
+          if (verifyResult.difModules.length) {
+              console.log();
+              console.log(ANSI_RED + "Modify files:" + ANSI_RESET);
+
+              for (i = 0; i < verifyResult.difModules.length; i++) {
+                  var str = verifyResult.difModules[i];
+                  var modulePath = str.substr(0, str.indexOf("#"));
+
+                  if (modulePath === "package.json") {
+                      console.log("    " + modulePath + "    NOTE: `npm install` can modify package.json");
+                  } else {
+                      console.log("    " + modulePath);
+                  }
               }
           }
 

@@ -32,6 +32,11 @@ const DEFAULT_IGNORE = ([
 
 const DEFAULT_OUT_FILENAME = "cerber.lock";
 
+interface IVerifyStatus {
+    difModules: string[];
+    signature: boolean;
+}
+
 namespace trusted.utils {
     /**
      * App for sign and verify node packages
@@ -62,11 +67,13 @@ namespace trusted.utils {
          * @static
          * @param {string} modulePath Directory path
          * @param {pki.CertificateCollection} [cacerts] CA certificates
-         * @returns {boolean}
+         * @param {string[]} [policies]
+         * @returns {IVerifyStatus}
          *
          * @memberOf Cerber
          */
-        public static verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): boolean {
+        public static verify(modulePath: string, cacerts?: pki.CertificateCollection,
+                             policies?: string[]): IVerifyStatus {
             const cerber = new Cerber();
             return cerber.verify(modulePath, cacerts, policies);
         }
@@ -137,15 +144,18 @@ namespace trusted.utils {
          *
          * @param {string} modulePath Directory path
          * @param {pki.CertificateCollection} [cacerts] CA certificates
-         * @returns {boolean}
+         * @param {string[]} [policies]
+         * @returns {IVerifyStatus}
          *
          * @memberOf Cerber
          */
-        public verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): boolean {
+        public verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): IVerifyStatus {
             const cerberLockPath = path.join(modulePath, DEFAULT_OUT_FILENAME);
             const modules = this.rehash(modulePath);
             const buffer = fs2.readFileSync(cerberLockPath, "utf8");
             const ccerber = JSON.parse(buffer);
+
+            let res: IVerifyStatus = {signature: false, difModules: []};
 
             let cms: cms.SignedData;
 
@@ -155,7 +165,9 @@ namespace trusted.utils {
             }
 
             if (!(JSON.stringify(ccerber) === JSON.stringify(modules))) {
-                return false;
+                res.difModules = modules.filter(function(x) {
+                    return ccerber.indexOf(x) === -1;
+                });
             }
 
             cms = new trusted.cms.SignedData();
@@ -173,7 +185,9 @@ namespace trusted.utils {
                 };
             }
 
-            return cms.verify(certsD);
+            res.signature = cms.verify(certsD);
+
+            return res;
         }
 
         /**
