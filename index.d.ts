@@ -103,7 +103,7 @@ declare namespace native {
         class Revoked {
             getSerialNumber(): string;
             getRevocationDate(): string;
-            getReason(): number;
+            getReason(): string;
             duplicate(): Revoked;
         }
         class RevokedCollection {
@@ -195,9 +195,9 @@ declare namespace native {
         }
         class Revocation {
             getCrlLocal(cert: Certificate, store: PKISTORE.PkiStore): any;
-            getCrlDistPoints(cert: Certificate): Array<string>;
+            getCrlDistPoints(cert: Certificate): string[];
             checkCrlTime(crl: CRL): boolean;
-            downloadCRL(distPoints: Array<string>, path: string, done: Function): void;
+            downloadCRL(distPoints: string[], path: string, done: Function): void;
         }
         class Pkcs12 {
             getCertificate(password: string): Certificate;
@@ -422,6 +422,10 @@ declare namespace native {
         class Jwt {
             checkLicense(data?: string): boolean;
         }
+        class Cerber {
+            sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
+            verify(modulePath: string, cacerts?: PKI.CertificateCollection): Object;
+        }
     }
 }
 declare namespace trusted {
@@ -512,6 +516,111 @@ declare namespace trusted.utils {
          * @memberOf Jwt
          */
         checkLicense(data?: string): boolean;
+    }
+}
+declare const path: any;
+declare const crypto2: any;
+declare const fs2: any;
+declare const os: any;
+declare const OS_TYPE: any;
+declare const DEFAULT_IGNORE: string[];
+declare const DEFAULT_OUT_FILENAME = "cerber.lock";
+interface IVerifyStatus {
+    difModules: string[];
+    signature: boolean;
+}
+declare namespace trusted.utils {
+    /**
+     * App for sign and verify node packages
+     *
+     * @export
+     * @class Cerber
+     * @extends {BaseObject<native.UTILS.Cerber>}
+     */
+    class Cerber extends BaseObject<native.UTILS.Cerber> {
+        /**
+         * Sign package
+         *
+         * @static
+         * @param {string} modulePath Directory path
+         * @param {pki.Certificate} cert Signer certificate
+         * @param {pki.Key} key Signer private key
+         *
+         * @memberOf Cerber
+         */
+        static sign(modulePath: string, cert: pki.Certificate, key: pki.Key): void;
+        /**
+         * Verify package
+         *
+         * @static
+         * @param {string} modulePath Directory path
+         * @param {pki.CertificateCollection} [cacerts] CA certificates
+         * @param {string[]} [policies]
+         * @returns {IVerifyStatus}
+         *
+         * @memberOf Cerber
+         */
+        static verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): IVerifyStatus;
+        /**
+         * Return signer certificate info:
+         * issuername, organization, subjectname, thumbprint
+         *
+         * @static
+         * @param {string} modulePath
+         * @returns {string[]}
+         *
+         * @memberOf Cerber
+         */
+        static getSignersInfo(modulePath: string): string[];
+        /**
+         * Creates an instance of Cerber.
+         *
+         *
+         * @memberOf Cerber
+         */
+        constructor();
+        /**
+         * Sign package
+         *
+         * @param {string} modulePath Directory path
+         * @param {pki.Certificate} cert Signer certificate
+         * @param {pki.Key} key Signer private key
+         *
+         * @memberOf Cerber
+         */
+        sign(modulePath: string, cert: pki.Certificate, key: pki.Key): void;
+        /**
+         * Verify package
+         *
+         * @param {string} modulePath Directory path
+         * @param {pki.CertificateCollection} [cacerts] CA certificates
+         * @param {string[]} [policies]
+         * @returns {IVerifyStatus}
+         *
+         * @memberOf Cerber
+         */
+        verify(modulePath: string, cacerts?: pki.CertificateCollection, policies?: string[]): IVerifyStatus;
+        /**
+         * Return signer certificate info:
+         * issuername, organization, subjectname, thumbprint
+         *
+         * @param {string} modulePath
+         * @returns {string[]}
+         *
+         * @memberOf Cerber
+         */
+        getSignersInfo(modulePath: string): string[];
+        /**
+         * Get filenames and sha1 hashes
+         *
+         * @private
+         * @param {string} dir Directory path
+         * @param {string} [relative] Subdirectory
+         * @returns {string[]} module_name#sha1_hash
+         *
+         * @memberOf Cerber
+         */
+        private rehash(dir, relative?);
     }
 }
 declare namespace trusted.pki {
@@ -1354,7 +1463,7 @@ declare namespace trusted.pki {
          *
          * @memberOf Revocation
          */
-        getCrlDistPoints(cert: Certificate): Array<string>;
+        getCrlDistPoints(cert: Certificate): string[];
         /**
          * Check validate CRL time
          *
@@ -1373,7 +1482,7 @@ declare namespace trusted.pki {
          *
          * @memberOf Revocation
          */
-        downloadCRL(distPoints: Array<string>, pathForSave: string, done: Function): void;
+        downloadCRL(distPoints: string[], pathForSave: string, done: Function): void;
     }
 }
 declare namespace trusted.pki {
@@ -1638,7 +1747,7 @@ declare namespace trusted.pki {
          * @type {number}
          * @memberOf Revoked
          */
-        readonly reason: number;
+        readonly reason: string;
         /**
          * Return Revoked duplicat
          *
@@ -2472,7 +2581,7 @@ declare namespace trusted.cms {
          *
          * @memberOf SignedData
          */
-        policies: Array<string>;
+        policies: string[];
         /**
          * Return true if sign detached
          *
