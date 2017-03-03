@@ -223,14 +223,16 @@ Handle<std::string> Certificate::getSerialNumber()
 Handle<std::string> Certificate::getSignatureAlgorithm() {
 	LOGGER_FN();
 
-	LOGGER_OPENSSL(X509_get_signature_nid);
-	int sig_nid = X509_get_signature_nid(this->internal());
-	if (!sig_nid){
-		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "Unknown signature nid");
+	X509_ALGOR *sigalg = this->internal()->sig_alg;
+
+	LOGGER_OPENSSL(OBJ_obj2nid);
+	int sig_nid = OBJ_obj2nid(sigalg->algorithm);
+	if (sig_nid != NID_undef) {
+		LOGGER_OPENSSL(OBJ_nid2ln);
+		return new std::string(OBJ_nid2ln(sig_nid));
 	}
 
-	LOGGER_OPENSSL(OBJ_nid2ln);
-	return new std::string(OBJ_nid2ln(sig_nid));
+	return (new Algorithm(sigalg))->getName();
 }
 
 Handle<std::string> Certificate::getSignatureDigest() {
