@@ -1,7 +1,7 @@
 #ifndef PKI_WOID_H_INCLUDED
 #define  PKI_WOID_H_INCLUDED
 
-#include "../../wrapper/pki/oid.h"
+#include <wrapper/pki/oid.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

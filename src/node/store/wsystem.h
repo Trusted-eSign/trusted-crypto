@@ -1,7 +1,7 @@
 #ifndef WSYSTEM_H_INCLUDED
 #define WSYSTEM_H_INCLUDED
 
-#include "../../wrapper/store/provider_system.h"
+#include <wrapper/store/provider_system.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

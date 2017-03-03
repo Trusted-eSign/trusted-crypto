@@ -1,7 +1,7 @@
 #ifndef PKI_WSIGNERID_H_INCLUDED
 #define  PKI_WSIGNERID_H_INCLUDED
 
-#include "../../wrapper/cms/signer_id.h"
+#include <wrapper/cms/signer_id.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

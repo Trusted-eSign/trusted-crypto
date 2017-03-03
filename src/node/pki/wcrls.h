@@ -1,7 +1,7 @@
 #ifndef PKI_WCRLS_H_INCLUDED
 #define  PKI_WCRLS_H_INCLUDED
 
-#include "../../wrapper/pki/crls.h"
+#include <wrapper/pki/crls.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

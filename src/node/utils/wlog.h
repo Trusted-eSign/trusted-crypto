@@ -1,7 +1,7 @@
 #ifndef UTILS_WLOG_H_INCLUDED
 #define  UTILS_WLOG_H_INCLUDED
 
-#include "../../wrapper/common/common.h"
+#include <wrapper/common/common.h>
 
 #include <nan.h>
 #include "../helper.h"

@@ -1,8 +1,8 @@
 #ifndef WCASHJSON_H_INCLUDED
 #define WCASHJSON_H_INCLUDED
 
-#include "../../wrapper/store/pkistore.h"
-#include "../../wrapper/store/cashjson.h"
+#include <wrapper/store/pkistore.h>
+#include <wrapper/store/cashjson.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

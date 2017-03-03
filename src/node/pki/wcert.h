@@ -1,7 +1,7 @@
 #ifndef PKI_WCERT_H_INCLUDED
 #define  PKI_WCERT_H_INCLUDED
 
-#include "../../wrapper/pki/cert.h"
+#include <wrapper/pki/cert.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

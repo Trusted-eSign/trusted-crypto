@@ -1,7 +1,7 @@
 #ifndef WPKISTORE_H_INCLUDED
 #define WPKISTORE_H_INCLUDED
 
-#include "../../wrapper/store/pkistore.h"
+#include <wrapper/store/pkistore.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

@@ -1,7 +1,7 @@
 #ifndef WMICROSOFT_H_INCLUDED
 #define WMICROSOFT_H_INCLUDED
 
-#include "../../wrapper/store/provider_microsoft.h"
+#include <wrapper/store/provider_microsoft.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

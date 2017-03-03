@@ -1,7 +1,7 @@
 #ifndef PKI_WATTR_H_INCLUDED
 #define  PKI_WATTR_H_INCLUDED
 
-#include "../../wrapper/pki/attr.h"
+#include <wrapper/pki/attr.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

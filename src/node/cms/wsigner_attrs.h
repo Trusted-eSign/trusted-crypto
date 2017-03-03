@@ -1,7 +1,7 @@
 #ifndef CMS_W_SIGNER_ATTRS_H_INCLUDED
 #define CMS_W_SIGNER_ATTRS_H_INCLUDED
 
-#include "../../wrapper/cms/common.h"
+#include <wrapper/cms/common.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

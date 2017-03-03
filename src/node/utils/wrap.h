@@ -2,7 +2,7 @@
 #define  UTIL_WRAPPER_INCLUDED
 
 #include <nan.h>
-#include "../../wrapper/common/common.h"
+#include <wrapper/common/common.h>
 #include "../helper.h"
 
 template<typename T>

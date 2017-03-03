@@ -2,7 +2,7 @@
 
 #include <nan.h>
 
-#include "../wrapper/common/common.h"
+#include <wrapper/common/common.h>
 
 /**
 * Schedule an "allocation failed" exception. This (tries) to allocate

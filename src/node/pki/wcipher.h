@@ -1,7 +1,7 @@
 #ifndef CMS_PKI_WCIPHER_H_INCLUDED
 #define CMS_PKI_WCIPHER_H_INCLUDED
 
-#include "../../wrapper/pki/cipher.h"
+#include <wrapper/pki/cipher.h>
 
 #include <nan.h>
 #include "../helper.h"

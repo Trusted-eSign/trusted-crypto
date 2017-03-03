@@ -1,7 +1,7 @@
 #ifndef PKI_WCERTREQINFO_H_INCLUDED
 #define PKI_WCERTREQINFO_H_INCLUDED
 
-#include "../../wrapper/pki/cert_request_info.h"
+#include <wrapper/pki/cert_request_info.h>
 
 #include <nan.h>
 #include "../helper.h"

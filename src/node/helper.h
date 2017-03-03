@@ -3,7 +3,7 @@
 
 #include <nan.h>
 
-#include "../wrapper/common/common.h"
+#include <wrapper/common/common.h>	
 
 #define LOGGER_ARG(name) LOGGER_INFO("Param: %s", name)
 

@@ -1,7 +1,7 @@
 #ifndef WCSR_H_INCLUDED
 #define WCSR_H_INCLUDED
 
-#include "../../wrapper/pki/csr.h"
+#include <wrapper/pki/csr.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

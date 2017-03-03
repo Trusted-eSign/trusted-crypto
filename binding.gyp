@@ -2,6 +2,9 @@
     "targets": [
         {
             "target_name": "trusted",
+            "dependencies": [
+                "deps/wrapper/wrapper.gyp:wrapper",
+            ],
             "sources": [
                 "src/node/main.cpp",
                 "src/node/helper.cpp",
@@ -36,47 +39,7 @@
                 "src/node/cms/wsigners.cpp",
                 "src/node/cms/wsigner_attrs.cpp",
                 "src/node/cms/wcmsRecipientInfo.cpp",
-                "src/node/cms/wcmsRecipientInfos.cpp",
-                "src/wrapper/stdafx.cpp",
-                "src/wrapper/utils/jwt.cpp",
-                "src/wrapper/common/bio.cpp",
-                "src/wrapper/common/common.cpp",
-                "src/wrapper/common/excep.cpp",
-                "src/wrapper/common/log.cpp",
-                "src/wrapper/common/openssl.cpp",
-                "src/wrapper/common/prov.cpp",
-                "src/wrapper/pki/crl.cpp",
-                "src/wrapper/pki/crls.cpp",
-                "src/wrapper/pki/revoked.cpp",
-                "src/wrapper/pki/revokeds.cpp",
-                "src/wrapper/pki/cert.cpp",
-                "src/wrapper/pki/certs.cpp",
-                "src/wrapper/pki/key.cpp",
-                "src/wrapper/pki/cert_request_info.cpp",
-                "src/wrapper/pki/cert_request.cpp",
-                "src/wrapper/pki/csr.cpp",
-                "src/wrapper/pki/cipher.cpp",
-                "src/wrapper/pki/chain.cpp",
-                "src/wrapper/pki/pkcs12.cpp",
-                "src/wrapper/pki/revocation.cpp",
-                "src/wrapper/store/cashjson.cpp",
-                "src/wrapper/store/pkistore.cpp",
-                "src/wrapper/store/provider_system.cpp",
-                "src/wrapper/store/storehelper.cpp",
-                "src/wrapper/pki/x509_name.cpp",
-                "src/wrapper/pki/alg.cpp",
-                "src/wrapper/pki/attr.cpp",
-                "src/wrapper/pki/attrs.cpp",
-                "src/wrapper/pki/attr_vals.cpp",
-                "src/wrapper/pki/oid.cpp",
-                "src/wrapper/cms/signer.cpp",
-                "src/wrapper/cms/signer_id.cpp",
-                "src/wrapper/cms/signers.cpp",
-                "src/wrapper/cms/signer_attrs.cpp",
-                "src/wrapper/cms/signed_data.cpp",
-                "src/wrapper/cms/cmsRecipientInfo.cpp",
-                "src/wrapper/cms/cmsRecipientInfos.cpp",
-                "src/jsoncpp/jsoncpp.cpp"
+                "src/node/cms/wcmsRecipientInfos.cpp"
             ],
             "xcode_settings": {
                 "OTHER_CPLUSPLUSFLAGS": [
@@ -93,8 +56,7 @@
                     "OS=='win'",
                     {
                         "sources": [
-                            "src/node/store/wmicrosoft.cpp",
-                            "src/wrapper/store/provider_microsoft.cpp"
+                            "src/node/store/wmicrosoft.cpp"
                         ],
                         "conditions": [
                             [
@@ -112,11 +74,14 @@
                             ]
                         ],
                         "libraries": [
+                            "-l<(module_root_dir)/build/Release/wrapper.lib",
                             "-l<(openssl_root)/lib/libeay32.lib",
                             "-lcrypt32.lib"
                         ],
                         "include_dirs": [
-                            "<(openssl_root)/include"
+                            "<(openssl_root)/include",
+                            "deps/wrapper/include",
+                            "deps/wrapper/jsoncpp"
                         ],
                         "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP" ],
                         "msbuild_settings": {
@@ -126,8 +91,13 @@
                         }
                     },
                     {
+                        "libraries": [
+                            "-L<(module_root_dir)/build/Release/wrapper.a"
+                        ],
                         "include_dirs": [
-                            "<(node_root_dir)/deps/openssl/openssl/include"
+                            "<(node_root_dir)/deps/openssl/openssl/include",
+                            "deps/wrapper/include",
+                            "deps/wrapper/jsoncpp"
                         ],
 
                         "defines": [ "UNIX", "OPENSSL_NO_CTGOSTCP" ],

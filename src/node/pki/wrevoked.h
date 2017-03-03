@@ -1,7 +1,7 @@
 #ifndef PKI_WREVOKED_H_INCLUDED
 #define PKI_WREVOKED_H_INCLUDED
 
-#include "../../wrapper/pki/revoked.h"
+#include <wrapper/pki/revoked.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

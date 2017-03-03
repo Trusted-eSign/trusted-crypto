@@ -10,7 +10,7 @@
 #include "../pki/wcert_request.h"
 #include "../pki/wkey.h"
 
-#include "../../wrapper/common/common.h"
+#include <wrapper/common/common.h>
 #include "../helper.h"
 
 void WPkiStore::Init(v8::Handle<v8::Object> exports){

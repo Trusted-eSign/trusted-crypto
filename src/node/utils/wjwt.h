@@ -5,7 +5,7 @@
 #include "wrap.h"
 #include "../helper.h"
 
-#include "../../wrapper/utils/jwt.h"
+#include <wrapper/utils/jwt.h>
 
 WRAP_CLASS(Jwt){
 public:

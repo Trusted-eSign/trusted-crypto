@@ -1,7 +1,7 @@
 #ifndef WKEY_H_INCLUDED
 #define WKEY_H_INCLUDED
 
-#include "../../wrapper/pki/key.h"
+#include <wrapper/pki/key.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

@@ -1,7 +1,7 @@
 #ifndef CMS_W_SIGNERS_H_INCLUDED
 #define CMS_W_SIGNERS_H_INCLUDED
 
-#include "../../wrapper/cms/signers.h"
+#include <wrapper/cms/signers.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

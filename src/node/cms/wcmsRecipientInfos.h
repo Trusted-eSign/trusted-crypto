@@ -1,7 +1,7 @@
 #ifndef PKI_WCMSRECIPIENTINFOS_H_INCLUDED
 #define  PKI_WCMSRECIPIENTINFOS_H_INCLUDED
 
-#include "../../wrapper/cms/cmsRecipientInfos.h"
+#include <wrapper/cms/cmsRecipientInfos.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

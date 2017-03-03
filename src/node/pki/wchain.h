@@ -1,7 +1,7 @@
 #ifndef PKI_WCHAIN_H_INCLUDED
 #define PKI_WCHAIN_H_INCLUDED
 
-#include "../../wrapper/pki/chain.h"
+#include <wrapper/pki/chain.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"
