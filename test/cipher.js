@@ -113,8 +113,8 @@ describe("CipherASSYMETRIC", function() {
         var item;
         var certWithKey;
 
-        for (var i = 0; i < ris.length; i++) {
-            ri = ris.items(i);
+        for (var j = 0; j < ris.length; j++) {
+            ri = ris.items(j);
             if (ri.issuerName === "/2.5.4.6=RU/2.5.4.8=Mari El/2.5.4.7=Yoshkar-Ola/2.5.4.10=Cifrovie Tehnologii/2.5.4.3=Test certificate/1.2.840.113549.1.9.1= trusted@digt.ru") {
                 break;
             }
