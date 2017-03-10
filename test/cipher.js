@@ -91,8 +91,8 @@ describe("CipherASSYMETRIC", function() {
         assert.equal(ris.length, 2, "Recipients length 2");
 
         ri = ris.items(0);
-        assert.equal(ri.issuerName, "/2.5.4.6=RU/2.5.4.8=Mari El/2.5.4.7=Yola/2.5.4.10=Trusted/2.5.4.3=Trusted/1.2.840.113549.1.9.1=trusted@digt.ru", "Error issuer name");
-        assert.equal(ri.serialNumber, "E8CF63BF8C889177", "Error serial number");
+        assert.equal(ri.issuerName, "/2.5.4.6=RU/2.5.4.8=Mari El/2.5.4.7=Yoshkar-Ola/2.5.4.10=Cifrovie Tehnologii/2.5.4.3=Test certificate/1.2.840.113549.1.9.1= trusted@digt.ru", "Error issuer name");
+        assert.equal(ri.serialNumber, "FD7CF8FC52A1D181", "Error serial number");
         assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/cert1.crt", trusted.DataFormat.PEM)) === 0, true, "Compare recipient cert");
         assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/test.crt", trusted.DataFormat.DER)) !== 0, true, "Compare recipient cert");
 
