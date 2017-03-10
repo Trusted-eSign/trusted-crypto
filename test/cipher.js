@@ -91,16 +91,21 @@ describe("CipherASSYMETRIC", function() {
         assert.equal(ris.length, 2, "Recipients length 2");
 
         ri = ris.items(0);
-        assert.equal(ri.issuerName, "/2.5.4.6=RU/2.5.4.8=Mari El/2.5.4.7=Yoshkar-Ola/2.5.4.10=Cifrovie Tehnologii/2.5.4.3=Test certificate/1.2.840.113549.1.9.1= trusted@digt.ru", "Error issuer name");
-        assert.equal(ri.serialNumber, "FD7CF8FC52A1D181", "Error serial number");
-        assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/cert1.crt", trusted.DataFormat.PEM)) === 0, true, "Compare recipient cert");
-        assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/test.crt", trusted.DataFormat.DER)) !== 0, true, "Compare recipient cert");
+        if (ri.serialNumber === "FD7CF8FC52A1D181") {
+            assert.equal(ri.issuerName, "/2.5.4.6=RU/2.5.4.8=Mari El/2.5.4.7=Yoshkar-Ola/2.5.4.10=Cifrovie Tehnologii/2.5.4.3=Test certificate/1.2.840.113549.1.9.1= trusted@digt.ru", "Error issuer name");
+            assert.equal(ri.serialNumber, "FD7CF8FC52A1D181", "Error serial number");
+            assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/cert1.crt", trusted.DataFormat.PEM)) === 0, true, "Compare recipient cert");
+            assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/test.crt", trusted.DataFormat.DER)) !== 0, true, "Compare recipient cert");
+        } else {
+            assert.equal(ri.issuerName, "/2.5.4.6=IL/2.5.4.10=StartCom Ltd./2.5.4.11=Secure Digital Certificate Signing/2.5.4.3=StartCom Certification Authority", "Error issuer name");
+            assert.equal(ri.serialNumber, "1B8612677AE19D", "Error serial number");
+            assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/cert1.crt", trusted.DataFormat.PEM)) !== 0, true, "Compare recipient cert");
+            assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/test.crt", trusted.DataFormat.DER)) === 0, true, "Compare recipient cert");
+        }
 
         ri = ris.items(1);
-        assert.equal(ri.issuerName, "/2.5.4.6=IL/2.5.4.10=StartCom Ltd./2.5.4.11=Secure Digital Certificate Signing/2.5.4.3=StartCom Certification Authority", "Error issuer name");
-        assert.equal(ri.serialNumber, "1B8612677AE19D", "Error serial number");
-        assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/cert1.crt", trusted.DataFormat.PEM)) !== 0, true, "Compare recipient cert");
-        assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/test.crt", trusted.DataFormat.DER)) === 0, true, "Compare recipient cert");
+        assert.equal(typeof (ri.issuerName), "string", "Error issuer name");
+        assert.equal(typeof (ri.serialNumber), "string", "Error serial number");
     });
 
     it("find recipient in store", function() {
@@ -108,7 +113,12 @@ describe("CipherASSYMETRIC", function() {
         var item;
         var certWithKey;
 
-        ri = ris.items(0);
+        for (var i = 0; i < ris.length; i++) {
+            ri = ris.items(i);
+            if (ri.issuerName === "/2.5.4.6=RU/2.5.4.8=Mari El/2.5.4.7=Yoshkar-Ola/2.5.4.10=Cifrovie Tehnologii/2.5.4.3=Test certificate/1.2.840.113549.1.9.1= trusted@digt.ru") {
+                break;
+            }
+        }
 
         store = new trusted.pkistore.PkiStore(DEFAULT_CERTSTORE_PATH + "/cash.json");
         assert.equal(store !== null, true);
