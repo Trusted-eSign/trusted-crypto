@@ -51,6 +51,6 @@ add_definitions(-DOPENSSL_NO_CTGOSTCP)
 add_compile_options(-std=c++11)
 add_library(wrapper STATIC ${SOURCE_LIB})
 
-include_directories(${CMAKE_SOURCE_DIR}/include/)
-include_directories(${CMAKE_SOURCE_DIR}/jsoncpp/)
+include_directories(./include/)
+include_directories(./jsoncpp/)
 
