@@ -98,11 +98,19 @@ describe("Store", function() {
             item = certs[i];
             if (item.key) {
                 certWithKey = store.getItem(item);
+                break;
             }
+        }
+
+        for (i = 0; i < certs.length; i++) {
+            item = certs[i];
             assert.equal(item.type, "CERTIFICATE");
-            if (item.type === "CERTIFICATE") {
+
+            if (item.provider === "MICROSOFT") {
                 cert = store.getItem(item);
                 assert.equal(cert.subjectName.length > 0, true);
+                assert.equal(typeof (providerMicrosoft.hasPrivateKey(cert)), "boolean", "Bad hasPrivateKey value type");
+                break;
             }
         }
 

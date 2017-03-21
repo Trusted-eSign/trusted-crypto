@@ -14,6 +14,7 @@ void WProviderMicrosoft::Init(v8::Handle<v8::Object> exports){
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
 	Nan::SetPrototypeMethod(tpl, "getKey", GetKey);
+	Nan::SetPrototypeMethod(tpl, "hasPrivateKey", HasPrivateKey);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -50,6 +51,24 @@ NAN_METHOD(WProviderMicrosoft::GetKey){
 		v8::Local<v8::Object> v8Key = WKey::NewInstance(key);
 
 		info.GetReturnValue().Set(v8Key);
+		return;
+	}
+
+	TRY_END();
+}
+
+NAN_METHOD(WProviderMicrosoft::HasPrivateKey){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		UNWRAP_DATA(ProviderMicrosoft);
+
+		bool res = _this->hasPrivateKey(wCert->data_);
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
 	}
 

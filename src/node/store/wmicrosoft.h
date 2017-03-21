@@ -18,6 +18,7 @@ public:
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
 	static NAN_METHOD(GetKey);
+	static NAN_METHOD(HasPrivateKey);
 };
 
 #endif //WMICROSOFT_H_INCLUDED
