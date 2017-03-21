@@ -329,9 +329,71 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 	EVP_MD_CTX *mctx = NULL;
 
 	try{
+		EVP_PKEY *pubkey;
+		LOGGER_OPENSSL(X509_get_pubkey);
+		pubkey = X509_get_pubkey(cert->internal());
+
+		if (pubkey->type == EVP_PKEY_RSA || pubkey->type == EVP_PKEY_DSA) {
+#ifndef OPENSSL_NO_ENGINE
+			if (!hasPrivateKey(cert)) {
+				return NULL;
+			}
+
+			if (ENGINE *e = ENGINE_by_id("capi"))
+			{
+				if (ENGINE_init(e))
+				{
+					PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+					PCCERT_CONTEXT pCertFound = HCRYPT_NULL;
+					HCERTSTORE hCertStore = HCRYPT_NULL;
+
+					pCertContext = createCertificateContext(cert);
+
+					if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+						CERT_STORE_PROV_SYSTEM,
+						X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+						HCRYPT_NULL,
+						CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_READONLY_FLAG,
+						L"My")))
+					{
+						THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore(My) failed");
+					}
+
+					if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+						THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "findExistingCertificate");
+					}
+
+					CertFreeCertificateContext(pCertContext);
+					pCertContext = HCRYPT_NULL;
+
+					CertCloseStore(hCertStore, 0);
+					hCertStore = HCRYPT_NULL;
+
+					Handle<std::string> name = nameToStr(pCertFound->dwCertEncodingType, &pCertFound->pCertInfo->Subject);
+
+					LOGGER_OPENSSL(ENGINE_load_private_key);
+					pkey = ENGINE_load_private_key(e, name->c_str(), 0, 0);
+
+					LOGGER_OPENSSL(ENGINE_free);
+					ENGINE_free(e);
+					e = NULL;
+				}
+				else {
+					THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error init capi engine");
+				}
+			}
+			else {
+				THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "ENGINE 'capi' is not loaded");
+			}
+
+			return new Key(pkey);
+#else
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Wrong Algorithm type");
+#endif //OPENSSL_NO_ENGINE
+		}
+
 #ifndef OPENSSL_NO_CTGOSTCP
 #define MAX_SIGNATURE_LEN 128
-		
 		size_t len;
 		unsigned char buf[MAX_SIGNATURE_LEN];
 
@@ -398,9 +460,7 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 		}
 
 		return new Key(pkey);
-#else
-		THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Only with CTGSOTCP");
-#endif
+#endif //OPENSSL_NO_CTGOSTCP
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error get key");
@@ -409,6 +469,215 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 	EVP_MD_CTX_destroy(mctx);
 	EVP_PKEY_free(pkey);
 	EVP_PKEY_CTX_free(pctx);
+}
+
+bool ProviderMicrosoft::hasPrivateKey(Handle<Certificate> cert) {
+	LOGGER_FN();
+
+	try {
+		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+		PCCERT_CONTEXT pCertFound = HCRYPT_NULL;
+		HCERTSTORE hCertStore = HCRYPT_NULL;
+		DWORD dwSize = 0;
+		bool res = false;
+
+		pCertContext = createCertificateContext(cert);
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_READONLY_FLAG,
+			L"My")))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore(My) failed");
+		}
+
+		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "findExistingCertificate");
+		}
+
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
+
+		CertCloseStore(hCertStore, 0);
+		hCertStore = HCRYPT_NULL;
+
+		if (CertGetCertificateContextProperty(pCertFound, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwSize)) {
+			res = true;
+		}
+
+		CertFreeCertificateContext(pCertFound);
+		pCertFound = HCRYPT_NULL;
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error check key existing");
+	}
+}
+
+PCCERT_CONTEXT ProviderMicrosoft::createCertificateContext(Handle<Certificate> cert) {
+	LOGGER_FN();
+
+	try {
+		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+		unsigned char *pData = NULL, *p = NULL;
+		int iData;		
+
+		if (cert->isEmpty()) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "cert cannot be empty");
+		}
+
+		LOGGER_OPENSSL(i2d_X509);
+		if ((iData = i2d_X509(cert->internal(), NULL)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error i2d_X509");
+		}
+
+		LOGGER_OPENSSL(OPENSSL_malloc);
+		if (NULL == (pData = (unsigned char*)OPENSSL_malloc(iData))) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error malloc");
+		}
+
+		p = pData;
+		LOGGER_OPENSSL(i2d_X509);
+		if ((iData = i2d_X509(cert->internal(), &p)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error i2d_X509");
+		}
+
+		LOGGER_TRACE("CertCreateCertificateContext");
+		if (NULL == (pCertContext = CertCreateCertificateContext(
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, pData, iData))) {
+				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertCreateCertificateContext() failed");
+		}
+
+		OPENSSL_free(pData);
+
+		return pCertContext;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error create cert context from X509");
+	}
+}
+
+bool ProviderMicrosoft::findExistingCertificate(
+	OUT PCCERT_CONTEXT &pOutCertContext,
+	IN HCERTSTORE hCertStore,
+	IN PCCERT_CONTEXT pCertContext,
+	IN DWORD dwFindFlags,
+	IN DWORD dwCertEncodingType
+	) {
+		
+	LOGGER_FN();
+
+	bool res = false;
+
+	try {
+		if (!hCertStore) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "certificate store cannot be empty");
+		}
+
+		if (!pCertContext) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "certificate context cannot be empty");
+		}
+
+		LOGGER_TRACE("CertFindCertificateInStore");
+		pOutCertContext = CertFindCertificateInStore(
+			hCertStore,
+			dwCertEncodingType,
+			dwFindFlags,
+			CERT_FIND_EXISTING,
+			pCertContext,
+			NULL
+		);
+
+		if (pOutCertContext) {
+			res = true;
+		}
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error find certificate in store");
+	}
+}
+
+Handle<std::string> ProviderMicrosoft::nameToStr(
+	IN DWORD dwCertEncodingType,
+	IN const CERT_NAME_BLOB *pName,
+	IN DWORD dwStrType
+	)
+{
+	LOGGER_FN();
+
+	try {
+		LPTSTR pszString;
+		DWORD cbSize;
+		Handle<std::string> res;
+
+		cbSize = CertNameToStr(
+			dwCertEncodingType,
+			const_cast<PCERT_NAME_BLOB> (pName),
+			dwStrType,
+			NULL,
+			0);
+
+		if (!cbSize) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertNameToStr. Code: %d", GetLastError());
+		}
+
+		if (!(pszString = (LPTSTR)malloc(cbSize * sizeof(TCHAR)))) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Memory allocation failed");
+		}
+
+		cbSize = CertNameToStr(
+			dwCertEncodingType,
+			const_cast<PCERT_NAME_BLOB> (pName),
+			dwStrType,
+			pszString,
+			cbSize);
+
+		res = new std::string(pszString);
+
+		free(pszString);
+		pszString = NULL;
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error convert name to string");
+	}
+}
+
+CRYPT_KEY_PROV_INFO * ProviderMicrosoft::getCertificateContextProperty(
+	IN PCCERT_CONTEXT pCertContext,
+	IN DWORD dwPropId) {
+
+	LOGGER_FN();
+
+	try {
+		DWORD dwSize = 0;
+
+		LOGGER_TRACE("CertGetCertificateContextProperty");
+		if (!CertGetCertificateContextProperty(pCertContext, dwPropId, NULL, &dwSize)) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertGetCertificateContextProperty(NULL) failed. Code: %d", GetLastError());
+		}
+
+		CRYPT_KEY_PROV_INFO *pinfo = (CRYPT_KEY_PROV_INFO *)malloc(dwSize);
+
+		LOGGER_TRACE("CertGetCertificateContextProperty");
+		if (!CertGetCertificateContextProperty(pCertContext, dwPropId, pinfo, &dwSize))
+		{
+			LOGGER_OPENSSL(OPENSSL_free);
+			OPENSSL_free(pinfo);
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertGetCertificateContextProperty(NULL) failed. Code: %d", GetLastError());
+		}
+
+		return pinfo;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error get certificate context property");
+	}
 }
 
 int ProviderMicrosoft::char2int(char input) {
