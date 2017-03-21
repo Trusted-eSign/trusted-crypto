@@ -225,8 +225,8 @@ Handle<std::string> Certificate::getSignatureAlgorithm() {
 
 	X509_ALGOR *sigalg = this->internal()->sig_alg;
 
-	LOGGER_OPENSSL(OBJ_obj2nid);
-	int sig_nid = OBJ_obj2nid(sigalg->algorithm);
+	LOGGER_OPENSSL(X509_get_signature_nid);
+	int sig_nid = X509_get_signature_nid(this->internal());
 	if (sig_nid != NID_undef) {
 		LOGGER_OPENSSL(OBJ_nid2ln);
 		return new std::string(OBJ_nid2ln(sig_nid));
