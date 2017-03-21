@@ -341,6 +341,7 @@ declare namespace native {
         class ProviderMicrosoft extends Provider {
             constructor();
             getKey(cert: PKI.Certificate): PKI.Key;
+            hasPrivateKey(cert: PKI.Certificate): boolean;
         }
         class ProviderCryptopro extends Provider {
             constructor();
@@ -2769,6 +2770,15 @@ declare namespace trusted.pkistore {
          * @memberOf ProviderMicrosoft
          */
         getKey(cert: pki.Certificate): pki.Key;
+        /**
+         * Ensure that the certificate's private key is available
+         *
+         * @param {Certificate} cert
+         * @returns {boolean}
+         *
+         * @memberOf ProviderMicrosoft
+         */
+        hasPrivateKey(cert: pki.Certificate): boolean;
     }
 }
 declare namespace trusted.pkistore {
