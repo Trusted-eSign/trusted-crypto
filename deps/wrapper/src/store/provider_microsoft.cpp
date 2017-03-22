@@ -332,6 +332,9 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 		EVP_PKEY *pubkey;
 		LOGGER_OPENSSL(X509_get_pubkey);
 		pubkey = X509_get_pubkey(cert->internal());
+		if (!pubkey) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "X509_get_pubkey");
+		}
 
 		if (pubkey->type == EVP_PKEY_RSA || pubkey->type == EVP_PKEY_DSA) {
 #ifndef OPENSSL_NO_ENGINE
