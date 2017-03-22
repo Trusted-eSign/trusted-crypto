@@ -373,6 +373,9 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 
 					LOGGER_OPENSSL(ENGINE_load_private_key);
 					pkey = ENGINE_load_private_key(e, name->c_str(), 0, 0);
+					if (!pkey) {
+						THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "ENGINE_load_private_key");
+					}
 
 					LOGGER_OPENSSL(ENGINE_free);
 					ENGINE_free(e);
