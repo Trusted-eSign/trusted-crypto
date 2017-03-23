@@ -36,6 +36,7 @@ public:
 	Handle<Key> getPublicKey();
 	int getType();
 	int getKeyUsage();
+	bool isSelfSigned();
 
 	//Methods
 	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);

@@ -11,6 +11,10 @@ Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, Handle
 		Handle<CertificateCollection> chain = new CertificateCollection();
 		chain->push(cert);
 
+		if (cert->selfSigned()) {
+			return chain;
+		}
+
 		Handle<Certificate> xtemp = cert;
 
 		do{

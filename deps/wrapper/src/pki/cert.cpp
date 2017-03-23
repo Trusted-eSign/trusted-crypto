@@ -8,8 +8,10 @@ Handle<Key> Certificate::getPublicKey() {
 	if (!this->isEmpty()) {
 		LOGGER_OPENSSL(X509_get_pubkey);
 		EVP_PKEY *key = X509_get_pubkey(this->internal());
-		if (!key)
-			THROW_EXCEPTION(0, Certificate, NULL, "X509_get_pubkey");;
+		if (!key) {
+			THROW_EXCEPTION(0, Certificate, NULL, "X509_get_pubkey");
+		}
+			
 		return new Key(key, this->handle());
 	}
 	return NULL;
@@ -352,6 +354,19 @@ bool Certificate::equals(Handle<Certificate> cert){
 		return true;
 	}
 	return false;
+}
+
+bool Certificate::isSelfSigned() {
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_check_purpose);
+	X509_check_purpose(this->internal(), -1, 0);
+	if (this->internal()->ex_flags & EXFLAG_SS) {
+		return true;
+	}		
+	else {
+		return false;
+	}
 }
 
 Handle<std::string> Certificate::hash(Handle<std::string> algorithm){
