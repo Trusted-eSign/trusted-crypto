@@ -30,6 +30,7 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "getSignatureAlgorithm", GetSignatureAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "getSignatureDigest", GetSignatureDigest);
 	Nan::SetPrototypeMethod(tpl, "getOrganizationName", GetOrganizationName);
+	Nan::SetPrototypeMethod(tpl, "isSelfSigned", IsSelfSigned);
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
@@ -448,6 +449,21 @@ NAN_METHOD(WCertificate::GetOrganizationName)
 	}
 	TRY_END();
 }
+
+NAN_METHOD(WCertificate::IsSelfSigned) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		bool res = _this->isSelfSigned();
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
+		return;
+	}
+	TRY_END();
+}
+
 
 NAN_METHOD(WCertificate::Duplicate)
 {

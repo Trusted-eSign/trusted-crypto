@@ -32,6 +32,7 @@ describe("Certificate", function() {
         assert.equal(typeof (cert.signatureAlgorithm), "string", "Bad signatureAlgorithm value");
         assert.equal(typeof (cert.signatureDigest), "string", "Bad signatureDigest value");
         assert.equal(typeof (cert.organizationName), "string", "Bad organizationName value");
+        assert.equal(typeof (cert.isSelfSigned), "boolean", "Error check self signed");
     });
 
     it("ru", function() {

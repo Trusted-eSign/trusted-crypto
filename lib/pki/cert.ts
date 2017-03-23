@@ -233,6 +233,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Return true is a certificate is self signed
+         *
+         * @readonly
+         * @type {boolean}
+         * @memberOf Certificate
+         */
+        get isSelfSigned(): boolean {
+            return this.handle.isSelfSigned();
+        }
+
+        /**
          * Compare certificates
          *
          * @param {Certificate} cert Certificate for compare
