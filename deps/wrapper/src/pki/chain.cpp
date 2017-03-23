@@ -11,7 +11,7 @@ Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, Handle
 		Handle<CertificateCollection> chain = new CertificateCollection();
 		chain->push(cert);
 
-		if (cert->selfSigned()) {
+		if (cert->isSelfSigned()) {
 			return chain;
 		}
 
