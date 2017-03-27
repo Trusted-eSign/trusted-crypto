@@ -77,7 +77,7 @@
                         }
                     },
                     {
-                        "defines": [ "UNIX", "OPENSSL_NO_CTGOSTCP" ],
+                        "defines": [ "UNIX", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSING" ],
 
                         "cflags_cc+": [ "-std=c++11" ]
                     }
