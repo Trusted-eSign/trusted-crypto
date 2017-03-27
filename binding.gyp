@@ -83,7 +83,7 @@
                             "deps/wrapper/include",
                             "deps/wrapper/jsoncpp"
                         ],
-                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP" ],
+                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSING" ],
                         "msbuild_settings": {
                             "Link": {
                                 "ImageHasSafeExceptionHandlers": "false"

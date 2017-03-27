@@ -66,16 +66,10 @@
                         "variables": {
                             "openssl_root%": "C:/openssl"
                         },
-                        "link_settings": {
-                            "libraries": [
-                                "-l<(openssl_root)/lib/libeay32.lib",
-                                "-lcrypt32.lib"
-                            ],
-                        },
                         "include_dirs": [
                             "<(openssl_root)/include"
                         ],
-                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP" ],
+                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSING" ],
                         "msbuild_settings": {
                             "Link": {
                                 "ImageHasSafeExceptionHandlers": "false"

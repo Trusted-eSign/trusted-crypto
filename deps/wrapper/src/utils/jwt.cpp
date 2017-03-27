@@ -8,14 +8,14 @@ bool Jwt::checkLicense() {
 	try{
 		int errorCode;
 
-#ifndef OPENSSL_NO_CTGOSTCP
-		if (!jwtdlVerifyLicenseFile(&errorCode)) {
-			THROW_EXCEPTION(0, Jwt, NULL, "jwtdlVerifyLicenseFile() failed(error code %d)", errorCode);
+#ifndef JWT_NO_LICENSING
+		if (!ctlicense_verify_file(&errorCode)) {
+			THROW_EXCEPTION(0, Jwt, NULL, "verify jwt license failed(error code %d)", errorCode);
 		}
 
 		return true;
 #else
-		THROW_EXCEPTION(0, Jwt, NULL, "Only if defined CTGSOTCP");
+		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSING");
 #endif
 	}
 	catch (Handle<Exception> e){
@@ -29,14 +29,14 @@ bool Jwt::checkLicense(Handle<std::string> lic) {
 	try{
 		int errorCode;
 
-#ifndef OPENSSL_NO_CTGOSTCP
-		if (!jwtdlVerifyLicenseStr((char *)lic->c_str(), &errorCode)) {
-			THROW_EXCEPTION(0, Jwt, NULL, "jwtdlVerifyLicenseFile() failed(error code %d)", errorCode);
+#ifndef JWT_NO_LICENSING
+		if (!ctlicense_verify_str((char *)lic->c_str(), &errorCode)) {
+			THROW_EXCEPTION(0, Jwt, NULL, "verify jwt license failed(error code %d)", errorCode);
 		}
 
 		return true;
 #else
-		THROW_EXCEPTION(0, Jwt, NULL, "Only if defined CTGSOTCP");
+		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSING");
 #endif
 	}
 	catch (Handle<Exception> e){

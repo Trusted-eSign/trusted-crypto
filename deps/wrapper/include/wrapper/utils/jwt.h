@@ -1,8 +1,8 @@
 #ifndef UTIL_JWT_INCLUDED
 #define UTIL_JWT_INCLUDED
 
-#ifndef OPENSSL_NO_CTGOSTCP
-	#include <openssl/license.h>
+#ifndef JWT_NO_LICENSING
+	#include <openssl/ctlicense.h>
 #endif
 
 #include "../common/common.h"
