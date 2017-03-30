@@ -44,7 +44,7 @@ bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollectio
 	LOGGER_FN();
 
 	try{
-		boolean res = true;
+		bool res = true;
 
 		LOGGER_OPENSSL(X509_STORE_CTX_new);
 		X509_STORE_CTX *ctx = X509_STORE_CTX_new();
