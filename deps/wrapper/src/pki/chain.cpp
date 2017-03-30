@@ -44,6 +44,8 @@ bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollectio
 	LOGGER_FN();
 
 	try{
+		boolean res = true;
+
 		LOGGER_OPENSSL(X509_STORE_CTX_new);
 		X509_STORE_CTX *ctx = X509_STORE_CTX_new();
 		if (!ctx) {
@@ -58,7 +60,7 @@ bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollectio
 
 		for (int i = 0, c = chain->length(); i < c; i++){
 			LOGGER_OPENSSL(X509_STORE_add_cert);
-			X509_STORE_add_cert(st, X509_dup(chain->items(i)->internal()));
+			X509_STORE_add_cert(st, chain->items(i)->internal());
 		}
 
 		LOGGER_OPENSSL(X509_STORE_CTX_init);
@@ -79,10 +81,18 @@ bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollectio
 
 		LOGGER_OPENSSL(X509_verify_cert);
 		if (X509_verify_cert(ctx) <= 0){
-			return false;
+			res = false;
 		}
 
-		return true;
+		LOGGER_OPENSSL(X509_STORE_CTX_free);
+		X509_STORE_CTX_free(ctx);
+		ctx = NULL;
+
+		LOGGER_OPENSSL(X509_STORE_free);
+		X509_STORE_free(st);
+		st = NULL;
+
+		return res;
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Chain, e, "Error verify chain (provider store)");
