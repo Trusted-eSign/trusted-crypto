@@ -500,8 +500,13 @@ bool ProviderMicrosoft::hasPrivateKey(Handle<Certificate> cert) {
 			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore(My) failed");
 		}
 
-		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
-			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "findExistingCertificate");
+		if (findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+			if (CertGetCertificateContextProperty(pCertFound, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwSize)) {
+				res = true;
+			}
+
+			CertFreeCertificateContext(pCertFound);
+			pCertFound = HCRYPT_NULL;
 		}
 
 		CertFreeCertificateContext(pCertContext);
@@ -509,13 +514,6 @@ bool ProviderMicrosoft::hasPrivateKey(Handle<Certificate> cert) {
 
 		CertCloseStore(hCertStore, 0);
 		hCertStore = HCRYPT_NULL;
-
-		if (CertGetCertificateContextProperty(pCertFound, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwSize)) {
-			res = true;
-		}
-
-		CertFreeCertificateContext(pCertFound);
-		pCertFound = HCRYPT_NULL;
 
 		return res;
 	}
@@ -605,7 +603,7 @@ bool ProviderMicrosoft::findExistingCertificate(
 		return res;
 	}
 	catch (Handle<Exception> e) {
-		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error find certificate in store");
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error find certificate in store. Code: %d", GetLastError());
 	}
 }
 

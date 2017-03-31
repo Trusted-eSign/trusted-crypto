@@ -434,8 +434,13 @@ bool ProviderCryptopro::hasPrivateKey(Handle<Certificate> cert) {
 			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertOpenStore(My) failed");
 		}
 
-		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
-			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "findExistingCertificate");
+		if (findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+			if (CertGetCertificateContextProperty(pCertFound, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwSize)) {
+				res = true;
+			}
+
+			CertFreeCertificateContext(pCertFound);
+			pCertFound = HCRYPT_NULL;
 		}
 
 		CertFreeCertificateContext(pCertContext);
@@ -443,13 +448,6 @@ bool ProviderCryptopro::hasPrivateKey(Handle<Certificate> cert) {
 
 		CertCloseStore(hCertStore, 0);
 		hCertStore = HCRYPT_NULL;
-
-		if (CertGetCertificateContextProperty(pCertFound, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwSize)) {
-			res = true;
-		}
-
-		CertFreeCertificateContext(pCertFound);
-		pCertFound = HCRYPT_NULL;
 
 		return res;
 	}
