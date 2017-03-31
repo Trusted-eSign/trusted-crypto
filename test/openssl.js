@@ -13,7 +13,10 @@ describe("OPENSSL", function() {
     it("run", function() {
         trusted.common.OpenSSL.run();
 
-        trusted.pki.Certificate.load("undefined");
-        assert.equal(trusted.common.OpenSSL.printErrors().length > 0, true);
+        try {
+            trusted.pki.Certificate.load("undefined");
+        } catch (err) {
+            assert.equal(trusted.common.OpenSSL.printErrors().length > 0, true);
+        }
     });
 });
