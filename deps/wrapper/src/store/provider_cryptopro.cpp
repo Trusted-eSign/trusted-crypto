@@ -47,11 +47,9 @@ void ProviderCryptopro::init(){
 			enumCertificates(hCertStore, &listStore[i]);
 			enumCrls(hCertStore, &listStore[i]);
 
-			if (hCertStore) {
-				CertCloseStore(hCertStore, 0);
+			CertCloseStore(hCertStore, 0);
 			}
 		}
-	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error init CryptoPRO provider");
 	}	
@@ -248,13 +246,9 @@ Handle<Certificate> ProviderCryptopro::getCert(Handle<std::string> hash, Handle<
 				THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "'d2i_X509' Error decode len bytes");
 			}
 
-			if (pCertContext){
-				CertFreeCertificateContext(pCertContext);
-			}
+			CertFreeCertificateContext(pCertContext);
 				
-			if (hCertStore) {
-				CertCloseStore(hCertStore, 0);
-			}
+			CertCloseStore(hCertStore, 0);
 
 			return new Certificate(hcert);
 		}
@@ -318,9 +312,7 @@ Handle<CRL> ProviderCryptopro::getCRL(Handle<std::string> hash, Handle<std::stri
 			CertFreeCRLContext(pCrlContext);
 		}
 
-		if (hCertStore) {
-			CertCloseStore(hCertStore, 0);
-		}
+		CertCloseStore(hCertStore, 0);
 
 		THROW_EXCEPTION(0, ProviderCryptopro, NULL, "Cannot find CRL in store");
 	}
@@ -417,6 +409,137 @@ Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 	if (mctx) EVP_MD_CTX_destroy(mctx);
 	if (pkey) EVP_PKEY_free(pkey);
 	if (pctx) EVP_PKEY_CTX_free(pctx);
+}
+
+bool ProviderCryptopro::hasPrivateKey(Handle<Certificate> cert) {
+	LOGGER_FN();
+
+	try {
+		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+		PCCERT_CONTEXT pCertFound = HCRYPT_NULL;
+		HCERTSTORE hCertStore = HCRYPT_NULL;
+		DWORD dwSize = 0;
+		bool res = false;
+
+		pCertContext = createCertificateContext(cert);
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_READONLY_FLAG,
+			L"My")))
+		{
+			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertOpenStore(My) failed");
+		}
+
+		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "findExistingCertificate");
+		}
+
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
+
+		CertCloseStore(hCertStore, 0);
+		hCertStore = HCRYPT_NULL;
+
+		if (CertGetCertificateContextProperty(pCertFound, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwSize)) {
+			res = true;
+		}
+
+		CertFreeCertificateContext(pCertFound);
+		pCertFound = HCRYPT_NULL;
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error check key existing");
+	}
+}
+
+PCCERT_CONTEXT ProviderCryptopro::createCertificateContext(Handle<Certificate> cert) {
+	LOGGER_FN();
+
+	try {
+		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+		unsigned char *pData = NULL, *p = NULL;
+		int iData;
+
+		if (cert->isEmpty()) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "cert cannot be empty");
+		}
+
+		LOGGER_OPENSSL(i2d_X509);
+		if ((iData = i2d_X509(cert->internal(), NULL)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Error i2d_X509");
+		}
+
+		LOGGER_OPENSSL(OPENSSL_malloc);
+		if (NULL == (pData = (unsigned char*)OPENSSL_malloc(iData))) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Error malloc");
+		}
+
+		p = pData;
+		LOGGER_OPENSSL(i2d_X509);
+		if ((iData = i2d_X509(cert->internal(), &p)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Error i2d_X509");
+		}
+
+		LOGGER_TRACE("CertCreateCertificateContext");
+		if (NULL == (pCertContext = CertCreateCertificateContext(
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, pData, iData))) {
+			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertCreateCertificateContext() failed");
+		}
+
+		OPENSSL_free(pData);
+
+		return pCertContext;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error create cert context from X509");
+	}
+}
+
+bool ProviderCryptopro::findExistingCertificate(
+	OUT PCCERT_CONTEXT &pOutCertContext,
+	IN HCERTSTORE hCertStore,
+	IN PCCERT_CONTEXT pCertContext,
+	IN DWORD dwFindFlags,
+	IN DWORD dwCertEncodingType
+	) {
+
+	LOGGER_FN();
+
+	bool res = false;
+
+	try {
+		if (!hCertStore) {
+			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "certificate store cannot be empty");
+		}
+
+		if (!pCertContext) {
+			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "certificate context cannot be empty");
+		}
+
+		LOGGER_TRACE("CertFindCertificateInStore");
+		pOutCertContext = CertFindCertificateInStore(
+			hCertStore,
+			dwCertEncodingType,
+			dwFindFlags,
+			CERT_FIND_EXISTING,
+			pCertContext,
+			NULL
+			);
+
+		if (pOutCertContext) {
+			res = true;
+		}
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error find certificate in store");
+	}
 }
 
 int ProviderCryptopro::char2int(char input) {

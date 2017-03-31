@@ -359,6 +359,7 @@ declare namespace native {
         class ProviderCryptopro extends Provider {
             constructor();
             public getKey(cert: PKI.Certificate): PKI.Key;
+            public hasPrivateKey(cert: PKI.Certificate): boolean;
         }
 
         class ProviderTSL extends Provider {
