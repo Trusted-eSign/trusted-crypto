@@ -159,6 +159,7 @@ Handle<PkiItem> ProviderMicrosoft::objectToPKIItem(Handle<Certificate> cert){
 
 		item->certNotBefore = cert->getNotBefore();
 		item->certNotAfter = cert->getNotAfter();
+		item->certKey = hasPrivateKey(cert) ? new std::string("1") : new std::string("");
 
 		return item;		
 	}
