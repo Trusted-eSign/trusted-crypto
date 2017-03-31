@@ -91,6 +91,7 @@ declare namespace native {
             getSignatureAlgorithm(): string;
             getSignatureDigest(): string;
             getOrganizationName(): string;
+            isSelfSigned(): boolean;
             load(filename: string, dataFormat: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
@@ -428,6 +429,13 @@ declare namespace native {
             verify(modulePath: string, cacerts?: PKI.CertificateCollection): Object;
         }
     }
+    namespace COMMON {
+        class OpenSSL {
+            run(): void;
+            stop(): void;
+            printErrors(): string;
+        }
+    }
 }
 declare namespace trusted {
     interface IBaseObject {
@@ -481,6 +489,51 @@ declare namespace trusted.core {
          * @memberOf ICollectionWrite
          */
         removeAt(index: number): void;
+    }
+}
+declare namespace trusted.common {
+    /**
+     * OpenSSL helper class
+     *
+     * @export
+     * @class OpenSSL
+     * @extends {BaseObject<native.COMMON.OpenSSL>}
+     */
+    class OpenSSL extends BaseObject<native.COMMON.OpenSSL> {
+        /**
+         * Load engines and add algorithms
+         *
+         * @static
+         * @returns {void}
+         *
+         * @memberOf OpenSSL
+         */
+        static run(): void;
+        /**
+         * Cleanup openssl objects and free errors
+         *
+         * @static
+         * @returns {void}
+         *
+         * @memberOf OpenSSL
+         */
+        static stop(): void;
+        /**
+         * Print OpenSSL error stack
+         *
+         * @static
+         * @returns {string}
+         *
+         * @memberOf OpenSSL
+         */
+        static printErrors(): string;
+        /**
+         * Creates an instance of OpenSSL.
+         *
+         *
+         * @memberOf OpenSSL
+         */
+        constructor();
     }
 }
 declare namespace trusted.utils {
@@ -1170,6 +1223,14 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         readonly organizationName: string;
+        /**
+         * Return true is a certificate is self signed
+         *
+         * @readonly
+         * @type {boolean}
+         * @memberOf Certificate
+         */
+        readonly isSelfSigned: boolean;
         /**
          * Compare certificates
          *
