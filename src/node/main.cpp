@@ -6,6 +6,8 @@
 
 #include <nan.h>
 
+#include "common/wopenssl.h"
+
 #include "utils/wlog.h"
 #include "utils/wjwt.h"
 
@@ -60,6 +62,11 @@ void init(v8::Handle<v8::Object> target) {
 	// LOGGER_TRACE("OpenSSL init");
 
 	OpenSSL::run();
+
+	v8::Local<v8::Object> OpenSSL = Nan::New<v8::Object>();
+
+	target->Set(Nan::New("COMMON").ToLocalChecked(), OpenSSL);
+	WOpenSSL::Init(OpenSSL);
 
 	v8::Local<v8::Object> Jwt = Nan::New<v8::Object>();
 

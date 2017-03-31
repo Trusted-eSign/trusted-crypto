@@ -9,6 +9,7 @@
                 "src/node/main.cpp",
                 "src/node/helper.cpp",
                 "src/node/stdafx.cpp",
+                "src/node/common/wopenssl.cpp",
                 "src/node/utils/wlog.cpp",
                 "src/node/utils/wrap.cpp",
                 "src/node/utils/wjwt.cpp",

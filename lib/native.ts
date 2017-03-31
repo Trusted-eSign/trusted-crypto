@@ -455,4 +455,12 @@ declare namespace native {
             public verify(modulePath: string, cacerts?: PKI.CertificateCollection): Object;
         }
     }
+
+    namespace COMMON {
+        class OpenSSL {
+            public run(): void;
+            public stop(): void;
+            public printErrors(): string;
+        }
+    }
 }

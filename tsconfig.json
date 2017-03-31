@@ -15,6 +15,7 @@
         "lib/native.ts",
         "lib/object.ts",
         "lib/core/collection.ts",
+        "lib/common/openssl.ts",
         "lib/utils/jwt.ts",
         "lib/utils/cerber.ts",
         "lib/pki/key_usage.ts",
