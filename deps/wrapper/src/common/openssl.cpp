@@ -3,8 +3,7 @@
 #include "wrapper/common/openssl.h"
 #include "wrapper/common/common.h"
 
-void OpenSSL::run()
-{
+void OpenSSL::run() {
 	LOGGER_FN();
 
 	CRYPTO_malloc_debug_init();
@@ -12,6 +11,7 @@ void OpenSSL::run()
 	
 	LOGGER_OPENSSL(ERR_load_crypto_strings);
 	ERR_load_crypto_strings();
+
 	LOGGER_OPENSSL(OpenSSL_add_all_algorithms);
 	OpenSSL_add_all_algorithms();
     
@@ -23,13 +23,29 @@ void OpenSSL::run()
 #endif
 }
 
-void OpenSSL::stop(){
+void OpenSSL::stop() {
 	LOGGER_FN();
+
+	LOGGER_OPENSSL(OBJ_cleanup);
+	OBJ_cleanup();
+
+	LOGGER_OPENSSL(EVP_cleanup);
+	EVP_cleanup();
+
+	LOGGER_OPENSSL(ENGINE_cleanup);
+	ENGINE_cleanup();
+
+	LOGGER_OPENSSL(CRYPTO_cleanup_all_ex_data);
+	CRYPTO_cleanup_all_ex_data();
+
+	LOGGER_OPENSSL(ERR_remove_thread_state);
+	ERR_remove_thread_state(NULL);
+
+	LOGGER_OPENSSL(RAND_cleanup);
+	RAND_cleanup();
 
 	LOGGER_OPENSSL(ERR_free_strings);
 	ERR_free_strings();
-	LOGGER_OPENSSL(EVP_cleanup);
-	EVP_cleanup();
 }
 
 Handle<std::string> OpenSSL::printErrors()
