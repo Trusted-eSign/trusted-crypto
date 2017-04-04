@@ -77,94 +77,95 @@ NAN_METHOD(WCashJson::Export) {
 
 		for (int i = 0; i < res->length(); i++){
 			v8::Local<v8::Object> tempObj = v8::Object::New(isolate);
+			Handle<PkiItem> item = res->items(i);
 
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "type"),
-				v8::String::NewFromUtf8(isolate, res->items(i)->type->c_str()));
+				v8::String::NewFromUtf8(isolate, item->type->c_str()));
 
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "format"),
-				v8::String::NewFromUtf8(isolate, res->items(i)->format->c_str()));
+				v8::String::NewFromUtf8(isolate, item->format->c_str()));
 
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "provider"),
-				v8::String::NewFromUtf8(isolate, res->items(i)->provider->c_str()));
+				v8::String::NewFromUtf8(isolate, item->provider->c_str()));
 
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "category"),
-				v8::String::NewFromUtf8(isolate, res->items(i)->category->c_str()));
+				v8::String::NewFromUtf8(isolate, item->category->c_str()));
 
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "uri"),
-				v8::String::NewFromUtf8(isolate, res->items(i)->uri->c_str()));
+				v8::String::NewFromUtf8(isolate, item->uri->c_str()));
 
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "hash"),
-				v8::String::NewFromUtf8(isolate, res->items(i)->hash->c_str()));
+				v8::String::NewFromUtf8(isolate, item->hash->c_str()));
 
-			if (strcmp(res->items(i)->type->c_str(), "CERTIFICATE") == 0){
+			if (strcmp(item->type->c_str(), "CERTIFICATE") == 0){
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "subjectName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certSubjectName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certSubjectName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "subjectFriendlyName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certSubjectFriendlyName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certSubjectFriendlyName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "issuerName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certIssuerName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certIssuerName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "issuerFriendlyName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certIssuerFriendlyName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certIssuerFriendlyName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "notBefore"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certNotBefore->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certNotBefore->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "notAfter"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certNotAfter->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certNotAfter->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "serial"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certSerial->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certSerial->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "key"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certKey->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certKey->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "organizationName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certOrganizationName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certOrganizationName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "signatureAlgorithm"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->certSignatureAlgorithm->c_str()));
+					v8::String::NewFromUtf8(isolate, item->certSignatureAlgorithm->c_str()));
 
 				array8->Set(i, tempObj);
 				continue;
 			}
 
-			if (strcmp(res->items(i)->type->c_str(), "CRL") == 0){
+			if (strcmp(item->type->c_str(), "CRL") == 0){
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "issuerName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->crlIssuerName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->crlIssuerName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "issuerFriendlyName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->crlIssuerFriendlyName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->crlIssuerFriendlyName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "lastUpdate"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->crlLastUpdate->c_str()));
+					v8::String::NewFromUtf8(isolate, item->crlLastUpdate->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "nextUpdate"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->crlNextUpdate->c_str()));
+					v8::String::NewFromUtf8(isolate, item->crlNextUpdate->c_str()));
 
 				array8->Set(i, tempObj);
 				continue;
 			}
 
-			if (strcmp(res->items(i)->type->c_str(), "REQUEST") == 0){
+			if (strcmp(item->type->c_str(), "REQUEST") == 0){
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "subjectName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->csrSubjectName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->csrSubjectName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "subjectFriendlyName"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->csrSubjectFriendlyName->c_str()));
+					v8::String::NewFromUtf8(isolate, item->csrSubjectFriendlyName->c_str()));
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "key"),
-					v8::String::NewFromUtf8(isolate, res->items(i)->csrKey->c_str()));
+					v8::String::NewFromUtf8(isolate, item->csrKey->c_str()));
 
 				array8->Set(i, tempObj);
 				continue;
 			}
 
-			if (strcmp(res->items(i)->type->c_str(), "KEY") == 0){
+			if (strcmp(item->type->c_str(), "KEY") == 0){
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "encrypted"),
-					v8::Boolean::New(isolate, res->items(i)->keyEncrypted));
+					v8::Boolean::New(isolate, item->keyEncrypted));
 
 				array8->Set(i, tempObj);
 				continue;
