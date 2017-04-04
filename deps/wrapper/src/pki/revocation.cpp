@@ -10,8 +10,7 @@ Handle<CRL> Revocation::getCrlLocal(Handle<Certificate> cert, Handle<PkiStore> p
 		Handle<Filter> filter = new Filter();
 		filter->types.push_back(new std::string("CRL"));
 
-		Handle<PkiItemCollection> filteredItems = new PkiItemCollection();	
-		filteredItems = pkiStore->find(filter);
+		Handle<PkiItemCollection> filteredItems = pkiStore->find(filter);
 
 		STACK_OF(X509_CRL) *skCRL = NULL;
 

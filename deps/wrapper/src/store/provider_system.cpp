@@ -134,8 +134,7 @@ void Provider_System::init(Handle<std::string> folder){
 				bioFile = BIO_new(BIO_s_file());
 				LOGGER_OPENSSL(BIO_read_filename);
 				if (BIO_read_filename(bioFile, uri.c_str()) > 0){
-					Handle<PkiItem> itemTemp = new PkiItem();
-					itemTemp = objectToPKIItem(new std::string(uri));
+					Handle<PkiItem> itemTemp = objectToPKIItem(new std::string(uri));
 					if (!itemTemp.isEmpty()){
 						providerItemCollection->push(itemTemp);
 					}					

@@ -29,9 +29,7 @@ Handle<PkiItemCollection> PkiStore::find(Handle<Filter> filter){
 	LOGGER_FN();
 
 	try{
-		Handle<PkiItemCollection> storeItemCollection = new PkiItemCollection();
-
-		storeItemCollection = getItems();
+		Handle<PkiItemCollection> storeItemCollection = getItems();
 
 		if (storeItemCollection.isEmpty()){
 			THROW_EXCEPTION(0, PkiStore, NULL, "Store no have pki elements");
@@ -165,9 +163,7 @@ Handle<PkiItem> PkiStore::findKey(Handle<Filter> filter){
 			THROW_EXCEPTION(0, PkiStore, NULL, "Need hash certificate\request for search key");
 		}
 
-		Handle<PkiItemCollection> storeItemCollection = new PkiItemCollection();
-
-		storeItemCollection = getItems();
+		Handle<PkiItemCollection> storeItemCollection = getItems();
 
 		if (storeItemCollection.isEmpty()){
 			THROW_EXCEPTION(0, PkiStore, NULL, "Store no have pki elements");
