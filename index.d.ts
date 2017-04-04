@@ -33,6 +33,23 @@ declare namespace trusted {
         RSA_F4 = 1,
     }
 }
+declare namespace trusted {
+    /**
+     *
+     * @export
+     * @enum {number}
+     */
+    enum LoggerLevel {
+        NULL = 0,
+        ERROR = 1,
+        WARNING = 2,
+        INFO = 4,
+        DEBUG = 8,
+        TRACE = 16,
+        OPENSSL = 32,
+        ALL = 63,
+    }
+}
 declare namespace native {
     namespace PKI {
         class Key {
@@ -347,6 +364,7 @@ declare namespace native {
         class ProviderCryptopro extends Provider {
             constructor();
             getKey(cert: PKI.Certificate): PKI.Key;
+            hasPrivateKey(cert: PKI.Certificate): boolean;
         }
         class ProviderTSL extends Provider {
             constructor(url: string);
@@ -427,6 +445,11 @@ declare namespace native {
         class Cerber {
             sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
             verify(modulePath: string, cacerts?: PKI.CertificateCollection): Object;
+        }
+        class Logger {
+            start(filename: string, level: trusted.LoggerLevel): void;
+            stop(): void;
+            clear(): void;
         }
     }
     namespace COMMON {
@@ -570,6 +593,60 @@ declare namespace trusted.utils {
          * @memberOf Jwt
          */
         checkLicense(data?: string): boolean;
+    }
+}
+declare namespace trusted.utils {
+    /**
+     * Wrap logger class
+     *
+     * @export
+     * @class Logger
+     * @extends {BaseObject<native.UTILS.Logger>}
+     */
+    class Logger extends BaseObject<native.UTILS.Logger> {
+        /**
+         * Start write log to a file
+         *
+         * @static
+         * @param {string} filename
+         * @param {LoggerLevel} [level=DEFAULT_LOGGER_LEVEL]
+         * @returns {Logger}
+         *
+         * @memberOf Logger
+         */
+        static start(filename: string, level?: LoggerLevel): Logger;
+        /**
+         * Creates an instance of Logger.
+         *
+         * @memberOf Logger
+         */
+        constructor();
+        /**
+         * Start write log to a file
+         *
+         * @param {string} filename
+         * @param {LoggerLevel} [level=DEFAULT_LOGGER_LEVEL]
+         * @returns {void}
+         *
+         * @memberOf Logger
+         */
+        start(filename: string, level?: LoggerLevel): void;
+        /**
+         * Stop write log file
+         *
+         * @returns {void}
+         *
+         * @memberOf Logger
+         */
+        stop(): void;
+        /**
+         * Clean exsisting log file
+         *
+         * @returns {void}
+         *
+         * @memberOf Logger
+         */
+        clear(): void;
     }
 }
 declare const path: any;
@@ -2804,6 +2881,15 @@ declare namespace trusted.pkistore {
          * @memberOf ProviderCryptopro
          */
         getKey(cert: pki.Certificate): pki.Key;
+        /**
+         * Ensure that the certificate's private key is available
+         *
+         * @param {Certificate} cert
+         * @returns {boolean}
+         *
+         * @memberOf ProviderCryptopro
+         */
+        hasPrivateKey(cert: pki.Certificate): boolean;
     }
 }
 declare namespace trusted.pkistore {
