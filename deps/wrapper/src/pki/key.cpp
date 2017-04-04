@@ -152,7 +152,6 @@ Handle<Key> Key::generate(DataFormat::DATA_FORMAT format, PublicExponent::Public
 	RSA *rsa = NULL;
 	BIGNUM *bn = NULL;
 	EVP_PKEY *evpkey = NULL;
-	BIO *bp_private = NULL;
 
 	try{
 		ENGINE *en = NULL;
@@ -211,11 +210,6 @@ Handle<Key> Key::generate(DataFormat::DATA_FORMAT format, PublicExponent::Public
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Key, e, "Can not keypair generate and save to file");
-	}
-
-	if (bp_private){
-		LOGGER_OPENSSL(BIO_free_all);
-		BIO_free_all(bp_private);
 	}
 
 	if (rsa){
