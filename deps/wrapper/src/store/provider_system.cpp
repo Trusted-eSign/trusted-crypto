@@ -387,9 +387,7 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 		THROW_EXCEPTION(0, Provider_System, e, "Object type not supported");
 	}
 
-	if (item->type->length() == 0){
-		return NULL;
-	}
+	return NULL;
 }
 
 

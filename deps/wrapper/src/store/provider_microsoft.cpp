@@ -476,6 +476,8 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 	EVP_MD_CTX_destroy(mctx);
 	EVP_PKEY_free(pkey);
 	EVP_PKEY_CTX_free(pctx);
+
+	return NULL;
 }
 
 bool ProviderMicrosoft::hasPrivateKey(Handle<Certificate> cert) {
