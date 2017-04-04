@@ -1,7 +1,7 @@
 #include "common.h"
 
 #ifndef COMMON_LOG_H_INCLUDE
-#define  COMMON_LOG_H_INCLUDE
+#define COMMON_LOG_H_INCLUDE
 
 #include <fstream>
 
@@ -27,7 +27,6 @@ class CTWRAPPER_API Logger{
 //methods
 public:
 	Logger(){ init(); };
-	Logger(const char* path);
 	~Logger();
 	//Handle<std::string> filename(const char*path);
 	void write(LoggerLevel::LOGGER_LEVEL level, const char* fn, const char *msg, ...);
@@ -52,6 +51,9 @@ protected:
 	//Handle<std::ofstream> _file;
 	FILE* _file;
 };
+
+//GLOBAL LOG
+extern Logger logger;
 
 #define LOGGER_DEBUG(msg, ...) \
 	logger.debug(__FUNCTION__, msg, ## __VA_ARGS__);
@@ -88,5 +90,4 @@ protected:
 	Handle<std::string> _fn;
 	Logger *_logger;
 };
-
 #endif //!COMMON_LOG_H_INCLUDE

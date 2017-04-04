@@ -2,7 +2,9 @@
 
 #include <ctime>
 
-#include "wrapper/common/common.h"
+#include "wrapper/common/log.h"
+
+Logger logger;
 
 static void writeLoggerLevel(FILE *file, LoggerLevel::LOGGER_LEVEL level){
 	std::string str_level("");
@@ -58,10 +60,9 @@ static void writeLoggerFunction(FILE *file, const char* fn){
 	fwrite(": ", 1, 2, file);
 }
 
-Logger::Logger(const char* path){};
 Logger::~Logger(){};
 
-void Logger::init(){
+void Logger::init() {
 	levels = LoggerLevel::Null;
 	_file = NULL;
 };
@@ -70,6 +71,8 @@ void Logger::start(const char *filename, int levels){
 	_file = fopen(filename, "a+");
 	_filename = new std::string(filename);
 	this->levels = levels;
+
+	logger = *this;
 }
 
 void Logger::stop(){
@@ -77,10 +80,14 @@ void Logger::stop(){
 		fclose(_file);
 		_file = NULL;
 	}
+	levels = LoggerLevel::Null;
 }
 
 void Logger::clear(){
-	fclose(_file);
+	if (_file){
+		fclose(_file);
+		_file = NULL;
+	}
 	_file = fopen(this->_filename->c_str(), "w+");
 }
 

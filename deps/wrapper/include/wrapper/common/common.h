@@ -17,9 +17,6 @@
 #include "excep.h"
 #include "log.h"
 
-//GLOBAL LOG
-extern CTWRAPPER_API Logger logger;
-
 #include "bio.h"
 #include "object.h"
 #include "prov.h"

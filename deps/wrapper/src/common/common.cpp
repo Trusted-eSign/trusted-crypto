@@ -24,8 +24,6 @@ Handle<std::string> ASN1_TIME_toString(ASN1_TIME* time){
 	return out->read();
 }
 
-Logger logger;
-
 std::string X509_NAME_oneline_ex(X509_NAME *a)
 {
     X509_NAME_ENTRY *ne;

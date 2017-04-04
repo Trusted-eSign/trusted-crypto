@@ -1,10 +1,9 @@
-#include "common.h"
-
 #ifndef CMS_COMMON_OBJECT_H_INCLUDED
 #define  CMS_COMMON_OBJECT_H_INCLUDED
 
 #include <typeinfo>
 #include <set>
+#include "common.h"
 
 class Object{
 public:

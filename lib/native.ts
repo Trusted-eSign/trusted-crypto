@@ -455,6 +455,12 @@ declare namespace native {
             public sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
             public verify(modulePath: string, cacerts?: PKI.CertificateCollection): Object;
         }
+
+        class Logger {
+            public start(filename: string, level: trusted.LoggerLevel): void;
+            public stop(): void;
+            public clear(): void;
+        }
     }
 
     namespace COMMON {

@@ -68,10 +68,11 @@ void init(v8::Handle<v8::Object> target) {
 	target->Set(Nan::New("COMMON").ToLocalChecked(), OpenSSL);
 	WOpenSSL::Init(OpenSSL);
 
-	v8::Local<v8::Object> Jwt = Nan::New<v8::Object>();
+	v8::Local<v8::Object> Utils = Nan::New<v8::Object>();
 
-	target->Set(Nan::New("UTILS").ToLocalChecked(), Jwt);
-	WJwt::Init(Jwt);
+	target->Set(Nan::New("UTILS").ToLocalChecked(), Utils);
+	WJwt::Init(Utils);
+	WLogger::Init(Utils);
 
 	v8::Local<v8::Object> Pki = Nan::New<v8::Object>();
 
@@ -118,12 +119,6 @@ void init(v8::Handle<v8::Object> target) {
 	WFilter::Init(PkiStore);
 	WPkiItem::Init(PkiStore);
 	WCashJson::Init(PkiStore);
-
-	// target->Set(NanNew<v8::String>("utils"), NanNew<v8::Object>());
-	// WLogger::Init(target->Get(NanNew<v8::String>("utils"))->ToObject());
-
-
-	// logger.start("log-node.txt", LoggerLevel::Debug);
 }
 
 NODE_MODULE(trusted, init)
