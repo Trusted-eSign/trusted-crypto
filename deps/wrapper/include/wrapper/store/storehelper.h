@@ -8,10 +8,10 @@
 #include "../common/common.h"
 
 #if defined(OPENSSL_SYS_WINDOWS) 
-	#define CROSSPLATFORM_SLASH       "\\"
+	#define CROSSPLATFORM_SLASH       '\\'
 #endif
 #if defined(OPENSSL_SYS_UNIX) 
-	#define CROSSPLATFORM_SLASH       "/"
+	#define CROSSPLATFORM_SLASH       '/'
 #endif
 
 class IPkiKey {
