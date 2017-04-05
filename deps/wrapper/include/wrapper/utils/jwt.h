@@ -1,7 +1,7 @@
 #ifndef UTIL_JWT_INCLUDED
 #define UTIL_JWT_INCLUDED
 
-#ifndef JWT_NO_LICENSING
+#ifndef JWT_NO_LICENSE
 	#include <openssl/ctlicense.h>
 #endif
 
