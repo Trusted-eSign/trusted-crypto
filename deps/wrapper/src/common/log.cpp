@@ -77,7 +77,7 @@ void Logger::start(const char *filename, int levels){
 	this->_filename = new std::string(filename);
 	this->levels = levels;
 
-	*logger = *this;
+	logger = this;
 }
 
 void Logger::stop(){

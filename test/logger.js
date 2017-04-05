@@ -6,6 +6,25 @@ var fs = require("fs");
 
 var DEFAULT_OUT_PATH = "test/out";
 
+/**
+* Check file exists
+* @param  {string} filePath Path to file
+* @returns {boolean} file exists?
+*/
+function checkFile(filePath) {
+    try {
+        return fs.statSync(filePath).isFile();
+    } catch (err) {
+        return false;
+    }
+}
+
+before(function() {
+    if (checkFile(DEFAULT_OUT_PATH + "/logger.txt")) {
+        fs.unlinkSync(DEFAULT_OUT_PATH + "/logger.txt");
+    }
+});
+
 describe("LOGGER", function() {
     var logger;
 
@@ -15,11 +34,11 @@ describe("LOGGER", function() {
         assert.equal(fs.existsSync(DEFAULT_OUT_PATH + "/logger.txt"), true, "Log file not exists");
     });
 
-    /*it("stop", function() {
+    it("stop", function() {
         logger.stop();
 
         assert.equal(fs.statSync(DEFAULT_OUT_PATH + "/logger.txt").size > 0, true, "Empty log file");
-    });*/
+    });
 
     it("clear", function() {
         logger.clear();
@@ -31,7 +50,7 @@ describe("LOGGER", function() {
         logger = new trusted.utils.Logger();
         logger.start(DEFAULT_OUT_PATH + "/logger.txt", trusted.LoggerLevel.ALL);
 
-        assert.equal(fs.statSync(DEFAULT_OUT_PATH + "/logger.txt").size > 0, true, "Empty log file");
+        assert.equal(fs.statSync(DEFAULT_OUT_PATH + "/logger.txt").size === 0, true, "Empty log file");
     });
 });
 
