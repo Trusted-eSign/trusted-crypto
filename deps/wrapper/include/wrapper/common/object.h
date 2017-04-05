@@ -125,7 +125,7 @@ class SSLObject{
 public:
 	SSLObject(T* data, void(*fn)(void *), Handle<SObject> parent = NULL) :fnFree_(fn){
 		LOGGER_TRACE("Create OpenSSL object");
-		logger.write(LoggerLevel::OpenSSL, __FUNCTION__, typeid(data).name());
+		logger->write(LoggerLevel::OpenSSL, __FUNCTION__, typeid(data).name());
 		this->data_ = new SObject((void *)data, parent, typeid(this).name());
 		this->data_->free_ = fn;
 	}

@@ -50,7 +50,7 @@
 
 void init(v8::Handle<v8::Object> target) {
 	// logger.start("/tmp/trustedtls/node.log", -1); // -1 = all levels bits
-	// logger.start("logger.txt", LoggerLevel::All );
+	// logger->start("logger.txt", LoggerLevel::All );
 
 	// On Windows, we can't use Node's OpenSSL, so we link
 	// to a standalone OpenSSL library. Therefore, we need

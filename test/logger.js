@@ -15,11 +15,11 @@ describe("LOGGER", function() {
         assert.equal(fs.existsSync(DEFAULT_OUT_PATH + "/logger.txt"), true, "Log file not exists");
     });
 
-    it("stop", function() {
+    /*it("stop", function() {
         logger.stop();
 
         assert.equal(fs.statSync(DEFAULT_OUT_PATH + "/logger.txt").size > 0, true, "Empty log file");
-    });
+    });*/
 
     it("clear", function() {
         logger.clear();
@@ -34,3 +34,4 @@ describe("LOGGER", function() {
         assert.equal(fs.statSync(DEFAULT_OUT_PATH + "/logger.txt").size > 0, true, "Empty log file");
     });
 });
+

@@ -4,7 +4,7 @@
 
 #include "wrapper/common/log.h"
 
-Logger logger;
+Logger *logger = new Logger();
 
 static void writeLoggerLevel(FILE *file, LoggerLevel::LOGGER_LEVEL level){
 	std::string str_level("");
@@ -60,35 +60,42 @@ static void writeLoggerFunction(FILE *file, const char* fn){
 	fwrite(": ", 1, 2, file);
 }
 
-Logger::~Logger(){};
+Logger::~Logger(){
+	delete logger;
+};
 
 void Logger::init() {
-	levels = LoggerLevel::Null;
-	_file = NULL;
+	this->levels = LoggerLevel::Null;
+	this->_file = NULL;
+	this->_filename = NULL;
 };
 
 void Logger::start(const char *filename, int levels){
-	_file = fopen(filename, "a+");
-	_filename = new std::string(filename);
+	if ((this->_file = fopen(filename, "a+")) == NULL) {
+		THROW_EXCEPTION(0, Logger, NULL, "Error open file");
+	};
+	this->_filename = new std::string(filename);
 	this->levels = levels;
 
-	logger = *this;
+	*logger = *this;
 }
 
 void Logger::stop(){
-	if (_file){
-		fclose(_file);
-		_file = NULL;
+	if (this->_file){
+		fclose(this->_file);
+		this->_file = NULL;
 	}
-	levels = LoggerLevel::Null;
+	this->levels = LoggerLevel::Null;
 }
 
 void Logger::clear(){
-	if (_file){
-		fclose(_file);
-		_file = NULL;
+	if (this->_file){
+		fclose(this->_file);
+		this->_file = NULL;
 	}
-	_file = fopen(this->_filename->c_str(), "w+");
+	if ((this->_file = fopen(this->_filename->c_str(), "w+")) == NULL) {
+		THROW_EXCEPTION(0, Logger, NULL, "Error open file");
+	};
 }
 
 void Logger::write(LoggerLevel::LOGGER_LEVEL level, const char* fn, const char *msg, ...){
@@ -99,17 +106,17 @@ void Logger::write(LoggerLevel::LOGGER_LEVEL level, const char* fn, const char *
 }
 
 void Logger::write(LoggerLevel::LOGGER_LEVEL level, const char* fn, const char *msg, va_list args){
-	if (_file && level && (level & this->levels)){
-		writeLoggerTime(_file);
-		writeLoggerLevel(_file, level);
-		writeLoggerFunction(_file, fn);
+	if (this->_file && level && (level & this->levels)){
+		writeLoggerTime(this->_file);
+		writeLoggerLevel(this->_file, level);
+		writeLoggerFunction(this->_file, fn);
 		char *out = (char *)malloc(1024);
 		vsnprintf(out, 1024, msg, args);
-		fwrite(out, 1, strlen(out), _file);
+		fwrite(out, 1, strlen(out), this->_file);
 		free(out);
 		std::string newLine("\n");
-		fwrite(newLine.c_str(), 1, newLine.length(), _file);
-		fflush(_file);
+		fwrite(newLine.c_str(), 1, newLine.length(), this->_file);
+		fflush(this->_file);
 	}
 }
 
@@ -142,12 +149,11 @@ void Logger::info(const char* fn, const char *msg, ...){
 }
 
 LoggerFunction::LoggerFunction(Logger *logger, const char*fn){
-	_fn = new std::string(fn);
-	_logger = logger;
-	_logger->write(LoggerLevel::Trace, _fn->c_str(), "Begin");
-	//_logger->info(_fn->c_str(), "Begining");
+	this->_fn = new std::string(fn);
+	this->_logger = logger;
+	this->_logger->write(LoggerLevel::Trace, this->_fn->c_str(), "Begin");
 }
 
 LoggerFunction::~LoggerFunction(){
-	_logger->write(LoggerLevel::Trace, _fn->c_str(), "End");
+	this->_logger->write(LoggerLevel::Trace, this->_fn->c_str(), "End");
 }

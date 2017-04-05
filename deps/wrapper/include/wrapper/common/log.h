@@ -53,25 +53,25 @@ protected:
 };
 
 //GLOBAL LOG
-extern Logger logger;
+extern Logger *logger;
 
 #define LOGGER_DEBUG(msg, ...) \
-	logger.debug(__FUNCTION__, msg, ## __VA_ARGS__);
+	logger->debug(__FUNCTION__, msg, ## __VA_ARGS__);
 
 #define LOGGER_ERROR(msg, ...) \
-	logger.error(__FUNCTION__, msg, ## __VA_ARGS__);
+	logger->error(__FUNCTION__, msg, ## __VA_ARGS__);
 
 #define LOGGER_INFO(msg, ...) \
-	logger.info(__FUNCTION__, msg, ## __VA_ARGS__);
+	logger->info(__FUNCTION__, msg, ## __VA_ARGS__);
 
 #define LOGGER_WARN(msg, ...) \
-	logger.warn(__FUNCTION__, msg, ## __VA_ARGS__);
+	logger->warn(__FUNCTION__, msg, ## __VA_ARGS__);
 
 #define LOGGER_OPENSSL(msg, ...) \
-	logger.write(LoggerLevel::OpenSSL, __FUNCTION__, #msg, ## __VA_ARGS__);
+	logger->write(LoggerLevel::OpenSSL, __FUNCTION__, #msg, ## __VA_ARGS__);
 
 #define LOGGER_TRACE(msg, ...) \
-	logger.write(LoggerLevel::Trace, __FUNCTION__, msg, ## __VA_ARGS__);
+	logger->write(LoggerLevel::Trace, __FUNCTION__, msg, ## __VA_ARGS__);
 
 #define LOGGER_FN_BEGIN() \
 	LOGGER_TRACE("Begin")
@@ -80,14 +80,14 @@ extern Logger logger;
 	LOGGER_TRACE("End")
 
 #define LOGGER_FN() \
-	LoggerFunction __logger_fn(&logger, __FUNCTION__);
+	LoggerFunction __logger_fn(logger, __FUNCTION__);
 
 class CTWRAPPER_API LoggerFunction{
 public:
 	LoggerFunction(Logger *logger, const char *fn);
 	~LoggerFunction();
 protected:
-	Handle<std::string> _fn;
-	Logger *_logger;
+	Handle<std::string> _fn = NULL;
+	Logger *_logger = NULL;
 };
 #endif //!COMMON_LOG_H_INCLUDE
