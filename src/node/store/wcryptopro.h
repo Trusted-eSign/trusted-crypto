@@ -1,7 +1,7 @@
 #ifndef WCRYPTOPRO_H_INCLUDED
 #define WCRYPTOPRO_H_INCLUDED
 
-#include "../../wrapper/store/provider_cryptopro.h"
+#include <wrapper/store/provider_cryptopro.h>
 
 #include <nan.h>
 #include "../utils/wrap.h"

@@ -1,6 +1,6 @@
 #include "../stdafx.h"
 
-#include "provider_cryptopro.h"
+#include "wrapper/store/provider_cryptopro.h"
 
 ProviderCryptopro::ProviderCryptopro(){
 	LOGGER_FN();

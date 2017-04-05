@@ -69,7 +69,7 @@
                         "include_dirs": [
                             "<(openssl_root)/include"
                         ],
-                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSING" ],
+                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE" ],
                         "msbuild_settings": {
                             "Link": {
                                 "ImageHasSafeExceptionHandlers": "false"
@@ -77,7 +77,7 @@
                         }
                     },
                     {
-                        "defines": [ "UNIX", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSING" ],
+                        "defines": [ "UNIX", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE" ],
 
                         "cflags_cc+": [ "-std=c++11" ]
                     }

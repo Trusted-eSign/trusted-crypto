@@ -6,16 +6,16 @@ bool Jwt::checkLicense() {
 	LOGGER_FN();
 
 	try{
-		int errorCode;
+		int errorCode = NULL;
 
-#ifndef JWT_NO_LICENSING
-		if (!ctlicense_verify_file(&errorCode)) {
+#ifndef JWT_NO_LICENSE
+		if (!ctlicense_verify_file_code(-1, &errorCode)) {
 			THROW_EXCEPTION(0, Jwt, NULL, "verify jwt license failed(error code %d)", errorCode);
 		}
 
 		return true;
 #else
-		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSING");
+		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
 	catch (Handle<Exception> e){
@@ -29,14 +29,14 @@ bool Jwt::checkLicense(Handle<std::string> lic) {
 	try{
 		int errorCode;
 
-#ifndef JWT_NO_LICENSING
+#ifndef JWT_NO_LICENSE
 		if (!ctlicense_verify_str((char *)lic->c_str(), &errorCode)) {
 			THROW_EXCEPTION(0, Jwt, NULL, "verify jwt license failed(error code %d)", errorCode);
 		}
 
 		return true;
 #else
-		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSING");
+		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
 	catch (Handle<Exception> e){
