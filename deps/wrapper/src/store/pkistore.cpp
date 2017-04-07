@@ -19,6 +19,7 @@ PkiStore::PkiStore(Handle<std::string> json){
 		}
 		
 		providers = new ProviderCollection();
+		storeItemCollection = new PkiItemCollection();
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, PkiStore, e, "Cannot be constructed PkiStore(Handle<std::string> json)");
@@ -29,126 +30,11 @@ Handle<PkiItemCollection> PkiStore::find(Handle<Filter> filter){
 	LOGGER_FN();
 
 	try{
-		Handle<PkiItemCollection> storeItemCollection = getItems();
-
 		if (storeItemCollection.isEmpty()){
 			THROW_EXCEPTION(0, PkiStore, NULL, "Store no have pki elements");
 		}
 
-		Handle<PkiItemCollection> filteredItems = new PkiItemCollection();
-
-		for (int i = 0, c = storeItemCollection->length(); i < c; i++){
-			bool result = 1;
-
-			if (filter->types.size() > 0){
-				result = 0;
-				for (int j = 0; j < filter->types.size(); j++){
-					if (strcmp(storeItemCollection->items(i)->type->c_str(), filter->types[j]->c_str()) == 0){
-						result = 1;
-						break;
-					}
-				}
-				if (!result){
-					continue;
-				}
-			}
-
-			if (filter->providers.size() > 0){
-				result = 0;
-				for (int j = 0; j < filter->providers.size(); j++){
-					if (strcmp(storeItemCollection->items(i)->provider->c_str(), filter->providers[j]->c_str()) == 0){
-						result = 1;
-						break;
-					}
-				}
-				if (!result){
-					continue;
-				}
-			}
-			
-			if (filter->categorys.size() > 0){
-				result = 0;
-				for (int j = 0; j < filter->categorys.size(); j++){
-					if (strcmp(storeItemCollection->items(i)->category->c_str(), filter->categorys[j]->c_str()) == 0){
-						result = 1;
-						break;
-					}
-				}
-				if (!result){
-					continue;
-				}
-			}
-
-			if (!(filter->hash.isEmpty())){
-				if (strcmp(storeItemCollection->items(i)->hash->c_str(), filter->hash->c_str()) == 0){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-			}
-
-			if (!(filter->subjectName.isEmpty())){
-				if ((strcmp(storeItemCollection->items(i)->certSubjectName->c_str(), filter->subjectName->c_str()) == 0) ||
-					(strcmp(storeItemCollection->items(i)->csrSubjectName->c_str(), filter->subjectName->c_str()) == 0)){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-			}
-
-			if (!(filter->subjectFriendlyName.isEmpty())){
-				if ((strcmp(storeItemCollection->items(i)->certSubjectFriendlyName->c_str(), filter->subjectFriendlyName->c_str()) == 0) ||
-					(strcmp(storeItemCollection->items(i)->csrSubjectFriendlyName->c_str(), filter->subjectFriendlyName->c_str()) == 0)){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-			}
-
-			if (!(filter->issuerName.isEmpty())){
-				if ((strcmp(storeItemCollection->items(i)->certIssuerName->c_str(), filter->issuerName->c_str()) == 0) ||
-					(strcmp(storeItemCollection->items(i)->crlIssuerName->c_str(), filter->issuerName->c_str()) == 0)){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-			}
-
-			if (!(filter->issuerFriendlyName.isEmpty())){
-				if ((strcmp(storeItemCollection->items(i)->certIssuerFriendlyName->c_str(), filter->issuerFriendlyName->c_str()) == 0) ||
-					(strcmp(storeItemCollection->items(i)->crlIssuerFriendlyName->c_str(), filter->issuerFriendlyName->c_str()) == 0)){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-			}
-
-			if (!(filter->serial.isEmpty())){
-				if (strcmp(storeItemCollection->items(i)->certSerial->c_str(), filter->serial->c_str()) == 0){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-			}
-
-			if (result){
-				filteredItems->push(storeItemCollection->items(i));
-			}
-		}
-
-		return filteredItems;
+		return storeItemCollection->find(filter);
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error search object");
@@ -162,8 +48,6 @@ Handle<PkiItem> PkiStore::findKey(Handle<Filter> filter){
 		if (filter->hash.isEmpty()){
 			THROW_EXCEPTION(0, PkiStore, NULL, "Need hash certificate\request for search key");
 		}
-
-		Handle<PkiItemCollection> storeItemCollection = getItems();
 
 		if (storeItemCollection.isEmpty()){
 			THROW_EXCEPTION(0, PkiStore, NULL, "Store no have pki elements");
@@ -219,23 +103,67 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 	LOGGER_FN();
 
 	try{
-		Handle<Certificate> cert = new Certificate();
+		if (storeItemCollection.isEmpty()){
+			THROW_EXCEPTION(0, PkiStore, NULL, "Store no have pki elements");
+		}
+
+		Handle<Certificate> cert = NULL;
 
 		if (strcmp(item->provider->c_str(), "SYSTEM") == 0){
 			cert = Provider_System::getCertFromURI(item->uri, item->format);
 		}
 #if defined(OPENSSL_SYS_WINDOWS)
-		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0){
-			cert = ProviderMicrosoft::getCert(item->hash, item->category);
+		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0) {
+			for (int i = 0, c = storeItemCollection->length(); i < c; i++){
+				bool result = 1;
+
+				if ((strcmp(storeItemCollection->items(i)->hash->c_str(), item->hash->c_str()) == 0) &&
+					(strcmp(storeItemCollection->items(i)->provider->c_str(), item->provider->c_str()) == 0)){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+
+				if (result){
+					if (!storeItemCollection->items(i)->certificate->isEmpty()) {
+						cert = storeItemCollection->items(i)->certificate;
+						break;
+					}
+				}
+			}
 		}
 #endif
 #if defined(CPROCSP)
 		else  if (strcmp(item->provider->c_str(), "CRYPTOPRO") == 0){
-			cert = ProviderCryptopro::getCert(item->hash, item->category);
+			for (int i = 0, c = storeItemCollection->length(); i < c; i++){
+				bool result = 1;
+
+				if ((strcmp(storeItemCollection->items(i)->hash->c_str(), item->hash->c_str()) == 0) &&
+					(strcmp(storeItemCollection->items(i)->provider->c_str(), item->provider->c_str()) == 0)){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+
+				if (result){
+					if (!storeItemCollection->items(i)->certificate->isEmpty()) {
+						cert = storeItemCollection->items(i)->certificate;
+						break;
+					}
+				}
+			}
 		}
 #endif
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
+		}
+
+		if (cert->isEmpty()) {
+			THROW_EXCEPTION(0, PkiStore, NULL, "Error get certificate")
 		}
 
 		return cert;
@@ -319,28 +247,7 @@ Handle<Key> PkiStore::getItemKey(Handle<PkiItem> item){
 Handle<PkiItemCollection> PkiStore::getItems(){
 	LOGGER_FN();
 
-	try{
-		Handle<PkiItemCollection> result = new PkiItemCollection();
-
-		if (providers->length() == 0){
-			THROW_EXCEPTION(0, PkiStore, NULL, "Collection providers empty");
-		}
-
-		for (int i = 0; i < providers->length(); i++){
-			Handle<PkiItemCollection> tempColl;
-
-			tempColl = providers->items(i)->getProviderItemCollection();
-
-			for (int j = 0; j < tempColl->length(); j++){
-				result->push(tempColl->items(j));
-			}
-		}
-
-		return result;
-	}
-	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, PkiStore, e, "Error get items from store");
-	}	
+	return this->storeItemCollection;	
 }
 
 Handle<CertificateCollection> PkiStore::getCerts(){
@@ -373,10 +280,15 @@ Handle<CertificateCollection> PkiStore::getCerts(){
 	}
 }
 
-void PkiStore::addProvider(Handle<Provider> provider){
+void PkiStore::addProvider(Handle<Provider> provider) {
 	LOGGER_FN();
 	
 	providers->push(provider);
+
+	Handle<PkiItemCollection> tempColl = provider->getProviderItemCollection();
+	for (int i = 0; i < tempColl->length(); i++) {
+		this->storeItemCollection->push(tempColl->items(i));
+	}
 }
 
 Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, unsigned int flags){

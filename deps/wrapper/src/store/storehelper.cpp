@@ -56,17 +56,21 @@ PkiItem::PkiItem(){
 	certKey = new std::string("");
 	certOrganizationName = new std::string("");
 	certSignatureAlgorithm = new std::string("");
+	certificate = NULL;
 
 	csrSubjectName = new std::string("");
 	csrSubjectFriendlyName = new std::string("");
 	csrKey = new std::string("");
+	csr = NULL;
 
 	crlIssuerName = new std::string("");
 	crlIssuerFriendlyName = new std::string("");
 	crlLastUpdate = new std::string("");
 	crlNextUpdate = new std::string("");
+	crl = NULL;
 
 	keyEncrypted = false;
+	key = NULL;
 }
 
 void PkiItem::setFormat(Handle<std::string> format){
@@ -222,6 +226,130 @@ void PkiItemCollection::push(PkiItem &v){
 	_items.push_back(v);
 }
 
+Handle<PkiItemCollection> PkiItemCollection::find(Handle<Filter> filter) {
+	LOGGER_FN();
+
+	try{
+		Handle<PkiItemCollection> filteredItems = new PkiItemCollection();
+
+		for (int i = 0, c = this->length(); i < c; i++){
+			bool result = 1;
+
+			if (filter->types.size() > 0){
+				result = 0;
+				for (int j = 0; j < filter->types.size(); j++){
+					if (strcmp(this->items(i)->type->c_str(), filter->types[j]->c_str()) == 0){
+						result = 1;
+						break;
+					}
+				}
+				if (!result){
+					continue;
+				}
+			}
+
+			if (filter->providers.size() > 0){
+				result = 0;
+				for (int j = 0; j < filter->providers.size(); j++){
+					if (strcmp(this->items(i)->provider->c_str(), filter->providers[j]->c_str()) == 0){
+						result = 1;
+						break;
+					}
+				}
+				if (!result){
+					continue;
+				}
+			}
+
+			if (filter->categorys.size() > 0){
+				result = 0;
+				for (int j = 0; j < filter->categorys.size(); j++){
+					if (strcmp(this->items(i)->category->c_str(), filter->categorys[j]->c_str()) == 0){
+						result = 1;
+						break;
+					}
+				}
+				if (!result){
+					continue;
+				}
+			}
+
+			if (!(filter->hash.isEmpty())){
+				if (strcmp(this->items(i)->hash->c_str(), filter->hash->c_str()) == 0){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+			}
+
+			if (!(filter->subjectName.isEmpty())){
+				if ((strcmp(this->items(i)->certSubjectName->c_str(), filter->subjectName->c_str()) == 0) ||
+					(strcmp(this->items(i)->csrSubjectName->c_str(), filter->subjectName->c_str()) == 0)){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+			}
+
+			if (!(filter->subjectFriendlyName.isEmpty())){
+				if ((strcmp(this->items(i)->certSubjectFriendlyName->c_str(), filter->subjectFriendlyName->c_str()) == 0) ||
+					(strcmp(this->items(i)->csrSubjectFriendlyName->c_str(), filter->subjectFriendlyName->c_str()) == 0)){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+			}
+
+			if (!(filter->issuerName.isEmpty())){
+				if ((strcmp(this->items(i)->certIssuerName->c_str(), filter->issuerName->c_str()) == 0) ||
+					(strcmp(this->items(i)->crlIssuerName->c_str(), filter->issuerName->c_str()) == 0)){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+			}
+
+			if (!(filter->issuerFriendlyName.isEmpty())){
+				if ((strcmp(this->items(i)->certIssuerFriendlyName->c_str(), filter->issuerFriendlyName->c_str()) == 0) ||
+					(strcmp(this->items(i)->crlIssuerFriendlyName->c_str(), filter->issuerFriendlyName->c_str()) == 0)){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+			}
+
+			if (!(filter->serial.isEmpty())){
+				if (strcmp(this->items(i)->certSerial->c_str(), filter->serial->c_str()) == 0){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+			}
+
+			if (result){
+				filteredItems->push(this->items(i));
+			}
+		}
+
+		return filteredItems;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, PkiItemCollection, e, "Error search object");
+	}
+}
+
 Filter::Filter(){
 	LOGGER_FN();
 
@@ -229,6 +357,12 @@ Filter::Filter(){
 	providers = std::vector<Handle<std::string>>();
 	categorys = std::vector<Handle<std::string>>();
 	isValid = true;
+	hash = NULL;
+	subjectName = NULL;
+	subjectFriendlyName = NULL;
+	issuerName = NULL;
+	issuerFriendlyName = NULL;
+	serial = NULL;
 }
 
 void Filter::setType(Handle<std::string> type){

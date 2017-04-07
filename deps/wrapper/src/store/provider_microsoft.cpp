@@ -77,8 +77,10 @@ void ProviderMicrosoft::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 					THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "'d2i_X509' Error decode len bytes");
 				}
 
-				Handle<PkiItem> item = objectToPKIItem(new Certificate(cert));
+				Handle<Certificate> hcert = new Certificate(cert);
+				Handle<PkiItem> item = objectToPKIItem(hcert);
 				item->category = new std::string(*category);
+				item->certificate = hcert;
 
 				providerItemCollection->push(item);
 			}
@@ -115,8 +117,11 @@ void ProviderMicrosoft::enumCrls(HCERTSTORE hCertStore, std::string *category){
 					THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "'d2i_X509_CRL' Error decode len bytes");
 				}			
 
-				Handle<PkiItem> item = objectToPKIItem(new CRL(crl));
+				Handle<CRL> hcrl = new CRL(crl);
+				Handle<PkiItem> item = objectToPKIItem(hcrl);
 				item->category = new std::string(*category);
+				item->crl = hcrl;
+
 				providerItemCollection->push(item);
 			}
 		} while (pCrlContext != NULL);

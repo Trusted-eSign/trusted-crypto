@@ -103,8 +103,6 @@ Handle<Certificate> Chain::getIssued(Handle<CertificateCollection> certs, Handle
 	LOGGER_FN();
 
 	try{
-		int ret;
-
 		for (int i = 0, c = certs->length(); i < c; i++){
 			if (checkIssued(certs->items(i), cert)){
 				return certs->items(i);
@@ -124,19 +122,16 @@ bool Chain::checkIssued(Handle<Certificate> issuer, Handle<Certificate> cert){
 	try{
 		int ret;
 
-		X509 *iss = NULL;
-		iss = issuer->internal();
-		if (!iss){
-			THROW_EXCEPTION(0, Chain, NULL, "iss");
+		if (issuer->isEmpty()){
+			THROW_EXCEPTION(0, Chain, NULL, "Empty issuer cert");
 		}
-		X509 *sub = NULL;
-		sub = cert->internal();
-		if (!sub){
-			THROW_EXCEPTION(0, Chain, NULL, "sub");
+
+		if (cert->isEmpty()){
+			THROW_EXCEPTION(0, Chain, NULL, "Empty sub cert");
 		}
 
 		LOGGER_OPENSSL(X509_check_issued);
-		ret = X509_check_issued(iss, sub);
+		ret = X509_check_issued(issuer->internal(), cert->internal());
 		if (ret == X509_V_OK){
 			return 1;
 		}

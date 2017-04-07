@@ -6,6 +6,10 @@
 #include <vector>
 
 #include "../common/common.h"
+#include "../pki/cert.h"
+#include "../pki/crl.h"
+#include "../pki/key.h"
+#include "../pki/cert_request.h"
 
 #if defined(OPENSSL_SYS_WINDOWS) 
 	#define CROSSPLATFORM_SLASH       '\\'
@@ -19,6 +23,8 @@ public:
 	virtual ~IPkiKey(){};
 public:
 	bool keyEncrypted; /* Encrypted key (true or false) */
+public:
+	Handle<Key> key;
 };
 
 class IPkiCrl {
@@ -29,6 +35,8 @@ public:
 	Handle<std::string> crlIssuerFriendlyName;
 	Handle<std::string> crlLastUpdate;
 	Handle<std::string> crlNextUpdate;
+public:
+	Handle<CRL> crl;
 };
 
 class IPkiRequest {
@@ -38,6 +46,8 @@ public:
 	Handle<std::string> csrSubjectName;
 	Handle<std::string>	csrSubjectFriendlyName;
 	Handle<std::string> csrKey; /* thumbprint SHA1 */
+public:
+	Handle<CertificationRequest> csr;
 };
 
 class IPkiCertificate {
@@ -54,6 +64,9 @@ public:
 	Handle<std::string> certKey; /* thumbprint SHA1 */
 	Handle<std::string> certOrganizationName;
 	Handle<std::string> certSignatureAlgorithm; /* thumbprint SHA1 */
+
+public:
+	Handle<Certificate> certificate;
 };
 
 class PkiItem : public IPkiCertificate, public IPkiCrl, public IPkiKey, public IPkiRequest{
@@ -90,19 +103,6 @@ public:
 	void setSignatureAlgorithm(Handle<std::string> signatureAlgorithm);
 };
 
-class PkiItemCollection{
-public:
-	PkiItemCollection();
-	~PkiItemCollection();
-
-	Handle<PkiItem> items(int index);
-	int length();
-	void push(Handle<PkiItem> v);
-	void push(PkiItem &v);
-protected:
-	std::vector<PkiItem> _items;
-};
-
 class Filter {
 public:
 	Filter();
@@ -129,6 +129,20 @@ public:
 	Handle<std::string> issuerFriendlyName;
 	bool isValid;
 	Handle<std::string> serial;
+};
+
+class PkiItemCollection{
+public:
+	PkiItemCollection();
+	~PkiItemCollection();
+
+	Handle<PkiItem> items(int index);
+	int length();
+	void push(Handle<PkiItem> v);
+	void push(PkiItem &v);
+	Handle<PkiItemCollection> find(Handle<Filter> filter);
+protected:
+	std::vector<PkiItem> _items;
 };
 
 class Provider {

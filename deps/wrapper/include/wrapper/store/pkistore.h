@@ -19,15 +19,12 @@ class CTWRAPPER_API PkiStore;
 
 class PkiStore {
 public:
-	PkiStore(){};
 	PkiStore(Handle<std::string> json);
 	~PkiStore(){};
 
 public:
 	Handle<CertificateCollection> getCerts();
 	Handle<PkiItemCollection> getItems();
-
-	Handle<ProviderCollection> providers;
 
 	void addProvider(Handle<Provider> provider);
 	void deleteProvider(Handle<std::string> typeProvider);
@@ -46,6 +43,10 @@ public:
 	Handle<std::string> addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password);
 
 	static void bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result);
+
+private:
+	Handle<ProviderCollection> providers;
+	Handle<PkiItemCollection> storeItemCollection;
 };
 
 #endif //PKISTORE_H_INCLUDED
