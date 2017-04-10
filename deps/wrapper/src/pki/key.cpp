@@ -28,7 +28,7 @@ void Key::readPrivateKey(Handle<Bio> in, DataFormat::DATA_FORMAT format, Handle<
 		}
 
 		if (!key) {
-			THROW_EXCEPTION(0, Key, NULL, "Can not read EVP_PKEY data");
+			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "Can not read EVP_PKEY data");
 		}
 
 		this->setData(key);
@@ -62,7 +62,7 @@ void Key::readPublicKey(Handle<Bio> in, DataFormat::DATA_FORMAT format) {
 		}
 
 		if (!key) {
-			THROW_EXCEPTION(0, Key, NULL, "Can not read EVP_PKEY data");
+			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "Can not read EVP_PKEY data");
 		}
 
 		this->setData(key);
