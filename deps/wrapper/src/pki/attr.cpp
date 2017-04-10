@@ -38,7 +38,7 @@ Handle<std::string> Attribute::write() {
 
 	LOGGER_OPENSSL(i2d_X509_ATTRIBUTE);
 	int len = i2d_X509_ATTRIBUTE(this->internal(), &_out);
-	std::string *res = new std::string((char *)_out, len);
+	Handle<std::string> res = new std::string((char *)_out, len);
 	OPENSSL_free(_out);
 	return res;
 }

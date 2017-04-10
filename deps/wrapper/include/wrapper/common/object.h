@@ -56,7 +56,7 @@ public:
 		std::set<SObject*> *children = &(this->children);
 		int children_size = this->children.size();
 		if (children_size > 0){
-			for (std::set<SObject*>::iterator i = children->begin(); i != children->end(); i++) {
+			for (std::set<SObject*>::iterator i = children->begin(); i != children->end(); ++i) {
 				SObject *child = *i;
 				child->destroy();
 			}
