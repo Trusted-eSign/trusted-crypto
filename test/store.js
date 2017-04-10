@@ -59,7 +59,7 @@ describe("Store", function() {
         store.addKey(providerSystem.handle, key, "");
         store.addCsr(providerSystem.handle, "MY", csr);
 
-        newCert = trusted.pki.Certificate.load(DEFAULT_CERTSTORE_PATH + "/MY/8d270fd25fcf19d0e26d0f045767ca00304c7497_809a28508dae89b0a38a5ae6d059feb9b256b7b2.crt", trusted.DataFormat.PEM);
+        newCert = trusted.pki.Certificate.load(DEFAULT_CERTSTORE_PATH + "/MY/9411a862691c1846b24da3c89299799856876404_779e37cd0423417592ccc9c20ce3d83c665050c5.crt", trusted.DataFormat.PEM);
         assert.equal(cert.thumbprint === newCert.thumbprint, true);
 
         newCrl = trusted.pki.Crl.load(DEFAULT_CERTSTORE_PATH + "/CRL/1ebb0526075855661c09d7d9b59abd950bdae0ef.crl");
