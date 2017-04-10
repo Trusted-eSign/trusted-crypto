@@ -65,7 +65,7 @@ describe("Store", function() {
         newCrl = trusted.pki.Crl.load(DEFAULT_CERTSTORE_PATH + "/CRL/1ebb0526075855661c09d7d9b59abd950bdae0ef.crl");
         assert.equal(crl.thumbprint === newCrl.thumbprint, true);
 
-        newKey = trusted.pki.Key.readPrivateKey(DEFAULT_CERTSTORE_PATH + "/MY/3d7b3ab9cda89acca15457e9c656d5d40f59086d.key", trusted.DataFormat.PEM, "");
+        newKey = trusted.pki.Key.readPrivateKey(DEFAULT_CERTSTORE_PATH + "/MY/779e37cd0423417592ccc9c20ce3d83c665050c5.key", trusted.DataFormat.PEM, "");
         assert.equal(newKey !== null, true);
     });
 
