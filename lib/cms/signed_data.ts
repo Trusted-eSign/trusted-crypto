@@ -54,7 +54,7 @@ namespace trusted.cms {
     function EnumGetName(e: any, name: string): any {
         "use strict";
 
-        for (let i in e) {
+        for (const i in e) {
             if (i.toString().toLowerCase() === name.toLowerCase()) {
                 return { name: i, value: e[i] };
             }
@@ -81,7 +81,7 @@ namespace trusted.cms {
          * @memberOf SignedData
          */
         public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): SignedData {
-            let cms: SignedData = new SignedData();
+            const cms: SignedData = new SignedData();
             cms.handle.load(filename, format);
             return cms;
         }
@@ -97,7 +97,7 @@ namespace trusted.cms {
          * @memberOf SignedData
          */
         public static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): SignedData {
-            let cms: SignedData = new SignedData();
+            const cms: SignedData = new SignedData();
             cms.handle.import(buffer, format);
             return cms;
         }
@@ -125,7 +125,7 @@ namespace trusted.cms {
         get content(): ISignedDataContent {
             if (!this.prContent && !this.isDetached()) {
                 // Извлечь содержимое из подписи
-                let buf: Buffer = this.handle.getContent();
+                const buf: Buffer = this.handle.getContent();
                 this.prContent = {
                     data: buf,
                     type: SignedDataContentType.buffer,
@@ -145,7 +145,7 @@ namespace trusted.cms {
             if (v.type === SignedDataContentType.url) {
                 data = v.data.toString();
             } else {
-                data = new Buffer(<any> v.data);
+                data = new Buffer(v.data as any);
             }
             this.handle.setContent(data);
             this.prContent = v;
@@ -158,11 +158,11 @@ namespace trusted.cms {
          * @memberOf SignedData
          */
         get policies(): string[] {
-            let p: string[] = new Array<string>();
+            const p: string[] = new Array<string>();
 
-            let flags: number = this.handle.getFlags();
+            const flags: number = this.handle.getFlags();
 
-            for (let i in SignedDataPolicy) {
+            for (const i in SignedDataPolicy) {
                 if (+i & flags) {
                     p.push(SignedDataPolicy[i]);
                 }
@@ -179,8 +179,8 @@ namespace trusted.cms {
          */
         set policies(v: string[]) {
             let flags: number = 0;
-            for (let i: number = 0; i < v.length; i++) {
-                let flag: any = EnumGetName(SignedDataPolicy, v[i]);
+            for (const item of v) {
+                const flag: any = EnumGetName(SignedDataPolicy, item);
                 if (flag) {
                     flags |= +flag.value;
                 }
@@ -228,7 +228,7 @@ namespace trusted.cms {
          * @memberOf SignedData
          */
         public certificates(index?: number): any {
-            let certs: pki.CertificateCollection = new pki.CertificateCollection(this.handle.getCertificates());
+            const certs: pki.CertificateCollection = new pki.CertificateCollection(this.handle.getCertificates());
             if (index !== undefined) {
                 return certs.items(index);
             }
@@ -263,7 +263,7 @@ namespace trusted.cms {
          * @memberOf SignedData
          */
         public signers(index?: number): any {
-            let signers: SignerCollection = new SignerCollection(this.handle.getSigners());
+            const signers: SignerCollection = new SignerCollection(this.handle.getSigners());
             if (index !== undefined) {
                 return signers.items(index);
             }
@@ -328,7 +328,7 @@ namespace trusted.cms {
          * @memberOf SignedData
          */
         public createSigner(cert: pki.Certificate, key: pki.Key): Signer {
-            let signer: any = this.handle.createSigner(cert.handle, key.handle);
+            const signer: any = this.handle.createSigner(cert.handle, key.handle);
             return new Signer(signer);
         }
 

@@ -33,7 +33,7 @@ namespace trusted.pki {
          * @memberOf Chain
          */
         public buildChain(cert: Certificate, certs: CertificateCollection): CertificateCollection {
-            let certscol: CertificateCollection =
+            const certscol: CertificateCollection =
                 new CertificateCollection(this.handle.buildChain(cert.handle, certs.handle));
             return certscol;
         }

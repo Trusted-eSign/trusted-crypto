@@ -24,7 +24,7 @@ namespace trusted.pki {
          * @memberOf Crl
          */
         public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Crl {
-            let crl: Crl = new Crl();
+            const crl: Crl = new Crl();
             crl.load(filename, format);
             return crl;
         }
@@ -40,36 +40,18 @@ namespace trusted.pki {
          * @memberOf Crl
          */
         public static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): Crl {
-            let crl: Crl = new Crl();
+            const crl: Crl = new Crl();
             crl.import(buffer, format);
             return crl;
         }
 
         /**
          * Creates an instance of Crl.
-         *
-         *
-         * @memberOf Crl
-         */
-        constructor();
-
-        /**
-         * Creates an instance of Crl.
-         *
-         * @param {native.PKI.CRL} handle
+         * @param {native.PKI.CRL} [param]
          *
          * @memberOf Crl
          */
-        constructor(handle: native.PKI.CRL);
-
-        /**
-         * Creates an instance of Crl.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf Crl
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.CRL) {
             super();
             if (param instanceof native.PKI.CRL) {
                 this.handle = param;
@@ -267,7 +249,7 @@ namespace trusted.pki {
          * @memberOf Crl
          */
         public compare(crl: Crl): number {
-            let cmp: number = this.handle.compare(crl.handle);
+            const cmp: number = this.handle.compare(crl.handle);
             if (cmp < 0) {
                 return -1;
             }
@@ -298,7 +280,7 @@ namespace trusted.pki {
          *
          * @memberOf Crl
          */
-        public hash(algorithm: string = "sha1"): String {
+        public hash(algorithm: string = "sha1"): string {
             return this.handle.hash(algorithm).toString("hex");
         }
 
@@ -310,7 +292,7 @@ namespace trusted.pki {
          * @memberOf Crl
          */
         public duplicate(): Crl {
-            let crl: Crl = new Crl();
+            const crl: Crl = new Crl();
             crl.handle = this.handle.duplicate();
             return crl;
         }

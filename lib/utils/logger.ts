@@ -23,7 +23,7 @@ namespace trusted.utils {
          * @memberOf Logger
          */
         public static start(filename: string, level: LoggerLevel = DEFAULT_LOGGER_LEVEL): Logger {
-            let logger = new Logger();
+            const logger = new Logger();
             logger.handle.start(filename, level);
             return logger;
         }
@@ -36,7 +36,7 @@ namespace trusted.utils {
         constructor() {
             super();
             this.handle = new native.UTILS.Logger();
-        };
+        }
 
         /**
          * Start write log to a file

@@ -14,21 +14,11 @@ namespace trusted.pki {
 
         /**
          * Creates an instance of Attribute.
-         *
-         * @param {native.PKI.Attribute} handle
-         *
-         * @memberOf Attribute
-         */
-        constructor(handle: native.PKI.Attribute);
-
-        /**
-         * Creates an instance of Attribute.
-         *
-         * @param {*} [param]
+         * @param {native.PKI.Attribute} [param]
          *
          * @memberOf Attribute
          */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.Attribute) {
             super();
             if (param instanceof native.PKI.Attribute) {
                 this.handle = param;
@@ -87,8 +77,8 @@ namespace trusted.pki {
          * @memberOf Attribute
          */
         public duplicate(): Attribute {
-            let nattr: any = this.handle.duplicate();
-            let attr: Attribute = Attribute.wrap<native.PKI.Attribute, Attribute>(nattr);
+            const nattr: any = this.handle.duplicate();
+            const attr: Attribute = Attribute.wrap<native.PKI.Attribute, Attribute>(nattr);
 
             return attr;
         }
@@ -132,8 +122,8 @@ namespace trusted.pki {
          * @memberOf Attribute
          */
         public values(index?: number): any {
-            let vals: any = this.handle.values();
-            let attrVals: AttributeValueCollection =
+            const vals: any = this.handle.values();
+            const attrVals: AttributeValueCollection =
                 AttributeValueCollection.wrap<native.PKI.AttributeValueCollection, AttributeValueCollection>(vals);
 
             if (index === undefined) {

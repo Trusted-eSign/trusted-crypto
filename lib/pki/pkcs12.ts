@@ -21,36 +21,18 @@ namespace trusted.pki {
          * @memberOf Pkcs12
          */
         public static load(filename: string): Pkcs12 {
-            let p12: Pkcs12 = new Pkcs12();
+            const p12: Pkcs12 = new Pkcs12();
             p12.handle.load(filename);
             return p12;
         }
 
         /**
          * Creates an instance of Pkcs12.
-         *
-         *
-         * @memberOf Pkcs12
-         */
-        constructor();
-
-        /**
-         * Creates an instance of Pkcs12.
-         *
-         * @param {native.PKI.Pkcs12} handle
+         * @param {native.PKI.Pkcs12} [param]
          *
          * @memberOf Pkcs12
          */
-        constructor(handle: native.PKI.Pkcs12);
-
-        /**
-         * Creates an instance of Pkcs12.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf Pkcs12
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.Pkcs12) {
             super();
             if (param instanceof native.PKI.Pkcs12) {
                 this.handle = param;
@@ -92,7 +74,7 @@ namespace trusted.pki {
          * @memberOf Pkcs12
          */
         public ca(password: string): CertificateCollection {
-            let caCerts: CertificateCollection = new CertificateCollection(this.handle.getCACertificates(password));
+            const caCerts: CertificateCollection = new CertificateCollection(this.handle.getCACertificates(password));
             return caCerts;
         }
 
@@ -131,7 +113,7 @@ namespace trusted.pki {
          * @memberOf Pkcs12
          */
         public create(cert: Certificate, key: Key, ca: CertificateCollection, password: string, name: string): Pkcs12 {
-            let p12: Pkcs12 = new Pkcs12();
+            const p12: Pkcs12 = new Pkcs12();
             p12.handle = this.handle.create(cert.handle, key.handle, ca ? ca.handle : undefined, password, name);
             return p12;
         }

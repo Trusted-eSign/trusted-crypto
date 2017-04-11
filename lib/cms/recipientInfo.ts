@@ -12,29 +12,11 @@ namespace trusted.cms {
     export class CmsRecipientInfo extends BaseObject<native.CMS.CmsRecipientInfo> {
         /**
          * Creates an instance of CmsRecipientInfo.
-         *
-         *
-         * @memberOf CmsRecipientInfo
-         */
-        constructor();
-
-        /**
-         * Creates an instance of CmsRecipientInfo.
-         *
-         * @param {native.CMS.CmsRecipientInfo} handle
+         * @param {native.CMS.CmsRecipientInfo} [param]
          *
          * @memberOf CmsRecipientInfo
          */
-        constructor(handle: native.CMS.CmsRecipientInfo);
-
-        /**
-         * Creates an instance of CmsRecipientInfo.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf CmsRecipientInfo
-         */
-        constructor(param?: any) {
+        constructor(param?: native.CMS.CmsRecipientInfo) {
             super();
             if (param instanceof native.CMS.CmsRecipientInfo) {
                 this.handle = param;
@@ -74,7 +56,7 @@ namespace trusted.cms {
          * @memberOf CmsRecipientInfo
          */
         public ktriCertCmp(cert: pki.Certificate): number {
-            let cmp: any = this.handle.ktriCertCmp(cert.handle);
+            const cmp: number = this.handle.ktriCertCmp(cert.handle);
             if (cmp < 0) {
                 return -1;
             }

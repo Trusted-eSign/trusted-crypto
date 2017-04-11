@@ -13,6 +13,6 @@ namespace trusted {
         DEBUG = 8,
         TRACE = 16,
         OPENSSL = 32,
-        ALL = ERROR | WARNING | INFO | DEBUG | TRACE | OPENSSL
-    }
+        // tslint:disable-next-line:no-bitwise
+        ALL = ERROR | WARNING | INFO | DEBUG | TRACE | OPENSSL}
 }

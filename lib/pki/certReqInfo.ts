@@ -14,29 +14,11 @@ namespace trusted.pki {
 
         /**
          * Creates an instance of CertificationRequestInfo.
-         *
-         *
-         * @memberOf CertificationRequestInfo
-         */
-        constructor();
-
-        /**
-         * Creates an instance of CertificationRequestInfo.
-         *
-         * @param {native.PKI.CertificationRequestInfo} handle
+         * @param {native.PKI.CertificationRequestInfo} [param]
          *
          * @memberOf CertificationRequestInfo
          */
-        constructor(handle: native.PKI.CertificationRequestInfo);
-
-        /**
-         * Creates an instance of CertificationRequestInfo.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf CertificationRequestInfo
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.CertificationRequestInfo) {
             super();
 
             if (param instanceof native.PKI.CertificationRequestInfo) {

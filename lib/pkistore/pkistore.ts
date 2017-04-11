@@ -156,36 +156,19 @@ namespace trusted.pkistore {
 
         /**
          * Creates an instance of PkiStore.
-         *
-         * @param {native.PKISTORE.PkiStore} handle
-         *
-         * @memberOf PkiStore
-         */
-        constructor(handle: native.PKISTORE.PkiStore);
-
-        /**
-         * Creates an instance of PkiStore.
-         *
-         * @param {string} folder Path for create store
+         * @param {(native.PKISTORE.PkiStore | string)} param
          *
          * @memberOf PkiStore
          */
-        constructor(folder: string);
-
-        /**
-         * Creates an instance of PkiStore.
-         *
-         * @param {*} param
-         *
-         * @memberOf PkiStore
-         */
-        constructor(param: any) {
+        constructor(param: native.PKISTORE.PkiStore | string) {
             super();
-            if (param instanceof native.PKISTORE.PkiStore) {
-                this.handle = param;
-            } else {
+            if (typeof (param) === "string") {
                 this.handle = new native.PKISTORE.PkiStore(param);
                 this.cashJson = new CashJson(param);
+            } else if (param instanceof native.PKISTORE.PkiStore) {
+                this.handle = param;
+            } else {
+                throw new TypeError("PkiStore::constructor: Wrong input param");
             }
         }
 
@@ -279,7 +262,7 @@ namespace trusted.pkistore {
          * @memberOf PkiStore
          */
         public find(ifilter?: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem[] {
-            let filter: Filter = new Filter();
+            const filter: Filter = new Filter();
 
             if (!ifilter) {
                 return this.handle.find(filter.handle);
@@ -339,7 +322,7 @@ namespace trusted.pkistore {
          * @memberOf PkiStore
          */
         public findKey(ifilter: native.PKISTORE.IFilter): native.PKISTORE.IPkiItem {
-            let filter: Filter = new Filter();
+            const filter: Filter = new Filter();
 
             if (ifilter.type) {
                 for (let i: number = 0; i < ifilter.type.length; i++) {
@@ -395,7 +378,7 @@ namespace trusted.pkistore {
          * @memberOf PkiStore
          */
         public getItem(item: native.PKISTORE.IPkiItem): any {
-            let pkiItem: PkiItem = new PkiItem();
+            const pkiItem: PkiItem = new PkiItem();
 
             pkiItem.format = item.format;
             pkiItem.type = item.type;

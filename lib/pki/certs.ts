@@ -15,29 +15,11 @@ namespace trusted.pki {
 
         /**
          * Creates an instance of CertificateCollection.
-         *
-         * @param {native.PKI.CertificateCollection} handle
-         *
-         * @memberOf CertificateCollection
-         */
-        constructor(handle: native.PKI.CertificateCollection);
-
-        /**
-         * Creates an instance of CertificateCollection.
-         *
+         * @param {native.PKI.CertificateCollection} [param]
          *
          * @memberOf CertificateCollection
          */
-        constructor();
-
-        /**
-         * Creates an instance of CertificateCollection.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf CertificateCollection
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.CertificateCollection) {
             super();
             if (param instanceof native.PKI.CertificateCollection) {
                 this.handle = param;

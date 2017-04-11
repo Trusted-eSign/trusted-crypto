@@ -9,9 +9,9 @@ namespace trusted {
                 throw TypeError("BaseObjectCheck::Wrong incoming object for wrap function");
             }
 
-            let newObj: any = new this();
+            const newObj: any = new this();
             newObj.handle = obj;
-            return <TOut> newObj;
+            return newObj as TOut;
         }
 
         public handle: T;

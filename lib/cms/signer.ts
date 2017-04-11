@@ -54,7 +54,7 @@ namespace trusted.cms {
          * @memberOf Signer
          */
         get digestAlgorithm(): Algorithm {
-            let alg: Algorithm = new pki.Algorithm(this.handle.getDigestAlgorithm());
+            const alg: Algorithm = new pki.Algorithm(this.handle.getDigestAlgorithm());
             return alg;
         }
 
@@ -83,7 +83,7 @@ namespace trusted.cms {
                 if (v.type === SignedDataContentType.url) {
                     data = v.data.toString();
                 } else {
-                    data = new Buffer(<any> v.data);
+                    data = new Buffer(v.data as any);
                 }
             }
             return this.handle.verifyContent(data);
@@ -128,7 +128,7 @@ namespace trusted.cms {
          * @memberOf Signer
          */
         public signedAttributes(index?: number): any {
-            let attrs: SignerAttributeCollection = new SignerAttributeCollection(this.handle.getSignedAttributes());
+            const attrs: SignerAttributeCollection = new SignerAttributeCollection(this.handle.getSignedAttributes());
 
             if (index === undefined) {
                 return attrs;
@@ -165,7 +165,7 @@ namespace trusted.cms {
          * @memberOf Signer
          */
         public unsignedAttributes(index?: number): any {
-            let attrs: SignerAttributeCollection = new SignerAttributeCollection(this.handle.getUnsignedAttributes());
+            const attrs: SignerAttributeCollection = new SignerAttributeCollection(this.handle.getUnsignedAttributes());
 
             if (index === undefined) {
                 return attrs;

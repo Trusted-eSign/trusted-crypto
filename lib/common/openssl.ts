@@ -19,7 +19,7 @@ namespace trusted.common {
          * @memberOf OpenSSL
          */
         public static run(): void {
-            let openssl = new native.COMMON.OpenSSL();
+            const openssl = new native.COMMON.OpenSSL();
             return openssl.run();
         }
 
@@ -32,7 +32,7 @@ namespace trusted.common {
          * @memberOf OpenSSL
          */
         public static stop(): void {
-            let openssl = new native.COMMON.OpenSSL();
+            const openssl = new native.COMMON.OpenSSL();
             return openssl.stop();
         }
 
@@ -45,7 +45,7 @@ namespace trusted.common {
          * @memberOf OpenSSL
          */
         public static printErrors(): string {
-            let openssl = new native.COMMON.OpenSSL();
+            const openssl = new native.COMMON.OpenSSL();
             return openssl.printErrors();
         }
 
@@ -58,6 +58,6 @@ namespace trusted.common {
         constructor() {
             super();
             this.handle = new native.COMMON.OpenSSL();
-        };
+        }
     }
 }

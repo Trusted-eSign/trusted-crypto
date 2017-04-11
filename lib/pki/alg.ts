@@ -13,38 +13,11 @@ namespace trusted.pki {
     export class Algorithm extends BaseObject<native.PKI.Algorithm> {
         /**
          * Creates an instance of Algorithm.
-         *
-         *
-         * @memberOf Algorithm
-         */
-        constructor();
-
-        /**
-         * Creates an instance of Algorithm.
-         *
-         * @param {native.PKI.Algorithm} handle
+         * @param {(native.PKI.Algorithm | string)} [param]
          *
          * @memberOf Algorithm
          */
-        constructor(handle: native.PKI.Algorithm);
-
-        /**
-         * Creates an instance of Algorithm.
-         *
-         * @param {string} name
-         *
-         * @memberOf Algorithm
-         */
-        constructor(name: string);
-
-        /**
-         * Creates an instance of Algorithm.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf Algorithm
-         */
-        constructor (param?: any) {
+        constructor(param?: native.PKI.Algorithm | string) {
             super();
 
             if (param instanceof native.PKI.Algorithm) {
@@ -86,8 +59,8 @@ namespace trusted.pki {
          * @memberOf Algorithm
          */
         public duplicate(): Algorithm {
-            let walg: any = this.handle.duplicate();
-            let alg: any = new Algorithm();
+            const walg: any = this.handle.duplicate();
+            const alg: any = new Algorithm();
             alg.handle = walg;
             return alg;
         }

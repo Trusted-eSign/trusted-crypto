@@ -12,11 +12,11 @@ namespace trusted.cms {
     export class SignerId extends BaseObject<native.CMS.SignerId> {
         /**
          * Creates an instance of SignerId.
-         *
+         * @param {native.CMS.SignerId} [param]
          *
          * @memberOf SignerId
          */
-        constructor(param?: any) {
+        constructor(param?: native.CMS.SignerId) {
             super();
             if (param instanceof native.CMS.SignerId) {
                 this.handle = param;

@@ -24,7 +24,7 @@ namespace trusted.pki {
          * @memberOf Certificate
          */
         public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
-            let cert: Certificate = new Certificate();
+            const cert: Certificate = new Certificate();
             cert.handle.load(filename, format);
             return cert;
         }
@@ -40,36 +40,18 @@ namespace trusted.pki {
          * @memberOf Certificate
          */
         public static import(buffer: Buffer, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
-            let cert: Certificate = new Certificate();
+            const cert: Certificate = new Certificate();
             cert.handle.import(buffer, format);
             return cert;
         }
 
         /**
          * Creates an instance of Certificate.
-         *
-         *
-         * @memberOf Certificate
-         */
-        constructor();
-
-        /**
-         * Creates an instance of Certificate.
-         *
-         * @param {native.PKI.Certificate} handle
+         * @param {native.PKI.Certificate} [param]
          *
          * @memberOf Certificate
          */
-        constructor(handle: native.PKI.Certificate);
-
-        /**
-         * Creates an instance of Certificate.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf Certificate
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.Certificate) {
             super();
             if (param instanceof native.PKI.Certificate) {
                 this.handle = param;
@@ -252,7 +234,7 @@ namespace trusted.pki {
          * @memberOf Certificate
          */
         public compare(cert: Certificate): number {
-            let cmp: any = this.handle.compare(cert.handle);
+            const cmp: any = this.handle.compare(cert.handle);
             if (cmp < 0) {
                 return -1;
             }
@@ -283,7 +265,7 @@ namespace trusted.pki {
          *
          * @memberOf Certificate
          */
-        public hash(algorithm: string = "sha1"): String {
+        public hash(algorithm: string = "sha1"): string {
             return this.handle.hash(algorithm).toString("hex");
         }
 
@@ -295,7 +277,7 @@ namespace trusted.pki {
          * @memberOf Certificate
          */
         public duplicate(): Certificate {
-            let cert: Certificate = new Certificate();
+            const cert: Certificate = new Certificate();
             cert.handle = this.handle.duplicate();
             return cert;
         }

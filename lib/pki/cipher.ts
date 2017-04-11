@@ -124,15 +124,15 @@ namespace trusted.pki {
             this.handle.setSalt(salt);
         }
 
-        get algorithm(): String {
+        get algorithm(): string {
             return this.handle.getAlgorithm();
         }
 
-        get mode(): String {
+        get mode(): string {
             return this.handle.getMode();
         }
 
-        get dgst(): String {
+        get dgst(): string {
             return this.handle.getDigestAlgorithm();
         }
 

@@ -17,20 +17,20 @@ namespace trusted.pki {
      * @param {string} path Path for save in local system
      * @param {Function} done callback function
      */
-    function download(url: string, path: string, done: Function): void {
+    function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void {
         "use strict";
 
-        let sendReq: any = request.get(url);
+        const sendReq: any = request.get(url);
 
-        sendReq.on("response", function (response) {
+        sendReq.on("response", function(response) {
             switch (response.statusCode) {
                 case 200:
-                    let stream = fs.createWriteStream(path);
+                    const stream = fs.createWriteStream(path);
 
-                    response.on("data", function (chunk) {
+                    response.on("data", function(chunk) {
                         stream.write(chunk);
-                    }).on("end", function () {
-                        stream.on("close", function () {
+                    }).on("end", function() {
+                        stream.on("close", function() {
                             done(null, url, path);
                         });
                         stream.end();
@@ -42,7 +42,7 @@ namespace trusted.pki {
             }
         });
 
-        sendReq.on("error", function (err) {
+        sendReq.on("error", function(err) {
             fs.unlink(path);
             done(err.message);
         });
@@ -77,7 +77,7 @@ namespace trusted.pki {
          * @memberOf Revocation
          */
         public getCrlLocal(cert: Certificate, store: pkistore.PkiStore): any {
-            let res = this.handle.getCrlLocal(cert.handle, store.handle);
+            const res = this.handle.getCrlLocal(cert.handle, store.handle);
             if (res) {
                 return Crl.wrap<native.PKI.CRL, Crl>(res);
             }
@@ -117,13 +117,13 @@ namespace trusted.pki {
          *
          * @memberOf Revocation
          */
-        public downloadCRL(distPoints: string[], pathForSave: string, done: Function): void {
-            let crl = new Crl();
+        public downloadCRL(distPoints: string[], pathForSave: string, done: (err: Error, crl: Crl) => void): void {
+            const crl = new Crl();
             let returnPath;
 
             try {
-                async.forEachOf(distPoints, function (value, key, callback) {
-                    download(value, pathForSave + key, function (err, url, goodPath) {
+                async.forEachOf(distPoints, function(value, key, callback) {
+                    download(value, pathForSave + key, function(err, url, goodPath) {
                         if (err) {
                             return callback(err);
                         } else {
@@ -131,7 +131,7 @@ namespace trusted.pki {
                             callback();
                         }
                     });
-                }, function (err) {
+                }, function(err) {
                     if (err) {
                         done(err.message, null);
                     } else {

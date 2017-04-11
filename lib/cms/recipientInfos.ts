@@ -14,29 +14,11 @@ namespace trusted.cms {
         implements core.ICollectionWrite {
         /**
          * Creates an instance of CmsRecipientInfoCollection.
-         *
-         *
-         * @memberOf CmsRecipientInfoCollection
-         */
-        constructor();
-
-        /**
-         * Creates an instance of CmsRecipientInfoCollection.
-         *
-         * @param {native.CMS.CmsRecipientInfoCollection} handle
+         * @param {native.CMS.CmsRecipientInfoCollection} [param]
          *
          * @memberOf CmsRecipientInfoCollection
          */
-        constructor(handle: native.CMS.CmsRecipientInfoCollection);
-
-        /**
-         * Creates an instance of CmsRecipientInfoCollection.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf CmsRecipientInfoCollection
-         */
-        constructor(param?: any) {
+        constructor(param?: native.CMS.CmsRecipientInfoCollection) {
             super();
             if (param instanceof native.CMS.CmsRecipientInfoCollection) {
                 this.handle = param;

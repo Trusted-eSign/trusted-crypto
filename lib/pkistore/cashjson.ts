@@ -41,53 +41,53 @@ namespace trusted.pkistore {
          * @memberOf CashJson
          */
         public import(items: native.PKISTORE.IPkiItem[]): void {
-            for (let i: number = 0; i < items.length; i++) {
-                let pkiItem: PkiItem = new PkiItem();
+            for (const item of items) {
+                const pkiItem: PkiItem = new PkiItem();
 
-                pkiItem.format = items[i].format;
-                pkiItem.type = items[i].type;
-                pkiItem.category = items[i].category;
-                pkiItem.provider = items[i].provider;
-                pkiItem.uri = items[i].uri;
-                pkiItem.hash = items[i].hash.toLocaleLowerCase();
-                if (items[i].subjectName) {
-                    pkiItem.subjectName = items[i].subjectName;
+                pkiItem.format = item.format;
+                pkiItem.type = item.type;
+                pkiItem.category = item.category;
+                pkiItem.provider = item.provider;
+                pkiItem.uri = item.uri;
+                pkiItem.hash = item.hash.toLocaleLowerCase();
+                if (item.subjectName) {
+                    pkiItem.subjectName = item.subjectName;
                 }
-                if (items[i].subjectFriendlyName) {
-                    pkiItem.subjectFriendlyName = items[i].subjectFriendlyName;
+                if (item.subjectFriendlyName) {
+                    pkiItem.subjectFriendlyName = item.subjectFriendlyName;
                 }
-                if (items[i].issuerName) {
-                    pkiItem.issuerName = items[i].issuerName;
+                if (item.issuerName) {
+                    pkiItem.issuerName = item.issuerName;
                 }
-                if (items[i].issuerFriendlyName) {
-                    pkiItem.issuerFriendlyName = items[i].issuerFriendlyName;
+                if (item.issuerFriendlyName) {
+                    pkiItem.issuerFriendlyName = item.issuerFriendlyName;
                 }
-                if (items[i].serial) {
-                    pkiItem.serial = items[i].serial;
+                if (item.serial) {
+                    pkiItem.serial = item.serial;
                 }
-                if (items[i].notBefore) {
-                    pkiItem.notBefore = items[i].notBefore;
+                if (item.notBefore) {
+                    pkiItem.notBefore = item.notBefore;
                 }
-                if (items[i].notAfter) {
-                    pkiItem.notAfter = items[i].notAfter;
+                if (item.notAfter) {
+                    pkiItem.notAfter = item.notAfter;
                 }
-                if (items[i].lastUpdate) {
-                    pkiItem.lastUpdate = items[i].lastUpdate;
+                if (item.lastUpdate) {
+                    pkiItem.lastUpdate = item.lastUpdate;
                 }
-                if (items[i].nextUpdate) {
-                    pkiItem.nextUpdate = items[i].nextUpdate;
+                if (item.nextUpdate) {
+                    pkiItem.nextUpdate = item.nextUpdate;
                 }
-                if (items[i].key) {
-                    pkiItem.key = items[i].key;
+                if (item.key) {
+                    pkiItem.key = item.key;
                 }
-                if (items[i].encrypted) {
-                    pkiItem.keyEnc = items[i].encrypted;
+                if (item.encrypted) {
+                    pkiItem.keyEnc = item.encrypted;
                 }
-                if (items[i].organizationName) {
-                    pkiItem.organizationName = items[i].organizationName;
+                if (item.organizationName) {
+                    pkiItem.organizationName = item.organizationName;
                 }
-                if (items[i].signatureAlgorithm) {
-                    pkiItem.signatureAlgorithm = items[i].signatureAlgorithm;
+                if (item.signatureAlgorithm) {
+                    pkiItem.signatureAlgorithm = item.signatureAlgorithm;
                 }
 
                 this.handle.import(pkiItem.handle);

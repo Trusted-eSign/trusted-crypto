@@ -25,36 +25,18 @@ namespace trusted.pki {
          * @memberOf CertificationRequest
          */
         public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): CertificationRequest {
-            let req: CertificationRequest = new CertificationRequest();
+            const req: CertificationRequest = new CertificationRequest();
             req.handle.load(filename, format);
             return req;
         }
 
         /**
          * Creates an instance of CertificationRequest.
-         *
-         *
-         * @memberOf CertificationRequest
-         */
-        constructor();
-
-        /**
-         * Creates an instance of CertificationRequest.
-         *
-         * @param {native.PKI.CertificationRequest} handle
+         * @param {native.PKI.CertificationRequest} [param]
          *
          * @memberOf CertificationRequest
          */
-        constructor(handle: native.PKI.CertificationRequest);
-
-        /**
-         * Creates an instance of CertificationRequest.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf CertificationRequest
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.CertificationRequest) {
             super();
             if (param instanceof native.PKI.CertificationRequestInfo) {
                 this.handle = new native.PKI.CertificationRequest(param);

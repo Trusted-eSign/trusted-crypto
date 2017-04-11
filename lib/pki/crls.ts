@@ -12,31 +12,14 @@ namespace trusted.pki {
      * @implements {core.ICollectionWrite}
      */
     export class CrlCollection extends BaseObject<native.PKI.CrlCollection> implements core.ICollectionWrite {
-        /**
-         * Creates an instance of CrlCollection.
-         *
-         * @param {native.PKI.CrlCollection} handle
-         *
-         * @memberOf CrlCollection
-         */
-        constructor(handle: native.PKI.CrlCollection);
 
         /**
          * Creates an instance of CrlCollection.
-         *
-         *
-         * @memberOf CrlCollection
-         */
-        constructor();
-
-        /**
-         * Creates an instance of CrlCollection.
-         *
-         * @param {*} [param]
+         * @param {native.PKI.CrlCollection} [param]
          *
          * @memberOf CrlCollection
          */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.CrlCollection) {
             super();
             if (param instanceof native.PKI.CrlCollection) {
                 this.handle = param;

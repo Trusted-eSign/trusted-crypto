@@ -101,7 +101,7 @@ namespace trusted.utils {
          */
         constructor() {
             super();
-        };
+        }
 
         /**
          * Sign package
@@ -121,9 +121,8 @@ namespace trusted.utils {
 
             let sd: cms.SignedData;
             let signer: cms.Signer;
-            let policies;
 
-            let str = JSON.stringify(modules, null, 2);
+            const str = JSON.stringify(modules, null, 2);
             fs2.writeFileSync(cerberLockPath, str);
 
             sd = new trusted.cms.SignedData();
@@ -155,7 +154,7 @@ namespace trusted.utils {
             const buffer = fs2.readFileSync(cerberLockPath, "utf8");
             const ccerber = JSON.parse(buffer);
 
-            let res: IVerifyStatus = {signature: false, difModules: []};
+            const res: IVerifyStatus = {signature: false, difModules: []};
 
             let cms: cms.SignedData;
 
@@ -208,7 +207,7 @@ namespace trusted.utils {
             let certs: pki.CertificateCollection;
             let signerCert: pki.Certificate;
             let cms: cms.SignedData;
-            let res = [];
+            const res = [];
 
             cms = new trusted.cms.SignedData();
             cms.load(cerberLockPath + ".sig", trusted.DataFormat.PEM);
@@ -221,7 +220,7 @@ namespace trusted.utils {
                 signerId = signer.signerId;
 
                 for (let j = 0; j < certs.length; j++) {
-                    let tmpCert: trusted.pki.Certificate = certs.items(j);
+                    const tmpCert: trusted.pki.Certificate = certs.items(j);
                     if ((tmpCert.issuerName === signerId.issuerName) &&
                     (tmpCert.serialNumber === signerId.serialNumber)) {
                         signer.certificate = tmpCert;
@@ -253,9 +252,9 @@ namespace trusted.utils {
          */
         private rehash(dir: string, relative?: string): string[] {
             let modules = [];
-            let filenames = fs2.readdirSync(dir);
+            const filenames = fs2.readdirSync(dir);
 
-            let filteredFiles = filenames.filter(function(e) {
+            const filteredFiles = filenames.filter(function(e) {
                 if (DEFAULT_IGNORE.indexOf(e) < 0) {
                     return true;
                 }
@@ -272,8 +271,8 @@ namespace trusted.utils {
                     modules = modules.concat(this.rehash(loc, rel));
                 } else {
                     if (stat.isFile()) {
-                        let buffer = fs2.readFileSync(loc, "binary");
-                        let hash = crypto2.createHash("sha1").update(buffer).digest("hex");
+                        const buffer = fs2.readFileSync(loc, "binary");
+                        const hash = crypto2.createHash("sha1").update(buffer).digest("hex");
 
                         if (OS_TYPE === "Windows_NT") {
                             rel = rel.replace(/\\/g, "/");

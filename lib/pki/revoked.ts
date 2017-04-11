@@ -13,29 +13,11 @@ namespace trusted.pki {
     export class Revoked extends BaseObject<native.PKI.Revoked> {
         /**
          * Creates an instance of Revoked.
-         *
-         *
-         * @memberOf Revoked
-         */
-        constructor();
-
-        /**
-         * Creates an instance of Revoked.
-         *
-         * @param {native.PKI.Revoked} handle
+         * @param {native.PKI.Revoked} [param]
          *
          * @memberOf Revoked
          */
-        constructor(handle: native.PKI.Revoked);
-
-        /**
-         * Creates an instance of Revoked.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf Revoked
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.Revoked) {
             super();
             if (param instanceof native.PKI.Revoked) {
                 this.handle = param;
@@ -85,7 +67,7 @@ namespace trusted.pki {
          * @memberOf Revoked
          */
         public duplicate(): Revoked {
-            let rv: Revoked = new Revoked();
+            const rv: Revoked = new Revoked();
             rv.handle = this.handle.duplicate();
             return rv;
         }

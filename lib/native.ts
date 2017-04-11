@@ -17,8 +17,7 @@ declare namespace native {
         }
 
         class Algorithm {
-            constructor();
-            constructor(name: string);
+            constructor(name?: string);
             public getTypeId(): OID;
             public getName(): string;
             public duplicate(): Algorithm;
@@ -45,8 +44,7 @@ declare namespace native {
         }
 
         class OID {
-            constructor();
-            constructor(value: string);
+            constructor(value?: string);
             public getLongName(): string;
             public getShortName(): string;
             public getValue(): string;
@@ -143,8 +141,7 @@ declare namespace native {
         }
 
         class CertificationRequest {
-            constructor();
-            constructor(csrinfo: PKI.CertificationRequestInfo);
+            constructor(csrinfo?: PKI.CertificationRequestInfo);
             public load(filename: string, dataFormat: trusted.DataFormat): void;
             public sign(key: Key): void;
             public verify(): boolean;
@@ -188,7 +185,7 @@ declare namespace native {
             public getCrlLocal(cert: Certificate, store: PKISTORE.PkiStore): any;
             public getCrlDistPoints(cert: Certificate): string[];
             public checkCrlTime(crl: CRL): boolean;
-            public downloadCRL(distPoints: string[], path: string, done: Function): void;
+            public downloadCRL(distPoints: string[], path: string, done: (err: Error, crl: PKI.CRL) => void): void;
         }
 
         class Pkcs12 {
@@ -404,8 +401,7 @@ declare namespace native {
             public save(fileName: string);
             public load(fileName: string);
             public export(): IPkiItem[];
-            public import(items: IPkiItem[]);
-            public import(item: PkiItem);
+            public import(items: IPkiItem[] | PkiItem);
         }
 
         class Filter {
@@ -453,7 +449,7 @@ declare namespace native {
 
         class Cerber {
             public sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
-            public verify(modulePath: string, cacerts?: PKI.CertificateCollection): Object;
+            public verify(modulePath: string, cacerts?: PKI.CertificateCollection): object;
         }
 
         class Logger {

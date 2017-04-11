@@ -23,7 +23,7 @@ namespace trusted.pki {
          * @memberOf Key
          */
         public static readPrivateKey(filename: string, format: DataFormat, password: string): Key {
-            let key: Key = new Key();
+            const key: Key = new Key();
             key.readPrivateKey.apply(key, arguments);
             return Key.wrap<native.PKI.Key, Key>(key.handle);
         }
@@ -39,36 +39,18 @@ namespace trusted.pki {
          * @memberOf Key
          */
         public static readPublicKey(filename: string, format: DataFormat): Key {
-            let key: Key = new Key();
+            const key: Key = new Key();
             key.readPublicKey.apply(key, arguments);
             return Key.wrap<native.PKI.Key, Key>(key.handle);
         }
 
         /**
          * Creates an instance of Key.
-         *
-         *
-         * @memberOf Key
-         */
-        constructor();
-
-        /**
-         * Creates an instance of Key.
-         *
-         * @param {native.PKI.Key} handle
+         * @param {native.PKI.Key} [param]
          *
          * @memberOf Key
          */
-        constructor(handle: native.PKI.Key);
-
-        /**
-         * Creates an instance of Key.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf Key
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.Key) {
             super();
             if (param instanceof native.PKI.Key) {
                 this.handle = param;
@@ -155,7 +137,7 @@ namespace trusted.pki {
          * @memberOf Key
          */
         public compare(key: Key): number {
-            let cmp: number = this.handle.compare(key.handle);
+            const cmp: number = this.handle.compare(key.handle);
             if (cmp < 0) {
                 return -1;
             }

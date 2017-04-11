@@ -20,7 +20,7 @@
     "lintES": "./node_modules/.bin/eslint test",
     "lintTS": "./node_modules/.bin/tslint lib/**/*.ts",
     "build": "node-gyp configure && node-gyp build && tsc",
-    "coverage": "nyc npm test",
+    "coverage": "nyc node_modules/.bin/mocha test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [

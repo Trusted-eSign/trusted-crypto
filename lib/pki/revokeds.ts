@@ -14,29 +14,11 @@ namespace trusted.pki {
     export class RevokedCollection extends BaseObject<native.PKI.RevokedCollection> implements core.ICollectionWrite {
         /**
          * Creates an instance of RevokedCollection.
-         *
-         * @param {native.PKI.RevokedCollection} handle
-         *
-         * @memberOf RevokedCollection
-         */
-        constructor(handle: native.PKI.RevokedCollection);
-
-        /**
-         * Creates an instance of RevokedCollection.
-         *
+         * @param {native.PKI.RevokedCollection} [param]
          *
          * @memberOf RevokedCollection
          */
-        constructor();
-
-        /**
-         * Creates an instance of RevokedCollection.
-         *
-         * @param {*} [param]
-         *
-         * @memberOf RevokedCollection
-         */
-        constructor(param?: any) {
+        constructor(param?: native.PKI.RevokedCollection) {
             super();
             if (param instanceof native.PKI.RevokedCollection) {
                 this.handle = param;
