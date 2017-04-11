@@ -62,8 +62,7 @@ declare namespace native {
             duplicate(): Key;
         }
         class Algorithm {
-            constructor();
-            constructor(name: string);
+            constructor(name?: string);
             getTypeId(): OID;
             getName(): string;
             duplicate(): Algorithm;
@@ -87,8 +86,7 @@ declare namespace native {
             length(): number;
         }
         class OID {
-            constructor();
-            constructor(value: string);
+            constructor(value?: string);
             getLongName(): string;
             getShortName(): string;
             getValue(): string;
@@ -174,8 +172,7 @@ declare namespace native {
             setVersion(version: number): void;
         }
         class CertificationRequest {
-            constructor();
-            constructor(csrinfo: PKI.CertificationRequestInfo);
+            constructor(csrinfo?: PKI.CertificationRequestInfo);
             load(filename: string, dataFormat: trusted.DataFormat): void;
             sign(key: Key): void;
             verify(): boolean;
@@ -215,7 +212,7 @@ declare namespace native {
             getCrlLocal(cert: Certificate, store: PKISTORE.PkiStore): any;
             getCrlDistPoints(cert: Certificate): string[];
             checkCrlTime(crl: CRL): boolean;
-            downloadCRL(distPoints: string[], path: string, done: Function): void;
+            downloadCRL(distPoints: string[], path: string, done: (err: Error, crl: PKI.CRL) => void): void;
         }
         class Pkcs12 {
             getCertificate(password: string): Certificate;
@@ -399,8 +396,7 @@ declare namespace native {
             save(fileName: string): any;
             load(fileName: string): any;
             export(): IPkiItem[];
-            import(items: IPkiItem[]): any;
-            import(item: PkiItem): any;
+            import(items: IPkiItem[] | PkiItem): any;
         }
         class Filter {
             constructor();
@@ -444,7 +440,7 @@ declare namespace native {
         }
         class Cerber {
             sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
-            verify(modulePath: string, cacerts?: PKI.CertificateCollection): Object;
+            verify(modulePath: string, cacerts?: PKI.CertificateCollection): object;
         }
         class Logger {
             start(filename: string, level: trusted.LoggerLevel): void;
@@ -807,19 +803,11 @@ declare namespace trusted.pki {
         static readPublicKey(filename: string, format: DataFormat): Key;
         /**
          * Creates an instance of Key.
-         *
-         *
-         * @memberOf Key
-         */
-        constructor();
-        /**
-         * Creates an instance of Key.
-         *
-         * @param {native.PKI.Key} handle
+         * @param {native.PKI.Key} [param]
          *
          * @memberOf Key
          */
-        constructor(handle: native.PKI.Key);
+        constructor(param?: native.PKI.Key);
         /**
          * Generate key
          *
@@ -896,20 +884,11 @@ declare namespace trusted.pki {
     class Oid extends BaseObject<native.PKI.OID> {
         /**
          * Creates an instance of Oid.
-         *
-         * @param {native.PKI.OID} handle
-         *
-         * @memberOf Oid
-         */
-        constructor(handle: native.PKI.OID);
-        /**
-         * Creates an instance of Oid.
-         *
-         * @param {string} oid
+         * @param {(native.PKI.OID | string)} param
          *
          * @memberOf Oid
          */
-        constructor(oid: string);
+        constructor(param: native.PKI.OID | string);
         /**
          * Return text value for OID
          *
@@ -947,27 +926,11 @@ declare namespace trusted.pki {
     class Algorithm extends BaseObject<native.PKI.Algorithm> {
         /**
          * Creates an instance of Algorithm.
-         *
-         *
-         * @memberOf Algorithm
-         */
-        constructor();
-        /**
-         * Creates an instance of Algorithm.
-         *
-         * @param {native.PKI.Algorithm} handle
+         * @param {(native.PKI.Algorithm | string)} [param]
          *
          * @memberOf Algorithm
          */
-        constructor(handle: native.PKI.Algorithm);
-        /**
-         * Creates an instance of Algorithm.
-         *
-         * @param {string} name
-         *
-         * @memberOf Algorithm
-         */
-        constructor(name: string);
+        constructor(param?: native.PKI.Algorithm | string);
         /**
          * Return algorithm name
          *
@@ -1013,12 +976,11 @@ declare namespace trusted.pki {
     class Attribute extends BaseObject<native.PKI.Attribute> {
         /**
          * Creates an instance of Attribute.
-         *
-         * @param {native.PKI.Attribute} handle
+         * @param {native.PKI.Attribute} [param]
          *
          * @memberOf Attribute
          */
-        constructor(handle: native.PKI.Attribute);
+        constructor(param?: native.PKI.Attribute);
         /**
          * Return ASN1 type of attribute
          *
@@ -1175,19 +1137,11 @@ declare namespace trusted.pki {
         static import(buffer: Buffer, format?: DataFormat): Certificate;
         /**
          * Creates an instance of Certificate.
-         *
-         *
-         * @memberOf Certificate
-         */
-        constructor();
-        /**
-         * Creates an instance of Certificate.
-         *
-         * @param {native.PKI.Certificate} handle
+         * @param {native.PKI.Certificate} [param]
          *
          * @memberOf Certificate
          */
-        constructor(handle: native.PKI.Certificate);
+        constructor(param?: native.PKI.Certificate);
         /**
          * Return version of certificate
          *
@@ -1334,7 +1288,7 @@ declare namespace trusted.pki {
          *
          * @memberOf Certificate
          */
-        hash(algorithm?: string): String;
+        hash(algorithm?: string): string;
         /**
          * Return certificate duplicat
          *
@@ -1393,19 +1347,11 @@ declare namespace trusted.pki {
     class CertificateCollection extends BaseObject<native.PKI.CertificateCollection> implements core.ICollectionWrite {
         /**
          * Creates an instance of CertificateCollection.
-         *
-         * @param {native.PKI.CertificateCollection} handle
-         *
-         * @memberOf CertificateCollection
-         */
-        constructor(handle: native.PKI.CertificateCollection);
-        /**
-         * Creates an instance of CertificateCollection.
-         *
+         * @param {native.PKI.CertificateCollection} [param]
          *
          * @memberOf CertificateCollection
          */
-        constructor();
+        constructor(param?: native.PKI.CertificateCollection);
         /**
          * Return element by index from collection
          *
@@ -1470,19 +1416,11 @@ declare namespace trusted.pki {
         static load(filename: string, format?: DataFormat): CertificationRequest;
         /**
          * Creates an instance of CertificationRequest.
-         *
-         *
-         * @memberOf CertificationRequest
-         */
-        constructor();
-        /**
-         * Creates an instance of CertificationRequest.
-         *
-         * @param {native.PKI.CertificationRequest} handle
+         * @param {native.PKI.CertificationRequest} [param]
          *
          * @memberOf CertificationRequest
          */
-        constructor(handle: native.PKI.CertificationRequest);
+        constructor(param?: native.PKI.CertificationRequest);
         /**
          * Load request from file
          *
@@ -1529,19 +1467,11 @@ declare namespace trusted.pki {
     class CertificationRequestInfo extends BaseObject<native.PKI.CertificationRequestInfo> {
         /**
          * Creates an instance of CertificationRequestInfo.
-         *
-         *
-         * @memberOf CertificationRequestInfo
-         */
-        constructor();
-        /**
-         * Creates an instance of CertificationRequestInfo.
-         *
-         * @param {native.PKI.CertificationRequestInfo} handle
+         * @param {native.PKI.CertificationRequestInfo} [param]
          *
          * @memberOf CertificationRequestInfo
          */
-        constructor(handle: native.PKI.CertificationRequestInfo);
+        constructor(param?: native.PKI.CertificationRequestInfo);
         /**
          * Set subject name
          *
@@ -1621,7 +1551,7 @@ declare namespace trusted.pki {
          *
          * @memberOf Revocation
          */
-        downloadCRL(distPoints: string[], pathForSave: string, done: Function): void;
+        downloadCRL(distPoints: string[], pathForSave: string, done: (err: Error, crl: Crl) => void): void;
     }
 }
 declare namespace trusted.pki {
@@ -1657,19 +1587,11 @@ declare namespace trusted.pki {
         static import(buffer: Buffer, format?: DataFormat): Crl;
         /**
          * Creates an instance of Crl.
-         *
-         *
-         * @memberOf Crl
-         */
-        constructor();
-        /**
-         * Creates an instance of Crl.
-         *
-         * @param {native.PKI.CRL} handle
+         * @param {native.PKI.CRL} [param]
          *
          * @memberOf Crl
          */
-        constructor(handle: native.PKI.CRL);
+        constructor(param?: native.PKI.CRL);
         /**
          * Return CRL in DER format
          *
@@ -1828,7 +1750,7 @@ declare namespace trusted.pki {
          *
          * @memberOf Crl
          */
-        hash(algorithm?: string): String;
+        hash(algorithm?: string): string;
         /**
          * Return CRL duplicat
          *
@@ -1850,19 +1772,11 @@ declare namespace trusted.pki {
     class Revoked extends BaseObject<native.PKI.Revoked> {
         /**
          * Creates an instance of Revoked.
-         *
-         *
-         * @memberOf Revoked
-         */
-        constructor();
-        /**
-         * Creates an instance of Revoked.
-         *
-         * @param {native.PKI.Revoked} handle
+         * @param {native.PKI.Revoked} [param]
          *
          * @memberOf Revoked
          */
-        constructor(handle: native.PKI.Revoked);
+        constructor(param?: native.PKI.Revoked);
         /**
          * Return serial nuber
          *
@@ -1909,19 +1823,11 @@ declare namespace trusted.pki {
     class RevokedCollection extends BaseObject<native.PKI.RevokedCollection> implements core.ICollectionWrite {
         /**
          * Creates an instance of RevokedCollection.
-         *
-         * @param {native.PKI.RevokedCollection} handle
-         *
-         * @memberOf RevokedCollection
-         */
-        constructor(handle: native.PKI.RevokedCollection);
-        /**
-         * Creates an instance of RevokedCollection.
-         *
+         * @param {native.PKI.RevokedCollection} [param]
          *
          * @memberOf RevokedCollection
          */
-        constructor();
+        constructor(param?: native.PKI.RevokedCollection);
         /**
          * Return element by index from collection
          *
@@ -1976,19 +1882,11 @@ declare namespace trusted.pki {
     class CrlCollection extends BaseObject<native.PKI.CrlCollection> implements core.ICollectionWrite {
         /**
          * Creates an instance of CrlCollection.
-         *
-         * @param {native.PKI.CrlCollection} handle
-         *
-         * @memberOf CrlCollection
-         */
-        constructor(handle: native.PKI.CrlCollection);
-        /**
-         * Creates an instance of CrlCollection.
-         *
+         * @param {native.PKI.CrlCollection} [param]
          *
          * @memberOf CrlCollection
          */
-        constructor();
+        constructor(param?: native.PKI.CrlCollection);
         /**
          * Return element by index from collection
          *
@@ -2183,9 +2081,9 @@ declare namespace trusted.pki {
         key: string;
         readonly rsalt: Buffer;
         salt: string;
-        readonly algorithm: String;
-        readonly mode: String;
-        readonly dgst: String;
+        readonly algorithm: string;
+        readonly mode: string;
+        readonly dgst: string;
         /**
          * Return recipient infos
          *
@@ -2219,19 +2117,11 @@ declare namespace trusted.pki {
         static load(filename: string): Pkcs12;
         /**
          * Creates an instance of Pkcs12.
-         *
-         *
-         * @memberOf Pkcs12
-         */
-        constructor();
-        /**
-         * Creates an instance of Pkcs12.
-         *
-         * @param {native.PKI.Pkcs12} handle
+         * @param {native.PKI.Pkcs12} [param]
          *
          * @memberOf Pkcs12
          */
-        constructor(handle: native.PKI.Pkcs12);
+        constructor(param?: native.PKI.Pkcs12);
         /**
          * Return certificate
          *
@@ -2301,19 +2191,11 @@ declare namespace trusted.cms {
     class CmsRecipientInfo extends BaseObject<native.CMS.CmsRecipientInfo> {
         /**
          * Creates an instance of CmsRecipientInfo.
-         *
-         *
-         * @memberOf CmsRecipientInfo
-         */
-        constructor();
-        /**
-         * Creates an instance of CmsRecipientInfo.
-         *
-         * @param {native.CMS.CmsRecipientInfo} handle
+         * @param {native.CMS.CmsRecipientInfo} [param]
          *
          * @memberOf CmsRecipientInfo
          */
-        constructor(handle: native.CMS.CmsRecipientInfo);
+        constructor(param?: native.CMS.CmsRecipientInfo);
         /**
          *  Return full issuer name
          *
@@ -2353,19 +2235,11 @@ declare namespace trusted.cms {
     class CmsRecipientInfoCollection extends BaseObject<native.CMS.CmsRecipientInfoCollection> implements core.ICollectionWrite {
         /**
          * Creates an instance of CmsRecipientInfoCollection.
-         *
-         *
-         * @memberOf CmsRecipientInfoCollection
-         */
-        constructor();
-        /**
-         * Creates an instance of CmsRecipientInfoCollection.
-         *
-         * @param {native.CMS.CmsRecipientInfoCollection} handle
+         * @param {native.CMS.CmsRecipientInfoCollection} [param]
          *
          * @memberOf CmsRecipientInfoCollection
          */
-        constructor(handle: native.CMS.CmsRecipientInfoCollection);
+        constructor(param?: native.CMS.CmsRecipientInfoCollection);
         /**
          * Return element by index from collection
          *
@@ -2419,11 +2293,11 @@ declare namespace trusted.cms {
     class SignerId extends BaseObject<native.CMS.SignerId> {
         /**
          * Creates an instance of SignerId.
-         *
+         * @param {native.CMS.SignerId} [param]
          *
          * @memberOf SignerId
          */
-        constructor(param?: any);
+        constructor(param?: native.CMS.SignerId);
         /**
          * Return full issuer name
          *
@@ -3017,20 +2891,11 @@ declare namespace trusted.pkistore {
         private cashJson;
         /**
          * Creates an instance of PkiStore.
-         *
-         * @param {native.PKISTORE.PkiStore} handle
-         *
-         * @memberOf PkiStore
-         */
-        constructor(handle: native.PKISTORE.PkiStore);
-        /**
-         * Creates an instance of PkiStore.
-         *
-         * @param {string} folder Path for create store
+         * @param {(native.PKISTORE.PkiStore | string)} param
          *
          * @memberOf PkiStore
          */
-        constructor(folder: string);
+        constructor(param: native.PKISTORE.PkiStore | string);
         /**
          * Return cash json
          *
