@@ -15,7 +15,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "node_modules/.bin/mocha test && npm run lint && npm run lintTS",
+    "test": "node_modules/.bin/mocha test && npm run lint",
     "lint": "npm run lintES && npm run lintTS",
     "lintES": "./node_modules/.bin/eslint test",
     "lintTS": "./node_modules/.bin/tslint lib/**/*.ts",
@@ -30,20 +30,21 @@
     "cms"
   ],
   "dependencies": {
-    "async": "^2.0.0",
+    "async": "^2.3.0",
     "commander": "^2.9.0",
-    "request": "^2.73.0"
+    "request": "^2.81.0"
   },
   "devDependencies": {
-    "@types/async": "^2.0.33",
-    "@types/node": "^6.0.48",
-    "@types/request": "0.0.33",
-    "coveralls": "^2.11.12",
-    "eslint": "^3.0.1",
-    "nyc": "^9.0.0",
-    "nan": "^2.4.0",
-    "tslint": "^4.4.2",
-    "typescript": "^2.0.8"
+    "@types/async": "^2.0.40",
+    "@types/node": "^7.0.12",
+    "@types/request": "^0.0.42",
+    "coveralls": "^2.13.0",
+    "eslint": "^3.19.0",
+    "nyc": "^10.2.0",
+    "nan": "^2.6.1",
+    "tslint": "^5.1.0",
+    "typescript": "^2.2.2",
+    "mocha": "^3.2.0"
   },
   "author": "Trusted Plus development team"
 }
