@@ -96,7 +96,7 @@
                             "-L<(module_root_dir)/build/Release/wrapper.a"
                         ],
                         "include_dirs": [
-                            "<(node_root_dir)/include/node/openssl"
+                            "<(node_root_dir)/include/node/openssl",
                             "deps/wrapper/include",
                             "deps/wrapper/jsoncpp"
                         ],
