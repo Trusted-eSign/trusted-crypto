@@ -92,9 +92,14 @@
                         }
                     },
                     {
+                        "conditions": [
+                            ['OS=="linux"', {
+                                "libraries": [
+                                    "-lcrypto"
+                                ]
+                            }]],
                         "libraries": [
-                            "-L<(module_root_dir)/build/Release/wrapper.a",
-                            "-lcrypto"
+                            "-L<(module_root_dir)/build/Release/wrapper.a"
                         ],
                         "include_dirs": [
                             "deps/wrapper/include",
