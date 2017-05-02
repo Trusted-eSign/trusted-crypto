@@ -69,7 +69,7 @@
                         "include_dirs": [
                             "<(openssl_root)/include"
                         ],
-                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE" ],
+                        "defines": ["CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE"],
                         "msbuild_settings": {
                             "Link": {
                                 "ImageHasSafeExceptionHandlers": "false"
@@ -77,13 +77,16 @@
                         }
                     },
                     {
-                        "defines": [ "UNIX", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE" ],
+                        "include_dirs": [
+                            "<(node_root_dir)/include/node/openssl"
+                        ],
+                        "defines": ["UNIX", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE"],
 
-                        "cflags_cc+": [ "-std=c++11" ]
+                        "cflags_cc+": ["-std=c++11"]
                     }
                 ]
             ],
-            "cflags": [ ],
+            "cflags": [],
             "cflags_cc!": [
                 "-fno-rtti",
                 "-fno-exceptions"

@@ -84,7 +84,7 @@
                             "deps/wrapper/include",
                             "deps/wrapper/jsoncpp"
                         ],
-                        "defines": [ "CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE" ],
+                        "defines": ["CTWRAPPER_STATIC", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE"],
                         "msbuild_settings": {
                             "Link": {
                                 "ImageHasSafeExceptionHandlers": "false"
@@ -96,14 +96,14 @@
                             "-L<(module_root_dir)/build/Release/wrapper.a"
                         ],
                         "include_dirs": [
-                            "<(node_root_dir)/deps/openssl/openssl/include",
+                            "<(node_root_dir)/include/node/openssl"
                             "deps/wrapper/include",
                             "deps/wrapper/jsoncpp"
                         ],
 
-                        "defines": [ "UNIX", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE" ],
+                        "defines": ["UNIX", "OPENSSL_NO_CTGOSTCP", "JWT_NO_LICENSE"],
 
-                        "cflags_cc+": [ "-std=c++11" ]
+                        "cflags_cc+": ["-std=c++11"]
                     }
                 ]
             ],
