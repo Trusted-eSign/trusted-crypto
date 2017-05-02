@@ -6,7 +6,6 @@ node_js:
   - "4"
 
 compiler: gcc
-sudo: false
 
 os:
   - linux
@@ -21,7 +20,7 @@ addons:
       - g++-4.7
 
 before_install:
-  - sudo apt-get install libssl-dev
+  - sudo apt-get install -y libcurl4-openssl-dev libssl-dev
   - npm install -g typescript
   - npm install -g mocha
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
