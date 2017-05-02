@@ -94,7 +94,7 @@
                     {
                         "libraries": [
                             "-L<(module_root_dir)/build/Release/wrapper.a",
-                            "-libcrypto"
+                            "-lcrypto"
                         ],
                         "include_dirs": [
                             "deps/wrapper/include",
