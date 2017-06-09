@@ -63,15 +63,23 @@ ENGINE *ENGINE_CTGOST_init(){
 	LOGGER_FN();
 
 	ENGINE *e = ENGINE_CTGOST_get_ptr();
-	ENGINE_register_pkey_meths(e);
-	ENGINE_register_pkey_asn1_meths(e);
+
+	if (e) {
+		ENGINE_register_pkey_meths(e);
+		ENGINE_register_pkey_asn1_meths(e);
+	}
+
 	return e;
 }
 
 ENGINE *ENGINE_CTGOST_get_ptr(){
 	LOGGER_FN();
-	ENGINE *e = ENGINE_by_id("ctgostcp");
-	if (!e)
-		THROW_OPENSSL_EXCEPTION(0, Common, NULL, "ENGINE 'ctgostcp' is not loaded");
+
+	ENGINE *e = NULL;
+
+#ifndef OPENSSL_NO_ENGINE
+	e = ENGINE_by_id("ctgostcp");
+#endif
+
 	return e;
 }
