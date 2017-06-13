@@ -6,11 +6,12 @@ bool Jwt::checkLicense() {
 	LOGGER_FN();
 
 	try{
-		int errorCode = NULL;
-
 #ifndef JWT_NO_LICENSE
-		if (!ctlicense_verify_file_code(-1, &errorCode)) {
-			THROW_EXCEPTION(0, Jwt, NULL, "verify jwt license failed(error code %d)", errorCode);
+
+		CTLICENSE_OPERATION noOperationDemand = { false, false, false, false, false, false, false };
+
+		if (!ctlicense_check_store(&noOperationDemand)) {
+			THROW_EXCEPTION(0, Jwt, NULL, "No valid jwt license in store ");
 		}
 
 		return true;
@@ -30,7 +31,9 @@ bool Jwt::checkLicense(Handle<std::string> lic) {
 		int errorCode;
 
 #ifndef JWT_NO_LICENSE
-		if (!ctlicense_verify_str((char *)lic->c_str(), &errorCode)) {
+		CTLICENSE_OPERATION noOperationDemand = { false, false, false, false, false, false, false };
+
+		if (!ctlicense_check_str((char *)lic->c_str(), &noOperationDemand, &errorCode)) {
 			THROW_EXCEPTION(0, Jwt, NULL, "verify jwt license failed(error code %d)", errorCode);
 		}
 
