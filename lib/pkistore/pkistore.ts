@@ -269,20 +269,20 @@ namespace trusted.pkistore {
             }
 
             if (ifilter.type) {
-                for (let i: number = 0; i < ifilter.type.length; i++) {
-                    filter.types = ifilter.type[i];
+                for (const type of ifilter.type) {
+                    filter.types = type;
                 }
             }
 
             if (ifilter.provider) {
-                for (let i: number = 0; i < ifilter.provider.length; i++) {
-                    filter.providers = ifilter.provider[i];
+                for (const provider of ifilter.provider) {
+                    filter.providers = provider;
                 }
             }
 
             if (ifilter.category) {
-                for (let i: number = 0; i < ifilter.category.length; i++) {
-                    filter.categorys = ifilter.category[i];
+                for (const category of ifilter.category) {
+                    filter.categorys = category;
                 }
             }
 
@@ -325,20 +325,20 @@ namespace trusted.pkistore {
             const filter: Filter = new Filter();
 
             if (ifilter.type) {
-                for (let i: number = 0; i < ifilter.type.length; i++) {
-                    filter.types = ifilter.type[i];
+                for (const type of ifilter.type) {
+                    filter.types = type;
                 }
             }
 
             if (ifilter.provider) {
-                for (let i: number = 0; i < ifilter.provider.length; i++) {
-                    filter.providers = ifilter.provider[i];
+                for (const provider of ifilter.provider) {
+                    filter.providers = provider;
                 }
             }
 
             if (ifilter.category) {
-                for (let i: number = 0; i < ifilter.category.length; i++) {
-                    filter.categorys = ifilter.category[i];
+                for (const category of ifilter.category) {
+                    filter.categorys = category;
                 }
             }
 
