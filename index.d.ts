@@ -436,7 +436,7 @@ declare namespace native {
     }
     namespace UTILS {
         class Jwt {
-            checkLicense(data?: string): boolean;
+            checkLicense(data?: string): number;
         }
         class Cerber {
             sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
@@ -567,13 +567,14 @@ declare namespace trusted.utils {
     class Jwt extends BaseObject<native.UTILS.Jwt> {
         /**
          * Verify jwt license file
+         * Return 0 if license correct
          *
          * @static
-         * @returns {boolean}
+         * @returns {number}
          *
          * @memberOf Jwt
          */
-        static checkLicense(data?: string): boolean;
+        static checkLicense(data?: string): number;
         /**
          * Creates an instance of Jwt.
          *
@@ -583,12 +584,13 @@ declare namespace trusted.utils {
         constructor();
         /**
          * Verify jwt license file
+         * Return 0 if license correct
          *
-         * @returns {boolean}
+         * @returns {number}
          *
          * @memberOf Jwt
          */
-        checkLicense(data?: string): boolean;
+        checkLicense(data?: string): number;
     }
 }
 declare namespace trusted.utils {

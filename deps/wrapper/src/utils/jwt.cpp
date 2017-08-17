@@ -2,19 +2,21 @@
 
 #include "wrapper/utils/jwt.h"
 
-bool Jwt::checkLicense() {
+int Jwt::checkLicense() {
 	LOGGER_FN();
 
 	try{
 #ifndef JWT_NO_LICENSE
 
+		int res = 0;
+
 		CTLICENSE_OPERATION noOperationDemand = { false, false, false, false, false, false, false };
 
 		if (!ctlicense_check_store(&noOperationDemand)) {
-			THROW_EXCEPTION(0, Jwt, NULL, "No valid jwt license in store ");
+			res = -1;
 		}
 
-		return true;
+		return res;
 #else
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
@@ -24,20 +26,21 @@ bool Jwt::checkLicense() {
 	}
 }
 
-bool Jwt::checkLicense(Handle<std::string> lic) {
+int Jwt::checkLicense(Handle<std::string> lic) {
 	LOGGER_FN();
 
 	try{
 		int errorCode;
+		int res = 0;
 
 #ifndef JWT_NO_LICENSE
 		CTLICENSE_OPERATION noOperationDemand = { false, false, false, false, false, false, false };
 
 		if (!ctlicense_check_str((char *)lic->c_str(), &noOperationDemand, &errorCode)) {
-			THROW_EXCEPTION(0, Jwt, NULL, "verify jwt license failed(error code %d)", errorCode);
+			res = errorCode;
 		}
 
-		return true;
+		return res;
 #else
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif

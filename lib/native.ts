@@ -444,7 +444,7 @@ declare namespace native {
 
     namespace UTILS {
         class Jwt {
-            public checkLicense(data?: string): boolean;
+            public checkLicense(data?: string): number;
         }
 
         class Cerber {

@@ -13,13 +13,14 @@ namespace trusted.utils {
     export class Jwt extends BaseObject<native.UTILS.Jwt> {
         /**
          * Verify jwt license file
+         * Return 0 if license correct
          *
          * @static
-         * @returns {boolean}
+         * @returns {number}
          *
          * @memberOf Jwt
          */
-        public static checkLicense(data?: string): boolean {
+        public static checkLicense(data?: string): number {
             const jwt = new native.UTILS.Jwt();
             return (data ? jwt.checkLicense(data) : jwt.checkLicense());
         }
@@ -37,12 +38,13 @@ namespace trusted.utils {
 
         /**
          * Verify jwt license file
+         * Return 0 if license correct
          *
-         * @returns {boolean}
+         * @returns {number}
          *
          * @memberOf Jwt
          */
-        public checkLicense(data?: string): boolean {
+        public checkLicense(data?: string): number {
             return (data ? this.handle.checkLicense(data) : this.handle.checkLicense());
         }
     }

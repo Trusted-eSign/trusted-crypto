@@ -12,8 +12,8 @@ public:
 	Jwt(){};
 	~Jwt(){};
 
-	bool checkLicense();
-	bool checkLicense(Handle<std::string> lic);
+	int checkLicense();
+	int checkLicense(Handle<std::string> lic);
 };
 
 #endif //!UTIL_JWT_INCLUDED 
