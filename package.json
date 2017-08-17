@@ -10,7 +10,7 @@
     "url": "https://github.com/TrustedPlus/trusted-crypto"
   },
   "bin": {
-	"trusted-crypto": "./bin/trusted-crypto"
+    "trusted-crypto": "./bin/trusted-crypto"
   },
   "main": "index.js",
   "types": "index.d.ts",
@@ -37,14 +37,14 @@
   "devDependencies": {
     "@types/async": "^2.0.40",
     "@types/node": "^7.0.12",
-    "@types/request": "^0.0.42",
+    "@types/request": "^2.0.1",
     "coveralls": "^2.13.0",
     "eslint": "^3.19.0",
-    "nyc": "^10.2.0",
+    "mocha": "^3.2.0",
     "nan": "^2.6.1",
+    "nyc": "^10.2.0",
     "tslint": "^5.1.0",
-    "typescript": "^2.2.2",
-    "mocha": "^3.2.0"
+    "typescript": "^2.4.1"
   },
   "author": "Trusted Plus development team"
 }
