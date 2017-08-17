@@ -378,7 +378,7 @@ declare namespace native {
              * Возвращает ключ по фильтру
              * - фильтр задается относительно элементов, которые могут быть связаны с ключом
              */
-            public findKey(filter: IFilter): IPkiItem;
+            public findKey(filter: Filter): IPkiItem;
 
             /**
              * Возвращает объект из структуры
