@@ -122,7 +122,7 @@ NAN_METHOD(WKey::ReadPrivateKey){
 		LOGGER_ARG("password");
 		if (!info[2]->IsUndefined()) {
 			v8::String::Utf8Value v8Pass(info[2]->ToString());
-			char *password = *v8Pass;
+			password = *v8Pass;
 		}
 
 		Handle<Bio> in = NULL;
