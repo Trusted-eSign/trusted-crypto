@@ -1,6 +1,8 @@
 #ifndef CMS_PKI_CERT_H_INCLUDED
 #define  CMS_PKI_CERT_H_INCLUDED
 
+#include <vector>
+
 #include <openssl/x509v3.h>
 #include <openssl/pem.h>
 
@@ -34,6 +36,7 @@ public:
 	Handle<std::string> getSignatureDigest();
 	Handle<std::string> getOrganizationName();
 	Handle<Key> getPublicKey();
+	std::vector<std::string> getOCSPUrls();
 	int getType();
 	int getKeyUsage();
 	bool isSelfSigned();

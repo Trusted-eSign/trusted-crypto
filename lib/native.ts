@@ -65,6 +65,7 @@ declare namespace native {
             public getSignatureAlgorithm(): string;
             public getSignatureDigest(): string;
             public getOrganizationName(): string;
+            public getOCSPUrls(): string[];
             public isSelfSigned(): boolean;
 
             public load(filename: string, dataFormat: trusted.DataFormat): void;

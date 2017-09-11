@@ -215,6 +215,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Return array of OCSP urls
+         *
+         * @readonly
+         * @type {string[]}
+         * @memberof Certificate
+         */
+        get OCSPUrls(): string[] {
+            return this.handle.getOCSPUrls();
+        }
+
+        /**
          * Return true is a certificate is self signed
          *
          * @readonly

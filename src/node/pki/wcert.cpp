@@ -30,6 +30,7 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "getSignatureAlgorithm", GetSignatureAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "getSignatureDigest", GetSignatureDigest);
 	Nan::SetPrototypeMethod(tpl, "getOrganizationName", GetOrganizationName);
+	Nan::SetPrototypeMethod(tpl, "getOCSPUrls", GetOCSPUrls);
 	Nan::SetPrototypeMethod(tpl, "isSelfSigned", IsSelfSigned);
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
@@ -445,6 +446,30 @@ NAN_METHOD(WCertificate::GetOrganizationName)
 		v8::Local<v8::String> v8OrgName = Nan::New<v8::String>(orgName->c_str()).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8OrgName);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::GetOCSPUrls)
+{
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		std::vector<std::string> res = _this->getOCSPUrls();
+
+		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+
+		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
+
+		for (int i = 0; i < res.size(); i++){
+			v8::Local<v8::String> v8Str = Nan::New<v8::String>(res[i]).ToLocalChecked();
+			array8->Set(i, v8Str);
+		}
+
+		info.GetReturnValue().Set(array8);
 		return;
 	}
 	TRY_END();

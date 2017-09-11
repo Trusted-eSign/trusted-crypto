@@ -11,7 +11,7 @@ Handle<Key> Certificate::getPublicKey() {
 		if (!key) {
 			THROW_EXCEPTION(0, Certificate, NULL, "X509_get_pubkey");
 		}
-			
+
 		return new Key(key, this->handle());
 	}
 	return NULL;
@@ -268,7 +268,7 @@ Handle<std::string> Certificate::getOrganizationName(){
 	Handle<std::string> organizationName = new std::string("");
 	if ((a = X509_get_subject_name(this->internal())) == NULL) {
 		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "Cannot get subject name");
-	}		
+	}
 
 	int nid = NID_organizationName;
 	LOGGER_OPENSSL(X509_NAME_get_index_by_NID);
@@ -344,6 +344,42 @@ int Certificate::getKeyUsage(){
 	return UINT32_MAX;
 }
 
+std::vector<std::string> Certificate::getOCSPUrls() {
+	LOGGER_FN();
+
+	std::vector<std::string> res;
+	const char *OCSPUrl = NULL;
+
+	try {
+		STACK_OF(ACCESS_DESCRIPTION)* pStack = NULL;
+		LOGGER_OPENSSL(X509_get_ext_d2i);
+		pStack = (STACK_OF(ACCESS_DESCRIPTION)*) X509_get_ext_d2i(this->internal(), NID_info_access, NULL, NULL);
+		if (pStack){
+			LOGGER_OPENSSL(sk_ACCESS_DESCRIPTION_num);
+			for (int j = 0; j < sk_ACCESS_DESCRIPTION_num(pStack); j++){
+				LOGGER_OPENSSL(sk_ACCESS_DESCRIPTION_value);
+				ACCESS_DESCRIPTION *pRes = (ACCESS_DESCRIPTION *)sk_ACCESS_DESCRIPTION_value(pStack, j);
+				if (pRes != NULL && pRes->method != NULL && OBJ_obj2nid(pRes->method) == NID_ad_OCSP){
+					GENERAL_NAME *pName = pRes->location;
+					if (pName != NULL && pName->type == GEN_URI) {
+						LOGGER_OPENSSL(ASN1_STRING_data);
+						OCSPUrl = (const char *)ASN1_STRING_data(pName->d.uniformResourceIdentifier);
+						res.push_back(OCSPUrl);
+					}
+				}
+			}
+
+			LOGGER_OPENSSL(sk_ACCESS_DESCRIPTION_free);
+			sk_ACCESS_DESCRIPTION_free(pStack);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Certificate, e, "Error get OCSP urls");
+	}
+
+	return res;
+}
+
 bool Certificate::equals(Handle<Certificate> cert){
 	LOGGER_FN();
 
@@ -363,7 +399,7 @@ bool Certificate::isSelfSigned() {
 	X509_check_purpose(this->internal(), -1, 0);
 	if (this->internal()->ex_flags & EXFLAG_SS) {
 		return true;
-	}		
+	}
 	else {
 		return false;
 	}
