@@ -226,6 +226,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Return array of CA issuers urls
+         *
+         * @readonly
+         * @type {string[]}
+         * @memberof Certificate
+         */
+        get CAIssuersUrls(): string[] {
+            return this.handle.getCAIssuersUrls();
+        }
+
+        /**
          * Return true is a certificate is self signed
          *
          * @readonly

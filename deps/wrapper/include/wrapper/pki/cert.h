@@ -37,6 +37,7 @@ public:
 	Handle<std::string> getOrganizationName();
 	Handle<Key> getPublicKey();
 	std::vector<std::string> getOCSPUrls();
+	std::vector<std::string> getCAIssuersUrls();
 	int getType();
 	int getKeyUsage();
 	bool isSelfSigned();

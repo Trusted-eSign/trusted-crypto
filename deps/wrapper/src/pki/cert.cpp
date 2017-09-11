@@ -380,6 +380,42 @@ std::vector<std::string> Certificate::getOCSPUrls() {
 	return res;
 }
 
+std::vector<std::string> Certificate::getCAIssuersUrls() {
+	LOGGER_FN();
+
+	std::vector<std::string> res;
+	const char *CAIssuerUrl = NULL;
+
+	try {
+		STACK_OF(ACCESS_DESCRIPTION)* pStack = NULL;
+		LOGGER_OPENSSL(X509_get_ext_d2i);
+		pStack = (STACK_OF(ACCESS_DESCRIPTION)*) X509_get_ext_d2i(this->internal(), NID_info_access, NULL, NULL);
+		if (pStack){
+			LOGGER_OPENSSL(sk_ACCESS_DESCRIPTION_num);
+			for (int j = 0; j < sk_ACCESS_DESCRIPTION_num(pStack); j++){
+				LOGGER_OPENSSL(sk_ACCESS_DESCRIPTION_value);
+				ACCESS_DESCRIPTION *pRes = (ACCESS_DESCRIPTION *)sk_ACCESS_DESCRIPTION_value(pStack, j);
+				if (pRes != NULL && pRes->method != NULL && OBJ_obj2nid(pRes->method) == NID_ad_ca_issuers){
+					GENERAL_NAME *pName = pRes->location;
+					if (pName != NULL && pName->type == GEN_URI) {
+						LOGGER_OPENSSL(ASN1_STRING_data);
+						CAIssuerUrl = (const char *)ASN1_STRING_data(pName->d.uniformResourceIdentifier);
+						res.push_back(CAIssuerUrl);
+					}
+				}
+			}
+
+			LOGGER_OPENSSL(sk_ACCESS_DESCRIPTION_free);
+			sk_ACCESS_DESCRIPTION_free(pStack);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Certificate, e, "Error get CA issuers urls");
+	}
+
+	return res;
+}
+
 bool Certificate::equals(Handle<Certificate> cert){
 	LOGGER_FN();
 
