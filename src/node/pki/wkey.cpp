@@ -117,9 +117,13 @@ NAN_METHOD(WKey::ReadPrivateKey){
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
+		char *password = "";
+
 		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[2]->ToString());
-		char *password = *v8Pass;
+		if (!info[2]->IsUndefined()) {
+			v8::String::Utf8Value v8Pass(info[2]->ToString());
+			char *password = *v8Pass;
+		}
 
 		Handle<Bio> in = NULL;
 
@@ -170,9 +174,14 @@ NAN_METHOD(WKey::WritePrivateKey) {
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
+		char *password = "";
+
 		LOGGER_ARG("password");
-		v8::String::Utf8Value v8Pass(info[2]->ToString());
-		char *password = *v8Pass;
+		if (!info[2]->IsUndefined()) {
+			v8::String::Utf8Value v8Pass(info[2]->ToString());
+			password = *v8Pass;
+		}
+		
 
 		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
 
