@@ -117,12 +117,12 @@ NAN_METHOD(WKey::ReadPrivateKey){
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
-		char *password = "";
+		Handle<std::string> hpass = new std::string("");
 
 		LOGGER_ARG("password");
 		if (!info[2]->IsUndefined()) {
 			v8::String::Utf8Value v8Pass(info[2]->ToString());
-			password = *v8Pass;
+			hpass = new std::string(*v8Pass);
 		}
 
 		Handle<Bio> in = NULL;
@@ -131,7 +131,7 @@ NAN_METHOD(WKey::ReadPrivateKey){
 
 		UNWRAP_DATA(Key);
 
-		_this->readPrivateKey(in, DataFormat::get(format), new std::string(password));
+		_this->readPrivateKey(in, DataFormat::get(format), hpass);
 
 		info.GetReturnValue().Set(info.This());
 		return;
@@ -174,12 +174,12 @@ NAN_METHOD(WKey::WritePrivateKey) {
 		LOGGER_ARG("format");
 		int format = info[1]->ToNumber()->Int32Value();
 
-		char *password = "";
+		Handle<std::string> hpass = new std::string("");
 
 		LOGGER_ARG("password");
 		if (!info[2]->IsUndefined()) {
 			v8::String::Utf8Value v8Pass(info[2]->ToString());
-			password = *v8Pass;
+			hpass = new std::string(*v8Pass);
 		}
 		
 
@@ -187,7 +187,7 @@ NAN_METHOD(WKey::WritePrivateKey) {
 
 		UNWRAP_DATA(Key);
 
-		_this->writePrivateKey(out, DataFormat::get(format), new std::string(password));
+		_this->writePrivateKey(out, DataFormat::get(format), hpass);
 
 		info.GetReturnValue().Set(info.This());
 		return;
