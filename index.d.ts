@@ -106,6 +106,8 @@ declare namespace native {
             getSignatureAlgorithm(): string;
             getSignatureDigest(): string;
             getOrganizationName(): string;
+            getOCSPUrls(): string[];
+            getCAIssuersUrls(): string[];
             isSelfSigned(): boolean;
             load(filename: string, dataFormat: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
@@ -378,7 +380,7 @@ declare namespace native {
              * Возвращает ключ по фильтру
              * - фильтр задается относительно элементов, которые могут быть связаны с ключом
              */
-            findKey(filter: IFilter): IPkiItem;
+            findKey(filter: Filter): IPkiItem;
             /**
              * Возвращает объект из структуры
              */
@@ -1256,6 +1258,22 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         readonly organizationName: string;
+        /**
+         * Return array of OCSP urls
+         *
+         * @readonly
+         * @type {string[]}
+         * @memberof Certificate
+         */
+        readonly OCSPUrls: string[];
+        /**
+         * Return array of CA issuers urls
+         *
+         * @readonly
+         * @type {string[]}
+         * @memberof Certificate
+         */
+        readonly CAIssuersUrls: string[];
         /**
          * Return true is a certificate is self signed
          *
