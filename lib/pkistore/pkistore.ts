@@ -200,14 +200,13 @@ namespace trusted.pkistore {
          * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
          * @param {string} category MY, OTHERS, TRUST, CRL
          * @param {Certificate} cert Certificate
-         * @param {number} flags
          * @returns {string}
          *
          * @memberOf PkiStore
          */
         public addCert(provider: native.PKISTORE.Provider, category: string,
-                       cert: pki.Certificate, flags: number): string {
-            return this.handle.addCert(provider, category, cert.handle, flags);
+                       cert: pki.Certificate): string {
+            return this.handle.addCert(provider, category, cert.handle);
         }
 
         /**
@@ -216,13 +215,12 @@ namespace trusted.pkistore {
          * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
          * @param {string} category MY, OTHERS, TRUST, CRL
          * @param {Crl} crl CRL
-         * @param {number} flags
          * @returns {string}
          *
          * @memberOf PkiStore
          */
-        public addCrl(provider: native.PKISTORE.Provider, category: string, crl: pki.Crl, flags: number): string {
-            return this.handle.addCrl(provider, category, crl.handle, flags);
+        public addCrl(provider: native.PKISTORE.Provider, category: string, crl: pki.Crl): string {
+            return this.handle.addCrl(provider, category, crl.handle);
         }
 
         /**

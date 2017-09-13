@@ -54,8 +54,8 @@ describe("Store", function() {
         key = trusted.pki.Key.readPrivateKey(DEFAULT_RESOURCES_PATH + "/cert1.key", trusted.DataFormat.PEM, "");
         csr = trusted.pki.CertificationRequest.load(DEFAULT_RESOURCES_PATH + "/test.csr", trusted.DataFormat.PEM, "");
 
-        uri = store.addCert(providerSystem.handle, "MY", cert, 0);
-        store.addCrl(providerSystem.handle, "CRL", crl, 0);
+        uri = store.addCert(providerSystem.handle, "MY", cert);
+        store.addCrl(providerSystem.handle, "CRL", crl);
         store.addKey(providerSystem.handle, key, "");
         store.addCsr(providerSystem.handle, "MY", csr);
 
