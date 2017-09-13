@@ -36,7 +36,7 @@ void ProviderCryptopro::init(){
 				CERT_STORE_PROV_SYSTEM,
 				PKCS_7_ASN_ENCODING | X509_ASN_ENCODING,
 				NULL,
-				CERT_SYSTEM_STORE_CURRENT_USER,
+				CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_READONLY_FLAG | CERT_STORE_OPEN_EXISTING_FLAG, ,
 				widestr.c_str()
 				);
 
@@ -48,11 +48,11 @@ void ProviderCryptopro::init(){
 			enumCrls(hCertStore, &listStore[i]);
 
 			CertCloseStore(hCertStore, 0);
-			}
 		}
+	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error init CryptoPRO provider");
-	}	
+	}
 }
 
 void ProviderCryptopro::enumCertificates(HCERTSTORE hCertStore, std::string *category){
@@ -83,7 +83,7 @@ void ProviderCryptopro::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 				item->certificate = hcert;
 
 				providerItemCollection->push(item);
-			}			
+			}
 		} while (pCertContext != NULL);
 
 		if (pCertContext){
@@ -115,7 +115,7 @@ void ProviderCryptopro::enumCrls(HCERTSTORE hCertStore, std::string *category){
 				LOGGER_OPENSSL(d2i_X509_CRL);
 				if (!(crl = d2i_X509_CRL(NULL, &p, pCrlContext->cbCrlEncoded))) {
 					THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "'d2i_X509_CRL' Error decode len bytes");
-				}			
+				}
 
 				Handle<CRL> hcrl = new CRL(crl);
 				Handle<PkiItem> item = objectToPKIItem(hcrl);
@@ -166,7 +166,7 @@ Handle<PkiItem> ProviderCryptopro::objectToPKIItem(Handle<Certificate> cert){
 		item->certNotAfter = cert->getNotAfter();
 		item->certKey = hasPrivateKey(cert) ? new std::string("1") : new std::string("");
 
-		return item;		
+		return item;
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error create PkiItem from certificate");
@@ -212,7 +212,7 @@ Handle<Certificate> ProviderCryptopro::getCert(Handle<std::string> hash, Handle<
 	try{
 		HCERTSTORE hCertStore;
 		PCCERT_CONTEXT pCertContext = NULL;
-		
+
 		const unsigned char *p;
 
 		std::wstring wCategory = std::wstring(category->begin(), category->end());
@@ -253,7 +253,7 @@ Handle<Certificate> ProviderCryptopro::getCert(Handle<std::string> hash, Handle<
 			}
 
 			CertFreeCertificateContext(pCertContext);
-				
+
 			CertCloseStore(hCertStore, 0);
 
 			return new Certificate(hcert);
@@ -344,23 +344,23 @@ Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 		ENGINE *e = ENGINE_by_id("ctgostcp");
 		if (e == NULL) {
 			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "CTGSOTCP is not loaded");
-		}			
-			
-	    LOGGER_OPENSSL(EVP_PKEY_CTX_new_id);
-	    pctx = EVP_PKEY_CTX_new_id(NID_id_GostR3410_2001, e);
+		}
 
-	    LOGGER_OPENSSL(EVP_PKEY_keygen_init);
-	    if (EVP_PKEY_keygen_init(pctx) <= 0){
+		LOGGER_OPENSSL(EVP_PKEY_CTX_new_id);
+		pctx = EVP_PKEY_CTX_new_id(NID_id_GostR3410_2001, e);
+
+		LOGGER_OPENSSL(EVP_PKEY_keygen_init);
+		if (EVP_PKEY_keygen_init(pctx) <= 0){
 			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "EVP_PKEY_keygen_init");
 		}
 
-	    LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
+		LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
 		if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_KEYSET, "all") <= 0){
 			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "EVP_PKEY_CTX_ctrl_str CTGOSTCP_PKEY_CTRL_STR_PARAM_KEYSET 'all'");
 		}
 
-	    LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
-	    if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_EXISTING, "true") <= 0){
+		LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
+		if (EVP_PKEY_CTX_ctrl_str(pctx, CTGOSTCP_PKEY_CTRL_STR_PARAM_EXISTING, "true") <= 0){
 			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "EVP_PKEY_CTX_ctrl_str CTGOSTCP_PKEY_CTRL_STR_PARAM_EXISTING 'true'");
 		}
 
@@ -415,6 +415,73 @@ Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 	if (mctx) EVP_MD_CTX_destroy(mctx);
 	if (pkey) EVP_PKEY_free(pkey);
 	if (pctx) EVP_PKEY_CTX_free(pctx);
+}
+
+void ProviderCryptopro::addPkiObject(Handle<Certificate> cert, Handle<std::string> category){
+	LOGGER_FN();
+
+	try{
+		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+		HCERTSTORE hCertStore = HCRYPT_NULL;
+
+		std::wstring wCategory = std::wstring(category->begin(), category->end());
+
+		pCertContext = createCertificateContext(cert);
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM_REGISTRY,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER,
+			wCategory.c_str())))
+		{
+			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertOpenStore failed");
+		}
+
+		if (!CertAddCertificateContextToStore(
+			hCertStore,
+			pCertContext,
+			CERT_STORE_ADD_REPLACE_EXISTING,
+			NULL
+			))
+		{
+			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
+		}
+
+		CertCloseStore(hCertStore, 0);
+		hCertStore = HCRYPT_NULL;
+
+		if (cert->isSelfSigned() && (strcmp(category->c_str(), "ROOT") != 0)) {
+			if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+				CERT_STORE_PROV_SYSTEM_REGISTRY,
+				X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+				HCRYPT_NULL,
+				CERT_SYSTEM_STORE_CURRENT_USER,
+				L"ROOT")))
+			{
+				THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertOpenStore ROOT failed");
+			}
+
+			if (!CertAddCertificateContextToStore(
+				hCertStore,
+				pCertContext,
+				CERT_STORE_ADD_REPLACE_EXISTING,
+				NULL
+				))
+			{
+				THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
+			}
+
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error add certificate to store");
+	}
 }
 
 bool ProviderCryptopro::hasPrivateKey(Handle<Certificate> cert) {
@@ -553,20 +620,20 @@ int ProviderCryptopro::char2int(char input) {
 		if (input >= '0' && input <= '9'){
 			return input - '0';
 		}
-			
+
 		if (input >= 'A' && input <= 'F'){
 			return input - 'A' + 10;
 		}
-			
+
 		if (input >= 'a' && input <= 'f'){
 			return input - 'a' + 10;
 		}
-		
+
 		THROW_EXCEPTION(0, ProviderCryptopro, NULL, "Invalid input string");
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error char to int");
-	}	
+	}
 }
 
 void ProviderCryptopro::hex2bin(const char* src, char* target) {

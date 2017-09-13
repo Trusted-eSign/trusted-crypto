@@ -25,7 +25,7 @@ void ProviderMicrosoft::init(){
 			"ROOT",
 			"TRUST",
 			"CA",
-			"Request"
+			"Request",
 		};
 
 		HCERTSTORE hCertStore;
@@ -36,7 +36,7 @@ void ProviderMicrosoft::init(){
 				CERT_STORE_PROV_SYSTEM,
 				PKCS_7_ASN_ENCODING | X509_ASN_ENCODING,
 				NULL,
-				CERT_SYSTEM_STORE_CURRENT_USER,
+				CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_READONLY_FLAG | CERT_STORE_OPEN_EXISTING_FLAG,
 				widestr.c_str()
 				);
 
@@ -52,7 +52,7 @@ void ProviderMicrosoft::init(){
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error init microsoft provider");
-	}	
+	}
 }
 
 void ProviderMicrosoft::enumCertificates(HCERTSTORE hCertStore, std::string *category){
@@ -115,7 +115,7 @@ void ProviderMicrosoft::enumCrls(HCERTSTORE hCertStore, std::string *category){
 				LOGGER_OPENSSL(d2i_X509_CRL);
 				if (!(crl = d2i_X509_CRL(NULL, &p, pCrlContext->cbCrlEncoded))) {
 					THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "'d2i_X509_CRL' Error decode len bytes");
-				}			
+				}
 
 				Handle<CRL> hcrl = new CRL(crl);
 				Handle<PkiItem> item = objectToPKIItem(hcrl);
@@ -166,7 +166,7 @@ Handle<PkiItem> ProviderMicrosoft::objectToPKIItem(Handle<Certificate> cert){
 		item->certNotAfter = cert->getNotAfter();
 		item->certKey = hasPrivateKey(cert) ? new std::string("1") : new std::string("");
 
-		return item;		
+		return item;
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error create PkiItem from certificate");
@@ -212,7 +212,7 @@ Handle<Certificate> ProviderMicrosoft::getCert(Handle<std::string> hash, Handle<
 	try{
 		HCERTSTORE hCertStore;
 		PCCERT_CONTEXT pCertContext = NULL;
-		
+
 		const unsigned char *p;
 
 		std::wstring wCategory = std::wstring(category->begin(), category->end());
@@ -253,7 +253,7 @@ Handle<Certificate> ProviderMicrosoft::getCert(Handle<std::string> hash, Handle<
 			}
 
 			CertFreeCertificateContext(pCertContext);
-				
+
 			CertCloseStore(hCertStore, 0);
 
 			return new Certificate(hcert);
@@ -468,7 +468,7 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 		if (!EVP_DigestSignInit(mctx, NULL, md, e, pkey)
 			|| (EVP_DigestSignUpdate(mctx, "123", 3) <= 0)
 			|| !EVP_DigestSignFinal(mctx, buf, &len)) {
-				THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error testing private key (via signing data)");
+			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error testing private key (via signing data)");
 		}
 
 		return new Key(pkey);
@@ -483,6 +483,73 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 	EVP_PKEY_CTX_free(pctx);
 
 	return NULL;
+}
+
+void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::string> category){
+	LOGGER_FN();
+
+	try{
+		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+		HCERTSTORE hCertStore = HCRYPT_NULL;
+
+		std::wstring wCategory = std::wstring(category->begin(), category->end());
+
+		pCertContext = createCertificateContext(cert);
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM_REGISTRY,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER,
+			wCategory.c_str())))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore failed");
+		}
+
+		if (!CertAddCertificateContextToStore(
+			hCertStore,
+			pCertContext,
+			CERT_STORE_ADD_REPLACE_EXISTING,
+			NULL
+			))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
+		}
+
+		CertCloseStore(hCertStore, 0);
+		hCertStore = HCRYPT_NULL;
+
+		if (cert->isSelfSigned() && (strcmp(category->c_str(), "ROOT") != 0)) {
+			if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+				CERT_STORE_PROV_SYSTEM_REGISTRY,
+				X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+				HCRYPT_NULL,
+				CERT_SYSTEM_STORE_CURRENT_USER,
+				L"ROOT")))
+			{
+				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore ROOT failed");
+			}
+
+			if (!CertAddCertificateContextToStore(
+				hCertStore,
+				pCertContext,
+				CERT_STORE_ADD_REPLACE_EXISTING,
+				NULL
+				))
+			{
+				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
+			}
+
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;	
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error add certificate to store");
+	}
 }
 
 bool ProviderMicrosoft::hasPrivateKey(Handle<Certificate> cert) {
@@ -535,7 +602,7 @@ PCCERT_CONTEXT ProviderMicrosoft::createCertificateContext(Handle<Certificate> c
 	try {
 		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
 		unsigned char *pData = NULL, *p = NULL;
-		int iData;		
+		int iData;
 
 		if (cert->isEmpty()) {
 			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "cert cannot be empty");
@@ -560,7 +627,7 @@ PCCERT_CONTEXT ProviderMicrosoft::createCertificateContext(Handle<Certificate> c
 		LOGGER_TRACE("CertCreateCertificateContext");
 		if (NULL == (pCertContext = CertCreateCertificateContext(
 			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, pData, iData))) {
-				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertCreateCertificateContext() failed");
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertCreateCertificateContext() failed");
 		}
 
 		OPENSSL_free(pData);
@@ -579,7 +646,7 @@ bool ProviderMicrosoft::findExistingCertificate(
 	IN DWORD dwFindFlags,
 	IN DWORD dwCertEncodingType
 	) {
-		
+
 	LOGGER_FN();
 
 	bool res = false;
@@ -601,7 +668,7 @@ bool ProviderMicrosoft::findExistingCertificate(
 			CERT_FIND_EXISTING,
 			pCertContext,
 			NULL
-		);
+			);
 
 		if (pOutCertContext) {
 			res = true;
@@ -699,21 +766,21 @@ int ProviderMicrosoft::char2int(char input) {
 		if (input >= '0' && input <= '9'){
 			return input - '0';
 		}
-			
+
 		if (input >= 'A' && input <= 'F'){
 			return input - 'A' + 10;
 		}
-			
+
 		if (input >= 'a' && input <= 'f'){
 			return input - 'a' + 10;
 		}
-		
+
 		THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Invalid input string");
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error char to int");
 	}
-	
+
 }
 
 void ProviderMicrosoft::hex2bin(const char* src, char* target) {

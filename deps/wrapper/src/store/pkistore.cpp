@@ -291,7 +291,7 @@ void PkiStore::addProvider(Handle<Provider> provider) {
 	}
 }
 
-Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, unsigned int flags){
+Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert){
 	LOGGER_FN();
 
 	try{
@@ -389,9 +389,19 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 			LOGGER_OPENSSL(BIO_free_all);
 			BIO_free_all(bioBN);
 
- 			Provider_System::addPkiObject(huri, cert, flags);
+ 			Provider_System::addPkiObject(huri, cert);
 			return huri;
 		}
+		else if (strcmp(provider->type->c_str(), "MICROSOFT") == 0){
+			ProviderMicrosoft::addPkiObject(cert, category);
+			return new std::string("");
+		}
+#if defined(CPROCSP)
+		else if (strcmp(provider->type->c_str(), "CRYPTOPRO") == 0){
+			ProviderCryptopro::addPkiObject(cert, category);
+			return new std::string("");
+		}
+#endif
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
@@ -401,7 +411,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 	}
 }
 
-Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl, unsigned int flags){
+Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl){
 	LOGGER_FN();
 
 	try{
@@ -415,7 +425,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 			uri = uri + std::string(hexHash) + ".crl";
 
 			Handle<std::string> huri = new std::string(uri);
-			Provider_System::addPkiObject(huri, crl, flags);
+			Provider_System::addPkiObject(huri, crl);
 			return huri;
 		}
 		else{

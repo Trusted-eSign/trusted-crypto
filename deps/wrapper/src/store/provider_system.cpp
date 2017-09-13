@@ -561,7 +561,7 @@ Handle<Key> Provider_System::getKeyFromURI(Handle<std::string> uri, Handle<std::
 	}
 }
 
-void Provider_System::addPkiObject(Handle<std::string> uri, Handle<Certificate> cert, unsigned int flags){
+void Provider_System::addPkiObject(Handle<std::string> uri, Handle<Certificate> cert){
 	LOGGER_FN();
 
 	try{
@@ -577,7 +577,7 @@ void Provider_System::addPkiObject(Handle<std::string> uri, Handle<Certificate> 
 	}	
 }
 
-void Provider_System::addPkiObject(Handle<std::string> uri, Handle<CRL> crl, unsigned int flags){
+void Provider_System::addPkiObject(Handle<std::string> uri, Handle<CRL> crl){
 	LOGGER_FN();
 
 	try{

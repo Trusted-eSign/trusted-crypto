@@ -93,7 +93,7 @@ NAN_METHOD(WPkiStore::AddCert){
 
 		UNWRAP_DATA(PkiStore);	
 
-		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCert->data_, NULL);
+		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCert->data_);
 
 		v8::Local<v8::String> v8Uri = Nan::New<v8::String>(uri->c_str()).ToLocalChecked();
 
@@ -120,7 +120,7 @@ NAN_METHOD(WPkiStore::AddCrl){
 
 		UNWRAP_DATA(PkiStore);
 
-		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCrl->data_, NULL);
+		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCrl->data_);
 
 		v8::Local<v8::String> v8Uri = Nan::New<v8::String>(uri->c_str()).ToLocalChecked();
 

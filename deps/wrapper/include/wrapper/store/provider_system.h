@@ -30,8 +30,8 @@ public:
 	Handle<CertificationRequest> static getCSRFromURI(Handle<std::string> uri, Handle<std::string> format);
 	Handle<Key> static getKeyFromURI(Handle<std::string> uri, Handle<std::string> format, bool enc);
 
-	static void addPkiObject(Handle<std::string> uri, Handle<Certificate> cert, unsigned int flags);
-	static void addPkiObject(Handle<std::string> uri, Handle<CRL> crl, unsigned int flags);
+	static void addPkiObject(Handle<std::string> uri, Handle<Certificate> cert);
+	static void addPkiObject(Handle<std::string> uri, Handle<CRL> crl);
 	static void addPkiObject(Handle<std::string> uri, Handle<CertificationRequest> csr);
 	static void addPkiObject(Handle<std::string> uri, Handle<Key> key, Handle<std::string> password);
 
