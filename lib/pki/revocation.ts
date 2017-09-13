@@ -3,50 +3,13 @@
 /// <reference types="async" />
 /// <reference path="../native.ts" />
 /// <reference path="../object.ts" />
+/// <reference path="../utils/download.ts" />
 
 namespace trusted.pki {
 
     const request = require("request");
     const fs = require("fs");
     const async = require("async");
-
-    /**
-     * Download file
-     *
-     * @param {string} url Url to remote file
-     * @param {string} path Path for save in local system
-     * @param {Function} done callback function
-     */
-    function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void {
-        "use strict";
-
-        const sendReq: any = request.get(url);
-
-        sendReq.on("response", function(response) {
-            switch (response.statusCode) {
-                case 200:
-                    const stream = fs.createWriteStream(path);
-
-                    response.on("data", function(chunk) {
-                        stream.write(chunk);
-                    }).on("end", function() {
-                        stream.on("close", function() {
-                            done(null, url, path);
-                        });
-                        stream.end();
-                    });
-
-                    break;
-                default:
-                    done(new Error("Server responded with status code" + response.statusCode));
-            }
-        });
-
-        sendReq.on("error", function(err) {
-            fs.unlink(path);
-            done(err.message);
-        });
-    }
 
     /**
      * Revocatiom provaider
@@ -123,7 +86,7 @@ namespace trusted.pki {
 
             try {
                 async.forEachOf(distPoints, function(value, key, callback) {
-                    download(value, pathForSave + key, function(err, url, goodPath) {
+                    utils.download(value, pathForSave + key, function(err, url, goodPath) {
                         if (err) {
                             return callback(err);
                         } else {
@@ -133,7 +96,7 @@ namespace trusted.pki {
                     });
                 }, function(err) {
                     if (err) {
-                        done(err.message, null);
+                        done(err, null);
                     } else {
                         crl.load(returnPath);
                         done(null, crl);

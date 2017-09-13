@@ -1518,6 +1518,16 @@ declare namespace trusted.pki {
         version: number;
     }
 }
+declare namespace trusted.utils {
+    /**
+     * Download file
+     *
+     * @param {string} url Url to remote file
+     * @param {string} path Path for save in local system
+     * @param {Function} done callback function
+     */
+    function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void;
+}
 declare namespace trusted.pki {
     /**
      * Revocatiom provaider
