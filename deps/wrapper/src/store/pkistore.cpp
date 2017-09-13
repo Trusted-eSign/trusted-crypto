@@ -392,10 +392,12 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
  			Provider_System::addPkiObject(huri, cert);
 			return huri;
 		}
+#if defined(OPENSSL_SYS_WINDOWS)
 		else if (strcmp(provider->type->c_str(), "MICROSOFT") == 0){
 			ProviderMicrosoft::addPkiObject(cert, category);
 			return new std::string("");
 		}
+#endif
 #if defined(CPROCSP)
 		else if (strcmp(provider->type->c_str(), "CRYPTOPRO") == 0){
 			ProviderCryptopro::addPkiObject(cert, category);
