@@ -41,6 +41,7 @@ public:
 	int getType();
 	int getKeyUsage();
 	bool isSelfSigned();
+	bool isCA();
 
 	//Methods
 	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);

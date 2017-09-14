@@ -68,6 +68,7 @@ declare namespace native {
             public getOCSPUrls(): string[];
             public getCAIssuersUrls(): string[];
             public isSelfSigned(): boolean;
+            public isCA(): boolean;
 
             public load(filename: string, dataFormat: trusted.DataFormat): void;
             public import(raw: Buffer, dataFormat: trusted.DataFormat): void;

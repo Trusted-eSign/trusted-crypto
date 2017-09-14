@@ -441,6 +441,13 @@ bool Certificate::isSelfSigned() {
 	}
 }
 
+bool Certificate::isCA() {
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_check_ca);
+	return (X509_check_ca(this->internal()) > 0);
+}
+
 Handle<std::string> Certificate::hash(Handle<std::string> algorithm){
 	LOGGER_FN();
 

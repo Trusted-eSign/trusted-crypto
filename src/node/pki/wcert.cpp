@@ -33,6 +33,7 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "getOCSPUrls", GetOCSPUrls);
 	Nan::SetPrototypeMethod(tpl, "getCAIssuersUrls", GetCAIssuersUrls);
 	Nan::SetPrototypeMethod(tpl, "isSelfSigned", IsSelfSigned);
+	Nan::SetPrototypeMethod(tpl, "isCA", IsCA);
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
@@ -514,6 +515,19 @@ NAN_METHOD(WCertificate::IsSelfSigned) {
 	TRY_END();
 }
 
+NAN_METHOD(WCertificate::IsCA) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		bool res = _this->isCA();
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
+		return;
+	}
+	TRY_END();
+}
 
 NAN_METHOD(WCertificate::Duplicate)
 {

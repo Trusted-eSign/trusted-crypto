@@ -248,6 +248,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Return true if it CA certificate (can be used to sign other certificates)
+         *
+         * @readonly
+         * @type {boolean}
+         * @memberOf Certificate
+         */
+        get isCA(): boolean {
+            return this.handle.isCA();
+        }
+
+        /**
          * Compare certificates
          *
          * @param {Certificate} cert Certificate for compare

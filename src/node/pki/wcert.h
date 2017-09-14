@@ -38,6 +38,7 @@ public:
 	static NAN_METHOD(GetOCSPUrls);
 	static NAN_METHOD(GetCAIssuersUrls);
 	static NAN_METHOD(IsSelfSigned);
+	static NAN_METHOD(IsCA);
 
 	//Methods
 	static NAN_METHOD(Load);
