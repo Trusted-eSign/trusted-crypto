@@ -17,6 +17,7 @@
         "lib/object.ts",
         "lib/core/collection.ts",
         "lib/common/openssl.ts",
+        "lib/utils/download.ts",
         "lib/utils/jwt.ts",
         "lib/utils/logger.ts",
         "lib/utils/cerber.ts",
