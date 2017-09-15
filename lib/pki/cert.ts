@@ -4,6 +4,7 @@
 namespace trusted.pki {
 
     const DEFAULT_DATA_FORMAT: DataFormat = DataFormat.DER;
+    const async = require("async");
 
     /**
      * Wrap X509
@@ -43,6 +44,46 @@ namespace trusted.pki {
             const cert: Certificate = new Certificate();
             cert.handle.import(buffer, format);
             return cert;
+        }
+
+        /**
+         * Download certificate
+         *
+         * @static
+         * @param {string[]} urls
+         * @param {string} pathForSave File path
+         * @param {Function} done callback
+         *
+         * @memberOf Certificate
+         */
+        public static download(urls: string[],
+                               pathForSave: string,
+                               done: (err: Error, certificate: Certificate) => void): void {
+
+            const certificate = new Certificate();
+            let returnPath;
+
+            try {
+                async.forEachOf(urls, function(value, key, callback) {
+                    utils.download(value, pathForSave + key, function(err: Error, url, goodPath) {
+                        if (err) {
+                            return callback(err);
+                        } else {
+                            returnPath = goodPath;
+                            callback();
+                        }
+                    });
+                }, function(err: Error) {
+                    if (err) {
+                        done(err, null);
+                    } else {
+                        certificate.load(returnPath);
+                        done(null, certificate);
+                    }
+                });
+            } catch (e) {
+                done(e, null);
+            }
         }
 
         /**

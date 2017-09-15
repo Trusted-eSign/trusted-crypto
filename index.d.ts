@@ -109,6 +109,7 @@ declare namespace native {
             getOCSPUrls(): string[];
             getCAIssuersUrls(): string[];
             isSelfSigned(): boolean;
+            isCA(): boolean;
             load(filename: string, dataFormat: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
@@ -556,6 +557,16 @@ declare namespace trusted.common {
          */
         constructor();
     }
+}
+declare namespace trusted.utils {
+    /**
+     * Download file
+     *
+     * @param {string} url Url to remote file
+     * @param {string} path Path for save in local system
+     * @param {Function} done callback function
+     */
+    function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void;
 }
 declare namespace trusted.utils {
     /**
@@ -1140,6 +1151,17 @@ declare namespace trusted.pki {
          */
         static import(buffer: Buffer, format?: DataFormat): Certificate;
         /**
+         * Download certificate
+         *
+         * @static
+         * @param {string[]} urls
+         * @param {string} pathForSave File path
+         * @param {Function} done callback
+         *
+         * @memberOf Certificate
+         */
+        static download(urls: string[], pathForSave: string, done: (err: Error, certificate: Certificate) => void): void;
+        /**
          * Creates an instance of Certificate.
          * @param {native.PKI.Certificate} [param]
          *
@@ -1282,6 +1304,14 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         readonly isSelfSigned: boolean;
+        /**
+         * Return true if it CA certificate (can be used to sign other certificates)
+         *
+         * @readonly
+         * @type {boolean}
+         * @memberOf Certificate
+         */
+        readonly isCA: boolean;
         /**
          * Compare certificates
          *
@@ -1517,16 +1547,6 @@ declare namespace trusted.pki {
          */
         version: number;
     }
-}
-declare namespace trusted.utils {
-    /**
-     * Download file
-     *
-     * @param {string} url Url to remote file
-     * @param {string} path Path for save in local system
-     * @param {Function} done callback function
-     */
-    function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void;
 }
 declare namespace trusted.pki {
     /**
