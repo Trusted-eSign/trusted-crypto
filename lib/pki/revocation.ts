@@ -85,8 +85,8 @@ namespace trusted.pki {
             let returnPath;
 
             try {
-                async.forEachOf(distPoints, function(value, key, callback) {
-                    utils.download(value, pathForSave + key, function(err, url, goodPath) {
+                async.forEachOf(distPoints, (value, key, callback) => {
+                    utils.download(value, pathForSave + key, (err, url, goodPath) => {
                         if (err) {
                             return callback(err);
                         } else {
@@ -94,7 +94,7 @@ namespace trusted.pki {
                             callback();
                         }
                     });
-                }, function(err) {
+                }, (err) => {
                     if (err) {
                         done(err, null);
                     } else {

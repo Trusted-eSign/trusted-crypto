@@ -164,7 +164,7 @@ namespace trusted.utils {
             }
 
             if (!(JSON.stringify(ccerber) === JSON.stringify(modules))) {
-                res.difModules = modules.filter(function(x) {
+                res.difModules = modules.filter((x) => {
                     return ccerber.indexOf(x) === -1;
                 });
             }
@@ -254,7 +254,7 @@ namespace trusted.utils {
             let modules = [];
             const filenames = fs2.readdirSync(dir);
 
-            const filteredFiles = filenames.filter(function(e) {
+            const filteredFiles = filenames.filter((e) => {
                 if (DEFAULT_IGNORE.indexOf(e) < 0) {
                     return true;
                 }

@@ -14,15 +14,15 @@ namespace trusted.utils {
     export function download(url: string, path: string, done: (err: Error, url?: string, path?: string) => void): void {
         const sendReq: any = request.get(url);
 
-        sendReq.on("response", function(response) {
+        sendReq.on("response", (response) => {
             switch (response.statusCode) {
                 case 200:
                     const stream = fs.createWriteStream(path);
 
-                    response.on("data", function(chunk) {
+                    response.on("data", (chunk) => {
                         stream.write(chunk);
-                    }).on("end", function() {
-                        stream.on("close", function() {
+                    }).on("end", () => {
+                        stream.on("close", () => {
                             done(null, url, path);
                         });
                         stream.end();
@@ -34,7 +34,7 @@ namespace trusted.utils {
             }
         });
 
-        sendReq.on("error", function(err) {
+        sendReq.on("error", (err) => {
             fs.unlink(path);
             done(err);
         });
