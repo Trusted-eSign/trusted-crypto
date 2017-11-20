@@ -75,12 +75,12 @@ namespace trusted.cms {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER (default)
          * @returns {SignedData}
          *
          * @memberOf SignedData
          */
-        public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): SignedData {
+        public static load(filename: string, format?: DataFormat): SignedData {
             const cms: SignedData = new SignedData();
             cms.handle.load(filename, format);
             return cms;
@@ -274,11 +274,11 @@ namespace trusted.cms {
          * Load sign from file location
          *
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER
          *
          * @memberOf SignedData
          */
-        public load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+        public load(filename: string, format?: DataFormat): void {
             this.handle.load(filename, format);
         }
 

@@ -210,7 +210,7 @@ declare namespace native {
             public setContent(v: Buffer): void;
             public getFlags(): number;
             public setFlags(v: number): void;
-            public load(filename: string, dataFormat: trusted.DataFormat): void;
+            public load(filename: string, dataFormat?: trusted.DataFormat): void;
             public import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             public save(filename: string, dataFormat: trusted.DataFormat): void;
             public export(dataFormat: trusted.DataFormat): Buffer;
