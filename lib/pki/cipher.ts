@@ -42,7 +42,7 @@ namespace trusted.pki {
          *
          * @memberOf Cipher
          */
-        public encrypt(filenameSource: string, filenameEnc: string, format?: DataFormat): void {
+        public encrypt(filenameSource: string, filenameEnc: string, format: DataFormat): void {
             this.handle.encrypt(filenameSource, filenameEnc, format);
         }
 

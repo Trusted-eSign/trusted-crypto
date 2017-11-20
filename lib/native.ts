@@ -161,7 +161,7 @@ declare namespace native {
             constructor();
             public setCryptoMethod(method: trusted.CryptoMethod): void;
             public encrypt(filenameSource: string, filenameEnc: string, format: trusted.DataFormat): void;
-            public decrypt(filenameEnc: string, filenameDec: string, format: trusted.DataFormat): void;
+            public decrypt(filenameEnc: string, filenameDec: string, format?: trusted.DataFormat): void;
             public addRecipientsCerts(certs: CertificateCollection): void;
             public setPrivKey(rkey: Key): void;
             public setRecipientCert(rcert: Certificate): void;

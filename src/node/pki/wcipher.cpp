@@ -124,18 +124,20 @@ NAN_METHOD(WCipher::Decrypt) {
 		v8::String::Utf8Value v8FilenameDec(info[1]->ToString());
 		char *filenameDec = *v8FilenameDec;
 
-		LOGGER_ARG("format");
-		int format = info[2]->ToNumber()->Int32Value();
-
 		Handle<Bio> inEnc = NULL;
 		Handle<Bio> outDec = NULL;
 
 		inEnc = new Bio(BIO_TYPE_FILE, filenameEnc, "rb");
 		outDec = new Bio(BIO_TYPE_FILE, filenameDec, "wb");
 
+		LOGGER_ARG("format");
+		DataFormat::DATA_FORMAT format = (info[1]->IsUndefined() || !info[1]->IsNumber()) ?
+			getCmsFileType(inEnc) :
+			DataFormat::get(info[1]->ToNumber()->Int32Value());
+
 		UNWRAP_DATA(Cipher);
 
-		_this->decrypt(inEnc, outDec, DataFormat::get(format));
+		_this->decrypt(inEnc, outDec, format);
 
 		info.GetReturnValue().Set(info.This());
 		return;
