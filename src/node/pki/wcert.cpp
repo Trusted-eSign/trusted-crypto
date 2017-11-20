@@ -2,6 +2,7 @@
 
 #include "wcert.h"
 #include "wkey.h"
+#include "../helper.h"
 
 const char* WCertificate::className = "Certificate";
 
@@ -77,16 +78,17 @@ NAN_METHOD(WCertificate::Load) {
 		v8::String::Utf8Value v8Filename(info[0]->ToString());
 		char *filename = *v8Filename;
 
+		Handle<Bio> in = NULL;
+		in = new Bio(BIO_TYPE_FILE, filename, "rb");
+
 		LOGGER_ARG("format");
-		int format = info[1]->ToNumber()->Int32Value();
+		DataFormat::DATA_FORMAT format = (info[1]->IsUndefined() || !info[1]->IsNumber()) ?
+			getCmsFileType(in) :
+			DataFormat::get(info[1]->ToNumber()->Int32Value());
 
 		UNWRAP_DATA(Certificate);
 
-		Handle<Bio> in = NULL;
-
-		in = new Bio(BIO_TYPE_FILE, filename, "rb");
-
-		_this->read(in, DataFormat::get(format));
+		_this->read(in, format);
 
 		info.GetReturnValue().Set(info.This());
 		return;

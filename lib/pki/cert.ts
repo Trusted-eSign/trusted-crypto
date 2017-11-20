@@ -19,12 +19,12 @@ namespace trusted.pki {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER (default)
          * @returns {Certificate}
          *
          * @memberOf Certificate
          */
-        public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): Certificate {
+        public static load(filename: string, format?: DataFormat): Certificate {
             const cert: Certificate = new Certificate();
             cert.handle.load(filename, format);
             return cert;
@@ -360,11 +360,11 @@ namespace trusted.pki {
          * Load certificate from file location
          *
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
+         * @param {DataFormat} [format]
          *
          * @memberOf Certificate
          */
-        public load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+        public load(filename: string, format?: DataFormat): void {
             this.handle.load(filename, format);
         }
 
