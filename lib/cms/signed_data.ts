@@ -75,7 +75,7 @@ namespace trusted.cms {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER
          * @returns {SignedData}
          *
          * @memberOf SignedData

@@ -19,7 +19,7 @@ namespace trusted.pki {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER
          * @returns {Certificate}
          *
          * @memberOf Certificate

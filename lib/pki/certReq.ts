@@ -19,8 +19,7 @@ namespace trusted.pki {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format] PEM | DER (default)
-         * @returns {CertificationRequest}
+         * @param {DataFormat} [format] PEM | DER
          *
          * @memberOf CertificationRequest
          */
@@ -49,7 +48,7 @@ namespace trusted.pki {
          * Load request from file
          *
          * @param {string} filename File location
-         * @param {DataFormat} [format] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER
          *
          * @memberOf CertificationRequest
          */
