@@ -110,7 +110,7 @@ declare namespace native {
             getCAIssuersUrls(): string[];
             isSelfSigned(): boolean;
             isCA(): boolean;
-            load(filename: string, dataFormat: trusted.DataFormat): void;
+            load(filename: string, dataFormat?: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
             export(dataFormat: trusted.DataFormat): Buffer;
@@ -176,7 +176,7 @@ declare namespace native {
         }
         class CertificationRequest {
             constructor(csrinfo?: PKI.CertificationRequestInfo);
-            load(filename: string, dataFormat: trusted.DataFormat): void;
+            load(filename: string, dataFormat?: trusted.DataFormat): void;
             sign(key: Key): void;
             verify(): boolean;
             getPEMString(): Buffer;
@@ -190,7 +190,7 @@ declare namespace native {
             constructor();
             setCryptoMethod(method: trusted.CryptoMethod): void;
             encrypt(filenameSource: string, filenameEnc: string, format: trusted.DataFormat): void;
-            decrypt(filenameEnc: string, filenameDec: string, format: trusted.DataFormat): void;
+            decrypt(filenameEnc: string, filenameDec: string, format?: trusted.DataFormat): void;
             addRecipientsCerts(certs: CertificateCollection): void;
             setPrivKey(rkey: Key): void;
             setRecipientCert(rcert: Certificate): void;
@@ -233,7 +233,7 @@ declare namespace native {
             setContent(v: Buffer): void;
             getFlags(): number;
             setFlags(v: number): void;
-            load(filename: string, dataFormat: trusted.DataFormat): void;
+            load(filename: string, dataFormat?: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
             export(dataFormat: trusted.DataFormat): Buffer;
@@ -1133,7 +1133,7 @@ declare namespace trusted.pki {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER
          * @returns {Certificate}
          *
          * @memberOf Certificate
@@ -1351,7 +1351,7 @@ declare namespace trusted.pki {
          * Load certificate from file location
          *
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT]
+         * @param {DataFormat} [format]
          *
          * @memberOf Certificate
          */
@@ -1458,8 +1458,7 @@ declare namespace trusted.pki {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
-         * @returns {CertificationRequest}
+         * @param {DataFormat} [format] PEM | DER
          *
          * @memberOf CertificationRequest
          */
@@ -1475,7 +1474,7 @@ declare namespace trusted.pki {
          * Load request from file
          *
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER
          *
          * @memberOf CertificationRequest
          */
@@ -2088,7 +2087,7 @@ declare namespace trusted.pki {
          *
          * @memberOf Cipher
          */
-        encrypt(filenameSource: string, filenameEnc: string, format?: DataFormat): void;
+        encrypt(filenameSource: string, filenameEnc: string, format: DataFormat): void;
         /**
          * Decrypt data
          *
@@ -2594,7 +2593,7 @@ declare namespace trusted.cms {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER
          * @returns {SignedData}
          *
          * @memberOf SignedData
@@ -2691,7 +2690,7 @@ declare namespace trusted.cms {
          * Load sign from file location
          *
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER
          *
          * @memberOf SignedData
          */
