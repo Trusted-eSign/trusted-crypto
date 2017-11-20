@@ -1,8 +1,6 @@
 #include "stdafx.h"
 
-#include <nan.h>
-
-#include <wrapper/common/common.h>
+#include "helper.h"
 
 /**
 * Schedule an "allocation failed" exception. This (tries) to allocate
@@ -94,4 +92,19 @@ Handle<std::string> getErrorText(Handle<Exception> e)
 	}
 
 	return t;
+}
+
+DataFormat::DATA_FORMAT getCmsFileType(Handle<Bio> in) {
+	LOGGER_FN();
+
+	char buf[1] = { 0 };
+
+	LOGGER_OPENSSL(BIO_read);
+	if (in.isEmpty() || (BIO_read(in->internal(), buf, sizeof(buf)) <= 0)) {
+		THROW_EXCEPTION(0, NULL, NULL, "Error get CMS file type");
+	}
+
+	in->seek(0);
+
+	return (0x30 == buf[0]) ? DataFormat::DER : DataFormat::BASE64;
 }

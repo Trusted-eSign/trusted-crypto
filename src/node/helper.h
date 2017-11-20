@@ -4,6 +4,7 @@
 #include <nan.h>
 
 #include <wrapper/common/common.h>	
+#include <wrapper/pki/pki.h>
 
 #define LOGGER_ARG(name) LOGGER_INFO("Param: %s", name)
 
@@ -27,6 +28,7 @@ Handle<std::string> getString(v8::Local<v8::String> v8String);
 Handle<std::string> getBuffer(v8::Local<v8::Value> v8Value);
 
 Handle<std::string> getErrorText(Handle<Exception> e);
+DataFormat::DATA_FORMAT getCmsFileType(Handle<Bio> in);
 
 #define METHOD_BEGIN() \
 	LOGGER_FN();
