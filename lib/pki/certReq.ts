@@ -19,12 +19,12 @@ namespace trusted.pki {
          *
          * @static
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER (default)
          * @returns {CertificationRequest}
          *
          * @memberOf CertificationRequest
          */
-        public static load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): CertificationRequest {
+        public static load(filename: string, format?: DataFormat): CertificationRequest {
             const req: CertificationRequest = new CertificationRequest();
             req.handle.load(filename, format);
             return req;
@@ -49,11 +49,11 @@ namespace trusted.pki {
          * Load request from file
          *
          * @param {string} filename File location
-         * @param {DataFormat} [format=DEFAULT_DATA_FORMAT] PEM | DER (default)
+         * @param {DataFormat} [format] PEM | DER (default)
          *
          * @memberOf CertificationRequest
          */
-        public load(filename: string, format: DataFormat = DEFAULT_DATA_FORMAT): void {
+        public load(filename: string, format?: DataFormat): void {
             this.handle.load(filename, format);
         }
 

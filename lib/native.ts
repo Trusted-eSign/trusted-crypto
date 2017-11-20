@@ -145,7 +145,7 @@ declare namespace native {
 
         class CertificationRequest {
             constructor(csrinfo?: PKI.CertificationRequestInfo);
-            public load(filename: string, dataFormat: trusted.DataFormat): void;
+            public load(filename: string, dataFormat?: trusted.DataFormat): void;
             public sign(key: Key): void;
             public verify(): boolean;
             public getPEMString(): Buffer;
