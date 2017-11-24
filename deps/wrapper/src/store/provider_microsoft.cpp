@@ -41,7 +41,8 @@ void ProviderMicrosoft::init(){
 				);
 
 			if (!hCertStore) {
-				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Error open store");
+				LOGGER_ERROR("error open store %s", listStore[i]);
+				continue;
 			}
 
 			enumCertificates(hCertStore, &listStore[i]);
@@ -503,7 +504,7 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 			CERT_SYSTEM_STORE_CURRENT_USER,
 			wCategory.c_str())))
 		{
-			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore failed");
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
 		}
 
 		if (!CertAddCertificateContextToStore(
