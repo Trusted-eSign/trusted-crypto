@@ -460,6 +460,14 @@ declare namespace native {
             public stop(): void;
             public clear(): void;
         }
+
+        class Csp {
+            public isGost2001CSPAvailable(): boolean;
+            public isGost2012_256CSPAvailable(): boolean;
+            public isGost2012_512CSPAvailable(): boolean;
+            public checkCPCSPLicense(): boolean;
+            public getCPCSPLicense(): string;
+        }
     }
 
     namespace COMMON {

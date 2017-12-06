@@ -11,6 +11,8 @@
 #include <windows.h>
 #include <wincrypt.h>
 
+#include "WinCryptEx.h"
+
 #define HCRYPT_NULL NULL
 #else // !_WIN32
 #ifdef __x86_64__
@@ -27,6 +29,10 @@
 
 #define HCRYPT_NULL 0
 #endif                          //added
+
+#if defined(_WIN32) || (!defined(_WIN32) && defined(CPROCSP))
+	#define CSP_ENABLE
+#endif
 
 #ifndef INT32_MAX
 #  define INT32_MAX __MAXINT__(int32_t)

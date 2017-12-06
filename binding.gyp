@@ -13,6 +13,7 @@
                 "src/node/utils/wlog.cpp",
                 "src/node/utils/wrap.cpp",
                 "src/node/utils/wjwt.cpp",
+                "src/node/utils/wcsp.cpp",
                 "src/node/pki/wcrl.cpp",
                 "src/node/pki/wcrls.cpp",
                 "src/node/pki/wrevoked.cpp",

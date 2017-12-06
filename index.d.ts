@@ -450,6 +450,13 @@ declare namespace native {
             stop(): void;
             clear(): void;
         }
+        class Csp {
+            isGost2001CSPAvailable(): boolean;
+            isGost2012_256CSPAvailable(): boolean;
+            isGost2012_512CSPAvailable(): boolean;
+            checkCPCSPLicense(): boolean;
+            getCPCSPLicense(): string;
+        }
     }
     namespace COMMON {
         class OpenSSL {
@@ -763,6 +770,67 @@ declare namespace trusted.utils {
          * @memberOf Cerber
          */
         private rehash(dir, relative?);
+    }
+}
+declare namespace trusted.utils {
+    /**
+     * cryptographic service provider (CSP) helper
+     * Uses on WIN32 or with CPROCSP
+     *
+     * @export
+     * @class Csp
+     * @extends {BaseObject<native.UTILS.Csp>}
+     */
+    class Csp extends BaseObject<native.UTILS.Csp> {
+        /**
+         * Check available provaider for GOST 2001
+         *
+         * @static
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        static isGost2001CSPAvailable(): boolean;
+        /**
+         * Check available provaider for GOST 2012-256
+         *
+         * @static
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        static isGost2012_256CSPAvailable(): boolean;
+        /**
+         * Check available provaider for GOST 2012-512
+         *
+         * @static
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        static isGost2012_512CSPAvailable(): boolean;
+        /**
+         * Verify license for CryptoPro CSP
+         * Throw exception if provaider not available
+         *
+         * @static
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        static checkCPCSPLicense(): boolean;
+        /**
+         * Return instaled correct license for CryptoPro CSP
+         * Throw exception if provaider not available
+         *
+         * @static
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        static getCPCSPLicense(): string;
+        /**
+         * Creates an instance of Csp.
+         *
+         *
+         * @memberOf Csp
+         */
+        constructor();
     }
 }
 declare namespace trusted.pki {

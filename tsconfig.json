@@ -21,7 +21,7 @@
         "lib/utils/jwt.ts",
         "lib/utils/logger.ts",
         "lib/utils/cerber.ts",
-        "lib/utils/logger.ts",
+        "lib/utils/csp.ts",
         "lib/pki/key_usage.ts",
         "lib/pki/key.ts",
         "lib/pki/oid.ts",

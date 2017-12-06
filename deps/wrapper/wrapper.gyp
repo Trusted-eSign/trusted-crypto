@@ -7,6 +7,7 @@
             "sources": [
                 "src/stdafx.cpp",
                 "src/utils/jwt.cpp",
+                "src/utils/csp.cpp",
                 "src/common/bio.cpp",
                 "src/common/common.cpp",
                 "src/common/excep.cpp",

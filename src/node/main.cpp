@@ -10,6 +10,7 @@
 
 #include "utils/wlog.h"
 #include "utils/wjwt.h"
+#include "utils/wcsp.h"
 
 #include "pki/wkey.h"
 #include "pki/wcert.h"
@@ -73,6 +74,7 @@ void init(v8::Handle<v8::Object> target) {
 	target->Set(Nan::New("UTILS").ToLocalChecked(), Utils);
 	WJwt::Init(Utils);
 	WLogger::Init(Utils);
+	WCsp::Init(Utils);
 
 	v8::Local<v8::Object> Pki = Nan::New<v8::Object>();
 
