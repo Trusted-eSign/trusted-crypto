@@ -41,10 +41,10 @@
     "coveralls": "^3.0.0",
     "eslint": "^4.11.0",
     "mocha": "^4.0.1",
-    "nan": "^2.7.0",
+    "nan": "^2.8.0",
     "nyc": "^10.2.0",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1"
+    "typescript": "^2.6.2"
   },
   "author": "Trusted Plus development team"
 }
