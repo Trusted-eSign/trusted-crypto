@@ -232,6 +232,6 @@ Handle<std::string> Csp::getCPCSPLicense() {
 #endif
 	}
 	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, Csp, e, "Error check cpcsp license");
+		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp license");
 	}
 }
