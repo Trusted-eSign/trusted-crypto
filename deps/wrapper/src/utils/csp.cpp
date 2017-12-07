@@ -108,6 +108,7 @@ bool Csp::checkCPCSPLicense() {
 #ifdef CSP_ENABLE
 		static HCRYPTPROV hCryptProv = 0;
 		DWORD cbData = 0;
+		LPBYTE pbData;
 		bool res = false;
 
 		if (!isGost2001CSPAvailable()) {
@@ -124,10 +125,22 @@ bool Csp::checkCPCSPLicense() {
 			THROW_EXCEPTION(0, Key, NULL, "CryptAcquireContext. Error: %d", GetLastError());
 		}
 
-		res = CryptGetProvParam(
+		if (!CryptGetProvParam(
 			hCryptProv,
 			PP_LICENSE,
 			NULL,
+			&cbData,
+			0))
+		{
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: %d", GetLastError());
+		}
+
+		pbData = (LPBYTE)malloc(cbData);
+
+		res = CryptGetProvParam(
+			hCryptProv,
+			PP_LICENSE,
+			pbData,
 			&cbData,
 			0);
 
@@ -138,6 +151,10 @@ bool Csp::checkCPCSPLicense() {
 		}
 
 		hCryptProv = 0;
+
+		if (pbData) {
+			free((BYTE*)pbData);
+		}
 
 		return res;
 #else
