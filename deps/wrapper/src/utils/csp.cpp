@@ -187,7 +187,7 @@ Handle<std::string> Csp::getCPCSPLicense() {
 			PROV_GOST_2001_DH,
 			CRYPT_VERIFYCONTEXT))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptAcquireContext. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: %d", GetLastError());
 		}
 
 		if (!CryptGetProvParam(
@@ -233,5 +233,127 @@ Handle<std::string> Csp::getCPCSPLicense() {
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp license");
+	}
+}
+
+std::vector<ProviderProps> Csp::enumProviders() {
+	LOGGER_FN();
+
+	try {
+#ifdef CSP_ENABLE
+		std::vector<ProviderProps> res;
+		DWORD dwIndex = 0;
+		DWORD dwType;
+		DWORD cbName;
+		LPTSTR pszName;
+
+		while (CryptEnumProviders(dwIndex, NULL, 0, &dwType, NULL, &cbName))
+		{
+			if (!cbName)
+				break;
+
+			pszName = (LPTSTR)malloc(cbName);
+
+			if (!CryptEnumProviders(dwIndex++, NULL, NULL, &dwType, pszName, &cbName)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptEnumProviders. Error: %d", GetLastError());
+			}
+
+			res.push_back({ dwType, new std::string(pszName) });
+
+			if (pszName) {
+				free(pszName);
+			}
+		}
+
+		return res;
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Csp, e, "Error enum providers");
+	}
+}
+
+std::vector<Handle<std::string>> Csp::enumContainers(int provType) {
+	LOGGER_FN();
+
+	try {
+#ifdef CSP_ENABLE
+		std::vector<Handle<std::string>> res;
+		std::vector<ProviderProps> providers;
+		HCRYPTPROV hProv = 0;
+		DWORD dwIndex = 0;
+		DWORD dwType;
+		LPTSTR pszName;
+		DWORD dwFlags = CRYPT_FIRST;
+		char* pszContainerName = NULL;
+		BYTE* pbData = NULL;
+		DWORD cbName;
+		DWORD dwCount = 1;
+
+		if (!provType) {
+			providers = this->enumProviders();
+		}
+		else {
+			providers.push_back({ provType, NULL });
+		}
+
+		if (!providers.size()) {
+			THROW_EXCEPTION(0, Csp, NULL, "Empty providers list");
+		}
+
+		for (int i = 0; i < providers.size(); i++) {
+			ProviderProps provider = providers[i];
+			
+			if (!CryptAcquireContext(
+				&hProv,
+				NULL,
+				!provider.name.isEmpty() && provider.name->length() ? (LPCSTR)provider.name->c_str() : NULL,
+				provider.type,
+				CRYPT_VERIFYCONTEXT))
+			{
+				THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: %d", GetLastError());
+			}
+
+			while (CryptGetProvParam(hProv, PP_ENUMCONTAINERS, NULL, &cbName, dwFlags))
+			{
+				if (cbName == 0)
+					break;
+
+				pbData = (BYTE*)malloc(cbName);
+
+				if (!pbData) {
+					THROW_EXCEPTION(0, Csp, NULL, "malloc failure");
+				}
+
+				if (!CryptGetProvParam(hProv, PP_ENUMCONTAINERS, pbData, &cbName, dwFlags | CRYPT_FQCN)) {
+					free((void*)pbData);
+					break;
+				}
+
+				pszContainerName = (char*)pbData;
+				res.push_back(new std::string(pszContainerName));
+
+				pszContainerName = NULL;
+				free((void*)pbData);
+
+				dwFlags = CRYPT_NEXT;
+			}
+
+			if (hProv) {
+				if (!CryptReleaseContext(hProv, 0)) {
+					THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+				}
+			}
+		}
+
+		return res;
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Csp, e, "Error enum containers");
 	}
 }

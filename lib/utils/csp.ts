@@ -74,6 +74,31 @@ namespace trusted.utils {
         }
 
         /**
+         * Enumerate available CSP
+         *
+         * @static
+         * @returns {object[]} {type: nuber, name: string}
+         * @memberof Csp
+         */
+        public static enumProviders(): object[] {
+            const csp = new native.UTILS.Csp();
+            return csp.enumProviders();
+        }
+
+        /**
+         * Enumerate conainers
+         *
+         * @static
+         * @param {number} [type]
+         * @returns {string[]} Fully Qualified Container Name
+         * @memberof Csp
+         */
+        public static enumContainers(type?: number): string[] {
+            const csp = new native.UTILS.Csp();
+            return csp.enumContainers(type);
+        }
+
+        /**
          * Creates an instance of Csp.
          *
          *

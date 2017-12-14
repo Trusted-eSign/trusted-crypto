@@ -467,6 +467,8 @@ declare namespace native {
             public isGost2012_512CSPAvailable(): boolean;
             public checkCPCSPLicense(): boolean;
             public getCPCSPLicense(): string;
+            public enumProviders(): object[];
+            public enumContainers(type?: number): string[];
         }
     }
 

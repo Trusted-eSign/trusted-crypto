@@ -456,6 +456,8 @@ declare namespace native {
             isGost2012_512CSPAvailable(): boolean;
             checkCPCSPLicense(): boolean;
             getCPCSPLicense(): string;
+            enumProviders(): object[];
+            enumContainers(type?: number): string[];
         }
     }
     namespace COMMON {
@@ -824,6 +826,23 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getCPCSPLicense(): string;
+        /**
+         * Enumerate available CSP
+         *
+         * @static
+         * @returns {object[]} {type: nuber, name: string}
+         * @memberof Csp
+         */
+        static enumProviders(): object[];
+        /**
+         * Enumerate conainers
+         *
+         * @static
+         * @param {number} [type]
+         * @returns {string[]} Fully Qualified Container Name
+         * @memberof Csp
+         */
+        static enumContainers(type?: number): string[];
         /**
          * Creates an instance of Csp.
          *

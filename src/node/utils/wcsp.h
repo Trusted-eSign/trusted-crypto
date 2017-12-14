@@ -21,6 +21,9 @@ public:
 
 	static NAN_METHOD(CheckCPCSPLicense);
 	static NAN_METHOD(GetCPCSPLicense);
+
+	static NAN_METHOD(EnumProviders);
+	static NAN_METHOD(EnumContainers);
 };
 
 #endif //!UTIL_WCSP_INCLUDED 

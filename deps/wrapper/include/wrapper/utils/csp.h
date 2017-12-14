@@ -1,7 +1,14 @@
 #ifndef UTIL_CSP_INCLUDED
 #define UTIL_CSP_INCLUDED
 
+#include <vector>
+
 #include "../common/common.h"
+
+struct ProviderProps {
+	int type;
+	Handle<std::string> name;
+};
 
 class Csp {
 public:
@@ -14,6 +21,9 @@ public:
 
 	bool checkCPCSPLicense();
 	Handle<std::string> getCPCSPLicense();
+
+	std::vector<ProviderProps> enumProviders();
+	std::vector<Handle<std::string>> enumContainers(int provType = NULL);
 };
 
 #endif //!UTIL_CSP_INCLUDED 
