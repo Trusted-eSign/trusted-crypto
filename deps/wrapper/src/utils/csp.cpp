@@ -446,6 +446,7 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 #endif
 	}
 	catch (Handle<Exception> e){
+#ifdef CSP_ENABLE
 		free(pbCertificate);
 
 		if (hKey) {
@@ -460,6 +461,7 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 
 			hProv = NULL;
 		}
+#endif
 
 		THROW_EXCEPTION(0, Csp, e, "Error get certificate from container");
 	}
