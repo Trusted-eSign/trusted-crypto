@@ -361,9 +361,11 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType) {
 Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
+#ifdef CSP_ENABLE
 	HCRYPTPROV hProv = NULL;
 	HCRYPTKEY hKey = NULL;
 	BYTE* pbCertificate = NULL;
+#endif
 
 	try {
 #ifdef CSP_ENABLE
