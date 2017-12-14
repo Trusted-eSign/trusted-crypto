@@ -19,7 +19,7 @@ bool Csp::isGost2001CSPAvailable() {
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 		}
 
@@ -52,7 +52,7 @@ bool Csp::isGost2012_256CSPAvailable() {
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 		}
 
@@ -85,7 +85,7 @@ bool Csp::isGost2012_512CSPAvailable() {
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 		}
 
@@ -122,7 +122,7 @@ bool Csp::checkCPCSPLicense() {
 			PROV_GOST_2001_DH,
 			CRYPT_VERIFYCONTEXT))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptAcquireContext. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Key, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
 		}
 
 		if (!CryptGetProvParam(
@@ -132,7 +132,7 @@ bool Csp::checkCPCSPLicense() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		pbData = (LPBYTE)malloc(cbData);
@@ -146,7 +146,7 @@ bool Csp::checkCPCSPLicense() {
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 		}
 
@@ -187,7 +187,7 @@ Handle<std::string> Csp::getCPCSPLicense() {
 			PROV_GOST_2001_DH,
 			CRYPT_VERIFYCONTEXT))
 		{
-			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
 		}
 
 		if (!CryptGetProvParam(
@@ -197,7 +197,7 @@ Handle<std::string> Csp::getCPCSPLicense() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		pbData = (LPBYTE)malloc(cbData);
@@ -209,14 +209,14 @@ Handle<std::string> Csp::getCPCSPLicense() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		license = new std::string((char *)pbData);
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 		}
 
@@ -255,7 +255,7 @@ std::vector<ProviderProps> Csp::enumProviders() {
 			pszName = (LPTSTR)malloc(cbName);
 
 			if (!CryptEnumProviders(dwIndex++, NULL, NULL, &dwType, pszName, &cbName)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptEnumProviders. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptEnumProviders. Error: 0x%08x", GetLastError());
 			}
 
 			res.push_back({ dwType, new std::string(pszName) });
@@ -313,7 +313,7 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType) {
 				provider.type,
 				CRYPT_VERIFYCONTEXT))
 			{
-				THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
 			}
 
 			while (CryptGetProvParam(hProv, PP_ENUMCONTAINERS, NULL, &cbName, dwFlags))
@@ -343,7 +343,7 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType) {
 
 			if (hProv) {
 				if (!CryptReleaseContext(hProv, 0)) {
-					THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+					THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 				}
 			}
 		}
@@ -389,29 +389,30 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 			provType,
 			0))
 		{
-			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
 		}
 
 		if (!CryptGetUserKey(hProv, AT_SIGNATURE, &hKey)) {
 			CryptDestroyKey(hKey);
 
 			if (!CryptGetUserKey(hProv, AT_KEYEXCHANGE, &hKey)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptGetUserKey. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptGetUserKey. Error: 0x%08x", GetLastError());
 			}
 		}
 
 		if (!CryptGetKeyParam(hKey, KP_CERTIFICATE, NULL, &cbName, 0)) {
-			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: %d", GetLastError());
+			DWORD ee = GetLastError();
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
 		}
 
 		pbCertificate = (BYTE*)malloc(cbName);
 
 		if (!CryptGetKeyParam(hKey, KP_CERTIFICATE, pbCertificate, &cbName, 0)) {
-			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
 		}
 
 		if ((pCertContext = CertCreateCertificateContext(X509_ASN_ENCODING, pbCertificate, cbName)) == NULL) {
-			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext. Error: %d", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext. Error: 0x%08x", GetLastError());
 		}
 
 		if (pCertContext) {
@@ -434,7 +435,7 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 
 		if (hProv) {
 			if (!CryptReleaseContext(hProv, 0)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 
 			hProv = NULL;
@@ -456,7 +457,7 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 
 		if (hProv) {
 			if (!CryptReleaseContext(hProv, 0)) {
-				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 
 			hProv = NULL;
