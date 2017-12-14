@@ -99,6 +99,23 @@ namespace trusted.utils {
         }
 
         /**
+         * Get certificate by container and provider props
+         *
+         * @static
+         * @param {string} contName
+         * @param {number} provType
+         * @param {string} [provName=""]
+         * @returns {pki.Certificate}
+         * @memberof Csp
+         */
+        public static getCertifiacteFromContainer(contName: string, provType: number, provName = ""): pki.Certificate {
+            const cert: pki.Certificate = new pki.Certificate();
+            const csp = new native.UTILS.Csp();
+            cert.handle = csp.getCertifiacteFromContainer(contName, provType, provName);
+            return cert;
+        }
+
+        /**
          * Creates an instance of Csp.
          *
          *

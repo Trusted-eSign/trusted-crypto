@@ -458,6 +458,7 @@ declare namespace native {
             getCPCSPLicense(): string;
             enumProviders(): object[];
             enumContainers(type?: number): string[];
+            getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
         }
     }
     namespace COMMON {
@@ -843,6 +844,7 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static enumContainers(type?: number): string[];
+        static getCertifiacteFromContainer(contName: string, provType: number, provName?: string): pki.Certificate;
         /**
          * Creates an instance of Csp.
          *

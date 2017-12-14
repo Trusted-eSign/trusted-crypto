@@ -1,6 +1,8 @@
 #include "../stdafx.h"
 
 #include "wcsp.h"
+#include "../pki/wcert.h"
+#include "../helper.h"
 
 void WCsp::Init(v8::Handle<v8::Object> exports) {
 	METHOD_BEGIN();
@@ -22,7 +24,8 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 
 	Nan::SetPrototypeMethod(tpl, "enumProviders", EnumProviders);
 	Nan::SetPrototypeMethod(tpl, "enumContainers", EnumContainers);
-
+	Nan::SetPrototypeMethod(tpl, "getCertifiacteFromContainer", GetCertifiacteFromContainer);
+	
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 
@@ -168,6 +171,32 @@ NAN_METHOD(WCsp::EnumContainers)
 		}
 
 		info.GetReturnValue().Set(array8);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::GetCertifiacteFromContainer)
+{
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Csp);
+
+		LOGGER_ARG("container");
+		v8::String::Utf8Value v8Cont(info[0]->ToString());
+		char *cont = *v8Cont;
+
+		LOGGER_ARG("type");
+		int type = info[1]->ToNumber()->Int32Value();
+
+		LOGGER_ARG("provider");
+		v8::String::Utf8Value v8Prov(info[2]->ToString());
+		char *provName = *v8Prov;
+
+		Handle<Certificate> cert = _this->getCertifiacteFromContainer(new std::string(cont), type, new std::string(provName));
+		v8::Local<v8::Object> v8Cert = WCertificate::NewInstance(cert);
+		info.GetReturnValue().Set(v8Cert);
 		return;
 	}
 	TRY_END();

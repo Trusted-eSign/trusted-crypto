@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../common/common.h"
+#include "../pki/cert.h"
 
 struct ProviderProps {
 	int type;
@@ -24,6 +25,7 @@ public:
 
 	std::vector<ProviderProps> enumProviders();
 	std::vector<Handle<std::string>> enumContainers(int provType = NULL);
+	Handle<Certificate> getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 };
 
 #endif //!UTIL_CSP_INCLUDED 

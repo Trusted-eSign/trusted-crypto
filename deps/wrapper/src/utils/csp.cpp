@@ -357,3 +357,108 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType) {
 		THROW_EXCEPTION(0, Csp, e, "Error enum containers");
 	}
 }
+
+Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
+	LOGGER_FN();
+
+	HCRYPTPROV hProv = NULL;
+	HCRYPTKEY hKey = NULL;
+	BYTE* pbCertificate = NULL;
+
+	try {
+#ifdef CSP_ENABLE
+		DWORD cbName;
+		PCCERT_CONTEXT pCertContext;
+		X509 *hcert = NULL;
+		const unsigned char *p;
+
+		if (contName.isEmpty()) {
+			THROW_EXCEPTION(0, Csp, NULL, "container name epmty");
+		}
+
+		if (!provType) {
+			THROW_EXCEPTION(0, Csp, NULL, "provider type not set");
+		}
+
+		if (!CryptAcquireContext(
+			&hProv,
+			contName->c_str(),
+			!provName.isEmpty() && provName->length() ? (LPCSTR)provName->c_str() : NULL,
+			provType,
+			0))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: %d", GetLastError());
+		}
+
+		if (!CryptGetUserKey(hProv, AT_SIGNATURE, &hKey)) {
+			CryptDestroyKey(hKey);
+
+			if (!CryptGetUserKey(hProv, AT_KEYEXCHANGE, &hKey)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptGetUserKey. Error: %d", GetLastError());
+			}
+		}
+
+		if (!CryptGetKeyParam(hKey, KP_CERTIFICATE, NULL, &cbName, 0)) {
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: %d", GetLastError());
+		}
+
+		pbCertificate = (BYTE*)malloc(cbName);
+
+		if (!CryptGetKeyParam(hKey, KP_CERTIFICATE, pbCertificate, &cbName, 0)) {
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: %d", GetLastError());
+		}
+
+		if ((pCertContext = CertCreateCertificateContext(X509_ASN_ENCODING, pbCertificate, cbName)) == NULL) {
+			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext. Error: %d", GetLastError());
+		}
+
+		if (pCertContext) {
+			p = pCertContext->pbCertEncoded;
+
+			LOGGER_OPENSSL(d2i_X509);
+			if (!(hcert = d2i_X509(NULL, &p, pCertContext->cbCertEncoded))) {
+				THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "'d2i_X509' Error decode len bytes");
+			}
+		} else {
+			THROW_EXCEPTION(0, Csp, NULL, "Cannot find certificate in store");
+		}
+
+		free(pbCertificate);
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+
+		return new Certificate(hcert);
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+		free(pbCertificate);
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: %d", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+
+		THROW_EXCEPTION(0, Csp, e, "Error get certificate from container");
+	}
+}
