@@ -22,9 +22,17 @@
 #define SIZEOF_VOID_P 4
 #endif
 
+#ifdef CPROCSP
 #undef HAVE_CONFIG_H // CSP headers includes myconfig.h if HAVE_CONFIG_H is defined
-//#include <cpcsp/WinCryptEx.h>
-#endif // !_WIN32
+#include <cpcsp/WinCryptEx.h>
+#include <cpcsp/CSP_WinDef.h>
+#define CSP_BOOL BOOL
+#endif
+#endif // !_WIN32                        //added
+
+#if defined(_WIN32) || (!defined(_WIN32) && defined(CPROCSP))
+#define CSP_ENABLE
+#endif
 
 #define X509_NAME_wincrypt X509_NAME
 #undef X509_NAME

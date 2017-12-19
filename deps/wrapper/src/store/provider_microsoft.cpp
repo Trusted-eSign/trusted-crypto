@@ -492,10 +492,28 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 	try{
 		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
 		HCERTSTORE hCertStore = HCRYPT_NULL;
+		CRYPT_KEY_PROV_INFO* pKeyInfo = NULL;
+		DWORD dwSize = 0;
 
 		std::wstring wCategory = std::wstring(category->begin(), category->end());
 
 		pCertContext = createCertificateContext(cert);
+
+		pKeyInfo = (CRYPT_KEY_PROV_INFO *)malloc(sizeof(CRYPT_KEY_PROV_INFO));
+
+		if (!pKeyInfo) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Error allocating memory for pKeyInfo");
+		}
+
+		if (!CertSetCertificateContextProperty(
+			pCertContext,
+			CERT_KEY_PROV_INFO_PROP_ID,
+			CERT_STORE_NO_CRYPT_RELEASE_FLAG,
+			pKeyInfo
+			))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertSetCertificateContextProperty failed: %s Code: 0x%08x", category->c_str(), GetLastError());
+		};
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
 			CERT_STORE_PROV_SYSTEM_REGISTRY,
@@ -517,10 +535,12 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
 		}
 
-		CertCloseStore(hCertStore, 0);
-		hCertStore = HCRYPT_NULL;
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
 
-		if (cert->isSelfSigned() && (strcmp(category->c_str(), "ROOT") != 0)) {
+		/*if (cert->isSelfSigned() && (strcmp(category->c_str(), "ROOT") != 0)) {
 			if (HCRYPT_NULL == (hCertStore = CertOpenStore(
 				CERT_STORE_PROV_SYSTEM_REGISTRY,
 				X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
@@ -543,10 +563,16 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 
 			CertCloseStore(hCertStore, 0);
 			hCertStore = HCRYPT_NULL;
+		}*/
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
 		}
 
-		CertFreeCertificateContext(pCertContext);
-		pCertContext = HCRYPT_NULL;	
+		if (pKeyInfo) {
+			free(pKeyInfo);
+		}	
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error add certificate to store");

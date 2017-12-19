@@ -25,6 +25,7 @@ public:
 	static NAN_METHOD(EnumProviders);
 	static NAN_METHOD(EnumContainers);
 	static NAN_METHOD(GetCertifiacteFromContainer);
+	static NAN_METHOD(InstallCertifiacteFromContainer);
 };
 
 #endif //!UTIL_WCSP_INCLUDED 

@@ -468,8 +468,9 @@ declare namespace native {
             public checkCPCSPLicense(): boolean;
             public getCPCSPLicense(): string;
             public enumProviders(): object[];
-            public enumContainers(type?: number): string[];
+            public enumContainers(type?: number, provName?: string): string[];
             public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
+            public installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
         }
     }
 

@@ -24,6 +24,7 @@
 #ifdef CPROCSP
 #undef HAVE_CONFIG_H // CSP headers includes myconfig.h if HAVE_CONFIG_H is defined
 #include <cpcsp/WinCryptEx.h>
+#include <cpcsp/CSP_WinDef.h>
 #define CSP_BOOL BOOL
 #endif
 

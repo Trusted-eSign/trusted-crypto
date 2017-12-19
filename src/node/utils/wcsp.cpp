@@ -1,4 +1,4 @@
-#include "../stdafx.h"
+﻿#include "../stdafx.h"
 
 #include "wcsp.h"
 #include "../pki/wcert.h"
@@ -25,6 +25,7 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "enumProviders", EnumProviders);
 	Nan::SetPrototypeMethod(tpl, "enumContainers", EnumContainers);
 	Nan::SetPrototypeMethod(tpl, "getCertifiacteFromContainer", GetCertifiacteFromContainer);
+	Nan::SetPrototypeMethod(tpl, "installCertifiacteFromContainer", InstallCertifiacteFromContainer);
 	
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -160,14 +161,18 @@ NAN_METHOD(WCsp::EnumContainers)
 			type = info[0]->ToNumber()->Int32Value();
 		}
 
-		std::vector<Handle<std::string>> res = _this->enumContainers(type);
+		LOGGER_ARG("name");
+		v8::String::Utf8Value v8Prov(info[1]->ToString());
+		char *provName = *v8Prov;
+
+		std::vector<std::wstring> res = _this->enumContainers(type, new std::string(provName));
 
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
 		for (int i = 0; i < res.size(); i++){
-			array8->Set(i, v8::String::NewFromUtf8(isolate, res[i]->c_str()));
+			array8->Set(i, v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (const uint16_t *)res[i].c_str(), v8::String::kNormalString, res[i].size()));
 		}
 
 		info.GetReturnValue().Set(array8);
@@ -181,11 +186,15 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 	METHOD_BEGIN();
 
 	try{
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
-		v8::String::Utf8Value v8Cont(info[0]->ToString());
-		char *cont = *v8Cont;
+		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
+
+		int string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, NULL, 0, NULL, NULL);
+		char* converted = (char*)LocalAlloc(LMEM_ZEROINIT, string_len);
+		string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, converted, string_len, NULL, NULL);
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -194,10 +203,46 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 		v8::String::Utf8Value v8Prov(info[2]->ToString());
 		char *provName = *v8Prov;
 
-		Handle<Certificate> cert = _this->getCertifiacteFromContainer(new std::string(cont), type, new std::string(provName));
+		Handle<Certificate> cert = _this->getCertifiacteFromContainer(new std::string(converted), type, new std::string(provName));
 		v8::Local<v8::Object> v8Cert = WCertificate::NewInstance(cert);
 		info.GetReturnValue().Set(v8Cert);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
+{
+	METHOD_BEGIN();
+
+	try{
+#ifdef CSP_ENABLE
+		UNWRAP_DATA(Csp);
+
+		LOGGER_ARG("container");
+		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
+
+		int string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, NULL, 0, NULL, NULL);
+		char* converted = (char*)LocalAlloc(LMEM_ZEROINIT, string_len);
+		string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, converted, string_len, NULL, NULL);
+
+		LOGGER_ARG("type");
+		int type = info[1]->ToNumber()->Int32Value();
+
+		LOGGER_ARG("provider");
+		v8::String::Utf8Value v8Prov(info[2]->ToString());
+		char *provName = *v8Prov;
+
+		_this->installCertifiacteFromContainer(new std::string(converted), type, new std::string(provName));
+
+		info.GetReturnValue().Set(info.This());
+		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }

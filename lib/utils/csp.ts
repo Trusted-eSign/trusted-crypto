@@ -93,9 +93,9 @@ namespace trusted.utils {
          * @returns {string[]} Fully Qualified Container Name
          * @memberof Csp
          */
-        public static enumContainers(type?: number): string[] {
+        public static enumContainers(type: null, provName = ""): string[] {
             const csp = new native.UTILS.Csp();
-            return csp.enumContainers(type);
+            return csp.enumContainers(type, provName);
         }
 
         /**
@@ -113,6 +113,12 @@ namespace trusted.utils {
             const csp = new native.UTILS.Csp();
             cert.handle = csp.getCertifiacteFromContainer(contName, provType, provName);
             return cert;
+        }
+
+        public static installCertifiacteFromContainer(contName: string, provType: number, provName = ""): void {
+            const csp = new native.UTILS.Csp();
+            csp.installCertifiacteFromContainer(contName, provType, provName);
+            return;
         }
 
         /**

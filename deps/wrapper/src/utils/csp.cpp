@@ -1,4 +1,4 @@
-#include "../stdafx.h"
+﻿#include "../stdafx.h"
 
 #include "wrapper/utils/csp.h"
 
@@ -258,7 +258,7 @@ std::vector<ProviderProps> Csp::enumProviders() {
 				THROW_EXCEPTION(0, Csp, NULL, "CryptEnumProviders. Error: 0x%08x", GetLastError());
 			}
 
-			res.push_back({ dwType, new std::string(pszName) });
+			res.push_back({ (int)dwType, new std::string(pszName) });
 
 			if (pszName) {
 				free(pszName);
@@ -275,12 +275,12 @@ std::vector<ProviderProps> Csp::enumProviders() {
 	}
 }
 
-std::vector<Handle<std::string>> Csp::enumContainers(int provType) {
+std::vector<std::wstring> Csp::enumContainers(int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
 	try {
 #ifdef CSP_ENABLE
-		std::vector<Handle<std::string>> res;
+		std::vector<std::wstring> res;
 		std::vector<ProviderProps> providers;
 		HCRYPTPROV hProv = 0;
 		DWORD dwIndex = 0;
@@ -296,7 +296,7 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType) {
 			providers = this->enumProviders();
 		}
 		else {
-			providers.push_back({ provType, NULL });
+			providers.push_back({ provType, provName });
 		}
 
 		if (!providers.size()) {
@@ -333,7 +333,22 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType) {
 				}
 
 				pszContainerName = (char*)pbData;
-				res.push_back(new std::string(pszContainerName));
+
+				size_t value_len = strlen(pszContainerName);
+				size_t wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)pszContainerName, value_len, NULL, 0);
+				if (!wide_string_len) {
+					THROW_EXCEPTION(0, Csp, NULL, "MultiByteToWideChar() failed");
+				}
+
+				wchar_t* wide_buf = (wchar_t*)LocalAlloc(LMEM_ZEROINIT, (wide_string_len + 1) * sizeof(wchar_t));
+				wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)pszContainerName, value_len, (LPWSTR)wide_buf, wide_string_len);
+
+				if (!wide_string_len) {
+					LocalFree(wide_buf);
+					THROW_EXCEPTION(0, Csp, NULL, "MultiByteToWideChar() failed");
+				}
+
+				res.push_back(wide_buf);
 
 				pszContainerName = NULL;
 				free((void*)pbData);
@@ -370,7 +385,9 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 	try {
 #ifdef CSP_ENABLE
 		DWORD cbName;
+		DWORD dwKeySpec;
 		PCCERT_CONTEXT pCertContext;
+		HCERTSTORE hCertStore = HCRYPT_NULL;
 		X509 *hcert = NULL;
 		const unsigned char *p;
 
@@ -398,6 +415,12 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 			if (!CryptGetUserKey(hProv, AT_KEYEXCHANGE, &hKey)) {
 				THROW_EXCEPTION(0, Csp, NULL, "CryptGetUserKey. Error: 0x%08x", GetLastError());
 			}
+			else {
+				dwKeySpec = AT_KEYEXCHANGE;
+			}
+		}
+		else {
+			dwKeySpec = AT_SIGNATURE;
 		}
 
 		if (!CryptGetKeyParam(hKey, KP_CERTIFICATE, NULL, &cbName, 0)) {
@@ -465,5 +488,162 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 #endif
 
 		THROW_EXCEPTION(0, Csp, e, "Error get certificate from container");
+	}
+}
+
+void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
+	LOGGER_FN();
+
+#ifdef CSP_ENABLE
+	HCRYPTPROV hProv = NULL;
+	HCRYPTKEY hKey = NULL;
+	BYTE* pbCertificate = NULL;
+#endif
+
+	try {
+#ifdef CSP_ENABLE
+		DWORD cbName;
+		DWORD dwKeySpec;
+		PCCERT_CONTEXT pCertContext;
+		HCERTSTORE hCertStore = HCRYPT_NULL;
+		CRYPT_KEY_PROV_INFO pKeyInfo = { 0 };
+
+		if (contName.isEmpty()) {
+			THROW_EXCEPTION(0, Csp, NULL, "container name epmty");
+		}
+
+		if (!provType) {
+			THROW_EXCEPTION(0, Csp, NULL, "provider type not set");
+		}
+
+		if (!CryptAcquireContext(
+			&hProv,
+			contName->c_str(),
+			!provName.isEmpty() && provName->length() ? (LPCSTR)provName->c_str() : NULL,
+			provType,
+			0))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+		}
+
+		if (!CryptGetUserKey(hProv, AT_SIGNATURE, &hKey)) {
+			CryptDestroyKey(hKey);
+
+			if (!CryptGetUserKey(hProv, AT_KEYEXCHANGE, &hKey)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptGetUserKey. Error: 0x%08x", GetLastError());
+			}
+			else {
+				dwKeySpec = AT_KEYEXCHANGE;
+			}
+		}
+		else {
+			dwKeySpec = AT_SIGNATURE;
+		}
+
+		if (!CryptGetKeyParam(hKey, KP_CERTIFICATE, NULL, &cbName, 0)) {
+			DWORD ee = GetLastError();
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
+		}
+
+		pbCertificate = (BYTE*)malloc(cbName);
+
+		if (!CryptGetKeyParam(hKey, KP_CERTIFICATE, pbCertificate, &cbName, 0)) {
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
+		}
+
+		if ((pCertContext = CertCreateCertificateContext(X509_ASN_ENCODING, pbCertificate, cbName)) == NULL) {
+			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext. Error: 0x%08x", GetLastError());
+		}
+
+		size_t value_len = strlen(contName->c_str());
+		size_t wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)contName->c_str(), value_len, NULL, 0);
+
+		wchar_t* wide_buf = (wchar_t*)LocalAlloc(LMEM_ZEROINIT, (wide_string_len + 1) * sizeof(wchar_t));
+		wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)contName->c_str(), value_len, (LPWSTR)wide_buf, wide_string_len);
+
+		pKeyInfo.dwKeySpec = dwKeySpec;
+		pKeyInfo.dwProvType = provType;
+		pKeyInfo.pwszContainerName = wide_buf;
+		pKeyInfo.pwszProvName = !provName.isEmpty() && provName->length() ? (LPWSTR)provName->c_str() : NULL;
+
+		if (!CertSetCertificateContextProperty(
+			pCertContext,
+			CERT_KEY_PROV_INFO_PROP_ID,
+			CERT_STORE_NO_CRYPT_RELEASE_FLAG,
+			&pKeyInfo
+			))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CertSetCertificateContextProperty: Code: %d", GetLastError());
+		};
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM_REGISTRY,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER,
+			L"MY")))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CertOpenStore failed: Code: %d", GetLastError());
+		}
+
+		if (!CertAddCertificateContextToStore(
+			hCertStore,
+			pCertContext,
+			CERT_STORE_ADD_REPLACE_EXISTING,
+			NULL
+			))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
+		}
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		free(pbCertificate);
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+
+		return;
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+#ifdef CSP_ENABLE
+		free(pbCertificate);
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+#endif
+
+		THROW_EXCEPTION(0, Csp, e, "Error install certificate from container");
 	}
 }
