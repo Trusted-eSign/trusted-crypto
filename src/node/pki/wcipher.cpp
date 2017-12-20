@@ -85,28 +85,63 @@ NAN_METHOD(WCipher::Encrypt) {
 	METHOD_BEGIN();
 
 	try {
-		LOGGER_ARG("filenameSource");
-		v8::String::Utf8Value v8FilenameSource(info[0]->ToString());
-		char *filenameSource = *v8FilenameSource;
+		Handle<Bio> inputbuffer;
+		Handle<Bio> outputbuffer;
 
-		LOGGER_ARG("filenameEnc");
-		v8::String::Utf8Value v8FilenameEnc(info[1]->ToString());
-		char *filenameEnc = *v8FilenameEnc;
+		if (info[0]->IsString()){
+			LOGGER_ARG("source");
+			v8::String::Utf8Value v8FilenameSource(info[0]->ToString());
+			BIO *pInputbuffer = BIO_new_file(*v8FilenameSource, "rb");
+			if (!pInputbuffer){
+				Nan::ThrowError("File not found");
+				return;
+			}
+			inputbuffer = new Bio(pInputbuffer);
+		} else{ 
+			LOGGER_ARG("source");
+			v8::Local<v8::Object> v8Inputbuffer = info[0]->ToObject();
+			BIO *pInputbuffer = BIO_new_mem_buf(node::Buffer::Data(v8Inputbuffer), node::Buffer::Length(v8Inputbuffer));
+			inputbuffer = new Bio(pInputbuffer);
+		}
+
+		if  (info[1]->IsString()){
+			LOGGER_ARG("destinationEnc");
+			v8::String::Utf8Value v8FilenameEnc(info[1]->ToString());
+			BIO *pOutputbuffer = BIO_new_file(*v8FilenameEnc, "wb");
+			if (!pOutputbuffer){
+				Nan::ThrowError("File not found");
+				return;
+			}
+			outputbuffer = new Bio(pOutputbuffer);
+		}
+		else{ 
+			LOGGER_ARG("destinationEnc");
+			BIO *pOutputbuffer = BIO_new(BIO_s_mem());
+			outputbuffer = new Bio(pOutputbuffer);
+		}
 
 		LOGGER_ARG("format");
 		int format = info[2]->ToNumber()->Int32Value();
 
-		Handle<Bio> inSource = NULL;
-		Handle<Bio> outEnc = NULL;
-
-		inSource = new Bio(BIO_TYPE_FILE, filenameSource, "rb");
-		outEnc = new Bio(BIO_TYPE_FILE, filenameEnc, "wb");
-
 		UNWRAP_DATA(Cipher);
 
-		_this->encrypt(inSource, outEnc, DataFormat::get(format));
+		Handle<Bio> encBio = _this->encrypt(inputbuffer, outputbuffer, DataFormat::get(format));
 
-		info.GetReturnValue().Set(info.This());
+		if (info[1]->IsString()){
+			info.GetReturnValue().Set(info.This());
+		} else{
+			char *bptr; 
+			long len;
+			len = BIO_get_mem_data(encBio->internal(), &bptr);
+			BIO *pOutputBio = BIO_new_mem_buf(bptr, len);
+			Handle<Bio> outputBio = new Bio(pOutputBio);
+			Handle<std::string> resStr = outputBio->read();
+
+			std::string result = encBase64(resStr->c_str());
+			v8::Local<v8::String> v8ResStr = Nan::New<v8::String>(result).ToLocalChecked();
+
+			info.GetReturnValue().Set(v8ResStr);
+		}
 		return;
 	}
 	TRY_END();
@@ -116,30 +151,63 @@ NAN_METHOD(WCipher::Decrypt) {
 	METHOD_BEGIN();
 
 	try {
-		LOGGER_ARG("filenameEnc");
-		v8::String::Utf8Value v8FilenameEnc(info[0]->ToString());
-		char *filenameEnc = *v8FilenameEnc;
+		Handle<Bio> inputbuffer = NULL;
+		Handle<Bio> outputbuffer;
+		if (info[0]->IsString()){
+			LOGGER_ARG("sourceEnc");
+			v8::String::Utf8Value v8FilenameSource(info[0]->ToString());
+			char *filenameSource = *v8FilenameSource;
+			inputbuffer = new Bio(BIO_TYPE_FILE, filenameSource, "rb");
+		}else{
+			LOGGER_ARG("sourceEnc");
+			v8::Local<v8::Object> v8Inputbuffer = info[0]->ToObject();
+			BIO *pInputbuffer1 = BIO_new_mem_buf(node::Buffer::Data(v8Inputbuffer), node::Buffer::Length(v8Inputbuffer));
+			Handle<Bio> inputbuffer1 = new Bio(pInputbuffer1);
+			Handle<std::string> resStr = inputbuffer1->read();
 
-		LOGGER_ARG("filenameDec");
-		v8::String::Utf8Value v8FilenameDec(info[1]->ToString());
-		char *filenameDec = *v8FilenameDec;
+			std::string buffer = decBase64(resStr->c_str());
 
-		Handle<Bio> inEnc = NULL;
-		Handle<Bio> outDec = NULL;
-
-		inEnc = new Bio(BIO_TYPE_FILE, filenameEnc, "rb");
-		outDec = new Bio(BIO_TYPE_FILE, filenameDec, "wb");
-
+			BIO *pInputbuffer = BIO_new_mem_buf(buffer.c_str(), buffer.length());
+			inputbuffer = new Bio(pInputbuffer);
+		}
+		
+		if (info[1]->IsString()){
+			LOGGER_ARG("destinationDec");
+			v8::String::Utf8Value v8FilenameEnc(info[1]->ToString());
+			char *filenameEnc = *v8FilenameEnc;
+			outputbuffer = new Bio(BIO_TYPE_FILE, filenameEnc, "wb");
+		}
+		else{
+			LOGGER_ARG("destinationDec");
+			BIO *pOutputbuffer = BIO_new(BIO_s_mem());
+			outputbuffer = new Bio(pOutputbuffer);
+		}
+		
 		LOGGER_ARG("format");
-		DataFormat::DATA_FORMAT format = (info[1]->IsUndefined() || !info[1]->IsNumber()) ?
-			getCmsFileType(inEnc) :
-			DataFormat::get(info[1]->ToNumber()->Int32Value());
 
+		DataFormat::DATA_FORMAT format;
+		if (info[0]->IsString()){
+			format = (info[1]->IsUndefined() || !info[1]->IsNumber()) ?	getCmsFileType(inputbuffer) : DataFormat::get(info[1]->ToNumber()->Int32Value());
+		} else {
+			format = DataFormat::BASE64;
+		}
 		UNWRAP_DATA(Cipher);
+		
+		Handle<Bio> result = _this->decrypt(inputbuffer, outputbuffer, format);
 
-		_this->decrypt(inEnc, outDec, format);
-
-		info.GetReturnValue().Set(info.This());
+		if (info[1]->IsString()){
+			info.GetReturnValue().Set(info.This());
+		} else {
+			char *bptr; 
+			long len;
+			len = BIO_get_mem_data(result->internal(), &bptr);
+			BIO *outputQwerty = BIO_new_mem_buf(bptr, len);
+			Handle<Bio> outputScrin = new Bio(outputQwerty);
+			Handle<std::string> resStr = outputScrin->read();
+			
+			v8::Local<v8::String> v8ResStr = Nan::New<v8::String>(resStr->c_str()).ToLocalChecked();
+			info.GetReturnValue().Set(v8ResStr);
+		}
 		return;
 	}
 	TRY_END();

@@ -2,6 +2,16 @@
 /// <reference path="../object.ts" />
 
 namespace trusted.pki {
+
+    export enum CipherContentType {
+        url,
+        buffer,
+    }
+
+    export interface ICipherContent {
+        type: CipherContentType;
+        data: string | Buffer;
+    }
     /**
      * Encrypt and decrypt operations
      *
@@ -42,8 +52,21 @@ namespace trusted.pki {
          *
          * @memberOf Cipher
          */
-        public encrypt(filenameSource: string, filenameEnc: string, format: DataFormat): void {
-            this.handle.encrypt(filenameSource, filenameEnc, format);
+        public encrypt(source: ICipherContent, destinationEnc: ICipherContent, format: DataFormat): string {
+            let sourceData: any;
+            let destinationData: any;
+
+            if (source.type === CipherContentType.url)
+                sourceData = source.data.toString();  
+            else 
+                sourceData = new Buffer(source.data.valueOf() as any);              
+
+            if (destinationEnc.type === CipherContentType.url)
+                destinationData = destinationEnc.data.toString();
+            else
+                destinationData = new Buffer(destinationEnc.data.valueOf() as any);            
+
+            return this.handle.encrypt(sourceData, destinationData, format);
         }
 
         /**
@@ -55,8 +78,20 @@ namespace trusted.pki {
          *
          * @memberOf Cipher
          */
-        public decrypt(filenameEnc: string, filenameDec: string, format?: DataFormat): void {
-            this.handle.decrypt(filenameEnc, filenameDec, format);
+        public decrypt(sourceEnc: ICipherContent, destinationDec: ICipherContent, format: DataFormat): string {
+            let sourceData: any;
+            let destinationData: any;
+            if (sourceEnc.type === CipherContentType.url)
+                sourceData = sourceEnc.data.toString();
+            else 
+                sourceData = new Buffer(sourceEnc.data.valueOf() as any);
+            
+            if (destinationDec.type === CipherContentType.url)
+                destinationData = destinationDec.data.toString();
+            else
+                destinationData = new Buffer(destinationDec.data.valueOf() as any);
+                
+            return this.handle.decrypt(sourceData, destinationData, format);
         }
 
         /**
