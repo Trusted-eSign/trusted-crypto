@@ -145,7 +145,7 @@ describe("CipherASSYMETRIC", function() {
         ris = cipher.getRecipientInfos(DEFAULT_OUT_PATH + "/encAssym.txt", trusted.DataFormat.PEM);
         assert.equal(ris.length, 2, "Recipients length 2");
 
-        ri = ris.items(1);
+        ri = ris.items(0);
         if (ri.serialNumber === "FD7CF8FC52A1D181") {
             assert.equal(ri.issuerName, "/2.5.4.6=RU/2.5.4.8=Mari El/2.5.4.7=Yoshkar-Ola/2.5.4.10=Cifrovie Tehnologii/2.5.4.3=Test certificate/1.2.840.113549.1.9.1= trusted@digt.ru", "Error issuer name");
             assert.equal(ri.serialNumber, "FD7CF8FC52A1D181", "Error serial number");
@@ -158,7 +158,7 @@ describe("CipherASSYMETRIC", function() {
             assert.equal(ri.ktriCertCmp(trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/test.crt", trusted.DataFormat.DER)) === 0, true, "Compare recipient cert");
         }
 
-        ri = ris.items(0);
+        ri = ris.items(1);
         assert.equal(typeof (ri.issuerName), "string", "Error issuer name");
         assert.equal(typeof (ri.serialNumber), "string", "Error serial number");
     });
@@ -170,7 +170,7 @@ describe("CipherASSYMETRIC", function() {
 
         for (var j = 0; j < ris.length; j++) {
             ri = ris.items(j);
-            if (ri.issuerName === "/2.5.4.6=IL/2.5.4.10=StartCom Ltd./2.5.4.11=Secure Digital Certificate Signing/2.5.4.3=StartCom Certification Authority", "Error issuer name") {
+            if (ri.issuerName === "/2.5.4.6=RU/2.5.4.8=Mari El/2.5.4.7=Yoshkar-Ola/2.5.4.10=Cifrovie Tehnologii/2.5.4.3=Test certificate/1.2.840.113549.1.9.1= trusted@digt.ru", "Error issuer name") {
                 break;
             }
         }
