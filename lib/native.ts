@@ -161,7 +161,7 @@ declare namespace native {
             url,
             buffer,
         }
-    
+
         export interface ICipherContent {
             type: CipherContentType;
             data: string | Buffer;
@@ -171,7 +171,7 @@ declare namespace native {
             constructor();
             public setCryptoMethod(method: trusted.CryptoMethod): void;
             public encrypt(source: ICipherContent, destinationEnc: ICipherContent, format: trusted.DataFormat): string;
-            public decrypt(sourceEnc: ICipherContent, destinationDec: ICipherContent, format?: trusted.DataFormat): string;
+            public decrypt(sourceEnc: ICipherContent, destDec: ICipherContent, format?: trusted.DataFormat): string;
             public addRecipientsCerts(certs: CertificateCollection): void;
             public setPrivKey(rkey: Key): void;
             public setRecipientCert(rcert: Certificate): void;
@@ -477,6 +477,10 @@ declare namespace native {
             public isGost2012_512CSPAvailable(): boolean;
             public checkCPCSPLicense(): boolean;
             public getCPCSPLicense(): string;
+            public enumProviders(): object[];
+            public enumContainers(type?: number, provName?: string): string[];
+            public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
+            public installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
         }
     }
 

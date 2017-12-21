@@ -151,8 +151,9 @@ NAN_METHOD(WCipher::Decrypt) {
 	METHOD_BEGIN();
 
 	try {
-		Handle<Bio> inputbuffer = NULL;
+		Handle<Bio> inputbuffer;
 		Handle<Bio> outputbuffer;
+
 		if (info[0]->IsString()){
 			LOGGER_ARG("sourceEnc");
 			v8::String::Utf8Value v8FilenameSource(info[0]->ToString());
@@ -172,13 +173,13 @@ NAN_METHOD(WCipher::Decrypt) {
 		}
 		
 		if (info[1]->IsString()){
-			LOGGER_ARG("destinationDec");
+			LOGGER_ARG("destDec");
 			v8::String::Utf8Value v8FilenameEnc(info[1]->ToString());
 			char *filenameEnc = *v8FilenameEnc;
 			outputbuffer = new Bio(BIO_TYPE_FILE, filenameEnc, "wb");
 		}
 		else{
-			LOGGER_ARG("destinationDec");
+			LOGGER_ARG("destDec");
 			BIO *pOutputbuffer = BIO_new(BIO_s_mem());
 			outputbuffer = new Bio(pOutputbuffer);
 		}

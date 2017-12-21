@@ -38,6 +38,7 @@ describe("CipherSYMMETRIC", function() {
             type: trusted.pki.CipherContentType.url,
             data: DEFAULT_OUT_PATH + "/encSym.txt"
         };
+
         cipher.encrypt(inp, outp);
     });
 
@@ -50,6 +51,7 @@ describe("CipherSYMMETRIC", function() {
             type: trusted.pki.CipherContentType.url,
             data: DEFAULT_OUT_PATH + "/decSym.txt"
         };
+
         cipher.decrypt(inp, outp);
 
         var res = fs.readFileSync(DEFAULT_RESOURCES_PATH + "/test.txt");
@@ -60,6 +62,7 @@ describe("CipherSYMMETRIC", function() {
 
     var encStr;
     var inputStr = "Text Текст 1234 !@#$%^&*()_+?";
+
     it("encrypt string", function() {
         encStr = "";
         cipher.digest = "MD5";
@@ -70,8 +73,9 @@ describe("CipherSYMMETRIC", function() {
         };
         var outp = {
             type: trusted.pki.CipherContentType.buffer,
-            data: ""
+            data: "test/out/encSym.txt"
         };
+
         encStr = cipher.encrypt(inp, outp);
     });
 
@@ -82,7 +86,7 @@ describe("CipherSYMMETRIC", function() {
         };
         var outp = {
             type: trusted.pki.CipherContentType.buffer,
-            data: ""
+            data: "test/out/decSym.txt"
         };
         var decStr = cipher.decrypt(inp, outp);
 
@@ -121,6 +125,7 @@ describe("CipherASSYMETRIC", function() {
             type: trusted.pki.CipherContentType.url,
             data: DEFAULT_OUT_PATH + "/encAssym.txt"
         };
+
         cipher.encrypt(inp, outp, trusted.DataFormat.PEM);
     });
 
