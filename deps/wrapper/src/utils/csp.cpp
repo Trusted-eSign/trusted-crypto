@@ -275,12 +275,12 @@ std::vector<ProviderProps> Csp::enumProviders() {
 	}
 }
 
-std::vector<std::wstring> Csp::enumContainers(int provType, Handle<std::string> provName) {
+std::vector<Handle<std::string>> Csp::enumContainers(int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
 	try {
 #ifdef CSP_ENABLE
-		std::vector<std::wstring> res;
+		std::vector<Handle<std::string>> res;
 		std::vector<ProviderProps> providers;
 		HCRYPTPROV hProv = 0;
 		DWORD dwIndex = 0;
@@ -334,21 +334,7 @@ std::vector<std::wstring> Csp::enumContainers(int provType, Handle<std::string> 
 
 				pszContainerName = (char*)pbData;
 
-				size_t value_len = strlen(pszContainerName);
-				size_t wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)pszContainerName, value_len, NULL, 0);
-				if (!wide_string_len) {
-					THROW_EXCEPTION(0, Csp, NULL, "MultiByteToWideChar() failed");
-				}
-
-				wchar_t* wide_buf = (wchar_t*)LocalAlloc(LMEM_ZEROINIT, (wide_string_len + 1) * sizeof(wchar_t));
-				wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)pszContainerName, value_len, (LPWSTR)wide_buf, wide_string_len);
-
-				if (!wide_string_len) {
-					LocalFree(wide_buf);
-					THROW_EXCEPTION(0, Csp, NULL, "MultiByteToWideChar() failed");
-				}
-
-				res.push_back(wide_buf);
+				res.push_back(new std::string(pszContainerName));
 
 				pszContainerName = NULL;
 				free((void*)pbData);
@@ -577,7 +563,7 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 		};
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
-			CERT_STORE_PROV_SYSTEM_REGISTRY,
+			CERT_STORE_PROV_SYSTEM,
 			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
 			HCRYPT_NULL,
 			CERT_SYSTEM_STORE_CURRENT_USER,
