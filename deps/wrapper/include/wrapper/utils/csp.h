@@ -24,7 +24,7 @@ public:
 	Handle<std::string> getCPCSPLicense();
 
 	std::vector<ProviderProps> enumProviders();
-	std::vector<std::wstring> enumContainers(int provType, Handle<std::string> provName);
+	std::vector<Handle<std::string>> enumContainers(int provType, Handle<std::string> provName);
 	Handle<Certificate> getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 	void installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 };

@@ -165,14 +165,17 @@ NAN_METHOD(WCsp::EnumContainers)
 		v8::String::Utf8Value v8Prov(info[1]->ToString());
 		char *provName = *v8Prov;
 
-		std::vector<std::wstring> res = _this->enumContainers(type, new std::string(provName));
+		std::vector<Handle<std::string>> res = _this->enumContainers(type, new std::string(provName));
 
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
 		for (int i = 0; i < res.size(); i++){
-			array8->Set(i, v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (const uint16_t *)res[i].c_str(), v8::String::kNormalString, res[i].size()));
+			v8::Local<v8::String> v8FName = Nan::New<v8::String>(res[i]->c_str()).ToLocalChecked();
+
+			info.GetReturnValue().Set(v8FName);
+			array8->Set(i, v8FName);
 		}
 
 		info.GetReturnValue().Set(array8);
@@ -190,11 +193,8 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
-		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
-
-		int string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, NULL, 0, NULL, NULL);
-		char* converted = (char*)LocalAlloc(LMEM_ZEROINIT, string_len);
-		string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, converted, string_len, NULL, NULL);
+		v8::String::Utf8Value v8Cont(info[0]->ToString());
+		char *cont = *v8Cont;
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -203,7 +203,7 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 		v8::String::Utf8Value v8Prov(info[2]->ToString());
 		char *provName = *v8Prov;
 
-		Handle<Certificate> cert = _this->getCertifiacteFromContainer(new std::string(converted), type, new std::string(provName));
+		Handle<Certificate> cert = _this->getCertifiacteFromContainer(new std::string(cont), type, new std::string(provName));
 		v8::Local<v8::Object> v8Cert = WCertificate::NewInstance(cert);
 		info.GetReturnValue().Set(v8Cert);
 		return;
@@ -223,11 +223,8 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
-		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
-
-		int string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, NULL, 0, NULL, NULL);
-		char* converted = (char*)LocalAlloc(LMEM_ZEROINIT, string_len);
-		string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, converted, string_len, NULL, NULL);
+		v8::String::Utf8Value v8Cont(info[0]->ToString());
+		char *cont = *v8Cont;
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -236,7 +233,7 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		v8::String::Utf8Value v8Prov(info[2]->ToString());
 		char *provName = *v8Prov;
 
-		_this->installCertifiacteFromContainer(new std::string(converted), type, new std::string(provName));
+		_this->installCertifiacteFromContainer(new std::string(cont), type, new std::string(provName));
 
 		info.GetReturnValue().Set(info.This());
 		return;
