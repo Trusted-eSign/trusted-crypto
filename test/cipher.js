@@ -60,9 +60,9 @@ describe("CipherSYMMETRIC", function() {
         assert.equal(res.toString() === out.toString(), true, "Resource and decrypt file diff");
     });
 
-    it("encrypt && decrypt string", function() {
-        var inputStr = "Text Текст 1234 !@#$%^&*()_+?";
+    var inputStr = "Text Текст 1234 !@#$%^&*()_+?";
 
+    it("encrypt string", function() {
         cipher.digest = "MD5";
         cipher.password = "4321";
         var inpEnc = {
@@ -74,11 +74,14 @@ describe("CipherSYMMETRIC", function() {
             data: ""
         };
 
-        var encStr = cipher.encrypt(inpEnc, outpEnc);
+        cipher.encrypt(inpEnc, outpEnc);
+    });
 
+    it("decrypt string", function() {
         var inpDec = {
             type: trusted.pki.CipherContentType.buffer,
-            data: encStr
+            data: "Salted%5f%5f%5cua%91V%fb%db%1c8A%a3%85%5cb~%cf%7d%b7%13%91%a4k%cc%5c%86Q%d5%" +
+            "d2%d62%9a%f8%8eo%7dk%13%a9%3c%f80%fd%88%f8%1b4%91A"
         };
         var outpDec = {
             type: trusted.pki.CipherContentType.buffer,

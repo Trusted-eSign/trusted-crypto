@@ -85,8 +85,8 @@ NAN_METHOD(WCipher::Encrypt) {
 	METHOD_BEGIN();
 
 	try {
-		Handle<Bio> inputbuffer;
-		Handle<Bio> outputbuffer;
+		Handle<Bio> inputbuffer = NULL;
+		Handle<Bio> outputbuffer = NULL;
 
 		if (info[0]->IsString()){
 			LOGGER_ARG("source");
@@ -130,8 +130,8 @@ NAN_METHOD(WCipher::Encrypt) {
 		if (info[1]->IsString()){
 			info.GetReturnValue().Set(info.This());
 		} else{
-			char *bptr; 
-			long len;
+			char *bptr = NULL; 
+			long len = 0;
 			len = BIO_get_mem_data(encBio->internal(), &bptr);
 			BIO *pOutputBio = BIO_new_mem_buf(bptr, len);
 			Handle<Bio> outputBio = new Bio(pOutputBio);
@@ -151,8 +151,8 @@ NAN_METHOD(WCipher::Decrypt) {
 	METHOD_BEGIN();
 
 	try {
-		Handle<Bio> inputbuffer;
-		Handle<Bio> outputbuffer;
+		Handle<Bio> inputbuffer = NULL;
+		Handle<Bio> outputbuffer = NULL;
 
 		if (info[0]->IsString()){
 			LOGGER_ARG("sourceEnc");
@@ -186,11 +186,9 @@ NAN_METHOD(WCipher::Decrypt) {
 		
 		LOGGER_ARG("format");
 
-		DataFormat::DATA_FORMAT format;
+		DataFormat::DATA_FORMAT format = DataFormat::BASE64;
 		if (info[0]->IsString()){
 			format = (info[1]->IsUndefined() || !info[1]->IsNumber()) ?	getCmsFileType(inputbuffer) : DataFormat::get(info[1]->ToNumber()->Int32Value());
-		} else {
-			format = DataFormat::BASE64;
 		}
 		UNWRAP_DATA(Cipher);
 		
@@ -199,8 +197,8 @@ NAN_METHOD(WCipher::Decrypt) {
 		if (info[1]->IsString()){
 			info.GetReturnValue().Set(info.This());
 		} else {
-			char *bptr; 
-			long len;
+			char *bptr = NULL; 
+			long len = 0;
 			len = BIO_get_mem_data(result->internal(), &bptr);
 			BIO *outputQwerty = BIO_new_mem_buf(bptr, len);
 			Handle<Bio> outputScrin = new Bio(outputQwerty);
