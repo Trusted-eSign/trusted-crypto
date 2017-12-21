@@ -563,7 +563,7 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 		};
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
-			CERT_STORE_PROV_SYSTEM_REGISTRY,
+			CERT_STORE_PROV_SYSTEM,
 			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
 			HCRYPT_NULL,
 			CERT_SYSTEM_STORE_CURRENT_USER,
