@@ -149,6 +149,14 @@ namespace trusted.pkistore {
         set signatureAlgorithm(signatureAlgorithm: string) {
             this.handle.setSignatureAlgorithm(signatureAlgorithm);
         }
+
+        set signatureDigestAlgorithm(signatureDigestAlgorithm: string) {
+            this.handle.setSignatureAlgorithm(signatureDigestAlgorithm);
+        }
+
+        set publicKeyAlgorithm(publicKeyAlgorithm: string) {
+            this.handle.setPublicKeyAlgorithm(publicKeyAlgorithm);
+        }
     }
 
     export class PkiStore extends BaseObject<native.PKISTORE.PkiStore> {
@@ -436,6 +444,12 @@ namespace trusted.pkistore {
             }
             if (item.signatureAlgorithm) {
                 pkiItem.signatureAlgorithm = item.signatureAlgorithm;
+            }
+            if (item.signatureDigestAlgorithm) {
+                pkiItem.signatureDigestAlgorithm = item.signatureDigestAlgorithm;
+            }
+            if (item.publicKeyAlgorithm) {
+                pkiItem.publicKeyAlgorithm = item.publicKeyAlgorithm;
             }
 
             if (item.type === "CERTIFICATE") {

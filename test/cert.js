@@ -30,7 +30,8 @@ describe("Certificate", function() {
         assert.equal(typeof (cert.type), "number", "Bad type value");
         assert.equal(typeof (cert.keyUsage), "number", "Bad keyUsage value");
         assert.equal(typeof (cert.signatureAlgorithm), "string", "Bad signatureAlgorithm value");
-        assert.equal(typeof (cert.signatureDigest), "string", "Bad signatureDigest value");
+        assert.equal(typeof (cert.signatureDigestAlgoritm), "string", "Bad signatureDigestAlgorithm value");
+        assert.equal(typeof (cert.publicKeyAlgoritm), "string", "Bad publicKeyAlgorithm value");
         assert.equal(typeof (cert.organizationName), "string", "Bad organizationName value");
         assert.equal(typeof (cert.OCSPUrls), "object", "Bad OCSPUrls value");
         assert.equal(cert.OCSPUrls.length, 1, "Bad OCSP urls length");

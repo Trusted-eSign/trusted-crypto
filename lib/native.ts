@@ -63,7 +63,8 @@ declare namespace native {
             public getType(): number;
             public getKeyUsage(): number;
             public getSignatureAlgorithm(): string;
-            public getSignatureDigest(): string;
+            public getSignatureDigestAlgorithm(): string;
+            public getPublicKeyAlgorithm(): string;
             public getOrganizationName(): string;
             public getOCSPUrls(): string[];
             public getCAIssuersUrls(): string[];
@@ -314,6 +315,8 @@ declare namespace native {
             key?: string; // thumbprint ket SHA1
             organizationName?: string;
             signatureAlgorithm?: string;
+            signatureDigestAlgorithm?: string;
+            publicKeyAlgorithm?: string;
         }
 
         export interface IFilter {
@@ -444,6 +447,9 @@ declare namespace native {
             public setKeyEncrypted(enc: boolean): void;
             public setOrganizationName(organizationName: string): void;
             public setSignatureAlgorithm(signatureAlgorithm: string): void;
+            public setSignatureAlgorithm(signatureAlgorithm: string): void;
+            public setSignatureDigestAlgorithm(signatureDigestAlgorithm: string): void;
+            public setPublicKeyAlgorithm(publicKeyAlgorithm: string): void;
         }
     }
 

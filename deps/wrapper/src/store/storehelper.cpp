@@ -56,6 +56,8 @@ PkiItem::PkiItem(){
 	certKey = new std::string("");
 	certOrganizationName = new std::string("");
 	certSignatureAlgorithm = new std::string("");
+	certSignatureDigestAlgorithm = new std::string("");
+	certPublicKeyAlgorithm = new std::string("");
 	certificate = NULL;
 
 	csrSubjectName = new std::string("");
@@ -190,6 +192,18 @@ void PkiItem::setSignatureAlgorithm(Handle<std::string> signatureAlgorithm){
 	LOGGER_FN();
 
 	this->certSignatureAlgorithm = signatureAlgorithm;
+}
+
+void PkiItem::setSignatureDigestAlgorithm(Handle<std::string> signatureDigestAlgorithm){
+	LOGGER_FN();
+
+	this->certSignatureDigestAlgorithm = signatureDigestAlgorithm;
+}
+
+void PkiItem::setPublicKeyAlgorithm(Handle<std::string> publicKeyAlgorithm){
+	LOGGER_FN();
+
+	this->certPublicKeyAlgorithm = publicKeyAlgorithm;
 }
 
 PkiItemCollection::PkiItemCollection(){

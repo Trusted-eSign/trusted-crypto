@@ -162,6 +162,8 @@ Handle<PkiItem> ProviderMicrosoft::objectToPKIItem(Handle<Certificate> cert){
 		item->certSerial = cert->getSerialNumber();
 		item->certOrganizationName = cert->getOrganizationName();
 		item->certSignatureAlgorithm = cert->getSignatureAlgorithm();
+		item->certSignatureDigestAlgorithm = cert->getSignatureDigestAlgorithm();
+		item->certPublicKeyAlgorithm = cert->getPublicKeyAlgorithm();
 
 		item->certNotBefore = cert->getNotBefore();
 		item->certNotAfter = cert->getNotAfter();
