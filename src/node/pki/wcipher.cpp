@@ -153,6 +153,7 @@ NAN_METHOD(WCipher::Decrypt) {
 	try {
 		Handle<Bio> inputbuffer = NULL;
 		Handle<Bio> outputbuffer = NULL;
+		std::string buffer;
 
 		if (info[0]->IsString()){
 			LOGGER_ARG("sourceEnc");
@@ -166,7 +167,7 @@ NAN_METHOD(WCipher::Decrypt) {
 			Handle<Bio> inputbuffer1 = new Bio(pInputbuffer1);
 			Handle<std::string> resStr = inputbuffer1->read();
 
-			std::string buffer = decBase64(resStr->c_str());
+			buffer = decBase64(resStr->c_str());
 
 			BIO *pInputbuffer = BIO_new_mem_buf(buffer.c_str(), buffer.length());
 			inputbuffer = new Bio(pInputbuffer);
