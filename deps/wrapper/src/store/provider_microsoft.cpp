@@ -41,7 +41,7 @@ void ProviderMicrosoft::init(){
 				);
 
 			if (!hCertStore) {
-				LOGGER_ERROR("error open store %s", listStore[i]);
+				LOGGER_ERROR("error open store");
 				continue;
 			}
 
@@ -498,7 +498,7 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 		pCertContext = createCertificateContext(cert);
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
-			CERT_STORE_PROV_SYSTEM_REGISTRY,
+			CERT_STORE_PROV_SYSTEM,
 			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
 			HCRYPT_NULL,
 			CERT_SYSTEM_STORE_CURRENT_USER,
@@ -524,7 +524,7 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 
 		if (cert->isSelfSigned() && (strcmp(category->c_str(), "ROOT") != 0)) {
 			if (HCRYPT_NULL == (hCertStore = CertOpenStore(
-				CERT_STORE_PROV_SYSTEM_REGISTRY,
+				CERT_STORE_PROV_SYSTEM,
 				X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
 				HCRYPT_NULL,
 				CERT_SYSTEM_STORE_CURRENT_USER,
@@ -556,6 +556,72 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error add certificate to store");
 	}
 }
+
+void ProviderMicrosoft::deletePkiObject(Handle<Certificate> cert, Handle<std::string> category){
+	LOGGER_FN();
+
+	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+	PCCERT_CONTEXT pCertFound = HCRYPT_NULL;
+	HCERTSTORE hCertStore = HCRYPT_NULL;
+
+	try{
+		std::wstring wCategory = std::wstring(category->begin(), category->end());
+
+		pCertContext = createCertificateContext(cert);
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER,
+			wCategory.c_str())))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
+		}
+
+		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Cannot find existing certificate");
+		}
+
+		if (!CertDeleteCertificateFromStore(pCertFound)) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertDeleteCertificateFromStore failed: Code: %d", GetLastError());
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (pCertFound) {
+			CertFreeCertificateContext(pCertFound);
+			pCertFound = HCRYPT_NULL;
+		}
+	}
+	catch (Handle<Exception> e){
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (pCertFound) {
+			CertFreeCertificateContext(pCertFound);
+			pCertFound = HCRYPT_NULL;
+		}
+
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error add certificate to store");
+	}
+}
+
 
 bool ProviderMicrosoft::hasPrivateKey(Handle<Certificate> cert) {
 	LOGGER_FN();

@@ -29,6 +29,7 @@ void WPkiStore::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "addCrl", AddCrl);
 	Nan::SetPrototypeMethod(tpl, "addKey", AddKey);
 	Nan::SetPrototypeMethod(tpl, "addCsr", AddCsr);
+	Nan::SetPrototypeMethod(tpl, "deleteCert", DeleteCert);
 	Nan::SetPrototypeMethod(tpl, "find", Find);
 	Nan::SetPrototypeMethod(tpl, "findKey", FindKey);
 	Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
@@ -179,6 +180,30 @@ NAN_METHOD(WPkiStore::AddKey){
 		v8::Local<v8::String> v8Uri = Nan::New<v8::String>(uri->c_str()).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8Uri);
+		return;
+	}
+
+	TRY_END();
+}
+
+NAN_METHOD(WPkiStore::DeleteCert){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("provider");
+		WProvider * wProv = WProvider::Unwrap<WProvider>(info[0]->ToObject());
+
+		LOGGER_ARG("category");
+		v8::String::Utf8Value v8Category(info[1]->ToString());
+		char *category = *v8Category;
+
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[2]->ToObject());
+
+		UNWRAP_DATA(PkiStore);
+
+		_this->deletePkiObject(wProv->data_, new std::string(category), wCert->data_);
+
 		return;
 	}
 

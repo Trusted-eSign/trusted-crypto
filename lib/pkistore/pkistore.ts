@@ -252,6 +252,20 @@ namespace trusted.pkistore {
         }
 
         /**
+         * Delete certificste from store
+         *
+         * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+         * @param {string} category MY, OTHERS, TRUST, CRL
+         * @param {Certificate} cert Certificate
+         * @returns
+         *
+         * @memberOf PkiStore
+         */
+        public deleteCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate): void {
+            return this.handle.deleteCert(provider, category, cert.handle);
+        }
+
+        /**
          * Find items in local store
          *
          * @param {native.PKISTORE.IFilter} [ifilter]

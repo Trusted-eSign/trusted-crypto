@@ -20,6 +20,7 @@ public:
 	static NAN_METHOD(AddCrl);
 	static NAN_METHOD(AddCsr);
 	static NAN_METHOD(AddKey);
+	static NAN_METHOD(DeleteCert);
 	static NAN_METHOD(Find);
 	static NAN_METHOD(FindKey);
 	static NAN_METHOD(GetItem);
