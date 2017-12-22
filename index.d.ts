@@ -1379,7 +1379,7 @@ declare namespace trusted.pki {
          * @type {string}
          * @memberOf Certificate
          */
-        readonly signatureDigestAlgoritm: string;
+        readonly signatureDigestAlgorithm: string;
         /**
          * Return public key algorithm
          *

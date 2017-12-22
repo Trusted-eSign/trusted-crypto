@@ -240,7 +240,7 @@ namespace trusted.pki {
          * @type {string}
          * @memberOf Certificate
          */
-        get signatureDigestAlgoritm(): string {
+        get signatureDigestAlgorithm(): string {
             return this.handle.getSignatureDigestAlgorithm();
         }
 
