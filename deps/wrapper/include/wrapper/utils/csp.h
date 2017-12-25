@@ -2,6 +2,7 @@
 #define UTIL_CSP_INCLUDED
 
 #include <vector>
+#include <sstream>
 
 #include "../common/common.h"
 #include "../pki/cert.h"
@@ -22,6 +23,7 @@ public:
 
 	bool checkCPCSPLicense();
 	Handle<std::string> getCPCSPLicense();
+	Handle<std::string> getCPCSPVersion();
 
 	std::vector<ProviderProps> enumProviders();
 	std::vector<Handle<std::string>> enumContainers(int provType, Handle<std::string> provName);

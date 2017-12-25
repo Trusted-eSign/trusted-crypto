@@ -236,6 +236,58 @@ Handle<std::string> Csp::getCPCSPLicense() {
 	}
 }
 
+Handle<std::string> Csp::getCPCSPVersion() {
+	LOGGER_FN();
+
+	try {
+#ifdef CSP_ENABLE
+		static HCRYPTPROV hCryptProv = 0;
+		Handle<std::string> version;
+		DWORD dwVersion[100];
+		DWORD dwDataLength = (DWORD)sizeof(dwVersion);
+
+		if (!isGost2001CSPAvailable()) {
+			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
+		}
+
+		if (!CryptAcquireContext(&hCryptProv, NULL,	NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+		}
+
+		if (!CryptGetProvParam(hCryptProv, PP_VERSION_EX, (BYTE*)&dwVersion, &dwDataLength, 0)){
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+		}
+
+		std::string str = "";
+		for (int i = 3; i >= 0; i--){
+			if (i == 1) continue;
+			std::stringstream ss;
+			ss << dwVersion[i];
+			if (i == 0)
+				str = str + ss.str();
+			else
+				str = str + ss.str() + ".";
+		}
+		version = new std::string(str);
+
+		if (hCryptProv) {
+			if (!CryptReleaseContext(hCryptProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+		}
+
+		hCryptProv = 0;
+
+		return version;
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp version");
+	}
+}
+
 std::vector<ProviderProps> Csp::enumProviders() {
 	LOGGER_FN();
 
