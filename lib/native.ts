@@ -475,6 +475,8 @@ declare namespace native {
             public isGost2012_512CSPAvailable(): boolean;
             public checkCPCSPLicense(): boolean;
             public getCPCSPLicense(): string;
+            public getCPCSPVersion(): string;
+            public getCPCSPSecurityLvl(): string;
             public enumProviders(): object[];
             public enumContainers(type?: number, provName?: string): string[];
             public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;

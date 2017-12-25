@@ -21,6 +21,8 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 
 	Nan::SetPrototypeMethod(tpl, "checkCPCSPLicense", CheckCPCSPLicense);
 	Nan::SetPrototypeMethod(tpl, "getCPCSPLicense", GetCPCSPLicense);
+	Nan::SetPrototypeMethod(tpl, "getCPCSPVersion", GetCPCSPVersion);
+	Nan::SetPrototypeMethod(tpl, "getCPCSPSecurityLvl", GetCPCSPSecurityLvl);
 
 	Nan::SetPrototypeMethod(tpl, "enumProviders", EnumProviders);
 	Nan::SetPrototypeMethod(tpl, "enumContainers", EnumContainers);
@@ -111,6 +113,38 @@ NAN_METHOD(WCsp::GetCPCSPLicense) {
 		UNWRAP_DATA(Csp);
 
 		Handle<std::string> lic = _this->getCPCSPLicense();
+
+		v8::Local<v8::String> v8Lic = Nan::New<v8::String>(lic->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Lic);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::GetCPCSPVersion) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Csp);
+
+		Handle<std::string> lic = _this->getCPCSPVersion();
+
+		v8::Local<v8::String> v8Lic = Nan::New<v8::String>(lic->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Lic);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::GetCPCSPSecurityLvl) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Csp);
+
+		Handle<std::string> lic = _this->getCPCSPSecurityLvl();
 
 		v8::Local<v8::String> v8Lic = Nan::New<v8::String>(lic->c_str()).ToLocalChecked();
 
