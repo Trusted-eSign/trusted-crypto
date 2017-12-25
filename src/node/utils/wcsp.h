@@ -22,6 +22,7 @@ public:
 	static NAN_METHOD(CheckCPCSPLicense);
 	static NAN_METHOD(GetCPCSPLicense);
 	static NAN_METHOD(GetCPCSPVersion);
+	static NAN_METHOD(GetCPCSPSecurityLvl);
 
 	static NAN_METHOD(EnumProviders);
 	static NAN_METHOD(EnumContainers);

@@ -86,6 +86,11 @@ namespace trusted.utils {
             return csp.getCPCSPVersion();
         }
 
+        public static getCPCSPSecurityLvl(): string {
+            const csp = new native.UTILS.Csp();
+            return csp.getCPCSPSecurityLvl();
+        }
+
         /**
          * Enumerate available CSP
          *
