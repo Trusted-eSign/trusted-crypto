@@ -835,6 +835,8 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getCPCSPLicense(): string;
+
+        static getCPCSPVersion(): string;
         /**
          * Creates an instance of Csp.
          *
