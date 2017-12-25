@@ -237,7 +237,7 @@ Handle<std::string> Certificate::getSignatureAlgorithm() {
 	return (new Algorithm(sigalg))->getName();
 }
 
-Handle<std::string> Certificate::getSignatureDigest() {
+Handle<std::string> Certificate::getSignatureDigestAlgorithm() {
 	LOGGER_FN();
 
 	int signature_nid = 0, md_nid = 0;
@@ -258,7 +258,15 @@ Handle<std::string> Certificate::getSignatureDigest() {
 		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown digest name");
 	}
 
-	return new std::string(OBJ_nid2sn(md_nid));
+	return new std::string(OBJ_nid2ln(md_nid));
+}
+
+Handle<std::string> Certificate::getPublicKeyAlgorithm() {
+	LOGGER_FN();
+
+	X509_CINF *ci = this->internal()->cert_info;
+
+	return (new Algorithm(ci->key->algor))->getName();
 }
 
 Handle<std::string> Certificate::getOrganizationName(){

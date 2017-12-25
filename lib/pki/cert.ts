@@ -240,8 +240,19 @@ namespace trusted.pki {
          * @type {string}
          * @memberOf Certificate
          */
-        get signatureDigest(): string {
-            return this.handle.getSignatureDigest();
+        get signatureDigestAlgorithm(): string {
+            return this.handle.getSignatureDigestAlgorithm();
+        }
+
+        /**
+         * Return public key algorithm
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Certificate
+         */
+        get publicKeyAlgorithm(): string {
+            return this.handle.getPublicKeyAlgorithm();
         }
 
         /**

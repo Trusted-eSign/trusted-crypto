@@ -64,6 +64,8 @@ public:
 	Handle<std::string> certKey; /* thumbprint SHA1 */
 	Handle<std::string> certOrganizationName;
 	Handle<std::string> certSignatureAlgorithm; /* thumbprint SHA1 */
+	Handle<std::string> certSignatureDigestAlgorithm;
+	Handle<std::string> certPublicKeyAlgorithm;
 
 public:
 	Handle<Certificate> certificate;
@@ -101,6 +103,8 @@ public:
 	void setKeyEncypted(bool enc);
 	void setOrganizationName(Handle<std::string> organizationName);
 	void setSignatureAlgorithm(Handle<std::string> signatureAlgorithm);
+	void setSignatureDigestAlgorithm(Handle<std::string> signatureDigestAlgorithm);
+	void setPublicKeyAlgorithm(Handle<std::string> publicKeyAlgorithm);
 };
 
 class Filter {

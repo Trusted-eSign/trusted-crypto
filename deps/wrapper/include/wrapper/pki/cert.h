@@ -32,8 +32,9 @@ public:
 	Handle<std::string> getSubjectFriendlyName();
 	Handle<std::string> getSubjectName();
 	Handle<std::string> getThumbprint();
+	Handle<std::string> getPublicKeyAlgorithm();
 	Handle<std::string> getSignatureAlgorithm();
-	Handle<std::string> getSignatureDigest();
+	Handle<std::string> getSignatureDigestAlgorithm();
 	Handle<std::string> getOrganizationName();
 	Handle<Key> getPublicKey();
 	std::vector<std::string> getOCSPUrls();
