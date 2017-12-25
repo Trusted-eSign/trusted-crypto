@@ -162,7 +162,7 @@ Handle<PkiItem> ProviderCryptopro::objectToPKIItem(Handle<Certificate> cert){
 		item->certSerial = cert->getSerialNumber();
 		item->certOrganizationName = cert->getOrganizationName();
 		item->certSignatureAlgorithm = cert->getSignatureAlgorithm();
-		item->certSignatureDigestAlgorithm = cert->getSignatureDigest();
+		item->certSignatureDigestAlgorithm = cert->getSignatureDigestAlgorithm();
 		item->certPublicKeyAlgorithm = cert->getPublicKeyAlgorithm();
 
 		item->certNotBefore = cert->getNotBefore();
