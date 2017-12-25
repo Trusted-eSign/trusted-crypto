@@ -187,11 +187,22 @@ declare namespace native {
             save(filename: string, dataFormat: trusted.DataFormat): void;
             getEncodedHEX(): Buffer;
         }
+
+        export enum CipherContentType {
+            url,
+            buffer,
+        }
+    
+        export interface ICipherContent {
+            type: CipherContentType;
+            data: string | Buffer;
+        }
+        
         class Cipher {
             constructor();
             setCryptoMethod(method: trusted.CryptoMethod): void;
-            encrypt(filenameSource: string, filenameEnc: string, format: trusted.DataFormat): void;
-            decrypt(filenameEnc: string, filenameDec: string, format?: trusted.DataFormat): void;
+            encrypt(source: ICipherContent, destinationEnc: ICipherContent, format: trusted.DataFormat): string;
+            decrypt(sourceEnc: ICipherContent, destinationDec: ICipherContent, format?: trusted.DataFormat): string;
             addRecipientsCerts(certs: CertificateCollection): void;
             setPrivKey(rkey: Key): void;
             setRecipientCert(rcert: Certificate): void;
@@ -835,6 +846,8 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getCPCSPLicense(): string;
+        
+        static getCPCSPVersion(): string;
         /**
          * Enumerate available CSP
          *

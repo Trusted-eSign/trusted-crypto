@@ -54,8 +54,8 @@ public:
 	/*Symetric or assymetric(default)*/
 	void setCryptoMethod(CryptoMethod::Crypto_Method method);
 
-	void encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_FORMAT format);
-	void decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FORMAT format);
+	Handle<Bio> encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_FORMAT format);
+	Handle<Bio> decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FORMAT format);
 
 public:
 	Handle<std::string> getAlgorithm();

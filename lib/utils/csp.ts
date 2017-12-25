@@ -73,6 +73,19 @@ namespace trusted.utils {
             return csp.getCPCSPLicense();
         }
 
+         /**
+         * Return instaled correct license for CryptoPro CSP
+         * Throw exception if provaider not available
+         *
+         * @static
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        public static getCPCSPVersion(): string {
+            const csp = new native.UTILS.Csp();
+            return csp.getCPCSPVersion();
+        }
+
         /**
          * Enumerate available CSP
          *

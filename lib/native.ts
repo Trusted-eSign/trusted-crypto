@@ -158,11 +158,21 @@ declare namespace native {
             public getEncodedHEX(): Buffer;
         }
 
+        export enum CipherContentType {
+            url,
+            buffer,
+        }
+
+        export interface ICipherContent {
+            type: CipherContentType;
+            data: string | Buffer;
+        }
+
         class Cipher {
             constructor();
             public setCryptoMethod(method: trusted.CryptoMethod): void;
-            public encrypt(filenameSource: string, filenameEnc: string, format: trusted.DataFormat): void;
-            public decrypt(filenameEnc: string, filenameDec: string, format?: trusted.DataFormat): void;
+            public encrypt(source: ICipherContent, destinationEnc: ICipherContent, format: trusted.DataFormat): string;
+            public decrypt(sourceEnc: ICipherContent, destDec: ICipherContent, format?: trusted.DataFormat): string;
             public addRecipientsCerts(certs: CertificateCollection): void;
             public setPrivKey(rkey: Key): void;
             public setRecipientCert(rcert: Certificate): void;
@@ -475,6 +485,7 @@ declare namespace native {
             public isGost2012_512CSPAvailable(): boolean;
             public checkCPCSPLicense(): boolean;
             public getCPCSPLicense(): string;
+            public getCPCSPVersion(): string;
             public enumProviders(): object[];
             public enumContainers(type?: number, provName?: string): string[];
             public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;

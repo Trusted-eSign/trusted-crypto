@@ -23,6 +23,8 @@ public:
 	bool checkCPCSPLicense();
 	Handle<std::string> getCPCSPLicense();
 
+	Handle<std::string> getCPCSPVersion();
+
 	std::vector<ProviderProps> enumProviders();
 	std::vector<Handle<std::string>> enumContainers(int provType, Handle<std::string> provName);
 	Handle<Certificate> getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);

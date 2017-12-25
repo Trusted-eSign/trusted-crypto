@@ -30,16 +30,67 @@ describe("CipherSYMMETRIC", function() {
     it("encrypt", function() {
         cipher.digest = "MD5";
         cipher.password = "4321";
-        cipher.encrypt(DEFAULT_RESOURCES_PATH + "/test.txt", DEFAULT_OUT_PATH + "/encSym.txt");
+        var inp = {
+            type: trusted.pki.CipherContentType.url,
+            data: DEFAULT_RESOURCES_PATH + "/test.txt"
+        };
+        var outp = {
+            type: trusted.pki.CipherContentType.url,
+            data: DEFAULT_OUT_PATH + "/encSym.txt"
+        };
+
+        cipher.encrypt(inp, outp);
     });
 
     it("decrypt", function() {
-        cipher.decrypt(DEFAULT_OUT_PATH + "/encSym.txt", DEFAULT_OUT_PATH + "/decSym.txt");
+        var inp = {
+            type: trusted.pki.CipherContentType.url,
+            data: DEFAULT_OUT_PATH + "/encSym.txt"
+        };
+        var outp = {
+            type: trusted.pki.CipherContentType.url,
+            data: DEFAULT_OUT_PATH + "/decSym.txt"
+        };
+
+        cipher.decrypt(inp, outp);
 
         var res = fs.readFileSync(DEFAULT_RESOURCES_PATH + "/test.txt");
         var out = fs.readFileSync(DEFAULT_OUT_PATH + "/decSym.txt");
 
         assert.equal(res.toString() === out.toString(), true, "Resource and decrypt file diff");
+    });
+
+    var inputStr = "Text Текст 1234 !@#$%^&*()_+?";
+
+    it("encrypt string", function() {
+        cipher.digest = "MD5";
+        cipher.password = "4321";
+        var inpEnc = {
+            type: trusted.pki.CipherContentType.buffer,
+            data: inputStr
+        };
+        var outpEnc = {
+            type: trusted.pki.CipherContentType.buffer,
+            data: ""
+        };
+
+        cipher.encrypt(inpEnc, outpEnc);
+    });
+
+    it("decrypt string", function() {
+        var inpDec = {
+            type: trusted.pki.CipherContentType.buffer,
+            data: "Salted%5f%5f%5cua%91V%fb%db%1c8A%a3%85%5cb~%cf%7d%b7%13%91%a4k%cc%5c%86Q%d5%" +
+            "d2%d62%9a%f8%8eo%7dk%13%a9%3c%f80%fd%88%f8%1b4%91A"
+        };
+        var outpDec = {
+            type: trusted.pki.CipherContentType.buffer,
+            data: ""
+        };
+
+        var decStr = cipher.decrypt(inpDec, outpDec);
+
+        assert.equal(inputStr === decStr, true, "Resource and decrypt text diff");
     });
 });
 
@@ -66,7 +117,16 @@ describe("CipherASSYMETRIC", function() {
     });
 
     it("encrypt", function() {
-        cipher.encrypt(DEFAULT_RESOURCES_PATH + "/test.txt", DEFAULT_OUT_PATH + "/encAssym.txt", trusted.DataFormat.PEM);
+        var inp = {
+            type: trusted.pki.CipherContentType.url,
+            data: DEFAULT_RESOURCES_PATH + "/test.txt"
+        };
+        var outp = {
+            type: trusted.pki.CipherContentType.url,
+            data: DEFAULT_OUT_PATH + "/encAssym.txt"
+        };
+
+        cipher.encrypt(inp, outp, trusted.DataFormat.PEM);
     });
 
     it("recipient cert", function() {
@@ -169,7 +229,16 @@ describe("CipherASSYMETRIC", function() {
         cipher.recipientCert = cert;
         cipher.privKey = store.getItem(key);
 
-        cipher.decrypt(DEFAULT_OUT_PATH + "/encAssym.txt", DEFAULT_OUT_PATH + "/decAssym.txt", trusted.DataFormat.PEM);
+        var inp = {
+            type: trusted.pki.CipherContentType.url,
+            data: DEFAULT_OUT_PATH + "/encAssym.txt"
+        };
+        var outp = {
+            type: trusted.pki.CipherContentType.url,
+            data: DEFAULT_OUT_PATH + "/decAssym.txt"
+        };
+
+        cipher.decrypt(inp, outp, trusted.DataFormat.PEM);
 
         var res = fs.readFileSync(DEFAULT_RESOURCES_PATH + "/test.txt");
         var out = fs.readFileSync(DEFAULT_OUT_PATH + "/decAssym.txt");
@@ -177,3 +246,4 @@ describe("CipherASSYMETRIC", function() {
         assert.equal(res.toString() === out.toString(), true, "Resource and decrypt file diff");
     });
 });
+

@@ -30,6 +30,9 @@ Handle<std::string> getBuffer(v8::Local<v8::Value> v8Value);
 Handle<std::string> getErrorText(Handle<Exception> e);
 DataFormat::DATA_FORMAT getCmsFileType(Handle<Bio> in);
 
+std::string encBase64(const char* buf);
+std::string decBase64(const char* buf);
+
 #define METHOD_BEGIN() \
 	LOGGER_FN();
 

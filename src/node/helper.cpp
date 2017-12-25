@@ -108,3 +108,62 @@ DataFormat::DATA_FORMAT getCmsFileType(Handle<Bio> in) {
 
 	return (0x30 == buf[0]) ? DataFormat::DER : DataFormat::BASE64;
 }
+
+std::string encBase64(const char* buf){
+	std::string res = "";
+	int i = 0;
+	while (buf[i] != NULL)
+	{
+		if ( (48 <= buf[i] && buf[i] <= 57) ||//0-9
+			(65 <= buf[i] && buf[i] <= 90) ||//abc...xyz
+			(97 <= buf[i] && buf[i] <= 122) || //ABC...XYZ
+			(buf[i]=='~' || buf[i]=='!' || buf[i]=='*' || buf[i]=='(' || buf[i]==')' || buf[i]=='\'')
+			)
+		{
+			res.append( &buf[i], 1);
+		} else {
+			res.append("%");
+			char dig1 = (buf[i]&0xF0)>>4;
+			char dig2 = (buf[i]&0x0F);
+			if ( 0<= dig1 && dig1<= 9) dig1+=48;    //0, 48 in ascii
+			if (10<= dig1 && dig1<=15) dig1+=97-10; //a, 97 in ascii
+			if ( 0<= dig2 && dig2<= 9) dig2+=48;
+			if (10<= dig2 && dig2<=15) dig2+=97-10;
+			
+			std::string r;
+			r.append( &dig1, 1);
+			r.append( &dig2, 1);
+			res.append(r);//converts char 255 to string "ff"
+		}
+		i++;
+	}
+	return res;
+}
+
+std::string decBase64(const char* buf){
+	std::string str = "";
+	int i = 0;
+	while (buf[i] != NULL){
+		str = str + (char)buf[i];
+		i++;
+	}
+	std::string res = "";
+	int len = str.length();
+		
+	for (int i = 0; i < len; i++) {
+		int j = i ;
+		char ch = str.at(j);
+		if (ch == '%'){
+			char tmpstr[] = "0x0__";
+			int chnum;
+			tmpstr[3] = str.at(j+1);
+			tmpstr[4] = str.at(j+2);
+			chnum = strtol(tmpstr, NULL, 16);
+			res += chnum;
+			i += 2;
+		} else {
+			res += ch;
+		}
+	}
+	return res;
+}

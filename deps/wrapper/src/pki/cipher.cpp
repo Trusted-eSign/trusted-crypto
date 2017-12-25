@@ -87,9 +87,9 @@ void Cipher::setRecipientCert(Handle<Certificate> cert){
 	}
 }
 
-void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_FORMAT format){
+Handle<Bio> Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_FORMAT format){
 	LOGGER_FN();
-
+	
 	try{
 		X509 *firstRecipientCertificate = NULL;
 		EVP_PKEY *pkey = NULL;
@@ -101,7 +101,7 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 		case CryptoMethod::SYMMETRIC:
 			/*Check pass*/
 			if (hpass == NULL){
-
+		
 				/*Check key*/
 				if (hkey == NULL){
 					THROW_EXCEPTION(0, Cipher, NULL, "key  undefined");
@@ -120,16 +120,16 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 			/*
 			* We use 'benc' how cipher BIO method.
 			* This is a filter BIO that encrypts any data written through it
-			*/
+			*/			
 			LOGGER_OPENSSL(BIO_new);
 			if ((benc = BIO_new(BIO_f_cipher())) == NULL){
 				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "BIO_new(BIO_f_cipher())");
 			}
-
+			
 			/*Save internal BIO cipher context to 'ctx'*/
 			LOGGER_OPENSSL(BIO_get_cipher_ctx);
 			BIO_get_cipher_ctx(benc, &ctx);
-
+			
 			/*Use param '1' for encrypt*/
 			LOGGER_OPENSSL(EVP_CipherInit_ex);
 			if (!EVP_CipherInit_ex(ctx, cipher, NULL, key, iv, 1)) {
@@ -149,7 +149,7 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error write bio");
 				}
 			}
-
+			
 			if (benc != NULL){
 				LOGGER_OPENSSL(BIO_push);
 				wbio = BIO_push(benc, wbio);
@@ -173,6 +173,8 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 				THROW_EXCEPTION(0, Cipher, NULL, "bad decrypt");
 			}
 
+			return new Bio(wbio);
+	
 			break;
 
 		//****************************************************************************************
@@ -241,15 +243,16 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 		default:
 			THROW_EXCEPTION(0, Cipher, NULL, "Unknown crypto method");
 		}
+		return NULL;
 
-		
+
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Cipher, e, "Error encrypt");
 	}	
 }
 
-void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FORMAT format){
+Handle<Bio> Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FORMAT format){
 	LOGGER_FN();
 
 	try{
@@ -288,7 +291,7 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 				else if (memcmp(mbuf, magic, sizeof magic - 1)) {
 					THROW_EXCEPTION(0, Cipher, NULL, "bad magic number");
 				}
-
+				
 				LOGGER_OPENSSL(EVP_BytesToKey);
 				if (EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)hpass, strlen(hpass), 1, key, iv) == 0){
 					THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "EVP_BytesToKey");
@@ -320,7 +323,7 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 				inl = BIO_read(rbio, (char *)buff, bsize);
 				if (inl <= 0){
 					break;
-				}
+				}				
 				LOGGER_OPENSSL(BIO_write);
 				if (BIO_write(wbio, (char *)buff, inl) != inl) {
 					THROW_EXCEPTION(0, Cipher, NULL, "Error writing output bio");
@@ -331,6 +334,7 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 			if (!BIO_flush(wbio)){
 				THROW_EXCEPTION(0, Cipher, NULL, "bad decrypt");
 			}
+			return new Bio(wbio);
 
 			break;
 
@@ -366,7 +370,7 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 			if (!CMS_decrypt_set1_pkey(cms, rkey, rcert)) {
 				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "CMS_decrypt_set1_pkey 'Error set private key'");
 			}
-
+			
 			LOGGER_OPENSSL(CMS_decrypt);
 			if (!CMS_decrypt(cms, NULL, NULL, NULL, outDec->internal(), flags)) {
 				THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "CMS_decrypt 'Error decrypt cms'");
@@ -381,6 +385,7 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 		default:
 			THROW_EXCEPTION(0, Cipher, NULL, "Unknown crypto method");
 		}
+		return NULL;
 
 		
 	}
