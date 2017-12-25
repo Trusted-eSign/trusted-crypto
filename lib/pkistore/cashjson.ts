@@ -89,6 +89,9 @@ namespace trusted.pkistore {
                 if (item.signatureAlgorithm) {
                     pkiItem.signatureAlgorithm = item.signatureAlgorithm;
                 }
+                if (item.signatureDigestAlgorithm) {
+                    pkiItem.signatureDigestAlgorithm = item.signatureDigestAlgorithm;
+                }
 
                 this.handle.import(pkiItem.handle);
             }

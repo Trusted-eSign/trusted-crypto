@@ -258,6 +258,8 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 			item->certSerial = hcert->getSerialNumber();
 			item->certOrganizationName = hcert->getOrganizationName();
 			item->certSignatureAlgorithm = hcert->getSignatureAlgorithm();
+			item->certSignatureDigestAlgorithm = hcert->getSignatureDigestAlgorithm();
+			item->certPublicKeyAlgorithm = hcert->getPublicKeyAlgorithm();
 
 			item->certNotBefore = hcert->getNotBefore();
 			item->certNotAfter = hcert->getNotAfter();

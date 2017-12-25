@@ -20,6 +20,7 @@ public:
 	static NAN_METHOD(AddCrl);
 	static NAN_METHOD(AddCsr);
 	static NAN_METHOD(AddKey);
+	static NAN_METHOD(DeleteCert);
 	static NAN_METHOD(Find);
 	static NAN_METHOD(FindKey);
 	static NAN_METHOD(GetItem);
@@ -84,6 +85,8 @@ public:
 	static NAN_METHOD(SetKeyEncrypted);
 	static NAN_METHOD(SetOrganizationName);
 	static NAN_METHOD(SetSignatureAlgorithm);
+	static NAN_METHOD(SetSignatureDigestAlgorithm);
+	static NAN_METHOD(SetPublicKeyAlgorithm);
 };
 
 #endif //WPKISTORE_H_INCLUDED

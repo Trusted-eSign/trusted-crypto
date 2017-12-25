@@ -29,6 +29,7 @@ void WPkiStore::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "addCrl", AddCrl);
 	Nan::SetPrototypeMethod(tpl, "addKey", AddKey);
 	Nan::SetPrototypeMethod(tpl, "addCsr", AddCsr);
+	Nan::SetPrototypeMethod(tpl, "deleteCert", DeleteCert);
 	Nan::SetPrototypeMethod(tpl, "find", Find);
 	Nan::SetPrototypeMethod(tpl, "findKey", FindKey);
 	Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
@@ -185,6 +186,30 @@ NAN_METHOD(WPkiStore::AddKey){
 	TRY_END();
 }
 
+NAN_METHOD(WPkiStore::DeleteCert){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("provider");
+		WProvider * wProv = WProvider::Unwrap<WProvider>(info[0]->ToObject());
+
+		LOGGER_ARG("category");
+		v8::String::Utf8Value v8Category(info[1]->ToString());
+		char *category = *v8Category;
+
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[2]->ToObject());
+
+		UNWRAP_DATA(PkiStore);
+
+		_this->deletePkiObject(wProv->data_, new std::string(category), wCert->data_);
+
+		return;
+	}
+
+	TRY_END();
+}
+
 NAN_METHOD(WPkiStore::Find){
 	METHOD_BEGIN();
 
@@ -252,6 +277,12 @@ NAN_METHOD(WPkiStore::Find){
 
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "signatureAlgorithm"),
 					v8::String::NewFromUtf8(isolate, item->certSignatureAlgorithm->c_str()));
+
+				tempObj->Set(v8::String::NewFromUtf8(isolate, "signatureDigestAlgorithm"),
+					v8::String::NewFromUtf8(isolate, item->certSignatureDigestAlgorithm->c_str()));
+
+				tempObj->Set(v8::String::NewFromUtf8(isolate, "publicKeyAlgorithm"),
+					v8::String::NewFromUtf8(isolate, item->certPublicKeyAlgorithm->c_str()));
 
 				array8->Set(i, tempObj);
 				continue;
@@ -643,6 +674,8 @@ void WPkiItem::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "setKeyEncrypted", SetKeyEncrypted);
 	Nan::SetPrototypeMethod(tpl, "setOrganizationName", SetOrganizationName);
 	Nan::SetPrototypeMethod(tpl, "setSignatureAlgorithm", SetSignatureAlgorithm);
+	Nan::SetPrototypeMethod(tpl, "setSignatureDigestAlgorithm", SetSignatureDigestAlgorithm);
+	Nan::SetPrototypeMethod(tpl, "setPublicKeyAlgorithm", SetPublicKeyAlgorithm);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -964,6 +997,38 @@ NAN_METHOD(WPkiItem::SetSignatureAlgorithm) {
 		char *signatureAlgorithm = *v8SignatureAlgorithm;
 
 		_this->setSignatureAlgorithm(new std::string(signatureAlgorithm));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WPkiItem::SetSignatureDigestAlgorithm) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(PkiItem);
+
+		LOGGER_ARG("signatureDigestAlgorithm");
+		v8::String::Utf8Value v8SignatureDigestAlgorithm(info[0]->ToString());
+		char *signatureDigestAlgorithm = *v8SignatureDigestAlgorithm;
+
+		_this->setSignatureDigestAlgorithm(new std::string(signatureDigestAlgorithm));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WPkiItem::SetPublicKeyAlgorithm) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(PkiItem);
+
+		LOGGER_ARG("publicKeyAlgorithm");
+		v8::String::Utf8Value v8PublicKeyAlgorithm(info[0]->ToString());
+		char *publicKeyAlgorithm = *v8PublicKeyAlgorithm;
+
+		_this->setPublicKeyAlgorithm(new std::string(publicKeyAlgorithm));
 		return;
 	}
 	TRY_END();
