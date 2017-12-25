@@ -29,7 +29,8 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "getType", GetType);
 	Nan::SetPrototypeMethod(tpl, "getKeyUsage", GetKeyUsage);
 	Nan::SetPrototypeMethod(tpl, "getSignatureAlgorithm", GetSignatureAlgorithm);
-	Nan::SetPrototypeMethod(tpl, "getSignatureDigest", GetSignatureDigest);
+	Nan::SetPrototypeMethod(tpl, "getSignatureDigestAlgorithm", GetSignatureDigestAlgorithm);
+	Nan::SetPrototypeMethod(tpl, "getPublicKeyAlgorithm", GetPublicKeyAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "getOrganizationName", GetOrganizationName);
 	Nan::SetPrototypeMethod(tpl, "getOCSPUrls", GetOCSPUrls);
 	Nan::SetPrototypeMethod(tpl, "getCAIssuersUrls", GetCAIssuersUrls);
@@ -421,18 +422,35 @@ NAN_METHOD(WCertificate::GetSignatureAlgorithm)
 	TRY_END();
 }
 
-NAN_METHOD(WCertificate::GetSignatureDigest)
+NAN_METHOD(WCertificate::GetSignatureDigestAlgorithm)
 {
 	METHOD_BEGIN();
 
 	try {
 		UNWRAP_DATA(Certificate);
 
-		Handle<std::string> sigAlg = _this->getSignatureDigest();
+		Handle<std::string> sigAlg = _this->getSignatureDigestAlgorithm();
 
 		v8::Local<v8::String> v8SigAlg = Nan::New<v8::String>(sigAlg->c_str()).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8SigAlg);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::GetPublicKeyAlgorithm)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		Handle<std::string> pubkeyAlg = _this->getPublicKeyAlgorithm();
+
+		v8::Local<v8::String> v8PubkeyAlg = Nan::New<v8::String>(pubkeyAlg->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8PubkeyAlg);
 		return;
 	}
 	TRY_END();

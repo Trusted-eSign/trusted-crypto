@@ -149,6 +149,14 @@ namespace trusted.pkistore {
         set signatureAlgorithm(signatureAlgorithm: string) {
             this.handle.setSignatureAlgorithm(signatureAlgorithm);
         }
+
+        set signatureDigestAlgorithm(signatureDigestAlgorithm: string) {
+            this.handle.setSignatureAlgorithm(signatureDigestAlgorithm);
+        }
+
+        set publicKeyAlgorithm(publicKeyAlgorithm: string) {
+            this.handle.setPublicKeyAlgorithm(publicKeyAlgorithm);
+        }
     }
 
     export class PkiStore extends BaseObject<native.PKISTORE.PkiStore> {
@@ -249,6 +257,20 @@ namespace trusted.pkistore {
          */
         public addCsr(provider: native.PKISTORE.Provider, category: string, csr: pki.CertificationRequest): string {
             return this.handle.addCsr(provider, category, csr.handle);
+        }
+
+        /**
+         * Delete certificste from store
+         *
+         * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+         * @param {string} category MY, OTHERS, TRUST, CRL
+         * @param {Certificate} cert Certificate
+         * @returns
+         *
+         * @memberOf PkiStore
+         */
+        public deleteCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate): void {
+            return this.handle.deleteCert(provider, category, cert.handle);
         }
 
         /**
@@ -422,6 +444,12 @@ namespace trusted.pkistore {
             }
             if (item.signatureAlgorithm) {
                 pkiItem.signatureAlgorithm = item.signatureAlgorithm;
+            }
+            if (item.signatureDigestAlgorithm) {
+                pkiItem.signatureDigestAlgorithm = item.signatureDigestAlgorithm;
+            }
+            if (item.publicKeyAlgorithm) {
+                pkiItem.publicKeyAlgorithm = item.publicKeyAlgorithm;
             }
 
             if (item.type === "CERTIFICATE") {

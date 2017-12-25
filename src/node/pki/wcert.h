@@ -33,7 +33,8 @@ public:
     static NAN_METHOD(GetType);
 	static NAN_METHOD(GetKeyUsage);
 	static NAN_METHOD(GetSignatureAlgorithm);
-	static NAN_METHOD(GetSignatureDigest);
+	static NAN_METHOD(GetSignatureDigestAlgorithm);
+	static NAN_METHOD(GetPublicKeyAlgorithm);
 	static NAN_METHOD(GetOrganizationName);
 	static NAN_METHOD(GetOCSPUrls);
 	static NAN_METHOD(GetCAIssuersUrls);

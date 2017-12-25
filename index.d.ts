@@ -104,7 +104,8 @@ declare namespace native {
             getType(): number;
             getKeyUsage(): number;
             getSignatureAlgorithm(): string;
-            getSignatureDigest(): string;
+            getSignatureDigestAlgorithm(): string;
+            getPublicKeyAlgorithm(): string;
             getOrganizationName(): string;
             getOCSPUrls(): string[];
             getCAIssuersUrls(): string[];
@@ -336,6 +337,8 @@ declare namespace native {
             key?: string;
             organizationName?: string;
             signatureAlgorithm?: string;
+            signatureDigestAlgorithm?: string;
+            publicKeyAlgorithm?: string;
         }
         interface IFilter {
             /**
@@ -403,6 +406,7 @@ declare namespace native {
             addCrl(provider: Provider, category: string, crl: PKI.CRL): string;
             addKey(provider: Provider, key: PKI.Key, password: string): string;
             addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
+            deleteCert(provider: Provider, category: string, cert: PKI.Certificate): void;
         }
         class CashJson {
             filenName: string;
@@ -446,6 +450,9 @@ declare namespace native {
             setKeyEncrypted(enc: boolean): void;
             setOrganizationName(organizationName: string): void;
             setSignatureAlgorithm(signatureAlgorithm: string): void;
+            setSignatureAlgorithm(signatureAlgorithm: string): void;
+            setSignatureDigestAlgorithm(signatureDigestAlgorithm: string): void;
+            setPublicKeyAlgorithm(publicKeyAlgorithm: string): void;
         }
     }
     namespace UTILS {
@@ -467,6 +474,10 @@ declare namespace native {
             isGost2012_512CSPAvailable(): boolean;
             checkCPCSPLicense(): boolean;
             getCPCSPLicense(): string;
+            enumProviders(): object[];
+            enumContainers(type?: number, provName?: string): string[];
+            getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
+            installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
         }
     }
     namespace COMMON {
@@ -835,8 +846,37 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getCPCSPLicense(): string;
-
+        
         static getCPCSPVersion(): string;
+        /**
+         * Enumerate available CSP
+         *
+         * @static
+         * @returns {object[]} {type: nuber, name: string}
+         * @memberof Csp
+         */
+        static enumProviders(): object[];
+        /**
+         * Enumerate conainers
+         *
+         * @static
+         * @param {number} [type]
+         * @returns {string[]} Fully Qualified Container Name
+         * @memberof Csp
+         */
+        static enumContainers(type: null, provName?: string): string[];
+        /**
+         * Get certificate by container and provider props
+         *
+         * @static
+         * @param {string} contName
+         * @param {number} provType
+         * @param {string} [provName=""]
+         * @returns {pki.Certificate}
+         * @memberof Csp
+         */
+        static getCertifiacteFromContainer(contName: string, provType: number, provName?: string): pki.Certificate;
+        static installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
         /**
          * Creates an instance of Csp.
          *
@@ -1352,7 +1392,15 @@ declare namespace trusted.pki {
          * @type {string}
          * @memberOf Certificate
          */
-        readonly signatureDigest: string;
+        readonly signatureDigestAlgorithm: string;
+        /**
+         * Return public key algorithm
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Certificate
+         */
+        readonly publicKeyAlgorithm: string;
         /**
          * Return organization name
          *
@@ -3016,6 +3064,8 @@ declare namespace trusted.pkistore {
         keyEnc: boolean;
         organizationName: string;
         signatureAlgorithm: string;
+        signatureDigestAlgorithm: string;
+        publicKeyAlgorithm: string;
     }
     class PkiStore extends BaseObject<native.PKISTORE.PkiStore> {
         private cashJson;
@@ -3086,6 +3136,17 @@ declare namespace trusted.pkistore {
          * @memberOf PkiStore
          */
         addCsr(provider: native.PKISTORE.Provider, category: string, csr: pki.CertificationRequest): string;
+        /**
+         * Delete certificste from store
+         *
+         * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
+         * @param {string} category MY, OTHERS, TRUST, CRL
+         * @param {Certificate} cert Certificate
+         * @returns
+         *
+         * @memberOf PkiStore
+         */
+        deleteCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate): void;
         /**
          * Find items in local store
          *

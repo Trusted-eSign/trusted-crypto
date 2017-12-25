@@ -623,6 +623,32 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key
 	}
 }
 
+void PkiStore::deletePkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert){
+	LOGGER_FN();
+
+	try{
+		if (strcmp(provider->type->c_str(), "SYSTEM") == 0){
+			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
+		}
+#if defined(OPENSSL_SYS_WINDOWS)
+		else if (strcmp(provider->type->c_str(), "MICROSOFT") == 0){
+			ProviderMicrosoft::deletePkiObject(cert, category);
+		}
+#endif
+#if defined(CPROCSP)
+		else if (strcmp(provider->type->c_str(), "CRYPTOPRO") == 0){
+			ProviderCryptopro::deletePkiObject(cert, category);
+		}
+#endif
+		else{
+			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
+		}
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, PkiStore, e, "Error delete certificate from store");
+	}
+}
+
 void PkiStore::bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result){
 	LOGGER_FN();
 

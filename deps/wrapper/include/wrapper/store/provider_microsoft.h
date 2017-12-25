@@ -24,6 +24,7 @@ public:
 	Handle<Key> static getKey(Handle<Certificate> cert);
 
 	static void addPkiObject(Handle<Certificate> cert, Handle<std::string> category);
+	static void deletePkiObject(Handle<Certificate> cert, Handle<std::string> category);
 
 	bool static hasPrivateKey(Handle<Certificate> cert);
 

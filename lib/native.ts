@@ -63,7 +63,8 @@ declare namespace native {
             public getType(): number;
             public getKeyUsage(): number;
             public getSignatureAlgorithm(): string;
-            public getSignatureDigest(): string;
+            public getSignatureDigestAlgorithm(): string;
+            public getPublicKeyAlgorithm(): string;
             public getOrganizationName(): string;
             public getOCSPUrls(): string[];
             public getCAIssuersUrls(): string[];
@@ -324,6 +325,8 @@ declare namespace native {
             key?: string; // thumbprint ket SHA1
             organizationName?: string;
             signatureAlgorithm?: string;
+            signatureDigestAlgorithm?: string;
+            publicKeyAlgorithm?: string;
         }
 
         export interface IFilter {
@@ -406,6 +409,8 @@ declare namespace native {
             public addCrl(provider: Provider, category: string, crl: PKI.CRL): string;
             public addKey(provider: Provider, key: PKI.Key, password: string): string;
             public addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
+
+            public deleteCert(provider: Provider, category: string, cert: PKI.Certificate): void;
         }
 
         class CashJson {
@@ -452,6 +457,9 @@ declare namespace native {
             public setKeyEncrypted(enc: boolean): void;
             public setOrganizationName(organizationName: string): void;
             public setSignatureAlgorithm(signatureAlgorithm: string): void;
+            public setSignatureAlgorithm(signatureAlgorithm: string): void;
+            public setSignatureDigestAlgorithm(signatureDigestAlgorithm: string): void;
+            public setPublicKeyAlgorithm(publicKeyAlgorithm: string): void;
         }
     }
 
