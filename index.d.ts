@@ -463,6 +463,8 @@ declare namespace native {
             isGost2012_512CSPAvailable(): boolean;
             checkCPCSPLicense(): boolean;
             getCPCSPLicense(): string;
+            getCPCSPVersion(): string;
+            getCPCSPSecurityLvl(): string;
             enumProviders(): object[];
             enumContainers(type?: number, provName?: string): string[];
             getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
@@ -835,6 +837,16 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getCPCSPLicense(): string;
+        /**
+         * Return instaled correct version for CryptoPro CSP
+         * Throw exception if provaider not available
+         *
+         * @static
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        static getCPCSPVersion(): string;
+        static getCPCSPSecurityLvl(): string;
         /**
          * Enumerate available CSP
          *
