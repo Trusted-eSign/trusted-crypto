@@ -251,7 +251,7 @@ Handle<std::string> Certificate::getSignatureDigestAlgorithm() {
 
 	LOGGER_OPENSSL("OBJ_find_sigid_algs");
 	if (!OBJ_find_sigid_algs(signature_nid, &md_nid, NULL)) {
-		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Error find sigid algs");
+		return new std::string("");
 	}
 
 	if (!md_nid){
