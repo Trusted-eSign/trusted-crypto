@@ -468,7 +468,9 @@ declare namespace native {
             enumProviders(): object[];
             enumContainers(type?: number, provName?: string): string[];
             getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
+            getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
             installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
+            deleteContainer(contName: string, provType: number, provName?: string): void;
         }
     }
     namespace COMMON {
@@ -876,6 +878,17 @@ declare namespace trusted.utils {
          */
         static getCertifiacteFromContainer(contName: string, provType: number, provName?: string): pki.Certificate;
         static installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
+        static deleteContainer(contName: string, provType: number, provName?: string): void;
+        /**
+         * Get container name by certificate
+         *
+         * @static
+         * @param {pki.Certificate} cert
+         * @param {string} [category="MY"]
+         * @returns {string}
+         * @memberof Csp
+         */
+        static getContainerNameByCertificate(cert: pki.Certificate, category?: string): string;
         /**
          * Creates an instance of Csp.
          *
