@@ -728,3 +728,351 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 		THROW_EXCEPTION(0, Csp, e, "Error install certificate from container");
 	}
 }
+
+Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert, Handle<std::string> category){
+	LOGGER_FN();
+
+	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+	PCCERT_CONTEXT pCertFound = HCRYPT_NULL;
+	HCERTSTORE hCertStore = HCRYPT_NULL;
+	HCRYPTPROV hCryptProv = HCRYPT_NULL;
+	HCRYPTKEY hPublicKey = HCRYPT_NULL;
+	LPBYTE pbContainerName;
+	LPBYTE pbFPCert;
+
+	try {
+		DWORD cbFPCert;
+		DWORD cbContainerName;
+		DWORD dwFlags;
+		DWORD cbData = 0;
+		Handle<std::string> res = new std::string("");
+
+		std::wstring wCategory = std::wstring(category->begin(), category->end());
+
+		pCertContext = createCertificateContext(cert);
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER,
+			wCategory.c_str())))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
+		}
+
+		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+			THROW_EXCEPTION(0, Csp, NULL, "Cannot find existing certificate");
+		}
+
+		if (!CryptAcquireContext(
+			&hCryptProv,
+			NULL,
+			NULL,
+			PROV_GOST_2001_DH,
+			CRYPT_VERIFYCONTEXT))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+		}
+
+		if (!CryptImportPublicKeyInfo(
+			hCryptProv,
+			pCertFound->dwCertEncodingType,
+			&pCertFound->pCertInfo->SubjectPublicKeyInfo,
+			&hPublicKey))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "Error during CryptImportPublicKeyInfo. Error: 0x%08x", GetLastError());
+		}
+
+		if (!CryptGetKeyParam(hPublicKey, KP_FP, NULL, &cbFPCert, 0))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
+		}
+
+		pbFPCert = (LPBYTE)malloc(cbFPCert);
+
+		if (!pbFPCert) {
+			THROW_EXCEPTION(0, Csp, NULL, "Fail to allocate memory");
+		}
+
+		if (!CryptGetKeyParam(hPublicKey, KP_FP, pbFPCert, &cbFPCert, 0))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
+		}
+
+
+		if (!CryptGetProvParam(hCryptProv, PP_ENUMCONTAINERS, NULL, &cbContainerName, CRYPT_FIRST))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+		}
+
+		pbContainerName = (LPBYTE)malloc(cbContainerName);
+
+		if (!pbContainerName) {
+			THROW_EXCEPTION(0, Csp, NULL, "Fail to allocate memory");
+		}
+
+		dwFlags = CRYPT_FIRST;
+
+		while (CryptGetProvParam(hCryptProv, PP_ENUMCONTAINERS, pbContainerName, &cbContainerName, dwFlags | CRYPT_FQCN))
+		{
+			if (cmpCertAndContFP((LPCSTR)pbContainerName, pbFPCert, cbFPCert)) {
+				res = new std::string((char*)pbContainerName);
+				break;
+			}
+
+			dwFlags = CRYPT_NEXT;
+		}
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (pCertFound) {
+			CertFreeCertificateContext(pCertFound);
+			pCertFound = HCRYPT_NULL;
+		}
+
+		if (pbContainerName) {
+			free(pbContainerName);
+		}
+
+		if (pbFPCert) {
+			free(pbFPCert);
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (hPublicKey)
+		{
+			if (!CryptDestroyKey(hPublicKey))
+			{
+				THROW_EXCEPTION(0, Csp, NULL, "CryptDestroyKey. Error: 0x%08x", GetLastError());
+			}
+		}
+
+		if (hCryptProv) {
+			if (!CryptReleaseContext(hCryptProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+		}
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (pCertFound) {
+			CertFreeCertificateContext(pCertFound);
+			pCertFound = HCRYPT_NULL;
+		}
+
+		if (pbContainerName) {
+			free(pbContainerName);
+		}
+
+		if (pbFPCert) {
+			free(pbFPCert);
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (hPublicKey)
+		{
+			if (!CryptDestroyKey(hPublicKey))
+			{
+				THROW_EXCEPTION(0, Csp, NULL, "CryptDestroyKey. Error: 0x%08x", GetLastError());
+			}
+		}
+
+		if (hCryptProv) {
+			if (!CryptReleaseContext(hCryptProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+		}
+
+		THROW_EXCEPTION(0, Csp, e, "Error delete contaiener");
+	}
+}
+
+PCCERT_CONTEXT Csp::createCertificateContext(Handle<Certificate> cert) {
+	LOGGER_FN();
+
+	try {
+		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+		unsigned char *pData = NULL, *p = NULL;
+		int iData;
+
+		if (cert->isEmpty()) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "cert cannot be empty");
+		}
+
+		LOGGER_OPENSSL(i2d_X509);
+		if ((iData = i2d_X509(cert->internal(), NULL)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error i2d_X509");
+		}
+
+		LOGGER_OPENSSL(OPENSSL_malloc);
+		if (NULL == (pData = (unsigned char*)OPENSSL_malloc(iData))) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error malloc");
+		}
+
+		p = pData;
+		LOGGER_OPENSSL(i2d_X509);
+		if ((iData = i2d_X509(cert->internal(), &p)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error i2d_X509");
+		}
+
+		LOGGER_TRACE("CertCreateCertificateContext");
+		if (NULL == (pCertContext = CertCreateCertificateContext(
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, pData, iData))) {
+			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext() failed");
+		}
+
+		OPENSSL_free(pData);
+
+		return pCertContext;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Csp, e, "Error create cert context from X509");
+	}
+}
+
+bool Csp::findExistingCertificate(
+	OUT PCCERT_CONTEXT &pOutCertContext,
+	IN HCERTSTORE hCertStore,
+	IN PCCERT_CONTEXT pCertContext,
+	IN DWORD dwFindFlags,
+	IN DWORD dwCertEncodingType
+	) {
+
+	LOGGER_FN();
+
+	bool res = false;
+
+	try {
+		if (!hCertStore) {
+			THROW_EXCEPTION(0, Csp, NULL, "certificate store cannot be empty");
+		}
+
+		if (!pCertContext) {
+			THROW_EXCEPTION(0, Csp, NULL, "certificate context cannot be empty");
+		}
+
+		LOGGER_TRACE("CertFindCertificateInStore");
+		pOutCertContext = CertFindCertificateInStore(
+			hCertStore,
+			dwCertEncodingType,
+			dwFindFlags,
+			CERT_FIND_EXISTING,
+			pCertContext,
+			NULL
+			);
+
+		if (pOutCertContext) {
+			res = true;
+		}
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Csp, e, "Error find certificate in store. Code: %d", GetLastError());
+	}
+}
+
+CRYPT_KEY_PROV_INFO * Csp::getCertificateContextProperty(
+	IN PCCERT_CONTEXT pCertContext,
+	IN DWORD dwPropId) {
+
+	LOGGER_FN();
+
+	try {
+		DWORD dwSize = 0;
+
+		LOGGER_TRACE("CertGetCertificateContextProperty");
+		if (!CertGetCertificateContextProperty(pCertContext, dwPropId, NULL, &dwSize)) {
+			THROW_EXCEPTION(0, Csp, NULL, "CertGetCertificateContextProperty(NULL) failed. Code: %d", GetLastError());
+		}
+
+		CRYPT_KEY_PROV_INFO *pinfo = (CRYPT_KEY_PROV_INFO *)malloc(dwSize);
+
+		LOGGER_TRACE("CertGetCertificateContextProperty");
+		if (!CertGetCertificateContextProperty(pCertContext, dwPropId, pinfo, &dwSize))
+		{
+			LOGGER_OPENSSL(OPENSSL_free);
+			OPENSSL_free(pinfo);
+			THROW_EXCEPTION(0, Csp, NULL, "CertGetCertificateContextProperty(NULL) failed. Code: %d", GetLastError());
+		}
+
+		return pinfo;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Csp, e, "Error get certificate context property");
+	}
+}
+
+bool Csp::cmpCertAndContFP(LPCSTR szContainerName, LPBYTE pbFPCert, DWORD cbFPCert) {
+	LOGGER_FN();
+
+	try {
+		HCRYPTPROV hProvCont = HCRYPT_NULL;
+		LPBYTE pbFPCont;
+		DWORD cbFPCont;
+		BOOL result = FALSE;
+
+		if (!CryptAcquireContext(
+			&hProvCont,
+			szContainerName,
+			NULL,
+			PROV_GOST_2012_256,
+			CRYPT_VERIFYCONTEXT))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+		}
+
+		cbFPCont = cbFPCert;
+		pbFPCont = (LPBYTE)malloc(cbFPCont);
+
+		if (CryptGetProvParam(hProvCont, PP_SIGNATURE_KEY_FP, pbFPCont, &cbFPCont, 0)) {
+			if (!memcmp(pbFPCont, pbFPCert, cbFPCert)) {
+				result = TRUE;
+				goto Done;
+			}
+		}
+
+		if (CryptGetProvParam(hProvCont, PP_EXCHANGE_KEY_FP, pbFPCont, &cbFPCont, 0)) {
+			if (!memcmp(pbFPCont, pbFPCert, cbFPCert)) {
+				result = TRUE;
+				goto Done;
+			}
+		}
+
+	Done:
+		if (pbFPCont) {
+			free(pbFPCont);
+		}
+
+		if (hProvCont)
+		{
+			if (!CryptReleaseContext(hProvCont, 0))
+			{
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+		}
+
+		return result;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Csp, e, "Error compare cert and container FP");
+	}
+}

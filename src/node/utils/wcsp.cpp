@@ -28,6 +28,7 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "enumContainers", EnumContainers);
 	Nan::SetPrototypeMethod(tpl, "getCertifiacteFromContainer", GetCertifiacteFromContainer);
 	Nan::SetPrototypeMethod(tpl, "installCertifiacteFromContainer", InstallCertifiacteFromContainer);
+	Nan::SetPrototypeMethod(tpl, "getContainerNameByCertificate", GetContainerNameByCertificate);
 	
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -275,5 +276,30 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		Nan::ThrowError("Only if CSP_ENABLE");
 #endif // CSP_ENABLE
 	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::GetContainerNameByCertificate){
+	METHOD_BEGIN();
+
+	try{
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		LOGGER_ARG("category");
+		v8::String::Utf8Value v8Category(info[1]->ToString());
+		char *category = *v8Category;
+
+		UNWRAP_DATA(Csp);
+
+		Handle<std::string> cont = _this->getContainerNameByCertificate(wCert->data_, new std::string(category));
+
+		v8::Local<v8::String> v8Cont = Nan::New<v8::String>(cont->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Cont);
+
+		return;
+	}
+
 	TRY_END();
 }

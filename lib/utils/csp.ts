@@ -140,6 +140,20 @@ namespace trusted.utils {
         }
 
         /**
+         * Get container name by certificate
+         *
+         * @static
+         * @param {pki.Certificate} cert
+         * @param {string} [category="MY"]
+         * @returns {string}
+         * @memberof Csp
+         */
+        public static getContainerNameByCertificate(cert: pki.Certificate, category: string = "MY"): string {
+            const csp = new native.UTILS.Csp();
+            return csp.getContainerNameByCertificate(cert.handle, category);
+        }
+
+        /**
          * Creates an instance of Csp.
          *
          *

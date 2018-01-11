@@ -429,7 +429,7 @@ void ProviderCryptopro::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 
 		std::wstring wCategory = std::wstring(category->begin(), category->end());
 
-		pCertContext = createCertificateContext(cert);
+		pCertContext = Csp::createCertificateContext(cert);
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
 			CERT_STORE_PROV_SYSTEM,
@@ -497,7 +497,7 @@ void ProviderCryptopro::deletePkiObject(Handle<Certificate> cert, Handle<std::st
 	try{
 		std::wstring wCategory = std::wstring(category->begin(), category->end());
 
-		pCertContext = createCertificateContext(cert);
+		pCertContext = Csp::createCertificateContext(cert);
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
 			CERT_STORE_PROV_SYSTEM,
@@ -509,7 +509,7 @@ void ProviderCryptopro::deletePkiObject(Handle<Certificate> cert, Handle<std::st
 			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
 		}
 
-		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+		if (!Csp::findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
 			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "Cannot find existing certificate");
 		}
 
@@ -562,7 +562,7 @@ bool ProviderCryptopro::hasPrivateKey(Handle<Certificate> cert) {
 		DWORD dwSize = 0;
 		bool res = false;
 
-		pCertContext = createCertificateContext(cert);
+		pCertContext = Csp::createCertificateContext(cert);
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
 			CERT_STORE_PROV_SYSTEM,
@@ -574,7 +574,7 @@ bool ProviderCryptopro::hasPrivateKey(Handle<Certificate> cert) {
 			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertOpenStore(My) failed");
 		}
 
-		if (findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+		if (Csp::findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
 			if (CertGetCertificateContextProperty(pCertFound, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwSize)) {
 				res = true;
 			}
@@ -593,91 +593,6 @@ bool ProviderCryptopro::hasPrivateKey(Handle<Certificate> cert) {
 	}
 	catch (Handle<Exception> e) {
 		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error check key existing");
-	}
-}
-
-PCCERT_CONTEXT ProviderCryptopro::createCertificateContext(Handle<Certificate> cert) {
-	LOGGER_FN();
-
-	try {
-		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
-		unsigned char *pData = NULL, *p = NULL;
-		int iData;
-
-		if (cert->isEmpty()) {
-			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "cert cannot be empty");
-		}
-
-		LOGGER_OPENSSL(i2d_X509);
-		if ((iData = i2d_X509(cert->internal(), NULL)) <= 0) {
-			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Error i2d_X509");
-		}
-
-		LOGGER_OPENSSL(OPENSSL_malloc);
-		if (NULL == (pData = (unsigned char*)OPENSSL_malloc(iData))) {
-			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Error malloc");
-		}
-
-		p = pData;
-		LOGGER_OPENSSL(i2d_X509);
-		if ((iData = i2d_X509(cert->internal(), &p)) <= 0) {
-			THROW_OPENSSL_EXCEPTION(0, ProviderCryptopro, NULL, "Error i2d_X509");
-		}
-
-		LOGGER_TRACE("CertCreateCertificateContext");
-		if (NULL == (pCertContext = CertCreateCertificateContext(
-			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, pData, iData))) {
-			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertCreateCertificateContext() failed");
-		}
-
-		OPENSSL_free(pData);
-
-		return pCertContext;
-	}
-	catch (Handle<Exception> e) {
-		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error create cert context from X509");
-	}
-}
-
-bool ProviderCryptopro::findExistingCertificate(
-	OUT PCCERT_CONTEXT &pOutCertContext,
-	IN HCERTSTORE hCertStore,
-	IN PCCERT_CONTEXT pCertContext,
-	IN DWORD dwFindFlags,
-	IN DWORD dwCertEncodingType
-	) {
-
-	LOGGER_FN();
-
-	bool res = false;
-
-	try {
-		if (!hCertStore) {
-			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "certificate store cannot be empty");
-		}
-
-		if (!pCertContext) {
-			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "certificate context cannot be empty");
-		}
-
-		LOGGER_TRACE("CertFindCertificateInStore");
-		pOutCertContext = CertFindCertificateInStore(
-			hCertStore,
-			dwCertEncodingType,
-			dwFindFlags,
-			CERT_FIND_EXISTING,
-			pCertContext,
-			NULL
-			);
-
-		if (pOutCertContext) {
-			res = true;
-		}
-
-		return res;
-	}
-	catch (Handle<Exception> e) {
-		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error find certificate in store");
 	}
 }
 

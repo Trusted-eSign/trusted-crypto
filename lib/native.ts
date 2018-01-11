@@ -480,6 +480,7 @@ declare namespace native {
             public enumProviders(): object[];
             public enumContainers(type?: number, provName?: string): string[];
             public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
+            public getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
             public installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
         }
     }
