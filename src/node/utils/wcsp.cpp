@@ -284,6 +284,7 @@ NAN_METHOD(WCsp::GetContainerNameByCertificate){
 	METHOD_BEGIN();
 
 	try{
+#ifdef CSP_ENABLE
 		LOGGER_ARG("cert");
 		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
 
@@ -300,6 +301,9 @@ NAN_METHOD(WCsp::GetContainerNameByCertificate){
 		info.GetReturnValue().Set(v8Cont);
 
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 
 	TRY_END();

@@ -771,6 +771,7 @@ void Csp::deleteContainer(Handle<std::string> contName, int provType, Handle<std
 Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert, Handle<std::string> category){
 	LOGGER_FN();
 
+#ifdef CSP_ENABLE
 	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
 	PCCERT_CONTEXT pCertFound = HCRYPT_NULL;
 	HCERTSTORE hCertStore = HCRYPT_NULL;
@@ -778,8 +779,10 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 	HCRYPTKEY hPublicKey = HCRYPT_NULL;
 	LPBYTE pbContainerName;
 	LPBYTE pbFPCert;
+#endif
 
 	try {
+#ifdef CSP_ENABLE
 		DWORD cbFPCert;
 		DWORD cbContainerName;
 		DWORD dwFlags;
@@ -901,8 +904,13 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 		}
 
 		return res;
+
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
 	}
 	catch (Handle<Exception> e) {
+#ifdef CSP_ENABLE
 		if (pCertContext) {
 			CertFreeCertificateContext(pCertContext);
 			pCertContext = HCRYPT_NULL;
@@ -939,10 +947,13 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 		}
+#endif
 
 		THROW_EXCEPTION(0, Csp, e, "Error delete contaiener");
 	}
 }
+
+#ifdef CSP_ENABLE
 
 PCCERT_CONTEXT Csp::createCertificateContext(Handle<Certificate> cert) {
 	LOGGER_FN();
@@ -1115,3 +1126,5 @@ bool Csp::cmpCertAndContFP(LPCSTR szContainerName, LPBYTE pbFPCert, DWORD cbFPCe
 		THROW_EXCEPTION(0, Csp, e, "Error compare cert and container FP");
 	}
 }
+
+#endif //CSP_ENABLE

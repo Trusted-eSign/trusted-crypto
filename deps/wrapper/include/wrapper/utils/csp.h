@@ -33,6 +33,7 @@ public:
 	void installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 	void deleteContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 
+#ifdef CSP_ENABLE
 	PCCERT_CONTEXT static createCertificateContext(Handle<Certificate> cert);
 
 	bool static findExistingCertificate(
@@ -50,6 +51,7 @@ private:
 		IN PCCERT_CONTEXT pCertContext,
 		IN DWORD dwPropId
 		);
+#endif //CSP_ENABLE
 };
 
 #endif //!UTIL_CSP_INCLUDED 
