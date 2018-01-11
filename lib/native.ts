@@ -482,6 +482,7 @@ declare namespace native {
             public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
             public getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
             public installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
+            public deleteContainer(contName: string, provType: number, provName?: string): void;
         }
     }
 

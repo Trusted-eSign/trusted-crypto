@@ -729,6 +729,45 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 	}
 }
 
+void Csp::deleteContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
+	LOGGER_FN();
+
+#ifdef CSP_ENABLE
+	HCRYPTPROV hProv = NULL;
+#endif
+
+	try {
+#ifdef CSP_ENABLE
+		if (contName.isEmpty()) {
+			THROW_EXCEPTION(0, Csp, NULL, "container name epmty");
+		}
+
+		if (!provType) {
+			THROW_EXCEPTION(0, Csp, NULL, "provider type not set");
+		}
+
+		if (!CryptAcquireContext(
+			&hProv,
+			contName->c_str(),
+			!provName.isEmpty() && provName->length() ? (LPCSTR)provName->c_str() : NULL,
+			provType,
+			CRYPT_DELETEKEYSET))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+		}
+
+		hProv = NULL;
+
+		return;
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Csp, e, "Error install certificate from container");
+	}
+}
+
 Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert, Handle<std::string> category){
 	LOGGER_FN();
 

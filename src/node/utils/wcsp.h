@@ -29,6 +29,7 @@ public:
 	static NAN_METHOD(GetCertifiacteFromContainer);
 	static NAN_METHOD(InstallCertifiacteFromContainer);
 	static NAN_METHOD(GetContainerNameByCertificate);
+	static NAN_METHOD(DeleteContainer);
 };
 
 #endif //!UTIL_WCSP_INCLUDED 

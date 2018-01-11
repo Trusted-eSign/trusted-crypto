@@ -31,6 +31,7 @@ public:
 	Handle<Certificate> getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 	Handle<std::string> getContainerNameByCertificate(Handle<Certificate> cert, Handle<std::string> category);
 	void installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
+	void deleteContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 
 	PCCERT_CONTEXT static createCertificateContext(Handle<Certificate> cert);
 

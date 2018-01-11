@@ -29,6 +29,7 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "getCertifiacteFromContainer", GetCertifiacteFromContainer);
 	Nan::SetPrototypeMethod(tpl, "installCertifiacteFromContainer", InstallCertifiacteFromContainer);
 	Nan::SetPrototypeMethod(tpl, "getContainerNameByCertificate", GetContainerNameByCertificate);
+	Nan::SetPrototypeMethod(tpl, "deleteContainer", DeleteContainer);
 	
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -301,5 +302,35 @@ NAN_METHOD(WCsp::GetContainerNameByCertificate){
 		return;
 	}
 
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::DeleteContainer)
+{
+	METHOD_BEGIN();
+
+	try{
+#ifdef CSP_ENABLE
+		UNWRAP_DATA(Csp);
+
+		LOGGER_ARG("container");
+		v8::String::Utf8Value v8Cont(info[0]->ToString());
+		char *cont = *v8Cont;
+
+		LOGGER_ARG("type");
+		int type = info[1]->ToNumber()->Int32Value();
+
+		LOGGER_ARG("provider");
+		v8::String::Utf8Value v8Prov(info[2]->ToString());
+		char *provName = *v8Prov;
+
+		_this->deleteContainer(new std::string(cont), type, new std::string(provName));
+
+		info.GetReturnValue().Set(info.This());
+		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
+	}
 	TRY_END();
 }
