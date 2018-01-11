@@ -777,8 +777,8 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 	HCERTSTORE hCertStore = HCRYPT_NULL;
 	HCRYPTPROV hCryptProv = HCRYPT_NULL;
 	HCRYPTKEY hPublicKey = HCRYPT_NULL;
-	LPBYTE pbContainerName;
-	LPBYTE pbFPCert;
+	LPBYTE pbContainerName = HCRYPT_NULL;
+	LPBYTE pbFPCert = HCRYPT_NULL;
 #endif
 
 	try {
