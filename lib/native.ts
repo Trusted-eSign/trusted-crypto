@@ -476,6 +476,8 @@ declare namespace native {
             public checkCPCSPLicense(): boolean;
             public getCPCSPLicense(): string;
             public getCPCSPVersion(): string;
+            public getCPCSPVersionPKZI(): string;
+            public getCPCSPVersionSKZI(): string;
             public getCPCSPSecurityLvl(): string;
             public enumProviders(): object[];
             public enumContainers(type?: number, provName?: string): string[];

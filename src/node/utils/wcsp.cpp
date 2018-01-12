@@ -22,6 +22,8 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "checkCPCSPLicense", CheckCPCSPLicense);
 	Nan::SetPrototypeMethod(tpl, "getCPCSPLicense", GetCPCSPLicense);
 	Nan::SetPrototypeMethod(tpl, "getCPCSPVersion", GetCPCSPVersion);
+	Nan::SetPrototypeMethod(tpl, "getCPCSPVersionPKZI", GetCPCSPVersionPKZI);
+	Nan::SetPrototypeMethod(tpl, "getCPCSPVersionSKZI", GetCPCSPVersionSKZI);
 	Nan::SetPrototypeMethod(tpl, "getCPCSPSecurityLvl", GetCPCSPSecurityLvl);
 
 	Nan::SetPrototypeMethod(tpl, "enumProviders", EnumProviders);
@@ -130,11 +132,43 @@ NAN_METHOD(WCsp::GetCPCSPVersion) {
 	try {
 		UNWRAP_DATA(Csp);
 
-		Handle<std::string> lic = _this->getCPCSPVersion();
+		Handle<std::string> ver = _this->getCPCSPVersion();
 
-		v8::Local<v8::String> v8Lic = Nan::New<v8::String>(lic->c_str()).ToLocalChecked();
+		v8::Local<v8::String> v8Ver = Nan::New<v8::String>(ver->c_str()).ToLocalChecked();
 
-		info.GetReturnValue().Set(v8Lic);
+		info.GetReturnValue().Set(v8Ver);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::GetCPCSPVersionPKZI) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Csp);
+
+		Handle<std::string> ver = _this->getCPCSPVersionPKZI();
+
+		v8::Local<v8::String> v8Ver = Nan::New<v8::String>(ver->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Ver);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::GetCPCSPVersionSKZI) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Csp);
+
+		Handle<std::string> ver = _this->getCPCSPVersionSKZI();
+
+		v8::Local<v8::String> v8Ver = Nan::New<v8::String>(ver->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Ver);
 		return;
 	}
 	TRY_END();

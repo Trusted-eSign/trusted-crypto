@@ -242,33 +242,41 @@ Handle<std::string> Csp::getCPCSPVersion() {
 	try {
 #ifdef CSP_ENABLE
 		static HCRYPTPROV hCryptProv = 0;
-		Handle<std::string> version;
-		DWORD dwVersion[100];
-		DWORD dwDataLength = (DWORD)sizeof(dwVersion);
+		DWORD cbData = 0;
+		DWORD pbData;
+		Handle <std::string> res;
 
 		if (!isGost2001CSPAvailable()) {
 			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
 		}
 
-		if (!CryptAcquireContext(&hCryptProv, NULL,	NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
+		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
 			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
 		}
 
-		if (!CryptGetProvParam(hCryptProv, PP_VERSION_EX, (BYTE*)&dwVersion, &dwDataLength, 0)){
+		if (!CryptGetProvParam(
+			hCryptProv,
+			PP_VERSION,
+			NULL,
+			&cbData,
+			0))
+		{
 			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
-		std::string str = "";
-		for (int i = 3; i >= 0; i--){
-			if (i == 1) continue;
-			std::stringstream ss;
-			ss << dwVersion[i];
-			if (i == 0)
-				str = str + ss.str();
-			else
-				str = str + ss.str() + ".";
+		pbData = (DWORD)malloc(cbData);
+
+		if (!CryptGetProvParam(
+			hCryptProv,
+			PP_VERSION,
+			(BYTE *)pbData,
+			&cbData,
+			0))
+		{
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
-		version = new std::string(str);
+
+		res = new std::string((char *)pbData);
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
@@ -278,7 +286,143 @@ Handle<std::string> Csp::getCPCSPVersion() {
 
 		hCryptProv = 0;
 
-		return version;
+		if (pbData) {
+			free((BYTE*)pbData);
+		}
+
+		return res;
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp version");
+	}
+}
+
+Handle<std::string> Csp::getCPCSPVersionPKZI() {
+	LOGGER_FN();
+
+	try {
+#ifdef CSP_ENABLE
+		static HCRYPTPROV hCryptProv = 0;
+		PROV_PP_VERSION_EX *exVersion = NULL;
+		DWORD cbData = 0;
+		LPBYTE pbData;
+		Handle<std::string> res;
+
+		if (!isGost2001CSPAvailable()) {
+			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
+		}
+
+		if (!CryptAcquireContext(&hCryptProv, NULL,	NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+		}
+
+		if (!CryptGetProvParam(
+			hCryptProv,
+			PP_VERSION_EX,
+			NULL,
+			&cbData,
+			0))
+		{
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+		}
+
+		pbData = (LPBYTE)malloc(cbData);
+
+		if (!CryptGetProvParam(
+			hCryptProv,
+			PP_VERSION_EX,
+			pbData,
+			&cbData,
+			0))
+		{
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+		}
+
+		exVersion = (PROV_PP_VERSION_EX *)pbData;
+		res = new std::string(std::to_string(exVersion->PKZI_Build));
+
+		if (hCryptProv) {
+			if (!CryptReleaseContext(hCryptProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+		}
+
+		hCryptProv = 0;
+
+		if (pbData) {
+			free((BYTE*)pbData);
+		}
+
+		return res;
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp version");
+	}
+}
+
+Handle<std::string> Csp::getCPCSPVersionSKZI() {
+	LOGGER_FN();
+
+	try {
+#ifdef CSP_ENABLE
+		static HCRYPTPROV hCryptProv = 0;
+		PROV_PP_VERSION_EX *exVersion = NULL;
+		DWORD cbData = 0;
+		LPBYTE pbData;
+		Handle<std::string> res;
+
+		if (!isGost2001CSPAvailable()) {
+			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
+		}
+
+		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+		}
+
+		if (!CryptGetProvParam(
+			hCryptProv,
+			PP_VERSION_EX,
+			NULL,
+			&cbData,
+			0))
+		{
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+		}
+
+		pbData = (LPBYTE)malloc(cbData);
+
+		if (!CryptGetProvParam(
+			hCryptProv,
+			PP_VERSION_EX,
+			pbData,
+			&cbData,
+			0))
+		{
+			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+		}
+
+		exVersion = (PROV_PP_VERSION_EX *)pbData;
+		res = new std::string(std::to_string(exVersion->SKZI_Build));
+
+		if (hCryptProv) {
+			if (!CryptReleaseContext(hCryptProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+		}
+
+		hCryptProv = 0;
+
+		if (pbData) {
+			free((BYTE*)pbData);
+		}
+
+		return res;
 #else
 		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
 #endif

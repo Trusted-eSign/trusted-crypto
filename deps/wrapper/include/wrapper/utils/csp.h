@@ -24,6 +24,8 @@ public:
 	bool checkCPCSPLicense();
 	Handle<std::string> getCPCSPLicense();
 	Handle<std::string> getCPCSPVersion();
+	Handle<std::string> getCPCSPVersionPKZI();
+	Handle<std::string> getCPCSPVersionSKZI();
 	Handle<std::string> getCPCSPSecurityLvl();
 
 	std::vector<ProviderProps> enumProviders();

@@ -86,6 +86,16 @@ namespace trusted.utils {
             return csp.getCPCSPVersion();
         }
 
+        public static getCPCSPVersionPKZI(): string {
+            const csp = new native.UTILS.Csp();
+            return csp.getCPCSPVersionPKZI();
+        }
+
+        public static getCPCSPVersionSKZI(): string {
+            const csp = new native.UTILS.Csp();
+            return csp.getCPCSPVersionSKZI();
+        }
+
         public static getCPCSPSecurityLvl(): string {
             const csp = new native.UTILS.Csp();
             return csp.getCPCSPSecurityLvl();
