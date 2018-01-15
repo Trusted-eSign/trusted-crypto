@@ -242,13 +242,10 @@ Handle<std::string> Csp::getCPCSPVersion() {
 	try {
 #ifdef CSP_ENABLE
 		static HCRYPTPROV hCryptProv = 0;
-		DWORD cbData = 0;
-		DWORD pbData;
+		DWORD pbData = 0;
+		DWORD cbData = (DWORD)sizeof(pbData);
+		
 		Handle <std::string> res;
-
-		if (!isGost2001CSPAvailable()) {
-			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
-		}
 
 		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
 			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
@@ -257,26 +254,14 @@ Handle<std::string> Csp::getCPCSPVersion() {
 		if (!CryptGetProvParam(
 			hCryptProv,
 			PP_VERSION,
-			NULL,
+			(BYTE*)&pbData,
 			&cbData,
 			0))
 		{
 			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
-		pbData = (DWORD)malloc(cbData);
-
-		if (!CryptGetProvParam(
-			hCryptProv,
-			PP_VERSION,
-			(BYTE *)pbData,
-			&cbData,
-			0))
-		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
-		}
-
-		res = new std::string((char *)pbData);
+		res = new std::string(std::to_string(((pbData >> 8) & 0xFF)) + "." + std::to_string((0xFF & pbData)));
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
@@ -285,10 +270,6 @@ Handle<std::string> Csp::getCPCSPVersion() {
 		}
 
 		hCryptProv = 0;
-
-		if (pbData) {
-			free((BYTE*)pbData);
-		}
 
 		return res;
 #else
@@ -310,10 +291,6 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 		DWORD cbData = 0;
 		LPBYTE pbData;
 		Handle<std::string> res;
-
-		if (!isGost2001CSPAvailable()) {
-			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
-		}
 
 		if (!CryptAcquireContext(&hCryptProv, NULL,	NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
 			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
@@ -376,10 +353,6 @@ Handle<std::string> Csp::getCPCSPVersionSKZI() {
 		DWORD cbData = 0;
 		LPBYTE pbData;
 		Handle<std::string> res;
-
-		if (!isGost2001CSPAvailable()) {
-			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
-		}
 
 		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
 			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
