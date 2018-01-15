@@ -464,6 +464,8 @@ declare namespace native {
             checkCPCSPLicense(): boolean;
             getCPCSPLicense(): string;
             getCPCSPVersion(): string;
+            getCPCSPVersionPKZI(): string;
+            getCPCSPVersionSKZI(): string;
             getCPCSPSecurityLvl(): string;
             enumProviders(): object[];
             enumContainers(type?: number, provName?: string): string[];
@@ -848,6 +850,8 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getCPCSPVersion(): string;
+        static getCPCSPVersionPKZI(): string;
+        static getCPCSPVersionSKZI(): string;
         static getCPCSPSecurityLvl(): string;
         /**
          * Enumerate available CSP
