@@ -53,6 +53,8 @@ private:
 		IN PCCERT_CONTEXT pCertContext,
 		IN DWORD dwPropId
 		);
+
+	LPCWSTR provTypeToProvNameW(DWORD dwProvType);
 #endif //CSP_ENABLE
 };
 

@@ -244,7 +244,7 @@ Handle<std::string> Csp::getCPCSPVersion() {
 		static HCRYPTPROV hCryptProv = 0;
 		DWORD pbData = 0;
 		DWORD cbData = (DWORD)sizeof(pbData);
-		
+
 		Handle <std::string> res;
 
 		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
@@ -292,7 +292,7 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 		LPBYTE pbData;
 		Handle<std::string> res;
 
-		if (!CryptAcquireContext(&hCryptProv, NULL,	NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
+		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
 			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
 		}
 
@@ -420,7 +420,7 @@ Handle<std::string> Csp::getCPCSPSecurityLvl() {
 			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
 		}
 
-		if (!CryptAcquireContext(&hCryptProv, NULL,	NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
+		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
 			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
 		}
 
@@ -517,7 +517,7 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType, Handle<std::s
 
 		for (int i = 0; i < providers.size(); i++) {
 			ProviderProps provider = providers[i];
-			
+
 			if (!CryptAcquireContext(
 				&hProv,
 				NULL,
@@ -643,7 +643,8 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 			if (!(hcert = d2i_X509(NULL, &p, pCertContext->cbCertEncoded))) {
 				THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "'d2i_X509' Error decode len bytes");
 			}
-		} else {
+		}
+		else {
 			THROW_EXCEPTION(0, Csp, NULL, "Cannot find certificate in store");
 		}
 
@@ -701,10 +702,12 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 	try {
 #ifdef CSP_ENABLE
 		DWORD cbName;
-		DWORD dwKeySpec;
+		DWORD dwKeySpec, dwSize;
 		PCCERT_CONTEXT pCertContext;
 		HCERTSTORE hCertStore = HCRYPT_NULL;
 		CRYPT_KEY_PROV_INFO pKeyInfo = { 0 };
+		DWORD dwNewProvType = 0;
+		ALG_ID dwAlgId = 0;
 
 		if (contName.isEmpty()) {
 			THROW_EXCEPTION(0, Csp, NULL, "container name epmty");
@@ -759,10 +762,53 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 		wchar_t* wide_buf = (wchar_t*)LocalAlloc(LMEM_ZEROINIT, (wide_string_len + 1) * sizeof(wchar_t));
 		wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)contName->c_str(), value_len, (LPWSTR)wide_buf, wide_string_len);
 
+		dwSize = sizeof(dwAlgId);
+		if (!CryptGetKeyParam(hKey, KP_ALGID, (LPBYTE)&dwAlgId, &dwSize, 0)) {
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
+		}
+
+		switch (dwAlgId) {
+		case CALG_GR3410EL:
+		case CALG_DH_EL_SF:
+			dwNewProvType = PROV_GOST_2001_DH;
+			break;
+
+#if defined(PROV_GOST_2012_256)
+		case CALG_GR3410_12_256:
+		case CALG_DH_GR3410_12_256_SF:
+			dwNewProvType = PROV_GOST_2012_256;
+			break;
+
+		case CALG_GR3410_12_512:
+		case CALG_DH_GR3410_12_512_SF:
+			dwNewProvType = PROV_GOST_2012_512;
+			CALG_ECDSA;
+			break;
+#endif // PROV_GOST_2012_256
+
+#if defined(CALG_ECDSA) && defined(CALG_ECDH)
+		case CALG_ECDSA:
+		case CALG_ECDH:
+			dwNewProvType = PROV_EC_ECDSA_FULL;
+			break;
+#endif // defined(CALG_ECDSA) && defined(CALG_ECDH)
+
+#if defined(CALG_RSA_SIGN) && defined(CALG_RSA_KEYX)
+		case CALG_RSA_SIGN:
+		case CALG_RSA_KEYX:
+			dwNewProvType = PROV_RSA_AES;
+			break;
+#endif // defined(CALG_ECDSA) && defined(CALG_ECDH)
+
+		default:
+			THROW_EXCEPTION(0, Csp, NULL, "Unsupported container key type", GetLastError());
+			break;
+		}
+
 		pKeyInfo.dwKeySpec = dwKeySpec;
-		pKeyInfo.dwProvType = provType;
+		pKeyInfo.dwProvType = dwNewProvType;
 		pKeyInfo.pwszContainerName = wide_buf;
-		pKeyInfo.pwszProvName = !provName.isEmpty() && provName->length() ? (LPWSTR)provName->c_str() : NULL;
+		pKeyInfo.pwszProvName = (LPWSTR)provTypeToProvNameW(dwNewProvType);
 
 		if (!CertSetCertificateContextProperty(
 			pCertContext,
@@ -1241,6 +1287,26 @@ bool Csp::cmpCertAndContFP(LPCSTR szContainerName, LPBYTE pbFPCert, DWORD cbFPCe
 	}
 	catch (Handle<Exception> e) {
 		THROW_EXCEPTION(0, Csp, e, "Error compare cert and container FP");
+	}
+}
+
+LPCWSTR Csp::provTypeToProvNameW(DWORD dwProvType) {
+	LOGGER_FN();
+
+	switch (dwProvType) {
+	case PROV_GOST_2001_DH:
+		return CP_GR3410_2001_PROV_W;
+
+#ifdef PROV_GOST_2012_256
+	case PROV_GOST_2012_256:
+		return CAT_L(CP_GR3410_2012_PROV_A);
+
+	case PROV_GOST_2012_512:
+		return CAT_L(CP_GR3410_2012_STRONG_PROV_A);
+#endif // PROV_GOST_2012_256
+
+	default:
+		return NULL;
 	}
 }
 
