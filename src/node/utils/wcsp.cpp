@@ -235,17 +235,14 @@ NAN_METHOD(WCsp::EnumContainers)
 		v8::String::Utf8Value v8Prov(info[1]->ToString());
 		char *provName = *v8Prov;
 
-		std::vector<Handle<std::string>> res = _this->enumContainers(type, new std::string(provName));
+		std::vector<Handle<std::wstring>> res = _this->enumContainers(type, new std::string(provName));
 
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
 		for (int i = 0; i < res.size(); i++){
-			v8::Local<v8::String> v8FName = Nan::New<v8::String>(res[i]->c_str()).ToLocalChecked();
-
-			info.GetReturnValue().Set(v8FName);
-			array8->Set(i, v8FName);
+			array8->Set(i, v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (const uint16_t *)res[i]->c_str()));
 		}
 
 		info.GetReturnValue().Set(array8);
@@ -293,8 +290,10 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
-		v8::String::Utf8Value v8Cont(info[0]->ToString());
-		char *cont = *v8Cont;
+		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
+		char *wcContainerName = new(std::nothrow) char[wcslen(wCont) + 1];
+		memset(wcContainerName, 0, wcslen(wCont) + 1);
+		std::wcstombs(wcContainerName, wCont, wcslen(wCont));
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -303,7 +302,11 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		v8::String::Utf8Value v8Prov(info[2]->ToString());
 		char *provName = *v8Prov;
 
-		_this->installCertifiacteFromContainer(new std::string(cont), type, new std::string(provName));
+		_this->installCertifiacteFromContainer(new std::string(wcContainerName), type, new std::string(provName));
+
+		if (wcContainerName) {
+			free(wcContainerName);
+		}
 
 		info.GetReturnValue().Set(info.This());
 		return;

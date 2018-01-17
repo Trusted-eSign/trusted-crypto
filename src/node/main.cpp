@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+#include <locale>
+#include <clocale>
+
 #include <openssl/cms.h>
 #include <openssl/engine.h>
 #include <openssl/err.h>
@@ -61,6 +64,8 @@ void init(v8::Handle<v8::Object> target) {
 	// I'm not sure where to call ERR_free_strings() and EVP_cleanup()
 
 	// LOGGER_TRACE("OpenSSL init");
+
+	std::setlocale(LC_ALL, "");
 
 	OpenSSL::run();
 

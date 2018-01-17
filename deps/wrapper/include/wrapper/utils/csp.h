@@ -29,7 +29,7 @@ public:
 	Handle<std::string> getCPCSPSecurityLvl();
 
 	std::vector<ProviderProps> enumProviders();
-	std::vector<Handle<std::string>> enumContainers(int provType, Handle<std::string> provName);
+	std::vector<Handle<std::wstring>> enumContainers(int provType, Handle<std::string> provName);
 	Handle<Certificate> getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 	Handle<std::string> getContainerNameByCertificate(Handle<Certificate> cert, Handle<std::string> category);
 	void installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);

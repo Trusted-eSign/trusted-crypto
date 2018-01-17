@@ -487,12 +487,12 @@ std::vector<ProviderProps> Csp::enumProviders() {
 	}
 }
 
-std::vector<Handle<std::string>> Csp::enumContainers(int provType, Handle<std::string> provName) {
+std::vector<Handle<std::wstring>> Csp::enumContainers(int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
 	try {
 #ifdef CSP_ENABLE
-		std::vector<Handle<std::string>> res;
+		std::vector<Handle<std::wstring>> res;
 		std::vector<ProviderProps> providers;
 		HCRYPTPROV hProv = 0;
 		DWORD dwIndex = 0;
@@ -502,7 +502,7 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType, Handle<std::s
 		char* pszContainerName = NULL;
 		BYTE* pbData = NULL;
 		DWORD cbName;
-		DWORD dwCount = 1;
+		WCHAR wzContName[1024];
 
 		if (!provType) {
 			providers = this->enumProviders();
@@ -546,7 +546,11 @@ std::vector<Handle<std::string>> Csp::enumContainers(int provType, Handle<std::s
 
 				pszContainerName = (char*)pbData;
 
-				res.push_back(new std::string(pszContainerName));
+				if (mbstowcs(wzContName, pszContainerName, 1024) <= 0) {
+					THROW_EXCEPTION(0, Csp, NULL, "mbstowcs failed");
+				}
+
+				res.push_back(new std::wstring(wzContName));
 
 				pszContainerName = NULL;
 				free((void*)pbData);
@@ -708,6 +712,7 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 		CRYPT_KEY_PROV_INFO pKeyInfo = { 0 };
 		DWORD dwNewProvType = 0;
 		ALG_ID dwAlgId = 0;
+		WCHAR wzContName[1024];
 
 		if (contName.isEmpty()) {
 			THROW_EXCEPTION(0, Csp, NULL, "container name epmty");
@@ -756,11 +761,9 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext. Error: 0x%08x", GetLastError());
 		}
 
-		size_t value_len = strlen(contName->c_str());
-		size_t wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)contName->c_str(), value_len, NULL, 0);
-
-		wchar_t* wide_buf = (wchar_t*)LocalAlloc(LMEM_ZEROINIT, (wide_string_len + 1) * sizeof(wchar_t));
-		wide_string_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCSTR)contName->c_str(), value_len, (LPWSTR)wide_buf, wide_string_len);
+		if (mbstowcs(wzContName, contName->c_str(), 1024) < 0) {
+			THROW_EXCEPTION(0, Csp, NULL, "Error mbstowcs");
+		}
 
 		dwSize = sizeof(dwAlgId);
 		if (!CryptGetKeyParam(hKey, KP_ALGID, (LPBYTE)&dwAlgId, &dwSize, 0)) {
@@ -807,7 +810,7 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 
 		pKeyInfo.dwKeySpec = dwKeySpec;
 		pKeyInfo.dwProvType = dwNewProvType;
-		pKeyInfo.pwszContainerName = wide_buf;
+		pKeyInfo.pwszContainerName = wzContName;
 		pKeyInfo.pwszProvName = (LPWSTR)provTypeToProvNameW(dwNewProvType);
 
 		if (!CertSetCertificateContextProperty(
