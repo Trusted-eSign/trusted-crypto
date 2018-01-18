@@ -260,8 +260,10 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
-		v8::String::Utf8Value v8Cont(info[0]->ToString());
-		char *cont = *v8Cont;
+		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
+		char *wcContainerName = new(std::nothrow) char[wcslen(wCont) + 1];
+		memset(wcContainerName, 0, wcslen(wCont) + 1);
+		std::wcstombs(wcContainerName, wCont, wcslen(wCont));
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -270,7 +272,7 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 		v8::String::Utf8Value v8Prov(info[2]->ToString());
 		char *provName = *v8Prov;
 
-		Handle<Certificate> cert = _this->getCertifiacteFromContainer(new std::string(cont), type, new std::string(provName));
+		Handle<Certificate> cert = _this->getCertifiacteFromContainer(new std::string(wcContainerName), type, new std::string(provName));
 		v8::Local<v8::Object> v8Cert = WCertificate::NewInstance(cert);
 		info.GetReturnValue().Set(v8Cert);
 		return;
