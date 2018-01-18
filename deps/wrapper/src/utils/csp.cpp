@@ -319,7 +319,9 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 		}
 
 		exVersion = (PROV_PP_VERSION_EX *)pbData;
-		res = new std::string(std::to_string(exVersion->PKZI_Build));
+		if (exVersion) {
+			res = new std::string(std::to_string(exVersion->PKZI_Build));
+		}
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
@@ -381,7 +383,9 @@ Handle<std::string> Csp::getCPCSPVersionSKZI() {
 		}
 
 		exVersion = (PROV_PP_VERSION_EX *)pbData;
-		res = new std::string(std::to_string(exVersion->SKZI_Build));
+		if (exVersion) {
+			res = new std::string(std::to_string(exVersion->SKZI_Build));
+		}
 
 		if (hCryptProv) {
 			if (!CryptReleaseContext(hCryptProv, 0)) {
@@ -472,9 +476,7 @@ std::vector<ProviderProps> Csp::enumProviders() {
 
 			res.push_back({ (int)dwType, new std::string(pszName) });
 
-			if (pszName) {
-				free(pszName);
-			}
+			free(pszName);
 		}
 
 		return res;
@@ -515,7 +517,7 @@ std::vector<Handle<std::wstring>> Csp::enumContainers(int provType, Handle<std::
 			THROW_EXCEPTION(0, Csp, NULL, "Empty providers list");
 		}
 
-		for (int i = 0; i < providers.size(); i++) {
+		for (size_t i = 0; i < providers.size(); i++) {
 			ProviderProps provider = providers[i];
 
 			if (!CryptAcquireContext(
@@ -640,16 +642,11 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext. Error: 0x%08x", GetLastError());
 		}
 
-		if (pCertContext) {
-			p = pCertContext->pbCertEncoded;
+		p = pCertContext->pbCertEncoded;
 
-			LOGGER_OPENSSL(d2i_X509);
-			if (!(hcert = d2i_X509(NULL, &p, pCertContext->cbCertEncoded))) {
-				THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "'d2i_X509' Error decode len bytes");
-			}
-		}
-		else {
-			THROW_EXCEPTION(0, Csp, NULL, "Cannot find certificate in store");
+		LOGGER_OPENSSL(d2i_X509);
+		if (!(hcert = d2i_X509(NULL, &p, pCertContext->cbCertEncoded))) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "'d2i_X509' Error decode len bytes");
 		}
 
 		free(pbCertificate);
@@ -843,15 +840,11 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 			THROW_EXCEPTION(0, Csp, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
 		}
 
-		if (pCertContext) {
-			CertFreeCertificateContext(pCertContext);
-			pCertContext = HCRYPT_NULL;
-		}
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
 
-		if (hCertStore) {
-			CertCloseStore(hCertStore, 0);
-			hCertStore = HCRYPT_NULL;
-		}
+		CertCloseStore(hCertStore, 0);
+		hCertStore = HCRYPT_NULL;
 
 		free(pbCertificate);
 
@@ -1042,18 +1035,11 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 			pCertFound = HCRYPT_NULL;
 		}
 
-		if (pbContainerName) {
-			free(pbContainerName);
-		}
+		free(pbContainerName);
+		free(pbFPCert);
 
-		if (pbFPCert) {
-			free(pbFPCert);
-		}
-
-		if (hCertStore) {
-			CertCloseStore(hCertStore, 0);
-			hCertStore = HCRYPT_NULL;
-		}
+		CertCloseStore(hCertStore, 0);
+		hCertStore = HCRYPT_NULL;
 
 		if (hPublicKey)
 		{
@@ -1087,13 +1073,8 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 			pCertFound = HCRYPT_NULL;
 		}
 
-		if (pbContainerName) {
-			free(pbContainerName);
-		}
-
-		if (pbFPCert) {
-			free(pbFPCert);
-		}
+		free(pbContainerName);
+		free(pbFPCert);
 
 		if (hCertStore) {
 			CertCloseStore(hCertStore, 0);
@@ -1246,6 +1227,10 @@ bool Csp::cmpCertAndContFP(LPCSTR szContainerName, LPBYTE pbFPCert, DWORD cbFPCe
 		DWORD cbFPCont;
 		BOOL result = FALSE;
 
+		if (!pbFPCert) {
+			THROW_EXCEPTION(0, Csp, NULL, "pbFPCert cannot be null pointer");
+		}
+
 		if (!CryptAcquireContext(
 			&hProvCont,
 			szContainerName,
@@ -1260,23 +1245,21 @@ bool Csp::cmpCertAndContFP(LPCSTR szContainerName, LPBYTE pbFPCert, DWORD cbFPCe
 		pbFPCont = (LPBYTE)malloc(cbFPCont);
 
 		if (CryptGetProvParam(hProvCont, PP_SIGNATURE_KEY_FP, pbFPCont, &cbFPCont, 0)) {
-			if (!memcmp(pbFPCont, pbFPCert, cbFPCert)) {
+			if (pbFPCont && !memcmp(pbFPCont, pbFPCert, cbFPCert)) {
 				result = TRUE;
 				goto Done;
 			}
 		}
 
 		if (CryptGetProvParam(hProvCont, PP_EXCHANGE_KEY_FP, pbFPCont, &cbFPCont, 0)) {
-			if (!memcmp(pbFPCont, pbFPCert, cbFPCert)) {
+			if (pbFPCont && !memcmp(pbFPCont, pbFPCert, cbFPCert)) {
 				result = TRUE;
 				goto Done;
 			}
 		}
 
 	Done:
-		if (pbFPCont) {
-			free(pbFPCont);
-		}
+		free(pbFPCont);
 
 		if (hProvCont)
 		{
