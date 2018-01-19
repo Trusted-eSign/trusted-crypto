@@ -782,7 +782,6 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 		case CALG_GR3410_12_512:
 		case CALG_DH_GR3410_12_512_SF:
 			dwNewProvType = PROV_GOST_2012_512;
-			CALG_ECDSA;
 			break;
 #endif // PROV_GOST_2012_256
 
