@@ -27,6 +27,11 @@
 #include <cpcsp/WinCryptEx.h>
 #include <cpcsp/CSP_WinDef.h>
 #define CSP_BOOL BOOL
+
+#if !defined(MAX_PATH)
+#define MAX_PATH 260
+#endif
+
 #endif
 #endif // !_WIN32                        //added
 

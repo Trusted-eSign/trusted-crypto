@@ -548,7 +548,7 @@ std::vector<Handle<std::wstring>> Csp::enumContainers(int provType, Handle<std::
 
 				pszContainerName = (char*)pbData;
 
-				if (mbstowcs(wzContName, pszContainerName, 1024) <= 0) {
+				if (mbstowcs(wzContName, pszContainerName, MAX_PATH) <= 0) {
 					THROW_EXCEPTION(0, Csp, NULL, "mbstowcs failed");
 				}
 
@@ -758,7 +758,7 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext. Error: 0x%08x", GetLastError());
 		}
 
-		if (mbstowcs(wzContName, contName->c_str(), 1024) < 0) {
+		if (mbstowcs(wzContName, contName->c_str(), MAX_PATH) < 0) {
 			THROW_EXCEPTION(0, Csp, NULL, "Error mbstowcs");
 		}
 

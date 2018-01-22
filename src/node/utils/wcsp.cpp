@@ -242,7 +242,7 @@ NAN_METHOD(WCsp::EnumContainers)
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
 		for (int i = 0; i < res.size(); i++){
-			array8->Set(i, v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (const uint16_t *)res[i]->c_str()));
+			array8->Set(i, v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (const uint16_t *)res[i]->c_str(), v8::String::kNormalString, res[i]->size()));
 		}
 
 		info.GetReturnValue().Set(array8);
@@ -261,9 +261,8 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 
 		LOGGER_ARG("container");
 		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
-		char *wcContainerName = new(std::nothrow) char[wcslen(wCont) + 1];
-		memset(wcContainerName, 0, wcslen(wCont) + 1);
-		std::wcstombs(wcContainerName, wCont, wcslen(wCont));
+		char *wcContainerName = new(std::nothrow) char[2 * MAX_PATH];
+		std::wcstombs(wcContainerName, wCont, 2 * MAX_PATH);
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -293,9 +292,8 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 
 		LOGGER_ARG("container");
 		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
-		char *wcContainerName = new(std::nothrow) char[wcslen(wCont) + 1];
-		memset(wcContainerName, 0, wcslen(wCont) + 1);
-		std::wcstombs(wcContainerName, wCont, wcslen(wCont));
+		char *wcContainerName = new(std::nothrow) char[2 * MAX_PATH];
+		std::wcstombs(wcContainerName, wCont, 2 * MAX_PATH);
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
