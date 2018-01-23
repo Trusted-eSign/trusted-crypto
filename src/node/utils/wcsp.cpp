@@ -242,7 +242,15 @@ NAN_METHOD(WCsp::EnumContainers)
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
 		for (int i = 0; i < res.size(); i++){
+
+#if defined(OPENSSL_SYS_WINDOWS)
 			array8->Set(i, v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (const uint16_t *)res[i]->c_str(), v8::String::kNormalString, res[i]->size()));
+#else 
+			char wcContainerName[MAX_PATH];
+			std::wcstombs(wcContainerName, res[i]->c_str(), MAX_PATH);
+
+			array8->Set(i, v8::String::NewFromUtf8(isolate, (const char *)wcContainerName))
+#endif //OPENSSL_SYS_WINDOWS
 		}
 
 		info.GetReturnValue().Set(array8);
@@ -260,9 +268,14 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
+#if defined(OPENSSL_SYS_WINDOWS)
 		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
 		char *wcContainerName = new(std::nothrow) char[2 * MAX_PATH];
 		std::wcstombs(wcContainerName, wCont, 2 * MAX_PATH);
+#else
+		v8::String::Utf8Value v8Cont(info[0]->ToString());
+		char *wcContainerName = *v8Cont;
+#endif //OPENSSL_SYS_WINDOWS
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -291,9 +304,14 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
+#if defined(OPENSSL_SYS_WINDOWS)
 		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
 		char *wcContainerName = new(std::nothrow) char[2 * MAX_PATH];
 		std::wcstombs(wcContainerName, wCont, 2 * MAX_PATH);
+#else
+		v8::String::Utf8Value v8Cont(info[0]->ToString());
+		char *wcContainerName = *v8Cont;
+#endif //OPENSSL_SYS_WINDOWS
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
