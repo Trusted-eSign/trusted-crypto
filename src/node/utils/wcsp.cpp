@@ -249,7 +249,7 @@ NAN_METHOD(WCsp::EnumContainers)
 			char wcContainerName[MAX_PATH];
 			std::wcstombs(wcContainerName, res[i]->c_str(), MAX_PATH);
 
-			array8->Set(i, v8::String::NewFromUtf8(isolate, (const char *)wcContainerName))
+			array8->Set(i, v8::String::NewFromUtf8(isolate, (const char *)wcContainerName));
 #endif //OPENSSL_SYS_WINDOWS
 		}
 
