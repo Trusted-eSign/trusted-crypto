@@ -32,7 +32,7 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "installCertifiacteFromContainer", InstallCertifiacteFromContainer);
 	Nan::SetPrototypeMethod(tpl, "getContainerNameByCertificate", GetContainerNameByCertificate);
 	Nan::SetPrototypeMethod(tpl, "deleteContainer", DeleteContainer);
-	
+
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 
@@ -61,7 +61,7 @@ NAN_METHOD(WCsp::IsGost2001CSPAvailable) {
 		UNWRAP_DATA(Csp);
 
 		bool res = _this->isGost2001CSPAvailable();
-		
+
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
 	}
@@ -235,22 +235,37 @@ NAN_METHOD(WCsp::EnumContainers)
 		v8::String::Utf8Value v8Prov(info[1]->ToString());
 		char *provName = *v8Prov;
 
-		std::vector<Handle<std::wstring>> res = _this->enumContainers(type, new std::string(provName));
+		std::vector<Handle<ContainerName>> res = _this->enumContainers(type, new std::string(provName));
 
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
-		for (int i = 0; i < res.size(); i++){
+		for (int i = 0; i < res.size(); i++) {
+			v8::Local<v8::Object> tempObj = v8::Object::New(isolate);
+			Handle<ContainerName> item = res[i];
+
+			tempObj->Set(v8::String::NewFromUtf8(isolate, "unique"),
+				v8::String::NewFromUtf8(isolate, item->unique->c_str()));
+
+			tempObj->Set(v8::String::NewFromUtf8(isolate, "fqcnA"),
+				v8::String::NewFromUtf8(isolate, item->fqcnA->c_str()));
 
 #if defined(OPENSSL_SYS_WINDOWS)
-			array8->Set(i, v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (const uint16_t *)res[i]->c_str(), v8::String::kNormalString, res[i]->size()));
-#else 
-			char wcContainerName[MAX_PATH];
-			std::wcstombs(wcContainerName, res[i]->c_str(), MAX_PATH);
+			tempObj->Set(v8::String::NewFromUtf8(isolate, "fqcnW"),
+				v8::String::NewFromTwoByte(isolate, (const uint16_t *)item->fqcnW->c_str(), v8::String::kNormalString, item->fqcnW->size()));
 
-			array8->Set(i, v8::String::NewFromUtf8(isolate, (const char *)wcContainerName));
+			tempObj->Set(v8::String::NewFromUtf8(isolate, "container"),
+				v8::String::NewFromTwoByte(isolate, (const uint16_t *)item->container->c_str(), v8::String::kNormalString, item->container->size()));
+#else 
+			tempObj->Set(v8::String::NewFromUtf8(isolate, "fqcnW"),
+				v8::String::NewFromTwoByte(isolate, (const uint16_t *)item->fqcnW->c_str(), v8::String::kNormalString, 2 * item->fqcnW->size()));
+
+			tempObj->Set(v8::String::NewFromUtf8(isolate, "container"),
+				v8::String::NewFromTwoByte(isolate, (const uint16_t *)item->container->c_str(), v8::String::kNormalString, 2 * item->container->size()));
 #endif //OPENSSL_SYS_WINDOWS
+
+			array8->Set(i, tempObj);
 		}
 
 		info.GetReturnValue().Set(array8);
@@ -268,14 +283,8 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
-#if defined(OPENSSL_SYS_WINDOWS)
-		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
-		char *wcContainerName = new(std::nothrow) char[2 * MAX_PATH];
-		std::wcstombs(wcContainerName, wCont, 2 * MAX_PATH);
-#else
 		v8::String::Utf8Value v8Cont(info[0]->ToString());
 		char *wcContainerName = *v8Cont;
-#endif //OPENSSL_SYS_WINDOWS
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -304,14 +313,8 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		UNWRAP_DATA(Csp);
 
 		LOGGER_ARG("container");
-#if defined(OPENSSL_SYS_WINDOWS)
-		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
-		char *wcContainerName = new(std::nothrow) char[2 * MAX_PATH];
-		std::wcstombs(wcContainerName, wCont, 2 * MAX_PATH);
-#else
 		v8::String::Utf8Value v8Cont(info[0]->ToString());
 		char *wcContainerName = *v8Cont;
-#endif //OPENSSL_SYS_WINDOWS
 
 		LOGGER_ARG("type");
 		int type = info[1]->ToNumber()->Int32Value();
@@ -321,10 +324,6 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		char *provName = *v8Prov;
 
 		_this->installCertifiacteFromContainer(new std::string(wcContainerName), type, new std::string(provName));
-
-		if (wcContainerName) {
-			free(wcContainerName);
-		}
 
 		info.GetReturnValue().Set(info.This());
 		return;

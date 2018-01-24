@@ -454,6 +454,13 @@ declare namespace native {
     }
 
     namespace UTILS {
+        export interface IContainerName {
+            container: string;
+            unique: string;
+            fqcnA: string;
+            fqcnW: string;
+        }
+
         class Jwt {
             public checkLicense(data?: string): number;
         }
@@ -480,7 +487,7 @@ declare namespace native {
             public getCPCSPVersionSKZI(): string;
             public getCPCSPSecurityLvl(): string;
             public enumProviders(): object[];
-            public enumContainers(type?: number, provName?: string): string[];
+            public enumContainers(type?: number, provName?: string): IContainerName[];
             public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
             public getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
             public installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;

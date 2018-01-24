@@ -121,7 +121,7 @@ namespace trusted.utils {
          * @returns {string[]} Fully Qualified Container Name
          * @memberof Csp
          */
-        public static enumContainers(type: null, provName = ""): string[] {
+        public static enumContainers(type: null, provName = ""): native.UTILS.IContainerName[] {
             const csp = new native.UTILS.Csp();
             return csp.enumContainers(type, provName);
         }

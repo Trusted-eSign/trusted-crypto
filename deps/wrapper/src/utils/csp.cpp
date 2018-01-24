@@ -489,14 +489,15 @@ std::vector<ProviderProps> Csp::enumProviders() {
 	}
 }
 
-std::vector<Handle<std::wstring>> Csp::enumContainers(int provType, Handle<std::string> provName) {
+std::vector<Handle<ContainerName>> Csp::enumContainers(int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
 	try {
 #ifdef CSP_ENABLE
-		std::vector<Handle<std::wstring>> res;
+		std::vector<Handle<ContainerName>> res;
 		std::vector<ProviderProps> providers;
 		HCRYPTPROV hProv = 0;
+		HCRYPTPROV hProvCont = 0;
 		DWORD dwIndex = 0;
 		DWORD dwType;
 		LPTSTR pszName;
@@ -504,7 +505,8 @@ std::vector<Handle<std::wstring>> Csp::enumContainers(int provType, Handle<std::
 		char* pszContainerName = NULL;
 		BYTE* pbData = NULL;
 		DWORD cbName;
-		WCHAR wzContName[1024];
+		WCHAR wzContName[MAX_PATH];
+		DWORD cbData = 0;
 
 		if (!provType) {
 			providers = this->enumProviders();
@@ -535,24 +537,68 @@ std::vector<Handle<std::wstring>> Csp::enumContainers(int provType, Handle<std::
 				if (cbName == 0)
 					break;
 
+				Handle<ContainerName> item = new ContainerName();
+
 				pbData = (BYTE*)malloc(cbName);
 
 				if (!pbData) {
 					THROW_EXCEPTION(0, Csp, NULL, "malloc failure");
 				}
 
-				if (!CryptGetProvParam(hProv, PP_ENUMCONTAINERS, pbData, &cbName, dwFlags | CRYPT_FQCN)) {
+				if (!CryptGetProvParam(hProv, PP_ENUMCONTAINERS, pbData, &cbName, dwFlags | CRYPT_UNIQUE)) {
 					free((void*)pbData);
+					pbData = NULL;
 					break;
 				}
 
 				pszContainerName = (char*)pbData;
+				item->unique = new std::string(pszContainerName);
 
-				if (mbstowcs(wzContName, pszContainerName, MAX_PATH) <= 0) {
+				if (!CryptAcquireContext(
+					&hProvCont,
+					pszContainerName,
+					NULL,
+					provider.type,
+					CRYPT_VERIFYCONTEXT))
+				{
+					THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+				}
+
+				if (!CryptGetProvParam(hProvCont, PP_FQCN, NULL, &cbData, 0)){
+					THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+				}
+
+				pbData = (LPBYTE)malloc(cbData);
+
+				if (!CryptGetProvParam(hProvCont, PP_FQCN, pbData, &cbData, 0)){
+					THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+				}
+
+				item->fqcnA = new std::string((char*)pbData);
+
+				if (mbstowcs(wzContName, (char*)pbData, MAX_PATH) <= 0) {
 					THROW_EXCEPTION(0, Csp, NULL, "mbstowcs failed");
 				}
 
-				res.push_back(new std::wstring(wzContName));
+				item->fqcnW = new std::wstring(wzContName);
+
+				if (!CryptGetProvParam(hProvCont, PP_CONTAINER, NULL, &cbData, 0)){
+					THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+				}
+
+				pbData = (LPBYTE)malloc(cbData);
+
+				if (!CryptGetProvParam(hProvCont, PP_CONTAINER, pbData, &cbData, 0)){
+					THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+				}
+
+				if (mbstowcs(wzContName, (char*)pbData, MAX_PATH) <= 0) {
+					THROW_EXCEPTION(0, Csp, NULL, "mbstowcs failed");
+				}
+
+				item->container = new std::wstring(wzContName);
+
+				res.push_back(item);
 
 				pszContainerName = NULL;
 				free((void*)pbData);
@@ -564,6 +610,16 @@ std::vector<Handle<std::wstring>> Csp::enumContainers(int provType, Handle<std::
 				if (!CryptReleaseContext(hProv, 0)) {
 					THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 				}
+			}
+
+			if (hProvCont) {
+				if (!CryptReleaseContext(hProvCont, 0)) {
+					THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+				}
+			}
+
+			if (pbData) {
+				free((BYTE*)pbData);
 			}
 		}
 
@@ -709,7 +765,9 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 		CRYPT_KEY_PROV_INFO pKeyInfo = { 0 };
 		DWORD dwNewProvType = 0;
 		ALG_ID dwAlgId = 0;
-		WCHAR wzContName[1024];
+		WCHAR wzContName[MAX_PATH];
+		DWORD cbData = 0;
+		BYTE* pbData = NULL;
 
 		if (contName.isEmpty()) {
 			THROW_EXCEPTION(0, Csp, NULL, "container name epmty");
@@ -758,10 +816,6 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCertificateContext. Error: 0x%08x", GetLastError());
 		}
 
-		if (mbstowcs(wzContName, contName->c_str(), MAX_PATH) < 0) {
-			THROW_EXCEPTION(0, Csp, NULL, "Error mbstowcs");
-		}
-
 		dwSize = sizeof(dwAlgId);
 		if (!CryptGetKeyParam(hKey, KP_ALGID, (LPBYTE)&dwAlgId, &dwSize, 0)) {
 			THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
@@ -802,6 +856,20 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 		default:
 			THROW_EXCEPTION(0, Csp, NULL, "Unsupported container key type", GetLastError());
 			break;
+		}
+
+		if (!CryptGetProvParam(hProv, PP_FQCN, NULL, &cbData, 0)){
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+		}
+
+		pbData = (LPBYTE)malloc(cbData);
+
+		if (!CryptGetProvParam(hProv, PP_FQCN, pbData, &cbData, 0)){
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+		}
+
+		if (mbstowcs(wzContName, (char*)pbData, MAX_PATH) <= 0) {
+			THROW_EXCEPTION(0, Csp, NULL, "mbstowcs failed");
 		}
 
 		pKeyInfo.dwKeySpec = dwKeySpec;
@@ -858,6 +926,10 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 			}
 
 			hProv = NULL;
+		}
+
+		if (pbData) {
+			free((BYTE*)pbData);
 		}
 
 		return;
@@ -1296,3 +1368,12 @@ LPCWSTR Csp::provTypeToProvNameW(DWORD dwProvType) {
 }
 
 #endif //CSP_ENABLE
+
+ContainerName::ContainerName(){
+	LOGGER_FN();
+
+	unique = new std::string("");
+	container = new std::wstring((wchar_t *) "");
+	fqcnA = new std::string("");
+	fqcnW = new std::wstring((wchar_t *) "");
+}
