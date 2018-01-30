@@ -445,6 +445,12 @@ declare namespace native {
         }
     }
     namespace UTILS {
+        interface IContainerName {
+            container: string;
+            unique: string;
+            fqcnA: string;
+            fqcnW: string;
+        }
         class Jwt {
             checkLicense(data?: string): number;
         }
@@ -468,11 +474,13 @@ declare namespace native {
             getCPCSPVersionSKZI(): string;
             getCPCSPSecurityLvl(): string;
             enumProviders(): object[];
-            enumContainers(type?: number, provName?: string): string[];
+            enumContainers(type?: number, provName?: string): IContainerName[];
             getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
             getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
             installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
             deleteContainer(contName: string, provType: number, provName?: string): void;
+            buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
+            verifyCertificateChain(cert: PKI.Certificate): boolean;
         }
     }
     namespace COMMON {
@@ -869,7 +877,7 @@ declare namespace trusted.utils {
          * @returns {string[]} Fully Qualified Container Name
          * @memberof Csp
          */
-        static enumContainers(type: null, provName?: string): string[];
+        static enumContainers(type: null, provName?: string): native.UTILS.IContainerName[];
         /**
          * Get certificate by container and provider props
          *
@@ -893,6 +901,8 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static getContainerNameByCertificate(cert: pki.Certificate, category?: string): string;
+        static buildChain(cert: pki.Certificate): pki.CertificateCollection;
+        static verifyCertificateChain(cert: pki.Certificate): boolean;
         /**
          * Creates an instance of Csp.
          *
