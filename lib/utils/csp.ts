@@ -169,6 +169,20 @@ namespace trusted.utils {
             return csp.getContainerNameByCertificate(cert.handle, category);
         }
 
+        public static buildChain(cert: pki.Certificate): pki.CertificateCollection {
+            const csp = new native.UTILS.Csp();
+
+            const certscol: pki.CertificateCollection =
+                new pki.CertificateCollection(csp.buildChain(cert.handle));
+
+            return certscol;
+        }
+
+        public static verifyCertificateChain(cert: pki.Certificate): boolean {
+            const csp = new native.UTILS.Csp();
+            return csp.verifyCertificateChain(cert.handle);
+        }
+
         /**
          * Creates an instance of Csp.
          *

@@ -33,7 +33,6 @@ Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, Handle
 		} while (!issuer.isEmpty());
 
 		return chain;
-	
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Chain, e, "Error build chain (certificate collection)");

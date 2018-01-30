@@ -2,6 +2,7 @@
 
 #include "wcsp.h"
 #include "../pki/wcert.h"
+#include "../pki/wcerts.h"
 #include "../helper.h"
 
 void WCsp::Init(v8::Handle<v8::Object> exports) {
@@ -32,6 +33,9 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "installCertifiacteFromContainer", InstallCertifiacteFromContainer);
 	Nan::SetPrototypeMethod(tpl, "getContainerNameByCertificate", GetContainerNameByCertificate);
 	Nan::SetPrototypeMethod(tpl, "deleteContainer", DeleteContainer);
+
+	Nan::SetPrototypeMethod(tpl, "buildChain", BuildChain);
+	Nan::SetPrototypeMethod(tpl, "verifyCertificateChain", VerifyCertificateChain);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -389,6 +393,41 @@ NAN_METHOD(WCsp::DeleteContainer)
 #else
 		Nan::ThrowError("Only if CSP_ENABLE");
 #endif // CSP_ENABLE
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::BuildChain) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		UNWRAP_DATA(Csp);
+
+		Handle<CertificateCollection> chain = _this->buildChain(wCert->data_);
+		v8::Local<v8::Object> v8Certificates = WCertificateCollection::NewInstance(chain);
+
+		info.GetReturnValue().Set(v8Certificates);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::VerifyCertificateChain) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("chain");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		UNWRAP_DATA(Csp);
+
+		bool res = _this->verifyCertificateChain(wCert->data_);
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
+		return;
 	}
 	TRY_END();
 }

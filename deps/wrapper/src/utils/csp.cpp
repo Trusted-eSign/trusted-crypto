@@ -1255,6 +1255,140 @@ bool Csp::findExistingCertificate(
 	}
 }
 
+Handle<CertificateCollection> Csp::buildChain(Handle<Certificate> cert){
+	LOGGER_FN();
+
+	try{
+		Handle<CertificateCollection> chain = new CertificateCollection();
+
+		PCCERT_CONTEXT pCertCtx = createCertificateContext(cert);
+
+		CERT_CHAIN_PARA chainPara;
+		PCCERT_CHAIN_CONTEXT pChainContext = NULL;
+
+		memset(&chainPara, 0, sizeof(chainPara));
+		chainPara.cbSize = sizeof(chainPara);
+
+		if (!CertGetCertificateChain(
+			NULL,
+			pCertCtx,
+			NULL,
+			NULL,
+			&chainPara,
+			CERT_CHAIN_CACHE_END_CERT | CERT_CHAIN_REVOCATION_CHECK_CHAIN,
+			NULL,
+			&pChainContext)) {
+
+			if (pChainContext) {
+				CertFreeCertificateChain(pChainContext);
+			}
+
+			chain->push(cert);
+
+			return chain;
+		}
+
+		PCERT_SIMPLE_CHAIN first_chain = pChainContext->rgpChain[0];
+		DWORD num_elements = first_chain->cElement;
+		PCERT_CHAIN_ELEMENT *element = first_chain->rgpElement;
+
+		X509 *xcert = NULL;
+		const unsigned char *p;
+
+		for (DWORD i = 0; i < num_elements; ++i) {
+			PCCERT_CONTEXT pCertContext = element[i]->pCertContext;
+
+			if (pCertContext){
+				p = pCertContext->pbCertEncoded;
+
+				LOGGER_OPENSSL(d2i_X509);
+				if (!(xcert = d2i_X509(NULL, &p, pCertContext->cbCertEncoded))) {
+					THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "'d2i_X509' Error decode len bytes");
+				}
+
+				chain->push(new Certificate(xcert));
+			}
+		}
+
+		if (pCertCtx) {
+			CertFreeCertificateContext(pCertCtx);
+		}
+
+		if (pChainContext) {
+			CertFreeCertificateChain(pChainContext);
+		}
+
+		return chain;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Csp, e, "Error build chain (certificate collection)");
+	}
+}
+
+bool Csp::verifyCertificateChain(Handle<Certificate> cert){
+	LOGGER_FN();
+
+	try{
+		CERT_CHAIN_POLICY_PARA policyPara;
+		CERT_CHAIN_POLICY_STATUS policyStatus;
+
+		CERT_CHAIN_PARA	 chainPara;
+		PCCERT_CHAIN_CONTEXT pChainContext = NULL;
+		bool bResult = false;
+
+		PCCERT_CONTEXT pCertCtx = createCertificateContext(cert);
+
+		memset(&chainPara, 0, sizeof(chainPara));
+		chainPara.cbSize = sizeof(chainPara);
+
+		if (!CertGetCertificateChain(
+			NULL,
+			pCertCtx,
+			NULL,
+			NULL,
+			&chainPara,
+			CERT_CHAIN_CACHE_END_CERT | CERT_CHAIN_REVOCATION_CHECK_CHAIN,
+			NULL,
+			&pChainContext)) {
+			goto Finish;
+		}
+
+		memset(&policyPara, 0, sizeof(policyPara));
+		policyPara.cbSize = sizeof(policyPara);
+
+		memset(&policyStatus, 0, sizeof(policyStatus));
+		policyStatus.cbSize = sizeof(policyStatus);
+
+		if (!CertVerifyCertificateChainPolicy(
+			CERT_CHAIN_POLICY_BASE,
+			pChainContext,
+			&policyPara,
+			&policyStatus)) {
+			goto Finish;
+		}
+
+		if (policyStatus.dwError) {
+			goto Finish;
+		}
+
+		bResult = true;
+
+	Finish:
+		if (pChainContext) {
+			CertFreeCertificateChain(pChainContext);
+		}
+
+		if (pCertCtx) {
+			CertFreeCertificateContext(pCertCtx);
+		}
+
+		return bResult;
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Csp, e, "Error verify chain (provider store)");
+	}
+}
+
 CRYPT_KEY_PROV_INFO * Csp::getCertificateContextProperty(
 	IN PCCERT_CONTEXT pCertContext,
 	IN DWORD dwPropId) {

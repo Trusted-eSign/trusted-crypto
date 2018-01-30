@@ -46,6 +46,9 @@ public:
 	void installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 	void deleteContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 
+	static Handle<CertificateCollection> buildChain(Handle<Certificate> cert);
+	static bool verifyCertificateChain(Handle<Certificate> cert);
+
 #ifdef CSP_ENABLE
 	PCCERT_CONTEXT static createCertificateContext(Handle<Certificate> cert);
 

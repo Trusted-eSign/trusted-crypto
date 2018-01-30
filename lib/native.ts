@@ -492,6 +492,8 @@ declare namespace native {
             public getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
             public installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
             public deleteContainer(contName: string, provType: number, provName?: string): void;
+            public buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
+            public verifyCertificateChain(cert: PKI.Certificate): boolean;
         }
     }
 
