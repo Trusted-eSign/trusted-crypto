@@ -6,6 +6,7 @@
 
 #include "../common/common.h"
 #include "../pki/cert.h"
+#include "../pki/pkcs12.h"
 
 struct ProviderProps {
 	int type;
@@ -50,6 +51,7 @@ public:
 	static bool verifyCertificateChain(Handle<Certificate> cert);
 
 	bool isHaveExportablePrivateKey(Handle<Certificate> cert);
+	Handle<Pkcs12> certToPkcs12(Handle<Certificate> cert);
 
 #ifdef CSP_ENABLE
 	PCCERT_CONTEXT static createCertificateContext(Handle<Certificate> cert);

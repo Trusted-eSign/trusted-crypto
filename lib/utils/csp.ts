@@ -197,6 +197,21 @@ namespace trusted.utils {
         }
 
         /**
+         * Create Pkcs by cert
+         * NOTE:  only for certificates with exportable key. Check it by isHaveExportablePrivateKey
+         *
+         * @static
+         * @param {pki.Certificate} cert
+         * @returns {pki.Pkcs12}
+         * @memberof Csp
+         */
+        public static certToPkcs12(cert: pki.Certificate): pki.Pkcs12 {
+            const csp = new native.UTILS.Csp();
+
+            return pki.Pkcs12.wrap<native.PKI.Pkcs12, pki.Pkcs12>(csp.certToPkcs12(cert.handle));
+        }
+
+        /**
          * Creates an instance of Csp.
          *
          *

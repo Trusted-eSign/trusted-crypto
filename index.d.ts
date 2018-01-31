@@ -482,6 +482,7 @@ declare namespace native {
             buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             verifyCertificateChain(cert: PKI.Certificate): boolean;
             isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
+            certToPkcs12(cert: PKI.Certificate): PKI.Pkcs12;
         }
     }
     namespace COMMON {
@@ -913,6 +914,16 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static isHaveExportablePrivateKey(cert: pki.Certificate): boolean;
+        /**
+         * Create Pkcs by cert
+         * NOTE:  only for certificates with exportable key. Check it by isHaveExportablePrivateKey
+         *
+         * @static
+         * @param {pki.Certificate} cert
+         * @returns {pki.Pkcs12}
+         * @memberof Csp
+         */
+        static certToPkcs12(cert: pki.Certificate): pki.Pkcs12;
         /**
          * Creates an instance of Csp.
          *

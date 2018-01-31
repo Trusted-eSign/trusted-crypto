@@ -3,6 +3,7 @@
 #include "wcsp.h"
 #include "../pki/wcert.h"
 #include "../pki/wcerts.h"
+#include "../pki/wpkcs12.h"
 #include "../helper.h"
 
 void WCsp::Init(v8::Handle<v8::Object> exports) {
@@ -38,6 +39,7 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "verifyCertificateChain", VerifyCertificateChain);
 
 	Nan::SetPrototypeMethod(tpl, "isHaveExportablePrivateKey", IsHaveExportablePrivateKey);
+	Nan::SetPrototypeMethod(tpl, "certToPkcs12", CertToPkcs12);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -463,3 +465,24 @@ NAN_METHOD(WCsp::IsHaveExportablePrivateKey) {
 	TRY_END();
 }
 
+NAN_METHOD(WCsp::CertToPkcs12) {
+	METHOD_BEGIN();
+
+	try {
+#ifdef CSP_ENABLE
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		UNWRAP_DATA(Csp);
+
+		Handle<Pkcs12> p12 = _this->certToPkcs12(wCert->data_);
+		v8::Local<v8::Object> v8P12 = WPkcs12::NewInstance(p12);
+
+		info.GetReturnValue().Set(v8P12);
+		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
+	}
+	TRY_END();
+}

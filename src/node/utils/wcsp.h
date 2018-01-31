@@ -37,6 +37,7 @@ public:
 	static NAN_METHOD(VerifyCertificateChain);
 
 	static NAN_METHOD(IsHaveExportablePrivateKey);
+	static NAN_METHOD(CertToPkcs12);
 };
 
 #endif //!UTIL_WCSP_INCLUDED 
