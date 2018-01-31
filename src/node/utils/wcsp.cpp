@@ -37,6 +37,8 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "buildChain", BuildChain);
 	Nan::SetPrototypeMethod(tpl, "verifyCertificateChain", VerifyCertificateChain);
 
+	Nan::SetPrototypeMethod(tpl, "isHaveExportablePrivateKey", IsHaveExportablePrivateKey);
+
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 
@@ -401,6 +403,7 @@ NAN_METHOD(WCsp::BuildChain) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		LOGGER_ARG("cert");
 		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
 
@@ -411,6 +414,9 @@ NAN_METHOD(WCsp::BuildChain) {
 
 		info.GetReturnValue().Set(v8Certificates);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -419,6 +425,7 @@ NAN_METHOD(WCsp::VerifyCertificateChain) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		LOGGER_ARG("chain");
 		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
 
@@ -428,6 +435,31 @@ NAN_METHOD(WCsp::VerifyCertificateChain) {
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
+
+NAN_METHOD(WCsp::IsHaveExportablePrivateKey) {
+	METHOD_BEGIN();
+
+	try {
+#ifdef CSP_ENABLE
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		UNWRAP_DATA(Csp);
+
+		bool res = _this->isHaveExportablePrivateKey(wCert->data_);
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
+		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
+	}
+	TRY_END();
+}
+

@@ -1389,6 +1389,97 @@ bool Csp::verifyCertificateChain(Handle<Certificate> cert){
 	}
 }
 
+bool Csp::isHaveExportablePrivateKey(Handle<Certificate> cert) {
+	LOGGER_FN();
+
+	HCERTSTORE hTempStore = HCRYPT_NULL;
+	HCERTSTORE hCertStore = HCRYPT_NULL;
+	PCCERT_CONTEXT pCertFound = HCRYPT_NULL;
+	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+
+	try {
+		bool res = false;
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER,
+			L"MY")))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore failed");
+		}
+
+		pCertContext = createCertificateContext(cert);
+
+		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Cannot find existing certificate");
+		}
+
+		if (!(hTempStore = CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL, CERT_STORE_CREATE_NEW_FLAG, NULL))) {
+			THROW_EXCEPTION(0, Csp, NULL, "CertOpenStore failed");
+		}
+
+		if (CertAddCertificateContextToStore(hTempStore, pCertFound, CERT_STORE_ADD_NEW, NULL)) {
+			CRYPT_DATA_BLOB bDataBlob = { 0, NULL };
+			if (PFXExportCertStoreEx(hTempStore, &bDataBlob, NULL, NULL, EXPORT_PRIVATE_KEYS | REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY)) {
+				bDataBlob.pbData = (BYTE *)malloc(bDataBlob.cbData);
+
+				if (PFXExportCertStoreEx(hTempStore, &bDataBlob, NULL, NULL, EXPORT_PRIVATE_KEYS | REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY)) {
+					res = true;
+				}
+
+				if (bDataBlob.pbData) {
+					free((BYTE*)bDataBlob.pbData);
+				}
+			}
+		}
+
+		if (pCertFound) {
+			CertFreeCertificateContext(pCertFound);
+			pCertFound = HCRYPT_NULL;
+		}
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (hTempStore) {
+			CertCloseStore(hTempStore, 0);
+			hTempStore = HCRYPT_NULL;
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		if (pCertFound) {
+			CertFreeCertificateContext(pCertFound);
+		}
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+		}
+
+		if (hTempStore) {
+			CertCloseStore(hTempStore, 0);
+			hTempStore = HCRYPT_NULL;
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		return false;
+	}
+}
+
 CRYPT_KEY_PROV_INFO * Csp::getCertificateContextProperty(
 	IN PCCERT_CONTEXT pCertContext,
 	IN DWORD dwPropId) {

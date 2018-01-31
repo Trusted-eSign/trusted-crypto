@@ -481,6 +481,7 @@ declare namespace native {
             deleteContainer(contName: string, provType: number, provName?: string): void;
             buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             verifyCertificateChain(cert: PKI.Certificate): boolean;
+            isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
         }
     }
     namespace COMMON {
@@ -903,6 +904,15 @@ declare namespace trusted.utils {
         static getContainerNameByCertificate(cert: pki.Certificate, category?: string): string;
         static buildChain(cert: pki.Certificate): pki.CertificateCollection;
         static verifyCertificateChain(cert: pki.Certificate): boolean;
+        /**
+         * Find certificate in MY store and check that private key exportable
+         *
+         * @static
+         * @param {pki.Certificate} cert
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        static isHaveExportablePrivateKey(cert: pki.Certificate): boolean;
         /**
          * Creates an instance of Csp.
          *

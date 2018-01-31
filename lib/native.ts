@@ -494,6 +494,7 @@ declare namespace native {
             public deleteContainer(contName: string, provType: number, provName?: string): void;
             public buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             public verifyCertificateChain(cert: PKI.Certificate): boolean;
+            public isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
         }
     }
 

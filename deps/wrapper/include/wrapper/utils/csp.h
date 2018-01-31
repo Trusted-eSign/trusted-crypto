@@ -49,6 +49,8 @@ public:
 	static Handle<CertificateCollection> buildChain(Handle<Certificate> cert);
 	static bool verifyCertificateChain(Handle<Certificate> cert);
 
+	bool isHaveExportablePrivateKey(Handle<Certificate> cert);
+
 #ifdef CSP_ENABLE
 	PCCERT_CONTEXT static createCertificateContext(Handle<Certificate> cert);
 

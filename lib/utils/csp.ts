@@ -184,6 +184,19 @@ namespace trusted.utils {
         }
 
         /**
+         * Find certificate in MY store and check that private key exportable
+         *
+         * @static
+         * @param {pki.Certificate} cert
+         * @returns {boolean}
+         * @memberof Csp
+         */
+        public static isHaveExportablePrivateKey(cert: pki.Certificate): boolean {
+            const csp = new native.UTILS.Csp();
+            return csp.isHaveExportablePrivateKey(cert.handle);
+        }
+
+        /**
          * Creates an instance of Csp.
          *
          *
