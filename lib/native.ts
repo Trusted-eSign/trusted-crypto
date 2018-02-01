@@ -495,7 +495,7 @@ declare namespace native {
             public buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             public verifyCertificateChain(cert: PKI.Certificate): boolean;
             public isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
-            public certToPkcs12(cert: PKI.Certificate, exportPrivateKey: boolean): PKI.Pkcs12;
+            public certToPkcs12(cert: PKI.Certificate, exportPrivateKey: boolean, password?: string): PKI.Pkcs12;
         }
     }
 

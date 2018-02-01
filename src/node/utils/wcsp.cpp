@@ -473,9 +473,20 @@ NAN_METHOD(WCsp::CertToPkcs12) {
 		LOGGER_ARG("cert");
 		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
 
+		LOGGER_ARG("encrypted");
+		v8::Local<v8::Boolean> v8ExportPK = info[1]->ToBoolean();
+
+		Handle<std::wstring> hpass;
+
+		LOGGER_ARG("password");
+		if (!info[2]->IsUndefined()) {
+			LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[2]->ToString());
+			hpass = new std::wstring(wCont);
+		}
+
 		UNWRAP_DATA(Csp);
 
-		Handle<Pkcs12> p12 = _this->certToPkcs12(wCert->data_);
+		Handle<Pkcs12> p12 = _this->certToPkcs12(wCert->data_, v8ExportPK->BooleanValue(), hpass);
 		v8::Local<v8::Object> v8P12 = WPkcs12::NewInstance(p12);
 
 		info.GetReturnValue().Set(v8P12);

@@ -51,7 +51,7 @@ public:
 	static bool verifyCertificateChain(Handle<Certificate> cert);
 
 	bool isHaveExportablePrivateKey(Handle<Certificate> cert);
-	Handle<Pkcs12> certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey);
+	Handle<Pkcs12> certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey, Handle<std::wstring> password);
 
 #ifdef CSP_ENABLE
 	PCCERT_CONTEXT static createCertificateContext(Handle<Certificate> cert);
