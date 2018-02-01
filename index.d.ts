@@ -482,7 +482,7 @@ declare namespace native {
             buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             verifyCertificateChain(cert: PKI.Certificate): boolean;
             isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
-            certToPkcs12(cert: PKI.Certificate): PKI.Pkcs12;
+            certToPkcs12(cert: PKI.Certificate, exportPrivateKey: boolean): PKI.Pkcs12;
         }
     }
     namespace COMMON {
@@ -920,10 +920,11 @@ declare namespace trusted.utils {
          *
          * @static
          * @param {pki.Certificate} cert
+         * @param {boolean} exportPrivateKey
          * @returns {pki.Pkcs12}
          * @memberof Csp
          */
-        static certToPkcs12(cert: pki.Certificate): pki.Pkcs12;
+        static certToPkcs12(cert: pki.Certificate, exportPrivateKey: boolean): pki.Pkcs12;
         /**
          * Creates an instance of Csp.
          *

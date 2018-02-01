@@ -202,13 +202,14 @@ namespace trusted.utils {
          *
          * @static
          * @param {pki.Certificate} cert
+         * @param {boolean} exportPrivateKey
          * @returns {pki.Pkcs12}
          * @memberof Csp
          */
-        public static certToPkcs12(cert: pki.Certificate): pki.Pkcs12 {
+        public static certToPkcs12(cert: pki.Certificate, exportPrivateKey: boolean): pki.Pkcs12 {
             const csp = new native.UTILS.Csp();
 
-            return pki.Pkcs12.wrap<native.PKI.Pkcs12, pki.Pkcs12>(csp.certToPkcs12(cert.handle));
+            return pki.Pkcs12.wrap<native.PKI.Pkcs12, pki.Pkcs12>(csp.certToPkcs12(cert.handle, exportPrivateKey));
         }
 
         /**
