@@ -25,6 +25,7 @@
 #undef HAVE_CONFIG_H // CSP headers includes myconfig.h if HAVE_CONFIG_H is defined
 #include <cpcsp/WinCryptEx.h>
 #include <cpcsp/CSP_WinDef.h>
+#include <cpcsp/CSP_WinCrypt.h>
 #define CSP_BOOL BOOL
 
 #if !defined(MAX_PATH)
