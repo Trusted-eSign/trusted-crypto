@@ -259,6 +259,7 @@ declare namespace native {
             getSignerId(): SignerId;
             getSignedAttributes(): SignerAttributeCollection;
             getUnsignedAttributes(): SignerAttributeCollection;
+            getSigningTime(): string;
             verify(): boolean;
             verifyContent(v: Buffer): boolean;
         }
@@ -2599,6 +2600,14 @@ declare namespace trusted.cms {
          * @memberOf Signer
          */
         readonly signerId: SignerId;
+        /**
+         * Return signing time from signed attributes
+         *
+         * @readonly
+         * @type {string}
+         * @memberof Signer
+         */
+        readonly signingTime: string;
         /**
          * Verify signer content
          *
