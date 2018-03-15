@@ -70,6 +70,17 @@ namespace trusted.cms {
         }
 
         /**
+         * Return signing time from signed attributes
+         *
+         * @readonly
+         * @type {string}
+         * @memberof Signer
+         */
+        get signingTime(): string {
+            return this.handle.getSigningTime();
+        }
+
+        /**
          * Verify signer content
          *
          * @param {ISignedDataContent} v

@@ -25,6 +25,7 @@ public:
 	static NAN_METHOD(GetSignatureAlgorithm);
 	static NAN_METHOD(GetDigestAlgorithm);
 	static NAN_METHOD(GetSignerId);
+	static NAN_METHOD(GetSigningTime);
 
 	// Methods
 	static NAN_METHOD(GetSignedAttributes);

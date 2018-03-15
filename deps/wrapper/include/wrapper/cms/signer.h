@@ -30,6 +30,7 @@ public:
 	Handle<Attribute> unsignedAttributes(int index, int location);
 	Handle<Attribute> unsignedAttributes(Handle<OID> oid);
 	Handle<Attribute> unsignedAttributes(Handle<OID> oid, int location);
+	Handle<std::string> getSigningTime();
 	void sign();
 	bool verify();
 	bool verify(Handle<Bio> content);

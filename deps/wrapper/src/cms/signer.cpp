@@ -225,16 +225,16 @@ bool Signer::verify(Handle<Bio> content){
 			}	
 		}
 
-		if (pctx) {
-			LOGGER_OPENSSL("EVP_PKEY_CTX_free");
-			EVP_PKEY_CTX_free(pctx);
-		}
+if (pctx) {
+	LOGGER_OPENSSL("EVP_PKEY_CTX_free");
+	EVP_PKEY_CTX_free(pctx);
+}
 
-		return res == 1;
+return res == 1;
 	}
 	catch (Handle<Exception> e) {
 		THROW_EXCEPTION(0, Signer, e, "Error verify signer content");
-	}	
+	}
 }
 
 Handle<SignerId> Signer::getSignerId(){
@@ -289,7 +289,7 @@ Handle<SignerId> Signer::getSignerId(){
 	}
 	catch (Handle<Exception> e) {
 		THROW_EXCEPTION(0, Signer, e, "Error get signer identifier information");
-	}	
+	}
 }
 
 Handle<Algorithm> Signer::getSignatureAlgorithm(){
@@ -320,4 +320,26 @@ Handle<Algorithm> Signer::getDigestAlgorithm(){
 	}
 
 	return new Algorithm(alg, this->handle());
+}
+
+Handle<std::string> Signer::getSigningTime() {
+	LOGGER_FN();
+
+	int i;
+	X509_ATTRIBUTE *attr = NULL;
+	ASN1_STRING *asn1s = NULL;
+	Handle<Bio> out = new Bio(BIO_TYPE_MEM, "");
+
+	LOGGER_OPENSSL("CMS_signed_get_attr_by_NID");
+	if ((i = CMS_signed_get_attr_by_NID(this->internal(), NID_pkcs9_signingTime, -1)) < 0
+		|| (!(attr = CMS_signed_get_attr(this->internal(), i))
+		|| (!(asn1s = (ASN1_STRING *)X509_ATTRIBUTE_get0_data(attr, 0, V_ASN1_UTCTIME, NULL))))
+		) {
+		return new std::string("");
+	}
+
+	LOGGER_OPENSSL("ASN1_UTCTIME_print");
+	ASN1_UTCTIME_print(out->internal(), asn1s);
+
+	return out->read();
 }

@@ -238,6 +238,7 @@ declare namespace native {
             public getSignerId(): SignerId;
             public getSignedAttributes(): SignerAttributeCollection;
             public getUnsignedAttributes(): SignerAttributeCollection;
+            public getSigningTime(): string;
             public verify(): boolean;
             public verifyContent(v: Buffer): boolean;
         }

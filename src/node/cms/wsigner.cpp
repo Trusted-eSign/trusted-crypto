@@ -26,6 +26,7 @@ void WSigner::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getSignatureAlgorithm", GetSignatureAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "getDigestAlgorithm", GetDigestAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "getSignerId", GetSignerId);
+	Nan::SetPrototypeMethod(tpl, "getSigningTime", GetSigningTime);
 
 	Nan::SetPrototypeMethod(tpl, "getSignedAttributes", GetSignedAttributes);
 	Nan::SetPrototypeMethod(tpl, "getUnsignedAttributes", GetUnsignedAttributes);
@@ -222,6 +223,22 @@ NAN_METHOD(WSigner::GetUnsignedAttributes){
 		v8::Local<v8::Object> v8Attrs = WSignerAttributeCollection::NewInstance(attrs);
 
 		info.GetReturnValue().Set(v8Attrs);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSigner::GetSigningTime){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Signer);
+
+		Handle<std::string> signingTime = _this->getSigningTime();
+
+		v8::Local<v8::String> v8Time = Nan::New<v8::String>(signingTime->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Time);
 		return;
 	}
 	TRY_END();
