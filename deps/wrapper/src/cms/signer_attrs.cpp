@@ -31,14 +31,14 @@ Handle<Attribute> SignerAttributeCollection::items(int index, int location){
 
 	if (this->signed_attr){
 		LOGGER_OPENSSL("CMS_signed_get_attr_count");
-		attr = CMS_signed_get_attr(this->signer->internal(), location);
+		attr = CMS_signed_get_attr(this->signer->internal(), index);
 		if (!attr){
 			THROW_OPENSSL_EXCEPTION(0, SignerAttributeCollection, NULL, "CMS_signed_get_attr_count");
 		}
 	}
 	else{
 		LOGGER_OPENSSL("CMS_unsigned_get_attr_count");
-		attr = CMS_unsigned_get_attr(this->signer->internal(), location);
+		attr = CMS_unsigned_get_attr(this->signer->internal(), index);
 		if (!attr){
 			THROW_OPENSSL_EXCEPTION(0, SignerAttributeCollection, NULL, "CMS_unsigned_get_attr_count");
 		}
