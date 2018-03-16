@@ -73,11 +73,17 @@ namespace trusted.cms {
          * Return signing time from signed attributes
          *
          * @readonly
-         * @type {string}
+         * @type {Date}
          * @memberof Signer
          */
-        get signingTime(): string {
-            return this.handle.getSigningTime();
+        get signingTime(): Date {
+            const strDate = this.handle.getSigningTime();
+
+            if (!strDate.length) {
+                return undefined;
+            }
+
+            return new Date(strDate);
         }
 
         /**
