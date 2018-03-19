@@ -46,9 +46,10 @@ Bio::~Bio()
 {
 	LOGGER_FN();
 
-	if (this->delData_){		
+	if (this->data_ != NULL && this->delData_){
 		LOGGER_OPENSSL(BIO_free);
 		BIO_free(this->data_);
+		this->data_ = NULL;
 	}
 }
 

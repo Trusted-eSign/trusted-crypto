@@ -190,6 +190,16 @@ namespace trusted.cms {
         }
 
         /**
+         *  Free signed content
+         *
+         * @returns {void}
+         * @memberof SignedData
+         */
+        public freeContent(): void {
+            return this.handle.freeContent();
+        }
+
+        /**
          * Return true if sign detached
          *
          * @returns {boolean}

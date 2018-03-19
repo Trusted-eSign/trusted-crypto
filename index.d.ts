@@ -232,6 +232,7 @@ declare namespace native {
             constructor();
             getContent(): Buffer;
             setContent(v: Buffer): void;
+            freeContent(): void;
             getFlags(): number;
             setFlags(v: number): void;
             load(filename: string, dataFormat?: trusted.DataFormat): void;
@@ -2604,10 +2605,10 @@ declare namespace trusted.cms {
          * Return signing time from signed attributes
          *
          * @readonly
-         * @type {string}
+         * @type {Date}
          * @memberof Signer
          */
-        readonly signingTime: string;
+        readonly signingTime: Date;
         /**
          * Verify signer content
          *
@@ -2831,6 +2832,13 @@ declare namespace trusted.cms {
          * @memberOf SignedData
          */
         policies: string[];
+        /**
+         *  Free signed content
+         *
+         * @returns {void}
+         * @memberof SignedData
+         */
+        freeContent(): void;
         /**
          * Return true if sign detached
          *

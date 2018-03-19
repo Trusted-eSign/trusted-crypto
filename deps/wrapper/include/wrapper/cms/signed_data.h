@@ -25,6 +25,7 @@ public:
 
 	// Properties
 	void setContent(Handle<Bio> value);
+	void freeContent();
 	Handle<Bio> getContent();
 	int getFlags();
 	void setFlags(int v);

@@ -22,6 +22,7 @@ void WSignedData::Init(v8::Handle<v8::Object> exports){
 
 	Nan::SetPrototypeMethod(tpl, "getContent", GetContent);
 	Nan::SetPrototypeMethod(tpl, "setContent", SetContent);
+	Nan::SetPrototypeMethod(tpl, "freeContent", FreeContent);
 	Nan::SetPrototypeMethod(tpl, "getFlags", GetFlags);
 	Nan::SetPrototypeMethod(tpl, "setFlags", SetFlags);
 
@@ -309,6 +310,20 @@ NAN_METHOD(WSignedData::SetContent) {
 
 		_this->setContent(buffer);
 
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WSignedData::FreeContent) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(SignedData);
+
+		_this->freeContent();
+
+		info.GetReturnValue().Set(info.This());
 		return;
 	}
 	TRY_END();

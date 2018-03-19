@@ -209,6 +209,7 @@ declare namespace native {
             constructor();
             public getContent(): Buffer;
             public setContent(v: Buffer): void;
+            public freeContent(): void;
             public getFlags(): number;
             public setFlags(v: number): void;
             public load(filename: string, dataFormat?: trusted.DataFormat): void;

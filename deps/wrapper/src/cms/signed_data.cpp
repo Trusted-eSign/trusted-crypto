@@ -212,6 +212,13 @@ Handle<Bio> SignedData::getContent(){
 	return this->content;
 }
 
+void SignedData::freeContent(){
+	LOGGER_FN();
+
+	this->content->~Bio();
+	this->content = NULL;
+}
+
 bool SignedData::verify(Handle<CertificateCollection> certs){
 	LOGGER_FN();
 	int res;
