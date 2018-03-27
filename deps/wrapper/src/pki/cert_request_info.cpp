@@ -113,8 +113,6 @@ Handle<Key> CertificationRequestInfo::getPublicKey() {
 
 	Handle<Key> key = NULL;
 
-	X509_REQ_INFO *xx = this->internal();
-
 	if (this->internal()->pubkey) {
 		LOGGER_OPENSSL(X509_PUBKEY_get);
 		key = new Key(X509_PUBKEY_get(this->internal()->pubkey));
