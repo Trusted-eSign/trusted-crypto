@@ -80,7 +80,6 @@ void CertificationRequestInfo::setVersion(long version){
 Handle<std::string> CertificationRequestInfo::getSubject() {
 	LOGGER_FN();
 
-	LOGGER_OPENSSL(X509_REQ_get_subject_name);
 	X509_NAME *name = this->internal()->subject;
 	if (!name)
 		THROW_EXCEPTION(0, CertificationRequestInfo, NULL, "X509_REQ_INFO subject is NULL");
