@@ -15,6 +15,15 @@ describe("CertificationRequest", function() {
     var publickey;
     var privatekey;
 
+    before(function() {
+        try {
+            fs.statSync(DEFAULT_OUT_PATH).isDirectory();
+        } catch (err) {
+            fs.mkdirSync(DEFAULT_OUT_PATH);
+        }
+    });
+
+
     it("init", function() {
         certReq = new trusted.pki.CertificationRequest();
         assert.equal(certReq !== null, true);
