@@ -42,7 +42,7 @@ describe("CertificationRequest", function() {
         certReq.subject = SUBJECT_NAME;
         assert.equal(typeof (certReq.subject), "string", "Bad subject value");
 
-        certReqInfo.version = 2;
+        certReq.version = 2;
         assert.equal(typeof (certReq.version), "number", "Bad version value");
 
         certReq.publicKey = publickey;
