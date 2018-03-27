@@ -171,8 +171,11 @@ declare namespace native {
             removeAt(index: number): void;
         }
         class CertificationRequestInfo {
+            getSubject(): string;
             setSubject(x509name: string): void;
-            setSubjectPublicKey(key: PKI.Key): void;
+            getPublicKey(): Key;
+            setPublicKey(key: Key): void;
+            getVersion(): number;
             setVersion(version: number): void;
         }
         class CertificationRequest {
@@ -1702,7 +1705,14 @@ declare namespace trusted.pki {
          */
         constructor(param?: native.PKI.CertificationRequestInfo);
         /**
-         * Set subject name
+         * Rerutn subject name
+         *
+         * @readonly
+         * @type {string}
+         * @memberof CertificationRequestInfo
+         */
+        /**
+         * Sets the subject of this certification request.
          *
          * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
          *
@@ -1710,13 +1720,27 @@ declare namespace trusted.pki {
          */
         subject: string;
         /**
+         * Rerutn subject public key
+         *
+         * @readonly
+         * @type {Key}
+         * @memberof CertificationRequestInfo
+         */
+        /**
          *  Set public key
          *
          *  @param {Key} pubkey Public key
          *
          * @memberOf CertificationRequestInfo
          */
-        pubkey: Key;
+        publicKey: Key;
+        /**
+         * Rerutn version
+         *
+         * @readonly
+         * @type {number}
+         * @memberof CertificationRequestInfo
+         */
         /**
          * Set version certificate
          *
