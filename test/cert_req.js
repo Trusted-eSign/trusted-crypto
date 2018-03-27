@@ -2,8 +2,10 @@
 
 var assert = require("assert");
 var trusted = require("../index.js");
+var fs = require("fs");
 
 var DEFAULT_RESOURCES_PATH = "test/resources";
+var DEFAULT_OUT_PATH = "test/out";
 var SUBJECT_NAME = "/C=US/O=Test/CN=example.com";
 
 describe("CertificationRequest", function() {
@@ -52,8 +54,19 @@ describe("CertificationRequest", function() {
         assert.equal(certReqFromInfo.subject === certReq.subject, true);
     });
 
-    it("sign", function() {
+    it("sign/verify", function() {
         certReq.sign(privatekey, "SHA1");
         assert.equal(certReq.verify() === true, true, "Bad verify value");
+    });
+
+    it("save/load", function() {
+        certReq.save(DEFAULT_OUT_PATH + "/testreq.pem", trusted.DataFormat.PEM);
+        assert.equal(fs.statSync(DEFAULT_OUT_PATH + "/testreq.pem").size > 0, true, "Empty saved certificate request file");
+
+        var req = new trusted.pki.CertificationRequest();
+
+        assert.equal(certReq !== null, true);
+        req.load(DEFAULT_OUT_PATH + "/testreq.pem", trusted.DataFormat.PEM);
+        assert.equal(typeof (certReq.subject), "string", "Bad subject value");
     });
 });
