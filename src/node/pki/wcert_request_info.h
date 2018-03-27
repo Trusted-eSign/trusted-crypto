@@ -19,6 +19,10 @@ public:
 	static NAN_METHOD(SetPublicKey);
 	static NAN_METHOD(SetVersion);
 
+	static NAN_METHOD(GetSubject);
+	static NAN_METHOD(GetPublicKey);
+	static NAN_METHOD(GetVersion);
+
 	WRAP_NEW_INSTANCE(CertificationRequestInfo);
 };
 

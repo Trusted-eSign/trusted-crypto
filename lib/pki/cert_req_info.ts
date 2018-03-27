@@ -29,6 +29,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Rerutn subject name
+         *
+         * @readonly
+         * @type {string}
+         * @memberof CertificationRequestInfo
+         */
+        get subject(): string {
+            return this.handle.getSubject();
+        }
+
+        /**
          * Sets the subject of this certification request.
          *
          * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
@@ -40,14 +51,36 @@ namespace trusted.pki {
         }
 
         /**
+         * Rerutn subject public key
+         *
+         * @readonly
+         * @type {Key}
+         * @memberof CertificationRequestInfo
+         */
+        get publicKey(): Key {
+            return Key.wrap<native.PKI.Key, Key>(this.handle.getPublicKey());
+        }
+
+        /**
          *  Set public key
          *
          *  @param {Key} pubkey Public key
          *
          * @memberOf CertificationRequestInfo
          */
-        set publicKey(pubkey: Key) {
+        set publicKey(pubkey: pki.Key) {
             this.handle.setPublicKey(pubkey.handle);
+        }
+
+        /**
+         * Rerutn version
+         *
+         * @readonly
+         * @type {number}
+         * @memberof CertificationRequestInfo
+         */
+        get version(): number {
+            return this.handle.getVersion();
         }
 
         /**

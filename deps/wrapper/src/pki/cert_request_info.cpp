@@ -76,3 +76,52 @@ void CertificationRequestInfo::setVersion(long version){
 		THROW_EXCEPTION(0, CertificationRequestInfo, NULL, "Error set version to X509_REQ_info");
 	}
 }
+
+Handle<std::string> CertificationRequestInfo::getSubject() {
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_REQ_get_subject_name);
+	X509_NAME *name = this->internal()->subject;
+	if (!name)
+		THROW_EXCEPTION(0, CertificationRequestInfo, NULL, "X509_REQ_INFO subject is NULL");
+
+	LOGGER_OPENSSL(X509_NAME_oneline_ex);
+	std::string str_name = X509_NAME_oneline_ex(name);
+
+	Handle<std::string> res = new std::string(str_name.c_str(), str_name.length());
+
+	return res;
+}
+
+long CertificationRequestInfo::getVersion() {
+	LOGGER_FN();
+
+	ASN1_INTEGER *ver = this->internal()->version;
+
+	if (!ver) {
+		THROW_EXCEPTION(0, CertificationRequestInfo, NULL, "X509_REQ_INFO version is NULL");
+	}
+
+	LOGGER_OPENSSL(ASN1_INTEGER_get);
+	long res = ASN1_INTEGER_get(this->internal()->version);
+
+	return res;
+}
+
+Handle<Key> CertificationRequestInfo::getPublicKey() {
+	LOGGER_FN();
+
+	Handle<Key> key = NULL;
+
+	X509_REQ_INFO *xx = this->internal();
+
+	if (this->internal()->pubkey) {
+		LOGGER_OPENSSL(X509_PUBKEY_get);
+		key = new Key(X509_PUBKEY_get(this->internal()->pubkey));
+	}
+	else {
+		THROW_EXCEPTION(0, CertificationRequestInfo, NULL, "X509_REQ_INFO pubkey is NULL");
+	}
+
+	return key;
+}

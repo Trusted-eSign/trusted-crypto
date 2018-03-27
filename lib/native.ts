@@ -139,8 +139,11 @@ declare namespace native {
         }
 
         class CertificationRequestInfo {
+            public getSubject(): string;
             public setSubject(x509name: string): void;
-            public setPublicKey(key: PKI.Key): void;
+            public getPublicKey(): Key;
+            public setPublicKey(key: Key): void;
+            public getVersion(): number;
             public setVersion(version: number): void;
         }
 

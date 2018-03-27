@@ -20,6 +20,10 @@ void WCertificationRequestInfo::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "setPublicKey", SetPublicKey);
 	Nan::SetPrototypeMethod(tpl, "setVersion", SetVersion);
 
+	Nan::SetPrototypeMethod(tpl, "getSubject", GetSubject);
+	Nan::SetPrototypeMethod(tpl, "getPublicKey", GetPublicKey);
+	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
+
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 
@@ -90,6 +94,54 @@ NAN_METHOD(WCertificationRequestInfo::SetVersion){
 
 		_this->setVersion(version);
 
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequestInfo::GetSubject) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertificationRequestInfo);
+
+		Handle<std::string> name = _this->getSubject();
+
+		v8::Local<v8::String> v8Name = Nan::New<v8::String>(name->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Name);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequestInfo::GetVersion)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertificationRequestInfo);
+
+		long version = _this->getVersion();
+
+		info.GetReturnValue().Set(
+			Nan::New<v8::Number>(version)
+			);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequestInfo::GetPublicKey)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertificationRequestInfo);
+
+		Handle<Key> key = _this->getPublicKey();
+		v8::Local<v8::Object> v8Key = WKey::NewInstance(key);
+		info.GetReturnValue().Set(v8Key);
 		return;
 	}
 	TRY_END();
