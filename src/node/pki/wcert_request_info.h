@@ -4,9 +4,10 @@
 #include <wrapper/pki/cert_request_info.h>
 
 #include <nan.h>
+#include "../utils/wrap.h"
 #include "../helper.h"
 
-class WCertificationRequestInfo : public node::ObjectWrap{
+WRAP_CLASS(CertificationRequestInfo) {
 public:
 	WCertificationRequestInfo(){};
 	~WCertificationRequestInfo(){};
@@ -15,15 +16,10 @@ public:
 	static NAN_METHOD(New);
 
 	static NAN_METHOD(SetSubject);
-	static NAN_METHOD(SetSubjectPublicKey);
+	static NAN_METHOD(SetPublicKey);
 	static NAN_METHOD(SetVersion);
 
-	Handle<CertificationRequestInfo> data_;
-
-	static inline Nan::Persistent<v8::Function> & constructor() {
-		static Nan::Persistent<v8::Function> my_constructor;
-		return my_constructor;
-	}
+	WRAP_NEW_INSTANCE(CertificationRequestInfo);
 };
 
 #endif //PKI_WCERTREQINFO_H_INCLUDED

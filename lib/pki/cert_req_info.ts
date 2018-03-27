@@ -29,7 +29,7 @@ namespace trusted.pki {
         }
 
         /**
-         * Set subject name
+         * Sets the subject of this certification request.
          *
          * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
          *
@@ -46,8 +46,8 @@ namespace trusted.pki {
          *
          * @memberOf CertificationRequestInfo
          */
-        set pubkey(pubkey: Key) {
-            this.handle.setSubjectPublicKey(pubkey.handle);
+        set publicKey(pubkey: Key) {
+            this.handle.setPublicKey(pubkey.handle);
         }
 
         /**

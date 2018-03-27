@@ -17,7 +17,7 @@ void WCertificationRequestInfo::Init(v8::Handle<v8::Object> exports){
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
 	Nan::SetPrototypeMethod(tpl, "setSubject", SetSubject);
-	Nan::SetPrototypeMethod(tpl, "setSubjectPublicKey", SetSubjectPublicKey);
+	Nan::SetPrototypeMethod(tpl, "setPublicKey", SetPublicKey);
 	Nan::SetPrototypeMethod(tpl, "setVersion", SetVersion);
 
 	// Store the constructor in the target bindings.
@@ -63,7 +63,7 @@ NAN_METHOD(WCertificationRequestInfo::SetSubject){
 	TRY_END();
 }
 
-NAN_METHOD(WCertificationRequestInfo::SetSubjectPublicKey){
+NAN_METHOD(WCertificationRequestInfo::SetPublicKey){
 	METHOD_BEGIN();
 
 	try{

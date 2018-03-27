@@ -140,7 +140,7 @@ declare namespace native {
 
         class CertificationRequestInfo {
             public setSubject(x509name: string): void;
-            public setSubjectPublicKey(key: PKI.Key): void;
+            public setPublicKey(key: PKI.Key): void;
             public setVersion(version: number): void;
         }
 
