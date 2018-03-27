@@ -150,7 +150,14 @@ declare namespace native {
         class CertificationRequest {
             constructor(csrinfo?: PKI.CertificationRequestInfo);
             public load(filename: string, dataFormat?: trusted.DataFormat): void;
-            public sign(key: Key): void;
+            public save(filename: string, dataFormat?: trusted.DataFormat): void;
+            public getSubject(): string;
+            public setSubject(x509name: string): void;
+            public getPublicKey(): Key;
+            public setPublicKey(key: Key): void;
+            public getVersion(): number;
+            public setVersion(version: number): void;
+            public sign(key: Key, digest: string): void;
             public verify(): boolean;
             public getPEMString(): Buffer;
         }

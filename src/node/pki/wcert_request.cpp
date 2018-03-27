@@ -18,7 +18,17 @@ void WCertificationRequest::Init(v8::Handle<v8::Object> exports){
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
+	Nan::SetPrototypeMethod(tpl, "save", Save);
+	Nan::SetPrototypeMethod(tpl, "setSubject", SetSubject);
+	Nan::SetPrototypeMethod(tpl, "setPublicKey", SetPublicKey);
+	Nan::SetPrototypeMethod(tpl, "setVersion", SetVersion);
+
+	Nan::SetPrototypeMethod(tpl, "getSubject", GetSubject);
+	Nan::SetPrototypeMethod(tpl, "getPublicKey", GetPublicKey);
+	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
+
 	Nan::SetPrototypeMethod(tpl, "sign", Sign);
+	Nan::SetPrototypeMethod(tpl, "verify", Verify);
 	Nan::SetPrototypeMethod(tpl, "getPEMString", GetPEMString);
 
 	// Store the constructor in the target bindings.
@@ -79,6 +89,132 @@ NAN_METHOD(WCertificationRequest::Load) {
 	TRY_END();
 }
 
+NAN_METHOD(WCertificationRequest::Save) {
+	METHOD_BEGIN();
+
+	try {
+		LOGGER_ARG("filename");
+		v8::String::Utf8Value v8Filename(info[0]->ToString());
+		char *filename = *v8Filename;
+
+		LOGGER_ARG("format");
+		int format = info[1]->ToNumber()->Int32Value();
+
+		UNWRAP_DATA(CertificationRequest);
+
+		Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
+		_this->write(out, DataFormat::get(format));
+		out->flush();
+
+		info.GetReturnValue().Set(info.This());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::SetSubject){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(CertificationRequest);
+
+		LOGGER_ARG("x509Name");
+		v8::String::Utf8Value v8Name(info[0]->ToString());
+		char *x509Name = *v8Name;
+		if (x509Name == NULL) {
+			Nan::ThrowError("Wrong x509name");
+			info.GetReturnValue().SetUndefined();
+		}
+
+		Handle<std::string> hname = new std::string(x509Name);
+
+		_this->setSubject(hname);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::SetPublicKey){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(CertificationRequest);
+
+		LOGGER_ARG("certificate")
+			WKey * wKey = WKey::Unwrap<WKey>(info[0]->ToObject());
+
+		_this->setPublicKey(wKey->data_);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::SetVersion){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(CertificationRequest);
+
+		LOGGER_ARG("version")
+			long version = info[0]->ToNumber()->Int32Value();
+
+		_this->setVersion(version);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::GetSubject) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertificationRequest);
+
+		Handle<std::string> name = _this->getSubject();
+
+		v8::Local<v8::String> v8Name = Nan::New<v8::String>(name->c_str()).ToLocalChecked();
+
+		info.GetReturnValue().Set(v8Name);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::GetVersion)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertificationRequest);
+
+		long version = _this->getVersion();
+
+		info.GetReturnValue().Set(
+			Nan::New<v8::Number>(version)
+			);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::GetPublicKey)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertificationRequest);
+
+		Handle<Key> key = _this->getPublicKey();
+		v8::Local<v8::Object> v8Key = WKey::NewInstance(key);
+		info.GetReturnValue().Set(v8Key);
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WCertificationRequest::Sign){
 	METHOD_BEGIN();
 
@@ -95,6 +231,20 @@ NAN_METHOD(WCertificationRequest::Sign){
 
 		_this->sign(wKey->data_, strDigest.c_str());
 
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::Verify) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertificationRequest);
+
+		bool res = _this->verify();
+
+		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
 	}
 	TRY_END();

@@ -37,7 +37,6 @@
         "lib/pki/revoked.ts",
         "lib/pki/revokeds.ts",
         "lib/pki/crls.ts",
-        "lib/pki/csr.ts",
         "lib/pki/chain.ts",
         "lib/pki/cipher.ts",
         "lib/pki/pkcs12.ts",

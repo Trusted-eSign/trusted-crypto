@@ -27,7 +27,6 @@
                 "src/node/pki/walg.cpp",
                 "src/node/pki/wcert_request_info.cpp",
                 "src/node/pki/wcert_request.cpp",
-                "src/node/pki/wcsr.cpp",
                 "src/node/pki/wcipher.cpp",
                 "src/node/pki/wchain.cpp",
                 "src/node/pki/wrevocation.cpp",

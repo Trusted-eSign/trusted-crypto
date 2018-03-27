@@ -92,6 +92,20 @@ Handle<std::string> CertificationRequest::getPEMString(){
 	}
 }
 
+Handle<CertificationRequest> CertificationRequest::duplicate(){
+	LOGGER_FN();
+
+	X509_REQ *req = NULL;
+
+	LOGGER_OPENSSL(X509_REQ_dup);
+	req = X509_REQ_dup(this->internal());
+	if (!req) {
+		THROW_EXCEPTION(0, CertificationRequest, NULL, "X509_REQ_dup");
+	}
+
+	return new CertificationRequest(req);
+}
+
 void CertificationRequest::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 	LOGGER_FN();
 
@@ -120,4 +134,143 @@ void CertificationRequest::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 	}
 
 	this->setData(req);
+}
+
+void CertificationRequest::write(Handle<Bio> out, DataFormat::DATA_FORMAT format){
+	LOGGER_FN();
+
+	if (out.isEmpty()) {
+		THROW_EXCEPTION(0, Certificate, NULL, "CertificationRequest is NULL");
+	}
+
+	switch (format){
+	case DataFormat::DER:
+		LOGGER_OPENSSL(i2d_X509_REQ_bio);
+		if (i2d_X509_REQ_bio(out->internal(), this->internal()) < 1)
+			THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "i2d_X509_REQ_bio", NULL);
+		break;
+	case DataFormat::BASE64:
+		LOGGER_OPENSSL(PEM_write_bio_X509_REQ);
+		if (PEM_write_bio_X509_REQ(out->internal(), this->internal()) < 1)
+			THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "CertificationRequest", NULL);
+		break;
+	default:
+		THROW_EXCEPTION(0, CertificationRequest, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
+	}
+}
+
+void CertificationRequest::setSubject(Handle<std::string> xName) {
+	LOGGER_FN();
+
+	try{
+		if (xName.isEmpty()){
+			THROW_EXCEPTION(0, CertificationRequest, NULL, "Parameter 1 can not be NULL");
+		}
+
+		LOGGER_OPENSSL(X509_NAME_new);
+		X509_NAME *name = X509_NAME_new();
+
+		std::string strName = xName->c_str();
+		strName = strName + "/";
+
+		std::string sl = "/";
+		std::string eq = "=";
+
+		size_t pos = 0, posInBuf = 0;
+
+		std::string buf, field, param;
+
+		while ((pos = strName.find(sl)) != std::string::npos)  {
+			buf = strName.substr(0, pos);
+			if (buf.length() > 0){
+				posInBuf = buf.find(eq);
+				field = buf.substr(0, posInBuf);
+				param = buf.substr(posInBuf + 1, buf.length());
+
+				LOGGER_OPENSSL(X509_NAME_add_entry_by_txt);
+				if (!X509_NAME_add_entry_by_txt(name, field.c_str(), MBSTRING_ASC, (const unsigned char *)param.c_str(), -1, -1, 0)){
+					THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "X509_NAME_add_entry_by_txt 'Unable add param to X509_NAME'");
+				}
+			}
+			strName.erase(0, pos + sl.length());
+		}
+
+		LOGGER_OPENSSL(X509_NAME_dup);
+		if (!X509_REQ_set_subject_name(this->internal(), name)) {
+			X509_NAME_free(name);
+
+			THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "X509_REQ_set_subject_name 'Error set subject name'");
+		}
+
+		if (name){
+			LOGGER_OPENSSL(X509_NAME_free);
+			X509_NAME_free(name);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, CertificationRequest, e, "Error set subject to X509_REQ_info");
+	}
+}
+
+void CertificationRequest::setPublicKey(Handle<Key> key){
+	LOGGER_FN();
+
+	if (key.isEmpty()){
+		THROW_EXCEPTION(0, CertificationRequest, NULL, "Key is empty");
+	}
+
+	LOGGER_OPENSSL(X509_REQ_set_pubkey);
+	if (!X509_REQ_set_pubkey(this->internal(), key->internal())) {
+		THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "X509_REQ_set_pubkey");
+	}
+}
+
+void CertificationRequest::setVersion(long version){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_REQ_set_version);
+	if (!X509_REQ_set_version(this->internal(), version)) {
+		THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "X509_REQ_set_version");
+	}
+}
+
+Handle<std::string> CertificationRequest::getSubject() {
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_REQ_get_subject_name);
+	X509_NAME *name = X509_REQ_get_subject_name(this->internal());
+	if (!name) {
+		THROW_EXCEPTION(0, CertificationRequest, NULL, "X509_REQ_INFO subject is NULL");
+	}
+
+	LOGGER_OPENSSL(X509_NAME_oneline_ex);
+	std::string str_name = X509_NAME_oneline_ex(name);
+
+	Handle<std::string> res = new std::string(str_name.c_str(), str_name.length());
+
+	return res;
+}
+
+long CertificationRequest::getVersion() {
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_REQ_get_version);
+	long res = X509_REQ_get_version(this->internal());
+
+	return res;
+}
+
+Handle<Key> CertificationRequest::getPublicKey() {
+	LOGGER_FN();
+
+	EVP_PKEY *epkey = NULL;
+	
+	LOGGER_OPENSSL(X509_REQ_get_pubkey);
+	epkey = X509_REQ_get_pubkey(this->internal());
+
+	if (!epkey) {
+		THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "X509_REQ_get_pubkey");
+	}
+
+	return new Key(epkey);
 }

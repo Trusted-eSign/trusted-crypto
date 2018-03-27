@@ -16,7 +16,19 @@ public:
 	static NAN_METHOD(New);
 
 	static NAN_METHOD(Load);
+	static NAN_METHOD(Save);
+
+	static NAN_METHOD(SetSubject);
+	static NAN_METHOD(SetPublicKey);
+	static NAN_METHOD(SetVersion);
+
+	static NAN_METHOD(GetSubject);
+	static NAN_METHOD(GetPublicKey);
+	static NAN_METHOD(GetVersion);
+
 	static NAN_METHOD(Sign);
+	static NAN_METHOD(Verify);
+
 	static NAN_METHOD(GetPEMString);
 
 	WRAP_NEW_INSTANCE(CertificationRequest);

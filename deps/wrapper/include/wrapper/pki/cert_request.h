@@ -20,12 +20,21 @@ public:
 
 	CertificationRequest(Handle<CertificationRequestInfo> csrinfo);
 
-	//Methods
 	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);
+	void write(Handle<Bio> out, DataFormat::DATA_FORMAT format);
+	Handle<CertificationRequest> duplicate();
+
+	void setSubject(Handle<std::string> x509Name);
+	void setPublicKey(Handle<Key> key);
+	void setVersion(long version);
+
+	Handle<std::string> getSubject();
+	Handle<Key> getPublicKey();
+	long getVersion();
+
 	void sign(Handle<Key> key, const char* digest);
 	bool verify();
 
-	//Properties
 	Handle<std::string> getPEMString();
 };
 

@@ -23,7 +23,6 @@
                 "src/pki/key.cpp",
                 "src/pki/cert_request_info.cpp",
                 "src/pki/cert_request.cpp",
-                "src/pki/csr.cpp",
                 "src/pki/cipher.cpp",
                 "src/pki/chain.cpp",
                 "src/pki/pkcs12.cpp",
