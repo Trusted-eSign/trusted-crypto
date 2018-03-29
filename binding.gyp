@@ -22,6 +22,7 @@
                 "src/node/pki/wcerts.cpp",
                 "src/node/pki/wattr.cpp",
                 "src/node/pki/wattr_vals.cpp",
+                "src/node/pki/wext.cpp",
                 "src/node/pki/wkey.cpp",
                 "src/node/pki/woid.cpp",
                 "src/node/pki/walg.cpp",

@@ -36,6 +36,7 @@
                 "src/pki/attr.cpp",
                 "src/pki/attrs.cpp",
                 "src/pki/attr_vals.cpp",
+                "src/pki/ext.cpp",
                 "src/pki/oid.cpp",
                 "src/cms/signer.cpp",
                 "src/cms/signer_id.cpp",
