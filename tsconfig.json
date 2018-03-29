@@ -29,6 +29,7 @@
         "lib/pki/attr.ts",
         "lib/pki/attr_vals.ts",
         "lib/pki/ext.ts",
+        "lib/pki/exts.ts",
         "lib/pki/cert.ts",
         "lib/pki/certs.ts",
         "lib/pki/cert_req.ts",

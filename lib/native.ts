@@ -58,6 +58,14 @@ declare namespace native {
             public setCritical(critical: boolean): void;
         }
 
+        class ExtensionCollection {
+            public items(index: number): Extension;
+            public length(): number;
+            public push(ext: Extension): void;
+            public pop(): void;
+            public removeAt(index: number): void;
+        }
+
         class Certificate {
             public getSubjectFriendlyName(): string;
             public getIssuerFriendlyName(): string;

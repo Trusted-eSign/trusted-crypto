@@ -98,6 +98,13 @@ declare namespace native {
             getCritical(): boolean;
             setCritical(critical: boolean): void;
         }
+        class ExtensionCollection {
+            items(index: number): Extension;
+            length(): number;
+            push(ext: Extension): void;
+            pop(): void;
+            removeAt(index: number): void;
+        }
         class Certificate {
             getSubjectFriendlyName(): string;
             getIssuerFriendlyName(): string;
@@ -1349,6 +1356,60 @@ declare namespace trusted.pki {
          * @memberof Extension
          */
         critical: boolean;
+    }
+}
+declare namespace trusted.pki {
+    /**
+     * Collection of Extension
+     *
+     * @export
+     * @class ExtensionCollection
+     * @extends {BaseObject<native.PKI.ExtensionCollection>}
+     * @implements {core.ICollectionWrite}
+     */
+    class ExtensionCollection extends BaseObject<native.PKI.ExtensionCollection> implements core.ICollectionWrite {
+        /**
+         * Creates an instance of ExtensionCollection.
+         * @param {native.PKI.ExtensionCollection} [param]
+         * @memberof ExtensionCollection
+         */
+        constructor(param?: native.PKI.ExtensionCollection);
+        /**
+         * Return element by index from collection
+         *
+         * @param {number} index
+         * @returns {Extension}
+         * @memberof ExtensionCollection
+         */
+        items(index: number): Extension;
+        /**
+         * Return collection length
+         *
+         * @readonly
+         * @type {number}
+         * @memberof ExtensionCollection
+         */
+        readonly length: number;
+        /**
+         * Add new element to collection
+         *
+         * @param {Extension} ext
+         * @memberof ExtensionCollection
+         */
+        push(ext: Extension): void;
+        /**
+         * Remove last element from collection
+         *
+         * @memberof ExtensionCollection
+         */
+        pop(): void;
+        /**
+         * Remove element by index from collection
+         *
+         * @param {number} index
+         * @memberof ExtensionCollection
+         */
+        removeAt(index: number): void;
     }
 }
 declare namespace trusted.pki {
