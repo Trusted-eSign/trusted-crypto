@@ -91,6 +91,13 @@ declare namespace native {
             getShortName(): string;
             getValue(): string;
         }
+        class Extension {
+            constructor(oid?: OID, value?: string);
+            getTypeId(): OID;
+            setTypeId(oid: OID): void;
+            getCritical(): boolean;
+            setCritical(critical: boolean): void;
+        }
         class Certificate {
             getSubjectFriendlyName(): string;
             getIssuerFriendlyName(): string;
@@ -181,7 +188,14 @@ declare namespace native {
         class CertificationRequest {
             constructor(csrinfo?: PKI.CertificationRequestInfo);
             load(filename: string, dataFormat?: trusted.DataFormat): void;
-            sign(key: Key): void;
+            save(filename: string, dataFormat?: trusted.DataFormat): void;
+            getSubject(): string;
+            setSubject(x509name: string): void;
+            getPublicKey(): Key;
+            setPublicKey(key: Key): void;
+            getVersion(): number;
+            setVersion(version: number): void;
+            sign(key: Key, digest: string): void;
             verify(): boolean;
             getPEMString(): Buffer;
         }
@@ -1296,6 +1310,49 @@ declare namespace trusted.pki {
 }
 declare namespace trusted.pki {
     /**
+     * Wrap X509_EXTENSION
+     *
+     * @export
+     * @class Extension
+     * @extends {BaseObject<native.PKI.Extension>}
+     */
+    class Extension extends BaseObject<native.PKI.Extension> {
+        /**
+         * Creates an instance of Extension.
+         * @param {native.PKI.OID} [oid]
+         * @param {string} [value]
+         * @memberof Extension
+         */
+        constructor(oid?: pki.Oid, value?: string);
+        /**
+         * Return extension oid
+         *
+         * @readonly
+         * @type {Oid}
+         * @memberof Extension
+         */
+        /**
+         * Set extension oid
+         *
+         * @memberof Extension
+         */
+        typeId: Oid;
+        /**
+         * Get critical
+         *
+         * @type {boolean}
+         * @memberof Extension
+         */
+        /**
+         * Set critical
+         *
+         * @memberof Extension
+         */
+        critical: boolean;
+    }
+}
+declare namespace trusted.pki {
+    /**
      * Wrap X509
      *
      * @export
@@ -1663,13 +1720,67 @@ declare namespace trusted.pki {
          */
         load(filename: string, format?: DataFormat): void;
         /**
-         * Sign request
+         * Write request to file
          *
-         * @param {Key} key Private key
+         * @param {string} filename File path
+         * @param {DataFormat} [dataFormat=DEFAULT_DATA_FORMAT]
          *
          * @memberOf CertificationRequest
          */
-        sign(key: Key): void;
+        save(filename: string, dataFormat?: DataFormat): void;
+        /**
+         * Rerutn subject name
+         *
+         * @readonly
+         * @type {string}
+         * @memberof CertificationRequest
+         */
+        /**
+         * Sets the subject of this certification request.
+         *
+         * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
+         *
+         * @memberOf CertificationRequest
+         */
+        subject: string;
+        /**
+         * Rerutn subject public key
+         *
+         * @readonly
+         * @type {Key}
+         * @memberof CertificationRequest
+         */
+        /**
+         *  Set public key
+         *
+         *  @param {Key} pubkey Public key
+         *
+         * @memberOf CertificationRequest
+         */
+        publicKey: Key;
+        /**
+         * Rerutn version
+         *
+         * @readonly
+         * @type {number}
+         * @memberof CertificationRequest
+         */
+        /**
+         * Set version certificate
+         *
+         * @param {number} version
+         *
+         * @memberOf CertificationRequest
+         */
+        version: number;
+        /**
+         *  Signs request using the given private key
+         *
+         * @param {Key} key private key to sign
+         * @param {string} [digest="SHA1"] message digest to use (defaults sha1)
+         * @memberof CertificationRequest
+         */
+        sign(key: Key, digest?: string): void;
         /**
          * Verify request
          *
@@ -2180,44 +2291,6 @@ declare namespace trusted.pki {
          * @memberOf CrlCollection
          */
         removeAt(index: number): void;
-    }
-}
-declare namespace trusted.pki {
-    /**
-     * Final class for make certification request
-     *
-     * @export
-     * @class CSR
-     * @extends {BaseObject<native.PKI.CSR>}
-     */
-    class CSR extends BaseObject<native.PKI.CSR> {
-        /**
-         * Creates an instance of CSR.
-         *
-         * @param {string} name
-         * @param {Key} key
-         * @param {string} digest
-         *
-         * @memberOf CSR
-         */
-        constructor(name: string, key: Key, digest: string);
-        /**
-         * Return encoded structure
-         *
-         * @readonly
-         * @type {Buffer}
-         * @memberOf CSR
-         */
-        readonly encoded: Buffer;
-        /**
-         * Write CSR to file
-         *
-         * @param {string} filename File path
-         * @param {DataFormat} [dataFormat=DEFAULT_DATA_FORMAT]
-         *
-         * @memberOf CSR
-         */
-        save(filename: string, dataFormat?: DataFormat): void;
     }
 }
 declare namespace trusted.pki {
