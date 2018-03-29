@@ -166,6 +166,18 @@ namespace trusted.pki {
         get PEMString(): Buffer {
             return this.handle.getPEMString();
         }
+
+        /**
+         * Create X509 certificate from request
+         *
+         * @param {number} days
+         * @param {Key} key
+         * @returns {Certificate}
+         * @memberof CertificationRequest
+         */
+        public toCertificate(days: number, key: Key): Certificate {
+            return Certificate.wrap<native.PKI.Certificate, Certificate>(this.handle.toCertificate(days, key.handle));
+        }
     }
 
 }

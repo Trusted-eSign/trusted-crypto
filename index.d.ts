@@ -205,6 +205,7 @@ declare namespace native {
             sign(key: Key, digest: string): void;
             verify(): boolean;
             getPEMString(): Buffer;
+            toCertificate(days: number, key: Key): Certificate;
         }
         class CSR {
             constructor(name: string, key: PKI.Key, digest: string);
@@ -1858,6 +1859,15 @@ declare namespace trusted.pki {
          * @memberOf CertificationRequest
          */
         readonly PEMString: Buffer;
+        /**
+         * Create X509 certificate from request
+         *
+         * @param {number} days
+         * @param {Key} key
+         * @returns {Certificate}
+         * @memberof CertificationRequest
+         */
+        toCertificate(days: number, key: Key): Certificate;
     }
 }
 declare namespace trusted.pki {

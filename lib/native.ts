@@ -176,6 +176,7 @@ declare namespace native {
             public sign(key: Key, digest: string): void;
             public verify(): boolean;
             public getPEMString(): Buffer;
+            public toCertificate(days: number, key: Key): Certificate;
         }
 
         class CSR {

@@ -5,6 +5,7 @@
 #include "wcert_request.h"
 #include "wcert_request_info.h"
 #include "wkey.h"
+#include "wcert.h"
 
 void WCertificationRequest::Init(v8::Handle<v8::Object> exports){
 	METHOD_BEGIN();
@@ -30,6 +31,8 @@ void WCertificationRequest::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "sign", Sign);
 	Nan::SetPrototypeMethod(tpl, "verify", Verify);
 	Nan::SetPrototypeMethod(tpl, "getPEMString", GetPEMString);
+
+	Nan::SetPrototypeMethod(tpl, "toCertificate", ToCertificate);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -158,7 +161,7 @@ NAN_METHOD(WCertificationRequest::SetVersion){
 		UNWRAP_DATA(CertificationRequest);
 
 		LOGGER_ARG("version")
-			long version = info[0]->ToNumber()->Int32Value();
+		long version = info[0]->ToNumber()->Int32Value();
 
 		_this->setVersion(version);
 
@@ -259,6 +262,27 @@ NAN_METHOD(WCertificationRequest::GetPEMString) {
 		Handle<std::string> encCSR = _this->getPEMString();
 
 		info.GetReturnValue().Set(stringToBuffer(encCSR));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::ToCertificate){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(CertificationRequest);
+
+		LOGGER_ARG("days");
+		int days = info[0]->ToNumber()->Int32Value();
+
+		LOGGER_ARG("key");
+		WKey * wKey = WKey::Unwrap<WKey>(info[1]->ToObject());
+
+		Handle<Certificate> cert = _this->toCertificate(days, wKey->data_);
+		v8::Local<v8::Object> v8Cert = WCertificate::NewInstance(cert);
+		info.GetReturnValue().Set(v8Cert);
+
 		return;
 	}
 	TRY_END();

@@ -35,6 +35,8 @@ public:
 	void sign(Handle<Key> key, const char* digest);
 	bool verify();
 
+	Handle<Certificate> toCertificate(int days, Handle<Key> key);
+
 	Handle<std::string> getPEMString();
 };
 

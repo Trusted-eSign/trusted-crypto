@@ -29,6 +29,8 @@ public:
 	static NAN_METHOD(Sign);
 	static NAN_METHOD(Verify);
 
+	static NAN_METHOD(ToCertificate);
+
 	static NAN_METHOD(GetPEMString);
 
 	WRAP_NEW_INSTANCE(CertificationRequest);

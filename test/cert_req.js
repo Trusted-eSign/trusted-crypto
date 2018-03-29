@@ -78,4 +78,12 @@ describe("CertificationRequest", function() {
         req.load(DEFAULT_OUT_PATH + "/testreq.pem", trusted.DataFormat.PEM);
         assert.equal(typeof (certReq.subject), "string", "Bad subject value");
     });
+
+    it("to certificate", function() {
+        var cert;
+
+        cert = certReq.toCertificate(365, privatekey);
+        assert.equal(certReq !== null, true);
+        assert.equal(typeof (cert.isSelfSigned), "boolean", "Error check self signed");
+    });
 });

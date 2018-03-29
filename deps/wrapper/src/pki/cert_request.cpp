@@ -274,3 +274,24 @@ Handle<Key> CertificationRequest::getPublicKey() {
 
 	return new Key(epkey);
 }
+
+Handle<Certificate> CertificationRequest::toCertificate(int days, Handle<Key> key) {
+	LOGGER_FN();
+
+	X509 *res = NULL;
+
+	if (days <= 0) {
+		THROW_EXCEPTION(0, CertificationRequest, NULL, "Days can not be <= 0");
+	}
+
+	if (key->isEmpty()) {
+		THROW_EXCEPTION(0, CertificationRequest, NULL, "Key can not be empty");
+	}
+
+	LOGGER_OPENSSL(X509_REQ_to_X509);
+	if ( !(res = X509_REQ_to_X509(this->internal(), days, key->internal())) ) {
+		THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "X509_REQ_to_X509");
+	}
+
+	return new Certificate(res);
+}
