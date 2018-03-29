@@ -50,6 +50,14 @@ declare namespace native {
             public getValue(): string;
         }
 
+        class Extension {
+            constructor(oid?: OID, value?: string);
+            public getTypeId(): OID;
+            public setTypeId(oid: OID): void;
+            public getCritical(): boolean;
+            public setCritical(critical: boolean): void;
+        }
+
         class Certificate {
             public getSubjectFriendlyName(): string;
             public getIssuerFriendlyName(): string;

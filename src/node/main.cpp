@@ -26,6 +26,7 @@
 #include "pki/woid.h"
 #include "pki/walg.h"
 #include "pki/wattr.h"
+#include "pki/wext.h"
 #include "pki/wcert_request_info.h"
 #include "pki/wcert_request.h"
 #include "pki/wcipher.h"
@@ -92,6 +93,7 @@ void init(v8::Handle<v8::Object> target) {
 	WOID::Init(Pki);
 	WAlgorithm::Init(Pki);
 	WAttribute::Init(Pki);
+	WExtension::Init(Pki);
 	WKey::Init(Pki);
 	WCertificationRequestInfo::Init(Pki);
 	WCertificationRequest::Init(Pki);
