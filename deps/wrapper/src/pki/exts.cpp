@@ -33,6 +33,10 @@ Handle<Extension> ExtensionCollection::items(int index) {
 	LOGGER_OPENSSL(sk_X509_EXTENSION_value);
 	X509_EXTENSION *res = sk_X509_EXTENSION_value(this->internal(), index);
 
+	if (!res){
+		THROW_OPENSSL_EXCEPTION(0, CertificateCollection, NULL, "Has no item by index %d", index);
+	}
+
 	return new Extension(res, this->handle());
 }
 
