@@ -173,6 +173,8 @@ declare namespace native {
             public setPublicKey(key: Key): void;
             public getVersion(): number;
             public setVersion(version: number): void;
+            public getExtensions(): ExtensionCollection;
+            public setExtensions(exts: ExtensionCollection): void;
             public sign(key: Key, digest: string): void;
             public verify(): boolean;
             public getPEMString(): Buffer;

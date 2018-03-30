@@ -9,6 +9,7 @@ class CTWRAPPER_API CertificationRequest;
 
 #include "pki.h"
 #include "cert_request_info.h"
+#include "exts.h"
 
 SSLOBJECT_free(X509_REQ, X509_REQ_free)
 
@@ -27,10 +28,12 @@ public:
 	void setSubject(Handle<std::string> x509Name);
 	void setPublicKey(Handle<Key> key);
 	void setVersion(long version);
+	void setExtensions(Handle<ExtensionCollection> exts);
 
 	Handle<std::string> getSubject();
 	Handle<Key> getPublicKey();
 	long getVersion();
+	Handle<ExtensionCollection> getExtensions();
 
 	void sign(Handle<Key> key, const char* digest);
 	bool verify();

@@ -135,6 +135,29 @@ namespace trusted.pki {
         }
 
         /**
+         * Rerutn extensions
+         *
+         * @readonly
+         * @type {ExtensionCollection}
+         * @memberof CertificationRequest
+         */
+        get extensions(): pki.ExtensionCollection {
+            return ExtensionCollection.wrap<native.PKI.ExtensionCollection, ExtensionCollection>(
+                this.handle.getExtensions());
+        }
+
+        /**
+         * Set extensions
+         *
+         * @param {ExtensionCollection} exts
+         *
+         * @memberOf CertificationRequest
+         */
+        set extensions(exts: pki.ExtensionCollection) {
+            this.handle.setExtensions(exts.handle);
+        }
+
+        /**
          *  Signs request using the given private key
          *
          * @param {Key} key private key to sign

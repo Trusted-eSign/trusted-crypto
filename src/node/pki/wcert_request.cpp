@@ -6,6 +6,7 @@
 #include "wcert_request_info.h"
 #include "wkey.h"
 #include "wcert.h"
+#include "wexts.h"
 
 void WCertificationRequest::Init(v8::Handle<v8::Object> exports){
 	METHOD_BEGIN();
@@ -20,13 +21,16 @@ void WCertificationRequest::Init(v8::Handle<v8::Object> exports){
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "save", Save);
+
 	Nan::SetPrototypeMethod(tpl, "setSubject", SetSubject);
 	Nan::SetPrototypeMethod(tpl, "setPublicKey", SetPublicKey);
 	Nan::SetPrototypeMethod(tpl, "setVersion", SetVersion);
+	Nan::SetPrototypeMethod(tpl, "setExtensions", SetExtensions);
 
 	Nan::SetPrototypeMethod(tpl, "getSubject", GetSubject);
 	Nan::SetPrototypeMethod(tpl, "getPublicKey", GetPublicKey);
 	Nan::SetPrototypeMethod(tpl, "getVersion", GetVersion);
+	Nan::SetPrototypeMethod(tpl, "getExtensions", GetExtensions);
 
 	Nan::SetPrototypeMethod(tpl, "sign", Sign);
 	Nan::SetPrototypeMethod(tpl, "verify", Verify);
@@ -170,6 +174,22 @@ NAN_METHOD(WCertificationRequest::SetVersion){
 	TRY_END();
 }
 
+NAN_METHOD(WCertificationRequest::SetExtensions){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(CertificationRequest);
+
+		LOGGER_ARG("extensions")
+			WExtensionCollection * wExts = WExtensionCollection::Unwrap<WExtensionCollection>(info[0]->ToObject());
+
+		_this->setExtensions(wExts->data_);
+
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WCertificationRequest::GetSubject) {
 	METHOD_BEGIN();
 
@@ -213,6 +233,21 @@ NAN_METHOD(WCertificationRequest::GetPublicKey)
 		Handle<Key> key = _this->getPublicKey();
 		v8::Local<v8::Object> v8Key = WKey::NewInstance(key);
 		info.GetReturnValue().Set(v8Key);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificationRequest::GetExtensions)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CertificationRequest);
+
+		Handle<ExtensionCollection> exts = _this->getExtensions();
+		v8::Local<v8::Object> v8Exts = WExtensionCollection::NewInstance(exts);
+		info.GetReturnValue().Set(v8Exts);
 		return;
 	}
 	TRY_END();

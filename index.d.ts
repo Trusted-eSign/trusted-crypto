@@ -202,6 +202,8 @@ declare namespace native {
             setPublicKey(key: Key): void;
             getVersion(): number;
             setVersion(version: number): void;
+            getExtensions(): ExtensionCollection;
+            setExtensions(exts: ExtensionCollection): void;
             sign(key: Key, digest: string): void;
             verify(): boolean;
             getPEMString(): Buffer;
@@ -1835,6 +1837,21 @@ declare namespace trusted.pki {
          * @memberOf CertificationRequest
          */
         version: number;
+        /**
+         * Rerutn extensions
+         *
+         * @readonly
+         * @type {ExtensionCollection}
+         * @memberof CertificationRequest
+         */
+        /**
+         * Set extensions
+         *
+         * @param {ExtensionCollection} exts
+         *
+         * @memberOf CertificationRequest
+         */
+        extensions: pki.ExtensionCollection;
         /**
          *  Signs request using the given private key
          *

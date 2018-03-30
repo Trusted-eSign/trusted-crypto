@@ -14,6 +14,11 @@ describe("CertificationRequest", function() {
     var certReqInfo;
     var publickey;
     var privatekey;
+    var ext1;
+    var ext2;
+    var exts;
+    var oid;
+
 
     before(function() {
         try {
@@ -36,6 +41,27 @@ describe("CertificationRequest", function() {
 
         privatekey = trusted.pki.Key.readPrivateKey(DEFAULT_RESOURCES_PATH + "/cert1.key", trusted.DataFormat.PEM, "");
         assert.equal(privatekey !== null, true);
+
+        oid = new trusted.pki.Oid("keyUsage");
+        assert.equal(oid !== null, true);
+
+        ext1 = new trusted.pki.Extension(oid, "critical,digitalSignature,keyEncipherment");
+        assert.equal(ext1 !== null, true);
+
+        oid = new trusted.pki.Oid("subjectAltName");
+        assert.equal(oid !== null, true);
+
+        ext2 = new trusted.pki.Extension(oid, "email:test@example.com");
+        assert.equal(ext2 !== null, true);
+
+        exts = new trusted.pki.ExtensionCollection();
+        assert.equal(exts !== null, true);
+
+        assert.equal(exts.length, 0);
+        exts.push(ext1);
+        assert.equal(exts.length, 1);
+        exts.push(ext2);
+        assert.equal(exts.length, 2);
     });
 
     it("create", function() {
@@ -47,6 +73,9 @@ describe("CertificationRequest", function() {
 
         certReq.publicKey = publickey;
         assert.equal(typeof (certReq.publicKey), "object", "Bad public key value");
+
+        certReq.extensions = exts;
+        assert.equal(typeof (certReq.extensions), "object", "Bad extensions value");
     });
 
     it("create from CertificationRequestInfo", function() {

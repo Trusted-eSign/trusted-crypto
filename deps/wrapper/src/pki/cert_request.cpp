@@ -234,6 +234,33 @@ void CertificationRequest::setVersion(long version){
 	}
 }
 
+void CertificationRequest::setExtensions(Handle<ExtensionCollection> exts) {
+	LOGGER_FN();
+
+	try {
+		if (exts.isEmpty()) {
+			THROW_EXCEPTION(0, CertificationRequest, NULL, "Extensions is empty");
+		}
+
+		if (this->internal()->req_info->attributes) {
+			LOGGER_OPENSSL(sk_X509_ATTRIBUTE_new_null);
+			if (!(this->internal()->req_info->attributes = sk_X509_ATTRIBUTE_new_null())) {
+				THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "sk_X509_ATTRIBUTE_new_null");
+			}
+		}
+
+		LOGGER_OPENSSL(X509_REQ_add_extensions);
+		if (!X509_REQ_add_extensions(this->internal(), exts->internal())) {
+			THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "Error add extensions");
+		}
+
+		return;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, CertificationRequest, e, "Error set extensions");
+	}
+}
+
 Handle<std::string> CertificationRequest::getSubject() {
 	LOGGER_FN();
 
@@ -273,6 +300,17 @@ Handle<Key> CertificationRequest::getPublicKey() {
 	}
 
 	return new Key(epkey);
+}
+
+Handle<ExtensionCollection> CertificationRequest::getExtensions() {
+	LOGGER_FN();
+
+	X509_EXTENSIONS *exts = NULL;
+
+	LOGGER_OPENSSL(X509_REQ_get_extensions);
+	exts = X509_REQ_get_extensions(this->internal());
+
+	return new ExtensionCollection(exts);
 }
 
 Handle<Certificate> CertificationRequest::toCertificate(int days, Handle<Key> key) {

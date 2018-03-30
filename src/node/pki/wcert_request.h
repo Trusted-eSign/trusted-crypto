@@ -21,10 +21,12 @@ public:
 	static NAN_METHOD(SetSubject);
 	static NAN_METHOD(SetPublicKey);
 	static NAN_METHOD(SetVersion);
+	static NAN_METHOD(SetExtensions);
 
 	static NAN_METHOD(GetSubject);
 	static NAN_METHOD(GetPublicKey);
 	static NAN_METHOD(GetVersion);
+	static NAN_METHOD(GetExtensions);
 
 	static NAN_METHOD(Sign);
 	static NAN_METHOD(Verify);
