@@ -69,7 +69,7 @@ describe("CertificationRequest", function() {
             { type: "C", value: "RU" },
             { type: "CN", value: "example.com" },
             { type: "O", value: "Test" },
-            { type: "1.2.643.100.322", value: "12295279771" }
+            { type: "1.2.643.100.3", value: "12295279771" }
         ];
 
         certReq.subject = atrs;
