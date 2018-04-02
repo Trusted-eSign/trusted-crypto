@@ -4,13 +4,40 @@ var assert = require("assert");
 var trusted = require("../index.js");
 
 var DEFAULT_RESOURCES_PATH = "test/resources";
+var DEFAULT_OUT_PATH = "test/out";
 
 describe("Certificate", function() {
     var cert;
+    var exts;
 
     it("init", function() {
+        var ext1;
+        var ext2;
+        var oid;
+
         cert = new trusted.pki.Certificate();
         assert.equal(cert !== null, true);
+
+        oid = new trusted.pki.Oid("keyUsage");
+        assert.equal(oid !== null, true);
+
+        ext1 = new trusted.pki.Extension(oid, "critical,digitalSignature,keyEncipherment");
+        assert.equal(ext1 !== null, true);
+
+        oid = new trusted.pki.Oid("subjectAltName");
+        assert.equal(oid !== null, true);
+
+        ext2 = new trusted.pki.Extension(oid, "email:test@example.com");
+        assert.equal(ext2 !== null, true);
+
+        exts = new trusted.pki.ExtensionCollection();
+        assert.equal(exts !== null, true);
+
+        assert.equal(exts.length, 0);
+        exts.push(ext1);
+        assert.equal(exts.length, 1);
+        exts.push(ext2);
+        assert.equal(exts.length, 2);
     });
 
     it("load", function() {
@@ -114,5 +141,27 @@ describe("Certificate", function() {
         assert.equal(hash3.length, 64, "SHA256 length 64");
 
         assert.equal(hash1 === hash2, true, "Hashes are not equals");
+    });
+
+    it("create from csr", function() {
+        var cert1;
+        var req = new trusted.pki.CertificationRequest();
+
+        req.load(DEFAULT_RESOURCES_PATH + "/testreq.pem", trusted.DataFormat.PEM);
+
+        cert1 = new trusted.pki.Certificate(req);
+        assert.equal(cert1 !== null, true);
+
+        cert1.subjectName = cert.subjectName;
+        assert.equal(typeof (cert1.subjectName), "string", "Bad subjectName value");
+
+        cert1.issuerName = cert.issuerName;
+        assert.equal(typeof (cert1.issuerName), "string", "Bad subjectName value");
+
+        cert1.version = 2;
+        assert.equal(typeof (cert1.version), "number", "Bad version value");
+
+        cert1.extensions = exts;
+        assert.equal(typeof (cert1.extensions), "object", "Bad extensions value");
     });
 });

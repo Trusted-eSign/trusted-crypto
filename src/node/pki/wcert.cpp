@@ -40,6 +40,11 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "isSelfSigned", IsSelfSigned);
 	Nan::SetPrototypeMethod(tpl, "isCA", IsCA);
 
+	Nan::SetPrototypeMethod(tpl, "setSubjectName", SetSubjectName);
+	Nan::SetPrototypeMethod(tpl, "setIssuerName", SetIssuerName);
+	Nan::SetPrototypeMethod(tpl, "setVersion", SetVersion);
+	Nan::SetPrototypeMethod(tpl, "setExtensions", SetExtensions);
+
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
 	Nan::SetPrototypeMethod(tpl, "save", Save);
@@ -569,6 +574,84 @@ NAN_METHOD(WCertificate::IsCA) {
 		bool res = _this->isCA();
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::SetSubjectName){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("x509Name");
+		v8::String::Utf8Value v8Name(info[0]->ToString());
+		char *x509Name = *v8Name;
+		if (x509Name == NULL) {
+			Nan::ThrowError("Wrong x509name");
+			info.GetReturnValue().SetUndefined();
+		}
+
+		Handle<std::string> hname = new std::string(x509Name);
+
+		_this->setSubject(hname);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::SetIssuerName){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("x509Name");
+		v8::String::Utf8Value v8Name(info[0]->ToString());
+		char *x509Name = *v8Name;
+		if (x509Name == NULL) {
+			Nan::ThrowError("Wrong x509name");
+			info.GetReturnValue().SetUndefined();
+		}
+
+		Handle<std::string> hname = new std::string(x509Name);
+
+		_this->setIssuer(hname);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::SetVersion){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("version")
+		long version = info[0]->ToNumber()->Int32Value();
+
+		_this->setVersion(version);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::SetExtensions){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("extensions")
+		WExtensionCollection * wExts = WExtensionCollection::Unwrap<WExtensionCollection>(info[0]->ToObject());
+
+		_this->setExtensions(wExts->data_);
+
 		return;
 	}
 	TRY_END();

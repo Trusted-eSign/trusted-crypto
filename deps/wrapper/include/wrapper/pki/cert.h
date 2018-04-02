@@ -48,6 +48,13 @@ public:
 	bool isSelfSigned();
 	bool isCA();
 
+	void setSubject(Handle<std::string> x509Name);
+	void setIssuer(Handle<std::string> x509Name);
+	void setVersion(long version);
+	void setExtensions(Handle<ExtensionCollection> exts);
+	void setNotBefore(Handle<std::string> notBefore);
+	void setNotAfter(Handle<std::string> notAfter);
+
 	//Methods
 	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);
 	void write(Handle<Bio> out, DataFormat::DATA_FORMAT format);
@@ -56,6 +63,7 @@ public:
 	bool equals(Handle<Certificate> cert);
 	Handle<std::string> hash(Handle<std::string> algorithm);
 	Handle<std::string> hash(const EVP_MD *md);
+	void sign(Handle<Key> key, const char* digest);
 
 protected:
 	static Handle<std::string> GetCommonName(X509_NAME *a);

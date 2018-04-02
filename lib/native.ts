@@ -71,12 +71,15 @@ declare namespace native {
             public getSubjectFriendlyName(): string;
             public getIssuerFriendlyName(): string;
             public getSubjectName(): string;
+            public setSubjectName(x509name: string): void;
             public getIssuerName(): string;
+            public setIssuerName(x509name: string): void;
             public getNotAfter(): string;
             public getNotBefore(): string;
             public getSerialNumber(): Buffer;
             public getThumbprint(): Buffer;
             public getVersion(): number;
+            public setVersion(version: number): void;
             public getType(): number;
             public getKeyUsage(): number;
             public getSignatureAlgorithm(): string;
@@ -86,6 +89,7 @@ declare namespace native {
             public getOCSPUrls(): string[];
             public getCAIssuersUrls(): string[];
             public getExtensions(): ExtensionCollection;
+            public setExtensions(exts: ExtensionCollection): void;
             public isSelfSigned(): boolean;
             public isCA(): boolean;
 

@@ -115,6 +115,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Set version certificate
+         *
+         * @param {number} version
+         *
+         * @memberof Certificate
+         */
+        set version(version: number) {
+            this.handle.setVersion(version);
+        }
+
+        /**
          * Return serial number of certificate
          *
          * @readonly
@@ -162,11 +173,39 @@ namespace trusted.pki {
          * Return issuer name
          *
          * @readonly
-         * @type {string}
+         * @type {string | native.PKI.INameField[]}
          * @memberOf Certificate
          */
-        get issuerName(): string {
+        get issuerName(): string | native.PKI.INameField[] {
             return this.handle.getIssuerName();
+        }
+
+        /**
+         * Sets the issuer
+         *
+         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
+         *
+         * @memberof Certificate
+         */
+        set issuerName(x509name: string | native.PKI.INameField[]) {
+            let normalizedName: string = "";
+
+            if (x509name instanceof Array) {
+                for (const field of x509name) {
+                    if (field.type && field.value) {
+                        const oid = new pki.Oid(field.type);
+
+                        normalizedName += "/";
+                        normalizedName += oid.value;
+                        normalizedName += "=";
+                        normalizedName += field.value;
+                    }
+                }
+            } else {
+                normalizedName = x509name;
+            }
+
+            this.handle.setIssuerName(normalizedName);
         }
 
         /**
@@ -184,11 +223,39 @@ namespace trusted.pki {
          * Return subject name
          *
          * @readonly
-         * @type {string}
+         * @type {string | native.PKI.INameField[]}
          * @memberOf Certificate
          */
-        get subjectName(): string {
+        get subjectName(): string | native.PKI.INameField[] {
             return this.handle.getSubjectName();
+        }
+
+        /**
+         * Sets the subject
+         *
+         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
+         *
+         * @memberof Certificate
+         */
+        set subjectName(x509name: string | native.PKI.INameField[]) {
+            let normalizedName: string = "";
+
+            if (x509name instanceof Array) {
+                for (const field of x509name) {
+                    if (field.type && field.value) {
+                        const oid = new pki.Oid(field.type);
+
+                        normalizedName += "/";
+                        normalizedName += oid.value;
+                        normalizedName += "=";
+                        normalizedName += field.value;
+                    }
+                }
+            } else {
+                normalizedName = x509name;
+            }
+
+            this.handle.setSubjectName(normalizedName);
         }
 
         /**
@@ -300,6 +367,17 @@ namespace trusted.pki {
         get extensions(): pki.ExtensionCollection {
             return ExtensionCollection.wrap<native.PKI.ExtensionCollection, ExtensionCollection>(
                 this.handle.getExtensions());
+        }
+
+        /**
+         * Set extensions
+         *
+         * @param {ExtensionCollection} exts
+         *
+         * @memberof Certificate
+         */
+        set extensions(exts: pki.ExtensionCollection) {
+            this.handle.setExtensions(exts.handle);
         }
 
         /**

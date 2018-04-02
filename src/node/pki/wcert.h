@@ -42,6 +42,11 @@ public:
 	static NAN_METHOD(IsSelfSigned);
 	static NAN_METHOD(IsCA);
 
+	static NAN_METHOD(SetSubjectName);
+	static NAN_METHOD(SetIssuerName);
+	static NAN_METHOD(SetVersion);
+	static NAN_METHOD(SetExtensions);
+
 	//Methods
 	static NAN_METHOD(Load);
 	static NAN_METHOD(Import);

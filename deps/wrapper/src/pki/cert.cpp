@@ -67,6 +67,13 @@ Certificate::Certificate(Handle<CertificationRequest> csr) :SSLObject<X509>(X509
 			}
 		}
 
+		if (req->req_info->version >= 0) {
+			LOGGER_OPENSSL(X509_set_version);
+			if (!X509_set_version(x, csr->getVersion())) {
+				THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_version");
+			}
+		}
+
 		LOGGER_OPENSSL(X509_gmtime_adj);
 		X509_gmtime_adj(X509_get_notBefore(x), 0);
 		LOGGER_OPENSSL(X509_time_adj_ex);
@@ -89,6 +96,12 @@ Certificate::Certificate(Handle<CertificationRequest> csr) :SSLObject<X509>(X509
 		exts = X509_REQ_get_extensions(req);
 
 		if (exts) {
+			/* Set version to V3 */
+			LOGGER_OPENSSL(X509_set_version);
+			if (!X509_set_version(x, 2)) {
+				THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_version");
+			}
+
 			LOGGER_OPENSSL(sk_X509_EXTENSION_num);
 			for (i = 0; i < sk_X509_EXTENSION_num(exts); i++) {
 				LOGGER_OPENSSL(sk_X509_EXTENSION_value);
@@ -554,6 +567,167 @@ Handle<ExtensionCollection> Certificate::getExtensions() {
 	}
 
 	return new ExtensionCollection(exts);
+}
+
+void Certificate::setSubject(Handle<std::string> xName) {
+	LOGGER_FN();
+
+	try{
+		if (xName.isEmpty()){
+			THROW_EXCEPTION(0, Certificate, NULL, "Parameter 1 can not be NULL");
+		}
+
+		LOGGER_OPENSSL(X509_NAME_new);
+		X509_NAME *name = X509_NAME_new();
+
+		std::string strName = xName->c_str();
+		strName = strName + "/";
+
+		std::string sl = "/";
+		std::string eq = "=";
+
+		size_t pos = 0, posInBuf = 0;
+
+		std::string buf, field, param;
+
+		while ((pos = strName.find(sl)) != std::string::npos)  {
+			buf = strName.substr(0, pos);
+			if (buf.length() > 0){
+				posInBuf = buf.find(eq);
+				field = buf.substr(0, posInBuf);
+				param = buf.substr(posInBuf + 1, buf.length());
+
+				LOGGER_OPENSSL(X509_NAME_add_entry_by_txt);
+				if (!X509_NAME_add_entry_by_txt(name, field.c_str(), MBSTRING_ASC, (const unsigned char *)param.c_str(), -1, -1, 0)){
+					THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_NAME_add_entry_by_txt 'Unable add param to X509_NAME'");
+				}
+			}
+			strName.erase(0, pos + sl.length());
+		}
+
+		LOGGER_OPENSSL(X509_set_subject_name);
+		if (!X509_set_subject_name(this->internal(), name)) {
+			X509_NAME_free(name);
+
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_subject_name 'Error set subject name'");
+		}
+
+		if (name){
+			LOGGER_OPENSSL(X509_NAME_free);
+			X509_NAME_free(name);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Certificate, e, "Error set subject to X509");
+	}
+}
+
+void Certificate::setIssuer(Handle<std::string> xName) {
+	LOGGER_FN();
+
+	try{
+		if (xName.isEmpty()){
+			THROW_EXCEPTION(0, Certificate, NULL, "Parameter 1 can not be NULL");
+		}
+
+		LOGGER_OPENSSL(X509_NAME_new);
+		X509_NAME *name = X509_NAME_new();
+
+		std::string strName = xName->c_str();
+		strName = strName + "/";
+
+		std::string sl = "/";
+		std::string eq = "=";
+
+		size_t pos = 0, posInBuf = 0;
+
+		std::string buf, field, param;
+
+		while ((pos = strName.find(sl)) != std::string::npos)  {
+			buf = strName.substr(0, pos);
+			if (buf.length() > 0){
+				posInBuf = buf.find(eq);
+				field = buf.substr(0, posInBuf);
+				param = buf.substr(posInBuf + 1, buf.length());
+
+				LOGGER_OPENSSL(X509_NAME_add_entry_by_txt);
+				if (!X509_NAME_add_entry_by_txt(name, field.c_str(), MBSTRING_ASC, (const unsigned char *)param.c_str(), -1, -1, 0)){
+					THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_NAME_add_entry_by_txt 'Unable add param to X509_NAME'");
+				}
+			}
+			strName.erase(0, pos + sl.length());
+		}
+
+		LOGGER_OPENSSL(X509_set_issuer_name);
+		if (!X509_set_issuer_name(this->internal(), name)) {
+			X509_NAME_free(name);
+
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_issuer_name 'Error set subject name'");
+		}
+
+		if (name){
+			LOGGER_OPENSSL(X509_NAME_free);
+			X509_NAME_free(name);
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Certificate, e, "Error set issuer to X509");
+	}
+}
+
+void Certificate::setVersion(long version){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_set_version);
+	if (!X509_set_version(this->internal(), version)) {
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_version");
+	}
+}
+
+void Certificate::setExtensions(Handle<ExtensionCollection> exts) {
+	LOGGER_FN();
+
+	try {
+		X509_EXTENSIONS *xexts = NULL;
+		X509_EXTENSION *ext = NULL;
+		ASN1_OBJECT *obj;
+		int i, idx;
+
+		if (exts.isEmpty()) {
+			THROW_EXCEPTION(0, Certificate, NULL, "Extensions is empty");
+		}
+
+		if (!(xexts = exts->internal())) {
+			THROW_EXCEPTION(0, Certificate, NULL, "Extensions is empty");
+		}
+
+		LOGGER_OPENSSL(sk_X509_EXTENSION_num);
+		for (i = 0; i < sk_X509_EXTENSION_num(xexts); i++) {
+			LOGGER_OPENSSL(sk_X509_EXTENSION_value);
+			ext = sk_X509_EXTENSION_value(xexts, i);
+
+			LOGGER_OPENSSL(X509_EXTENSION_get_object);
+			obj = X509_EXTENSION_get_object(ext);
+
+			LOGGER_OPENSSL(X509_get_ext_by_OBJ);
+			idx = X509_get_ext_by_OBJ(this->internal(), obj, -1);
+			if (idx != -1) {
+				continue;
+			}
+
+			LOGGER_OPENSSL(X509_add_ext);
+			if (!X509_add_ext(this->internal(), ext, -1)) {
+				THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_add_ext");
+			}
+		}
+
+		sk_X509_EXTENSION_pop_free(xexts, X509_EXTENSION_free);
+
+		return;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, CertificationRequest, e, "Error set extensions");
+	}
 }
 
 bool Certificate::equals(Handle<Certificate> cert){
