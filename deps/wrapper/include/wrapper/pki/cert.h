@@ -13,6 +13,7 @@ class CTWRAPPER_API Certificate;
 #include "pki.h"
 #include "key.h"
 #include "exts.h"
+#include "cert_request.h"
 
 SSLOBJECT_free(X509, X509_free);
 
@@ -21,6 +22,8 @@ public:
 	//constructor
 	SSLOBJECT_new(Certificate, X509){}
 	SSLOBJECT_new_null(Certificate, X509, X509_new){}
+
+	Certificate(Handle<CertificationRequest> csr);
 
 	//properties
 	long getVersion();

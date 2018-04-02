@@ -67,6 +67,7 @@ declare namespace native {
         }
 
         class Certificate {
+            constructor(param?: PKI.Certificate | PKI.CertificationRequest);
             public getSubjectFriendlyName(): string;
             public getIssuerFriendlyName(): string;
             public getSubjectName(): string;

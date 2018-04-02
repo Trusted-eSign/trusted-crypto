@@ -2,6 +2,123 @@
 
 #include "wrapper/pki/cert.h"
 
+Certificate::Certificate(Handle<CertificationRequest> csr) :SSLObject<X509>(X509_new(), &so_X509_free){
+	LOGGER_FN();
+
+	try{
+		X509 *x = NULL;
+		X509_REQ *req = NULL;
+		EVP_PKEY *pkey;
+		STACK_OF(X509_EXTENSION) *exts = NULL;
+		X509_EXTENSION *ext, *tmpext;
+		ASN1_OBJECT *obj;
+		int i, idx, ret = 0;
+		int verResult;
+
+		if (csr->isEmpty()){
+			THROW_EXCEPTION(0, Certificate, NULL, "CertificationRequest empty");
+		}
+
+		req = csr->internal();
+
+		if (req == NULL) {
+			THROW_EXCEPTION(0, Certificate, NULL, "req empty");
+		}
+
+		if ((req->req_info == NULL) ||
+			(req->req_info->pubkey == NULL) ||
+			(req->req_info->pubkey->public_key == NULL) ||
+			(req->req_info->pubkey->public_key->data == NULL)) {
+			THROW_EXCEPTION(0, Certificate, NULL, "Request not contain a public key");
+		}
+
+		LOGGER_OPENSSL(X509_REQ_get_pubkey);
+		if ((pkey = X509_REQ_get_pubkey(req)) == NULL) {
+			THROW_EXCEPTION(0, Certificate, NULL, "Cannot get public key");
+		}
+
+		LOGGER_OPENSSL(X509_REQ_verify);
+		verResult = X509_REQ_verify(req, pkey);
+		LOGGER_OPENSSL(EVP_PKEY_free);
+		EVP_PKEY_free(pkey);
+
+		if (verResult < 0) {
+			THROW_EXCEPTION(0, Certificate, NULL, "Signature of request verification error");
+		}
+
+		if (verResult == 0) {
+			THROW_EXCEPTION(0, Certificate, NULL, "Signature did not match the certificate request");
+		}
+
+		LOGGER_OPENSSL(X509_new);
+		if ((x = X509_new()) == NULL) {
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_new");
+		}
+
+		if (req->req_info->subject) {
+			LOGGER_OPENSSL(X509_set_issuer_name);
+			if (!X509_set_issuer_name(x, req->req_info->subject)) {
+				THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_issuer_name");
+			}
+
+			LOGGER_OPENSSL(X509_set_subject_name);
+			if (!X509_set_subject_name(x, req->req_info->subject)) {
+				THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_subject_name");
+			}
+		}
+
+		LOGGER_OPENSSL(X509_gmtime_adj);
+		X509_gmtime_adj(X509_get_notBefore(x), 0);
+		LOGGER_OPENSSL(X509_time_adj_ex);
+		X509_time_adj_ex(X509_get_notAfter(x), 365, 0, NULL);
+
+
+		if ((pkey = X509_REQ_get_pubkey(req)) == NULL) {
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "Cannot get public key");
+		}
+
+		LOGGER_OPENSSL(X509_set_pubkey);
+		if (!X509_set_pubkey(x, pkey)) {
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_pubkey");
+		}
+
+		LOGGER_OPENSSL(EVP_PKEY_free);
+		EVP_PKEY_free(pkey);
+
+		LOGGER_OPENSSL(X509_REQ_get_extensions);
+		exts = X509_REQ_get_extensions(req);
+
+		if (exts) {
+			LOGGER_OPENSSL(sk_X509_EXTENSION_num);
+			for (i = 0; i < sk_X509_EXTENSION_num(exts); i++) {
+				LOGGER_OPENSSL(sk_X509_EXTENSION_value);
+				ext = sk_X509_EXTENSION_value(exts, i);
+
+				LOGGER_OPENSSL(X509_EXTENSION_get_object);
+				obj = X509_EXTENSION_get_object(ext);
+
+				LOGGER_OPENSSL(X509_get_ext_by_OBJ);
+				idx = X509_get_ext_by_OBJ(x, obj, -1);
+				if (idx != -1) {
+					continue;
+				}
+
+				LOGGER_OPENSSL(X509_add_ext);
+				if (!X509_add_ext(x, ext, -1)) {
+					THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_add_ext");
+				}
+			}
+
+			sk_X509_EXTENSION_pop_free(exts, X509_EXTENSION_free);
+		}
+
+		this->setData(x);
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Certificate, e, "Error create certificate from request");
+	}
+}
+
 Handle<Key> Certificate::getPublicKey() {
 	LOGGER_FN();
 

@@ -3,6 +3,7 @@
 #include "wcert.h"
 #include "wkey.h"
 #include "wexts.h"
+#include "wcert_request.h"
 #include "../helper.h"
 
 const char* WCertificate::className = "Certificate";
@@ -60,6 +61,13 @@ NAN_METHOD(WCertificate::New) {
 	try {
 		WCertificate *obj = new WCertificate();
 		obj->data_ = new Certificate();
+
+		if (!info[0]->IsUndefined()){
+			LOGGER_INFO("csr");
+			WCertificationRequest * wCertReg = WCertificationRequest::Unwrap<WCertificationRequest>(info[0]->ToObject());
+
+			obj->data_ = new Certificate(wCertReg->data_);
+		}
 
 		obj->Wrap(info.This());
 

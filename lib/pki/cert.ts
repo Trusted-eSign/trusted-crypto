@@ -92,10 +92,12 @@ namespace trusted.pki {
          *
          * @memberOf Certificate
          */
-        constructor(param?: native.PKI.Certificate) {
+        constructor(param?: native.PKI.Certificate | native.PKI.CertificationRequest) {
             super();
             if (param instanceof native.PKI.Certificate) {
                 this.handle = param;
+            } else  if (param instanceof pki.CertificationRequest) {
+                this.handle = new native.PKI.Certificate(param.handle);
             } else {
                 this.handle = new native.PKI.Certificate();
             }
