@@ -106,15 +106,19 @@ declare namespace native {
             removeAt(index: number): void;
         }
         class Certificate {
+            constructor(param?: PKI.Certificate | PKI.CertificationRequest);
             getSubjectFriendlyName(): string;
             getIssuerFriendlyName(): string;
             getSubjectName(): string;
+            setSubjectName(x509name: string): void;
             getIssuerName(): string;
+            setIssuerName(x509name: string): void;
             getNotAfter(): string;
             getNotBefore(): string;
             getSerialNumber(): Buffer;
             getThumbprint(): Buffer;
             getVersion(): number;
+            setVersion(version: number): void;
             getType(): number;
             getKeyUsage(): number;
             getSignatureAlgorithm(): string;
@@ -124,6 +128,7 @@ declare namespace native {
             getOCSPUrls(): string[];
             getCAIssuersUrls(): string[];
             getExtensions(): ExtensionCollection;
+            setExtensions(exts: ExtensionCollection): void;
             isSelfSigned(): boolean;
             isCA(): boolean;
             load(filename: string, dataFormat?: trusted.DataFormat): void;
@@ -1474,7 +1479,7 @@ declare namespace trusted.pki {
          *
          * @memberOf Certificate
          */
-        constructor(param?: native.PKI.Certificate);
+        constructor(param?: native.PKI.Certificate | native.PKI.CertificationRequest);
         /**
          * Return version of certificate
          *
@@ -1482,7 +1487,14 @@ declare namespace trusted.pki {
          * @type {number}
          * @memberOf Certificate
          */
-        readonly version: number;
+        /**
+         * Set version certificate
+         *
+         * @param {number} version
+         *
+         * @memberof Certificate
+         */
+        version: number;
         /**
          * Return serial number of certificate
          *
@@ -1519,10 +1531,17 @@ declare namespace trusted.pki {
          * Return issuer name
          *
          * @readonly
-         * @type {string}
+         * @type {string | native.PKI.INameField[]}
          * @memberOf Certificate
          */
-        readonly issuerName: string;
+        /**
+         * Sets the issuer
+         *
+         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
+         *
+         * @memberof Certificate
+         */
+        issuerName: string | native.PKI.INameField[];
         /**
          * Return CN from subject name
          *
@@ -1535,10 +1554,17 @@ declare namespace trusted.pki {
          * Return subject name
          *
          * @readonly
-         * @type {string}
+         * @type {string | native.PKI.INameField[]}
          * @memberOf Certificate
          */
-        readonly subjectName: string;
+        /**
+         * Sets the subject
+         *
+         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
+         *
+         * @memberof Certificate
+         */
+        subjectName: string | native.PKI.INameField[];
         /**
          * Return Not Before date
          *
@@ -1618,7 +1644,14 @@ declare namespace trusted.pki {
          * @type {ExtensionCollection}
          * @memberof Certificate
          */
-        readonly extensions: pki.ExtensionCollection;
+        /**
+         * Set extensions
+         *
+         * @param {ExtensionCollection} exts
+         *
+         * @memberof Certificate
+         */
+        extensions: pki.ExtensionCollection;
         /**
          * Return true is a certificate is self signed
          *
