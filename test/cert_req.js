@@ -65,7 +65,14 @@ describe("CertificationRequest", function() {
     });
 
     it("create", function() {
-        certReq.subject = SUBJECT_NAME;
+        var atrs = [
+            { type: "C", value: "RU" },
+            { type: "CN", value: "example.com" },
+            { type: "O", value: "Test" },
+            { type: "1.2.643.100.322", value: "12295279771" }
+        ];
+
+        certReq.subject = atrs;
         assert.equal(typeof (certReq.subject), "string", "Bad subject value");
 
         certReq.version = 2;

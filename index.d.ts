@@ -192,12 +192,22 @@ declare namespace native {
             getVersion(): number;
             setVersion(version: number): void;
         }
+        interface INameField {
+            /**
+             * longName | shortName | nid
+             *
+             * @type {string}
+             * @memberof INameField
+             */
+            type: string;
+            value: string;
+        }
         class CertificationRequest {
             constructor(csrinfo?: PKI.CertificationRequestInfo);
             load(filename: string, dataFormat?: trusted.DataFormat): void;
             save(filename: string, dataFormat?: trusted.DataFormat): void;
             getSubject(): string;
-            setSubject(x509name: string): void;
+            setSubject(x509name: string | INameField[]): void;
             getPublicKey(): Key;
             setPublicKey(key: Key): void;
             getVersion(): number;
@@ -1802,11 +1812,11 @@ declare namespace trusted.pki {
         /**
          * Sets the subject of this certification request.
          *
-         * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
+         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
          *
          * @memberOf CertificationRequest
          */
-        subject: string;
+        subject: string | native.PKI.INameField[];
         /**
          * Rerutn subject public key
          *

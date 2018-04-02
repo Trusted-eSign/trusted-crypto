@@ -163,12 +163,23 @@ declare namespace native {
             public setVersion(version: number): void;
         }
 
+        export interface INameField {
+            /**
+             * longName | shortName | nid
+             *
+             * @type {string}
+             * @memberof INameField
+             */
+            type: string;
+            value: string;
+        }
+
         class CertificationRequest {
             constructor(csrinfo?: PKI.CertificationRequestInfo);
             public load(filename: string, dataFormat?: trusted.DataFormat): void;
             public save(filename: string, dataFormat?: trusted.DataFormat): void;
             public getSubject(): string;
-            public setSubject(x509name: string): void;
+            public setSubject(x509name: string | INameField[]): void;
             public getPublicKey(): Key;
             public setPublicKey(key: Key): void;
             public getVersion(): number;

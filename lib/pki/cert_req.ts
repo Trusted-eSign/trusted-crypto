@@ -75,19 +75,36 @@ namespace trusted.pki {
          * @type {string}
          * @memberof CertificationRequest
          */
-        get subject(): string {
+        get subject(): string | native.PKI.INameField[] {
             return this.handle.getSubject();
         }
 
         /**
          * Sets the subject of this certification request.
          *
-         * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
+         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
          *
          * @memberOf CertificationRequest
          */
-        set subject(x509name: string) {
-            this.handle.setSubject(x509name);
+        set subject(x509name: string | native.PKI.INameField[]) {
+            let normalizedName: string = "";
+
+            if (x509name instanceof Array) {
+                for (const field of x509name) {
+                    if (field.type && field.value) {
+                        const oid = new pki.Oid(field.type);
+
+                        normalizedName += "/";
+                        normalizedName += oid.value;
+                        normalizedName += "=";
+                        normalizedName += field.value;
+                    }
+                }
+            } else {
+                normalizedName = x509name;
+            }
+
+            this.handle.setSubject(normalizedName);
         }
 
         /**
