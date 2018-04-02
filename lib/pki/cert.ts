@@ -289,11 +289,23 @@ namespace trusted.pki {
         }
 
         /**
+         * Rerutn extensions
+         *
+         * @readonly
+         * @type {ExtensionCollection}
+         * @memberof Certificate
+         */
+        get extensions(): pki.ExtensionCollection {
+            return ExtensionCollection.wrap<native.PKI.ExtensionCollection, ExtensionCollection>(
+                this.handle.getExtensions());
+        }
+
+        /**
          * Return true is a certificate is self signed
          *
          * @readonly
          * @type {boolean}
-         * @memberOf Certificate
+         * @memberof Certificate
          */
         get isSelfSigned(): boolean {
             return this.handle.isSelfSigned();

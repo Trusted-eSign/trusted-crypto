@@ -2,6 +2,7 @@
 
 #include "wcert.h"
 #include "wkey.h"
+#include "wexts.h"
 #include "../helper.h"
 
 const char* WCertificate::className = "Certificate";
@@ -34,6 +35,7 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "getOrganizationName", GetOrganizationName);
 	Nan::SetPrototypeMethod(tpl, "getOCSPUrls", GetOCSPUrls);
 	Nan::SetPrototypeMethod(tpl, "getCAIssuersUrls", GetCAIssuersUrls);
+	Nan::SetPrototypeMethod(tpl, "getExtensions", GetExtensions);
 	Nan::SetPrototypeMethod(tpl, "isSelfSigned", IsSelfSigned);
 	Nan::SetPrototypeMethod(tpl, "isCA", IsCA);
 
@@ -516,6 +518,21 @@ NAN_METHOD(WCertificate::GetCAIssuersUrls)
 		}
 
 		info.GetReturnValue().Set(array8);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::GetExtensions)
+{
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Certificate);
+
+		Handle<ExtensionCollection> exts = _this->getExtensions();
+		v8::Local<v8::Object> v8Exts = WExtensionCollection::NewInstance(exts);
+		info.GetReturnValue().Set(v8Exts);
 		return;
 	}
 	TRY_END();

@@ -37,6 +37,7 @@ describe("Certificate", function() {
         assert.equal(cert.OCSPUrls.length, 1, "Bad OCSP urls length");
         assert.equal(typeof (cert.CAIssuersUrls), "object", "Bad CA Issuers value");
         assert.equal(cert.CAIssuersUrls.length, 1, "Bad CA Issuers urls length");
+        assert.equal(cert.extensions.length, 7, "Bad extensions length");
         assert.equal(typeof (cert.isSelfSigned), "boolean", "Error check self signed");
         assert.equal(typeof (cert.isCA), "boolean", "Error check CA");
     });

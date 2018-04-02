@@ -123,6 +123,7 @@ declare namespace native {
             getOrganizationName(): string;
             getOCSPUrls(): string[];
             getCAIssuersUrls(): string[];
+            getExtensions(): ExtensionCollection;
             isSelfSigned(): boolean;
             isCA(): boolean;
             load(filename: string, dataFormat?: trusted.DataFormat): void;
@@ -1611,11 +1612,19 @@ declare namespace trusted.pki {
          */
         readonly CAIssuersUrls: string[];
         /**
+         * Rerutn extensions
+         *
+         * @readonly
+         * @type {ExtensionCollection}
+         * @memberof Certificate
+         */
+        readonly extensions: pki.ExtensionCollection;
+        /**
          * Return true is a certificate is self signed
          *
          * @readonly
          * @type {boolean}
-         * @memberOf Certificate
+         * @memberof Certificate
          */
         readonly isSelfSigned: boolean;
         /**

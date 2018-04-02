@@ -424,6 +424,21 @@ std::vector<std::string> Certificate::getCAIssuersUrls() {
 	return res;
 }
 
+Handle<ExtensionCollection> Certificate::getExtensions() {
+	LOGGER_FN();
+
+	X509_EXTENSIONS *exts = NULL;
+	X509_CINF *ci;
+
+	ci = this->internal()->cert_info;
+
+	if (ci) {
+		exts = ci->extensions;
+	}
+
+	return new ExtensionCollection(exts);
+}
+
 bool Certificate::equals(Handle<Certificate> cert){
 	LOGGER_FN();
 

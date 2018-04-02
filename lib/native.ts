@@ -84,6 +84,7 @@ declare namespace native {
             public getOrganizationName(): string;
             public getOCSPUrls(): string[];
             public getCAIssuersUrls(): string[];
+            public getExtensions(): ExtensionCollection;
             public isSelfSigned(): boolean;
             public isCA(): boolean;
 

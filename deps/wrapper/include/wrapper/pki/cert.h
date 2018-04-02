@@ -12,7 +12,7 @@ class CTWRAPPER_API Certificate;
 
 #include "pki.h"
 #include "key.h"
-
+#include "exts.h"
 
 SSLOBJECT_free(X509, X509_free);
 
@@ -39,6 +39,7 @@ public:
 	Handle<Key> getPublicKey();
 	std::vector<std::string> getOCSPUrls();
 	std::vector<std::string> getCAIssuersUrls();
+	Handle<ExtensionCollection> getExtensions();
 	int getType();
 	int getKeyUsage();
 	bool isSelfSigned();
