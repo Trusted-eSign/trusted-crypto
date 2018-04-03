@@ -4,7 +4,6 @@ var assert = require("assert");
 var trusted = require("../index.js");
 
 var DEFAULT_RESOURCES_PATH = "test/resources";
-var DEFAULT_OUT_PATH = "test/out";
 
 describe("Certificate", function() {
     var cert;
