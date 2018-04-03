@@ -23,9 +23,26 @@ void CertificationRequest::sign(Handle<Key> key, const char* digest){
 
 	try{
 		const EVP_MD *md_alg = NULL;
+		int md_type = 0;
 
-		LOGGER_OPENSSL(EVP_get_digestbyname);
-		md_alg = EVP_get_digestbyname(digest);
+		if (key.isEmpty()) {
+			THROW_EXCEPTION(0, CertificationRequest, NULL, "Empty key");
+		}
+
+		if (!digest) {
+			LOGGER_OPENSSL(EVP_PKEY_get_default_digest_nid);
+			if (EVP_PKEY_get_default_digest_nid(key->internal(), &md_type) <= 0) {
+				THROW_OPENSSL_EXCEPTION(0, CertificationRequest, NULL, "default digest for key type not found");
+			}
+
+			LOGGER_OPENSSL(EVP_get_digestbynid);
+			md_alg = EVP_get_digestbynid(md_type);
+		}
+		else {
+			LOGGER_OPENSSL(EVP_get_digestbyname);
+			md_alg = EVP_get_digestbyname(digest);
+		}
+
 		if (!md_alg){
 			THROW_EXCEPTION(0, CertificationRequest, NULL, "Can not get digest by name");
 		}

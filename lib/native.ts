@@ -94,7 +94,7 @@ declare namespace native {
             public isSelfSigned(): boolean;
             public isCA(): boolean;
 
-            public sign(key: Key, digest: string): void;
+            public sign(key: Key, digest?: string): void;
             public load(filename: string, dataFormat?: trusted.DataFormat): void;
             public import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             public save(filename: string, dataFormat: trusted.DataFormat): void;
@@ -194,7 +194,7 @@ declare namespace native {
             public setVersion(version: number): void;
             public getExtensions(): ExtensionCollection;
             public setExtensions(exts: ExtensionCollection): void;
-            public sign(key: Key, digest: string): void;
+            public sign(key: Key, digest?: string): void;
             public verify(): boolean;
             public getPEMString(): Buffer;
             public toCertificate(days: number, key: Key): Certificate;

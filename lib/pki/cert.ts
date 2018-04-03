@@ -471,13 +471,13 @@ namespace trusted.pki {
         }
 
         /**
-         *  Signs certificate using the given private key
+         * Signs certificate using the given private key
          *
          * @param {Key} key private key to sign
-         * @param {string} [digest="SHA1"] message digest to use (defaults sha1)
+         * @param {string} [digest] message digest to use (if not set, use default for key)
          * @memberof Certificate
          */
-        public sign(key: Key, digest: string = "SHA1"): void {
+        public sign(key: Key, digest?: string): void {
             this.handle.sign(key.handle, digest);
         }
 

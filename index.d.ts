@@ -132,7 +132,7 @@ declare namespace native {
             setExtensions(exts: ExtensionCollection): void;
             isSelfSigned(): boolean;
             isCA(): boolean;
-            sign(key: Key, digest: string): void;
+            sign(key: Key, digest?: string): void;
             load(filename: string, dataFormat?: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
@@ -222,7 +222,7 @@ declare namespace native {
             setVersion(version: number): void;
             getExtensions(): ExtensionCollection;
             setExtensions(exts: ExtensionCollection): void;
-            sign(key: Key, digest: string): void;
+            sign(key: Key, digest?: string): void;
             verify(): boolean;
             getPEMString(): Buffer;
             toCertificate(days: number, key: Key): Certificate;
@@ -1713,10 +1713,10 @@ declare namespace trusted.pki {
          */
         duplicate(): Certificate;
         /**
-         *  Signs certificate using the given private key
+         * Signs certificate using the given private key
          *
          * @param {Key} key private key to sign
-         * @param {string} [digest="SHA1"] message digest to use (defaults sha1)
+         * @param {string} [digest] message digest to use (if not set, use default for key)
          * @memberof Certificate
          */
         sign(key: Key, digest?: string): void;
@@ -1922,10 +1922,10 @@ declare namespace trusted.pki {
          */
         extensions: pki.ExtensionCollection;
         /**
-         *  Signs request using the given private key
+         * Signs request using the given private key
          *
          * @param {Key} key private key to sign
-         * @param {string} [digest="SHA1"] message digest to use (defaults sha1)
+         * @param {string} [digest] message digest to use (if not set, use default for key)
          * @memberof CertificationRequest
          */
         sign(key: Key, digest?: string): void;

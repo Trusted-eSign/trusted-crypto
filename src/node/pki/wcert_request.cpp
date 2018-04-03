@@ -262,12 +262,15 @@ NAN_METHOD(WCertificationRequest::Sign){
 		LOGGER_ARG("key");
 		WKey * wKey = WKey::Unwrap<WKey>(info[0]->ToObject());
 
-		LOGGER_ARG("digest");
-		v8::String::Utf8Value v8Digest(info[1]->ToString());
-		char *digest = *v8Digest;
-		std::string strDigest(digest);
+		char *digest = NULL;
 
-		_this->sign(wKey->data_, strDigest.c_str());
+		LOGGER_ARG("digest");
+		if (!info[1]->IsUndefined()){
+			v8::String::Utf8Value v8Digest(info[1]->ToString());
+			digest = *v8Digest;
+		}
+
+		_this->sign(wKey->data_, digest);
 
 		return;
 	}

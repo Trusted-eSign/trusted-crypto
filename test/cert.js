@@ -173,7 +173,7 @@ describe("Certificate", function() {
         cert1.serialNumber = "";
         assert.equal(typeof (cert1.serialNumber), "string", "Bad extensions value");
 
-        cert1.sign(CAkey, "SHA1");
+        cert1.sign(CAkey);
         assert.equal(typeof (cert1.signatureAlgorithm), "string", "Bad signatureAlgorithm value");
     });
 });

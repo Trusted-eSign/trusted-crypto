@@ -100,7 +100,7 @@ describe("CertificationRequest", function() {
     });
 
     it("sign/verify", function() {
-        certReq.sign(privatekey, "SHA1");
+        certReq.sign(privatekey);
         assert.equal(certReq.verify() === true, true, "Bad verify value");
     });
 
