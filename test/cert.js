@@ -162,5 +162,8 @@ describe("Certificate", function() {
 
         cert1.extensions = exts;
         assert.equal(typeof (cert1.extensions), "object", "Bad extensions value");
+
+        cert1.serialNumber = "";
+        assert.equal(typeof (cert1.serialNumber), "object", "Bad extensions value");
     });
 });

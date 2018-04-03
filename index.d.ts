@@ -116,6 +116,7 @@ declare namespace native {
             getNotAfter(): string;
             getNotBefore(): string;
             getSerialNumber(): Buffer;
+            setSerialNumber(serial: string): void;
             getThumbprint(): Buffer;
             getVersion(): number;
             setVersion(version: number): void;
@@ -1502,7 +1503,14 @@ declare namespace trusted.pki {
          * @type {string}
          * @memberOf Certificate
          */
-        readonly serialNumber: string;
+        /**
+         * Set serial number
+         *
+         * if serial empty generate random
+         *
+         * @memberof Certificate
+         */
+        serialNumber: string;
         /**
          * Return type of certificate
          *

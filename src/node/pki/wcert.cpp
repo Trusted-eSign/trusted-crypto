@@ -44,6 +44,7 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "setIssuerName", SetIssuerName);
 	Nan::SetPrototypeMethod(tpl, "setVersion", SetVersion);
 	Nan::SetPrototypeMethod(tpl, "setExtensions", SetExtensions);
+	Nan::SetPrototypeMethod(tpl, "setSerialNumber", SetSerialNumber);
 
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
@@ -651,6 +652,23 @@ NAN_METHOD(WCertificate::SetExtensions){
 		WExtensionCollection * wExts = WExtensionCollection::Unwrap<WExtensionCollection>(info[0]->ToObject());
 
 		_this->setExtensions(wExts->data_);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::SetSerialNumber){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("digest");
+		v8::String::Utf8Value v8Serial(info[0]->ToString());
+		char *serial = *v8Serial;
+
+		_this->setSerialNumber(serial ? new std::string(serial) : new std::string(""));
 
 		return;
 	}

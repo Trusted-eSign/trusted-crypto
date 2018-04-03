@@ -730,6 +730,52 @@ void Certificate::setExtensions(Handle<ExtensionCollection> exts) {
 	}
 }
 
+void Certificate::setSerialNumber(Handle<std::string> serial){
+	LOGGER_FN();
+
+	ASN1_INTEGER *sno = NULL;
+	BIGNUM *btmp;
+
+	if (serial.isEmpty() || !serial->length()) {
+		LOGGER_OPENSSL(ASN1_INTEGER_new);
+		sno = ASN1_INTEGER_new();
+
+		LOGGER_OPENSSL(BN_new);
+		if (!(btmp = BN_new())) {
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "BN_new");
+		}
+
+		LOGGER_OPENSSL(BN_pseudo_rand);
+		if (!BN_pseudo_rand(btmp, SERIAL_RAND_BITS, 0, 0)) {
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "BN_pseudo_rand");
+		}
+
+		LOGGER_OPENSSL(BN_to_ASN1_INTEGER);
+		if (!BN_to_ASN1_INTEGER(btmp, sno)) {
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "BN_to_ASN1_INTEGER");
+		}
+
+		LOGGER_OPENSSL(BN_free);
+		BN_free(btmp);
+	}
+	else {
+		LOGGER_OPENSSL(s2i_ASN1_INTEGER);
+		if (!(sno = s2i_ASN1_INTEGER(NULL, (char *)serial->c_str()))) {
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "s2i_ASN1_INTEGER");
+		}
+	}
+
+	LOGGER_OPENSSL(X509_set_serialNumber);
+	if (!X509_set_serialNumber(this->internal(), sno)) {
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_serialNumber");
+	}
+
+	LOGGER_OPENSSL(ASN1_INTEGER_free);
+	ASN1_INTEGER_free(sno);
+
+	return;
+}
+
 bool Certificate::equals(Handle<Certificate> cert){
 	LOGGER_FN();
 

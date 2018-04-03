@@ -137,6 +137,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Set serial number
+         *
+         * if serial empty generate random
+         *
+         * @memberof Certificate
+         */
+        set serialNumber(serial: string) {
+            this.handle.setSerialNumber(serial);
+        }
+
+        /**
          * Return type of certificate
          *
          * @readonly

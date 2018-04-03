@@ -15,6 +15,8 @@ class CTWRAPPER_API Certificate;
 #include "exts.h"
 #include "cert_request.h"
 
+#define SERIAL_RAND_BITS 64
+
 SSLOBJECT_free(X509, X509_free);
 
 class Certificate : public SSLObject < X509 > {
@@ -54,6 +56,7 @@ public:
 	void setExtensions(Handle<ExtensionCollection> exts);
 	void setNotBefore(Handle<std::string> notBefore);
 	void setNotAfter(Handle<std::string> notAfter);
+	void setSerialNumber(Handle<std::string> serial);
 
 	//Methods
 	void read(Handle<Bio> in, DataFormat::DATA_FORMAT format);

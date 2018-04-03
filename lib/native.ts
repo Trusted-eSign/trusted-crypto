@@ -77,6 +77,7 @@ declare namespace native {
             public getNotAfter(): string;
             public getNotBefore(): string;
             public getSerialNumber(): Buffer;
+            public setSerialNumber(serial: string): void;
             public getThumbprint(): Buffer;
             public getVersion(): number;
             public setVersion(version: number): void;

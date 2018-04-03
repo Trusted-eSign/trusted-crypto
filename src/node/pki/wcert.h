@@ -46,6 +46,7 @@ public:
 	static NAN_METHOD(SetIssuerName);
 	static NAN_METHOD(SetVersion);
 	static NAN_METHOD(SetExtensions);
+	static NAN_METHOD(SetSerialNumber);
 
 	//Methods
 	static NAN_METHOD(Load);
