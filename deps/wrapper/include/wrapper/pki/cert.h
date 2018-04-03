@@ -54,8 +54,8 @@ public:
 	void setIssuer(Handle<std::string> x509Name);
 	void setVersion(long version);
 	void setExtensions(Handle<ExtensionCollection> exts);
-	void setNotBefore(Handle<std::string> notBefore);
-	void setNotAfter(Handle<std::string> notAfter);
+	void setNotBefore(long offset_sec = 0);
+	void setNotAfter(long offset_sec);
 	void setSerialNumber(Handle<std::string> serial);
 
 	//Methods

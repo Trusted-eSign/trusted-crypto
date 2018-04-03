@@ -281,6 +281,17 @@ namespace trusted.pki {
         }
 
         /**
+         * Set not before. Use offset in sec
+         *
+         * @memberof Certificate
+         */
+        set notBefore(offsetSec) {
+            if (typeof offsetSec === "number") {
+                this.handle.setNotBefore(offsetSec);
+            }
+        }
+
+        /**
          * Return Not After date
          *
          * @readonly
@@ -289,6 +300,17 @@ namespace trusted.pki {
          */
         get notAfter(): Date {
             return new Date(this.handle.getNotAfter());
+        }
+
+        /**
+         * Set not before. Use offset in sec
+         *
+         * @memberof Certificate
+         */
+        set notAfter(offsetSec) {
+            if (typeof offsetSec === "number") {
+                this.handle.setNotAfter(offsetSec);
+            }
         }
 
         /**

@@ -45,6 +45,8 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "setVersion", SetVersion);
 	Nan::SetPrototypeMethod(tpl, "setExtensions", SetExtensions);
 	Nan::SetPrototypeMethod(tpl, "setSerialNumber", SetSerialNumber);
+	Nan::SetPrototypeMethod(tpl, "setNotBefore", SetNotBefore);
+	Nan::SetPrototypeMethod(tpl, "setNotAfter", SetNotAfter);
 
 	Nan::SetPrototypeMethod(tpl, "sign", Sign);
 	Nan::SetPrototypeMethod(tpl, "load", Load);
@@ -670,6 +672,41 @@ NAN_METHOD(WCertificate::SetSerialNumber){
 		char *serial = *v8Serial;
 
 		_this->setSerialNumber(serial ? new std::string(serial) : new std::string(""));
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::SetNotBefore){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("offset_sec");
+		long offset_sec = 0;
+		if (!info[0]->IsUndefined()) {
+			offset_sec = info[0]->ToNumber()->Int32Value();
+		}
+		
+		_this->setNotBefore(offset_sec);
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::SetNotAfter){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("offset_sec");
+		long offset_sec = info[0]->ToNumber()->Int32Value();
+
+		_this->setNotAfter(offset_sec);
 
 		return;
 	}

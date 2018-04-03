@@ -114,7 +114,9 @@ declare namespace native {
             getIssuerName(): string;
             setIssuerName(x509name: string): void;
             getNotAfter(): string;
+            setNotAfter(offsetSec?: number): void;
             getNotBefore(): string;
+            setNotBefore(offsetSec?: number): void;
             getSerialNumber(): Buffer;
             setSerialNumber(serial: string): void;
             getThumbprint(): Buffer;
@@ -1581,7 +1583,12 @@ declare namespace trusted.pki {
          * @type {Date}
          * @memberOf Certificate
          */
-        readonly notBefore: Date;
+        /**
+         * Set not before. Use offset in sec
+         *
+         * @memberof Certificate
+         */
+        notBefore: Date;
         /**
          * Return Not After date
          *
@@ -1589,7 +1596,12 @@ declare namespace trusted.pki {
          * @type {Date}
          * @memberOf Certificate
          */
-        readonly notAfter: Date;
+        /**
+         * Set not before. Use offset in sec
+         *
+         * @memberof Certificate
+         */
+        notAfter: Date;
         /**
          * Return SHA-1 thumbprint
          *

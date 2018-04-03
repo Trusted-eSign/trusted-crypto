@@ -173,6 +173,13 @@ describe("Certificate", function() {
         cert1.serialNumber = "";
         assert.equal(typeof (cert1.serialNumber), "string", "Bad extensions value");
 
+        cert1.notBefore = 60;
+        assert.equal(typeof (cert1.notBefore), "object", "Bad notBefore value");
+
+        cert1.notAfter = 60 * 60 * 24 * 180; // 180 days in sec
+        assert.equal(typeof (cert1.notAfter), "object", "Bad notAfter value");
+
+
         cert1.sign(CAkey);
         assert.equal(typeof (cert1.signatureAlgorithm), "string", "Bad signatureAlgorithm value");
     });

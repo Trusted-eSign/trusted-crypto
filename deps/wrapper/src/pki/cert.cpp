@@ -77,7 +77,7 @@ Certificate::Certificate(Handle<CertificationRequest> csr) :SSLObject<X509>(X509
 		LOGGER_OPENSSL(X509_gmtime_adj);
 		X509_gmtime_adj(X509_get_notBefore(x), 0);
 		LOGGER_OPENSSL(X509_time_adj_ex);
-		X509_time_adj_ex(X509_get_notAfter(x), 365, 0, NULL);
+		X509_gmtime_adj(X509_get_notAfter(x), 60 * 60 * 24 * 365);
 
 
 		if ((pkey = X509_REQ_get_pubkey(req)) == NULL) {
@@ -717,6 +717,20 @@ void Certificate::setVersion(long version){
 	if (!X509_set_version(this->internal(), version)) {
 		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_version");
 	}
+}
+
+void Certificate::setNotBefore(long offset_sec){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_gmtime_adj);
+	X509_gmtime_adj(X509_get_notBefore(this->internal()), offset_sec);
+}
+
+void Certificate::setNotAfter(long offset_sec){
+	LOGGER_FN();
+
+	LOGGER_OPENSSL(X509_gmtime_adj);
+	X509_gmtime_adj(X509_get_notAfter(this->internal()), offset_sec);
 }
 
 void Certificate::setExtensions(Handle<ExtensionCollection> exts) {

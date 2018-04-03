@@ -75,7 +75,9 @@ declare namespace native {
             public getIssuerName(): string;
             public setIssuerName(x509name: string): void;
             public getNotAfter(): string;
+            public setNotAfter(offsetSec?: number): void;
             public getNotBefore(): string;
+            public setNotBefore(offsetSec?: number): void;
             public getSerialNumber(): Buffer;
             public setSerialNumber(serial: string): void;
             public getThumbprint(): Buffer;

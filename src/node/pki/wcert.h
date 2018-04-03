@@ -47,6 +47,8 @@ public:
 	static NAN_METHOD(SetVersion);
 	static NAN_METHOD(SetExtensions);
 	static NAN_METHOD(SetSerialNumber);
+	static NAN_METHOD(SetNotBefore);
+	static NAN_METHOD(SetNotAfter);
 
 	//Methods
 	static NAN_METHOD(Sign);
