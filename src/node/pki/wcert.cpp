@@ -46,6 +46,7 @@ void WCertificate::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "setExtensions", SetExtensions);
 	Nan::SetPrototypeMethod(tpl, "setSerialNumber", SetSerialNumber);
 
+	Nan::SetPrototypeMethod(tpl, "sign", Sign);
 	Nan::SetPrototypeMethod(tpl, "load", Load);
 	Nan::SetPrototypeMethod(tpl, "import", Import);
 	Nan::SetPrototypeMethod(tpl, "save", Save);
@@ -694,6 +695,27 @@ NAN_METHOD(WCertificate::Duplicate)
 		wcert->data_ = cert;
 
 		info.GetReturnValue().Set(v8Certificate);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCertificate::Sign){
+	METHOD_BEGIN();
+
+	try{
+		UNWRAP_DATA(Certificate);
+
+		LOGGER_ARG("key");
+		WKey * wKey = WKey::Unwrap<WKey>(info[0]->ToObject());
+
+		LOGGER_ARG("digest");
+		v8::String::Utf8Value v8Digest(info[1]->ToString());
+		char *digest = *v8Digest;
+		std::string strDigest(digest);
+
+		_this->sign(wKey->data_, strDigest.c_str());
+
 		return;
 	}
 	TRY_END();

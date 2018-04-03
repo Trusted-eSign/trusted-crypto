@@ -94,6 +94,7 @@ declare namespace native {
             public isSelfSigned(): boolean;
             public isCA(): boolean;
 
+            public sign(key: Key, digest: string): void;
             public load(filename: string, dataFormat?: trusted.DataFormat): void;
             public import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             public save(filename: string, dataFormat: trusted.DataFormat): void;

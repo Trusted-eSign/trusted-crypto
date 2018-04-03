@@ -471,6 +471,17 @@ namespace trusted.pki {
         }
 
         /**
+         *  Signs certificate using the given private key
+         *
+         * @param {Key} key private key to sign
+         * @param {string} [digest="SHA1"] message digest to use (defaults sha1)
+         * @memberof Certificate
+         */
+        public sign(key: Key, digest: string = "SHA1"): void {
+            this.handle.sign(key.handle, digest);
+        }
+
+        /**
          * Load certificate from file location
          *
          * @param {string} filename File location

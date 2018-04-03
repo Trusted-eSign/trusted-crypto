@@ -132,6 +132,7 @@ declare namespace native {
             setExtensions(exts: ExtensionCollection): void;
             isSelfSigned(): boolean;
             isCA(): boolean;
+            sign(key: Key, digest: string): void;
             load(filename: string, dataFormat?: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
             save(filename: string, dataFormat: trusted.DataFormat): void;
@@ -1711,6 +1712,14 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         duplicate(): Certificate;
+        /**
+         *  Signs certificate using the given private key
+         *
+         * @param {Key} key private key to sign
+         * @param {string} [digest="SHA1"] message digest to use (defaults sha1)
+         * @memberof Certificate
+         */
+        sign(key: Key, digest?: string): void;
         /**
          * Load certificate from file location
          *

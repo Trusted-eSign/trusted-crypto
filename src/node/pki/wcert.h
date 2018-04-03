@@ -49,6 +49,7 @@ public:
 	static NAN_METHOD(SetSerialNumber);
 
 	//Methods
+	static NAN_METHOD(Sign);
 	static NAN_METHOD(Load);
 	static NAN_METHOD(Import);
 	static NAN_METHOD(Save);

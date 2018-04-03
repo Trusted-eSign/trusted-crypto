@@ -143,18 +143,25 @@ describe("Certificate", function() {
     });
 
     it("create from csr", function() {
+        var CA;
         var cert1;
+        var CAkey;
         var req = new trusted.pki.CertificationRequest();
 
         req.load(DEFAULT_RESOURCES_PATH + "/testreq.pem", trusted.DataFormat.PEM);
 
+        CA = trusted.pki.Certificate.load(DEFAULT_RESOURCES_PATH + "/cert1.crt");
+        assert.equal(CA !== null, true);
+        CAkey = trusted.pki.Key.readPrivateKey(DEFAULT_RESOURCES_PATH + "/cert1.key", trusted.DataFormat.PEM, "");
+        assert.equal(CAkey !== null, true);
+
         cert1 = new trusted.pki.Certificate(req);
         assert.equal(cert1 !== null, true);
 
-        cert1.subjectName = cert.subjectName;
+        cert1.subjectName = req.subject;
         assert.equal(typeof (cert1.subjectName), "string", "Bad subjectName value");
 
-        cert1.issuerName = cert.issuerName;
+        cert1.issuerName = CA.issuerName;
         assert.equal(typeof (cert1.issuerName), "string", "Bad subjectName value");
 
         cert1.version = 2;
@@ -164,6 +171,9 @@ describe("Certificate", function() {
         assert.equal(typeof (cert1.extensions), "object", "Bad extensions value");
 
         cert1.serialNumber = "";
-        assert.equal(typeof (cert1.serialNumber), "object", "Bad extensions value");
+        assert.equal(typeof (cert1.serialNumber), "string", "Bad extensions value");
+
+        cert1.sign(CAkey, "SHA1");
+        assert.equal(typeof (cert1.signatureAlgorithm), "string", "Bad signatureAlgorithm value");
     });
 });

@@ -158,6 +158,28 @@ Handle<Certificate> Certificate::duplicate(){
 	return new Certificate(cert);
 }
 
+void Certificate::sign(Handle<Key> key, const char* digest){
+	LOGGER_FN();
+
+	try{
+		const EVP_MD *md_alg = NULL;
+
+		LOGGER_OPENSSL(EVP_get_digestbyname);
+		md_alg = EVP_get_digestbyname(digest);
+		if (!md_alg){
+			THROW_EXCEPTION(0, Certificate, NULL, "Can not get digest by name");
+		}
+
+		LOGGER_OPENSSL(X509_sign);
+		if (!X509_sign(this->internal(), key->internal(), md_alg)){
+			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_sign 'Error sign X509_REQ'");
+		}
+	}
+	catch (Handle<Exception> e){
+		THROW_EXCEPTION(0, Certificate, e, "Error sign csr");
+	}
+}
+
 void Certificate::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 	LOGGER_FN();
 
