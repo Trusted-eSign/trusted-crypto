@@ -9,8 +9,11 @@ Extension::Extension(Handle<OID> oid, Handle<std::string> value)
 	try {
 		X509_EXTENSION *ex = NULL;
 
+		X509V3_CTX ctx;
+		X509V3_set_ctx_test(&ctx);
+
 		LOGGER_OPENSSL(X509V3_EXT_conf_nid);
-		if (!(ex = X509V3_EXT_conf_nid(NULL, NULL, oid->toNid(), (char *)value->c_str()))) {
+		if (!(ex = X509V3_EXT_conf_nid(NULL, &ctx, oid->toNid(), (char *)value->c_str()))) {
 			THROW_OPENSSL_EXCEPTION(0, Extension, NULL, "X509V3_EXT_conf_nid");
 		}
 

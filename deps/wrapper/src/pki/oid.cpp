@@ -9,6 +9,17 @@ OID::OID(const std::string& val)
 {
 	LOGGER_FN();
 
+	if (!strcmp(val.c_str(), "1.2.643.100.111")) {
+		int nid;
+		nid = OBJ_create("1.2.643.100.111", "subjectSignTool", "subjectSignTool");
+		X509V3_EXT_add_alias(nid, NULL);
+	}
+	else if (!strcmp(val.c_str(), "1.2.643.100.112")) {
+		int nid;
+		nid = OBJ_create("1.2.643.100.112", "issuerSignTool", "issuerSignTool");
+		X509V3_EXT_add_alias(nid, NULL);
+	}
+
 	ASN1_OBJECT *obj = OBJ_txt2obj(val.c_str(), 0);
 	if (obj) {
 		this->setData(obj);
