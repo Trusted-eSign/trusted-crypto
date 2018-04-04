@@ -633,7 +633,7 @@ void Certificate::setSubject(Handle<std::string> xName) {
 				param = buf.substr(posInBuf + 1, buf.length());
 
 				LOGGER_OPENSSL(X509_NAME_add_entry_by_txt);
-				if (!X509_NAME_add_entry_by_txt(name, field.c_str(), MBSTRING_ASC, (const unsigned char *)param.c_str(), -1, -1, 0)){
+				if (!X509_NAME_add_entry_by_txt(name, field.c_str(), MBSTRING_UTF8, (const unsigned char *)param.c_str(), -1, -1, 0)){
 					THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_NAME_add_entry_by_txt 'Unable add param to X509_NAME'");
 				}
 			}
@@ -686,7 +686,7 @@ void Certificate::setIssuer(Handle<std::string> xName) {
 				param = buf.substr(posInBuf + 1, buf.length());
 
 				LOGGER_OPENSSL(X509_NAME_add_entry_by_txt);
-				if (!X509_NAME_add_entry_by_txt(name, field.c_str(), MBSTRING_ASC, (const unsigned char *)param.c_str(), -1, -1, 0)){
+				if (!X509_NAME_add_entry_by_txt(name, field.c_str(), MBSTRING_UTF8, (const unsigned char *)param.c_str(), -1, -1, 0)){
 					THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_NAME_add_entry_by_txt 'Unable add param to X509_NAME'");
 				}
 			}
