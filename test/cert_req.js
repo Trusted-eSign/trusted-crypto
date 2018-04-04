@@ -14,8 +14,7 @@ describe("CertificationRequest", function() {
     var certReqInfo;
     var publickey;
     var privatekey;
-    var ext1;
-    var ext2;
+    var ext;
     var exts;
     var oid;
 
@@ -42,34 +41,59 @@ describe("CertificationRequest", function() {
         privatekey = trusted.pki.Key.readPrivateKey(DEFAULT_RESOURCES_PATH + "/cert1.key", trusted.DataFormat.PEM, "");
         assert.equal(privatekey !== null, true);
 
-        oid = new trusted.pki.Oid("keyUsage");
-        assert.equal(oid !== null, true);
-
-        ext1 = new trusted.pki.Extension(oid, "critical,digitalSignature,keyEncipherment");
-        assert.equal(ext1 !== null, true);
-
-        oid = new trusted.pki.Oid("subjectAltName");
-        assert.equal(oid !== null, true);
-
-        ext2 = new trusted.pki.Extension(oid, "email:test@example.com");
-        assert.equal(ext2 !== null, true);
-
         exts = new trusted.pki.ExtensionCollection();
         assert.equal(exts !== null, true);
 
+
+        oid = new trusted.pki.Oid("keyUsage");
+        assert.equal(oid !== null, true);
+        ext = new trusted.pki.Extension(oid, "critical,keyAgreement,dataEncipherment,nonRepudiation,digitalSignature");
+        assert.equal(ext !== null, true);
         assert.equal(exts.length, 0);
-        exts.push(ext1);
+        exts.push(ext);
         assert.equal(exts.length, 1);
-        exts.push(ext2);
+
+
+        oid = new trusted.pki.Oid("extendedKeyUsage");
+        assert.equal(oid !== null, true);
+        ext = new trusted.pki.Extension(oid, "1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.4");
+        assert.equal(ext !== null, true);
+        exts.push(ext);
         assert.equal(exts.length, 2);
+
+        // Custom extension (SubjectSignTool) with format utf8
+        oid = new trusted.pki.Oid("1.2.643.100.111");
+        assert.equal(oid !== null, true);
+        ext = new trusted.pki.Extension(oid, "ASN1:FORMAT:UTF8,UTF8String:КриптоПро CSP версия 4.0");
+        assert.equal(ext !== null, true);
+        exts.push(ext);
+        assert.equal(exts.length, 3);
+
+        // Custom extension (IssuerSignTool) with format utf8
+        oid = new trusted.pki.Oid("1.2.643.100.112");
+        assert.equal(oid !== null, true);
+        ext = new trusted.pki.Extension(oid, "ASN1:FORMAT:UTF8,UTF8String:КриптоПро CSP версия 3.6");
+        assert.equal(ext !== null, true);
+        exts.push(ext);
+        assert.equal(exts.length, 4);
+
+        oid = new trusted.pki.Oid("certificatePolicies");
+        assert.equal(oid !== null, true);
+        ext = new trusted.pki.Extension(oid, "1.2.643.100.113.1");
+        assert.equal(ext !== null, true);
+        exts.push(ext);
+        assert.equal(exts.length, 5);
     });
 
     it("create", function() {
         var atrs = [
             { type: "C", value: "RU" },
-            { type: "CN", value: "example.com" },
-            { type: "O", value: "Test" },
-            { type: "1.2.643.100.3", value: "12295279771" }
+            { type: "CN", value: "Иван Иванов" },
+            { type: "localityName", value: "Yoshkar-Ola" },
+            { type: "stateOrProvinceName", value: "Mari El" },
+            { type: "O", value: "Test Org" },
+            { type: "1.2.643.100.3", value: "12295279882" },
+            { type: "1.2.643.3.131.1.1", value: "002465363366" }
         ];
 
         certReq.subject = atrs;
