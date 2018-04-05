@@ -22,7 +22,7 @@ describe("Key", function() {
     });
 
     it("generate", function() {
-        keyPair = key.generate(trusted.DataFormat.PEM, trusted.PublicExponent.RSA_F4, 1024);
+        keyPair = key.generate("RSA", ["rsa_keygen_bits:2048", "rsa_keygen_pubexp:3"]);
     });
 
     it("save private", function() {

@@ -6,7 +6,7 @@
 declare namespace native {
     namespace PKI {
         class Key {
-            public generate(format: trusted.DataFormat, pubExp: trusted.PublicExponent, keySize: number): Key;
+            public generate(algorithm: string, pkeyopts?: string[]): Key;
             public readPrivateKey(filename: string, format: trusted.DataFormat, password: string);
             public readPublicKey(filename: string, format: trusted.DataFormat);
             public writePrivateKey(filename: string, format: trusted.DataFormat, password: string);

@@ -62,16 +62,13 @@ namespace trusted.pki {
         /**
          * Generate key
          *
-         * @param {DataFormat} format
-         * @param {PublicExponent} pubExp
-         * @param {number} keySize
-         * @param {string} password
+         * @param {string} algorithm
+         * @param {string[]} [pkeyopts]
          * @returns {Key}
-         *
-         * @memberOf Key
+         * @memberof Key
          */
-        public generate(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string): Key {
-            return Key.wrap<native.PKI.Key, Key>(this.handle.generate(format, pubExp, keySize));
+        public generate(algorithm: string, pkeyopts?: string[]): Key {
+            return Key.wrap<native.PKI.Key, Key>(this.handle.generate(algorithm, pkeyopts));
         }
 
         /**

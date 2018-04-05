@@ -146,83 +146,80 @@ void Key::writePublicKey(Handle<Bio> out, DataFormat::DATA_FORMAT format) {
 	}
 }
 
-Handle<Key> Key::generate(DataFormat::DATA_FORMAT format, PublicExponent::Public_Exponent pubEx, int keySize) {
+Handle<Key> Key::generate(Handle<std::string> algorithm, std::vector<std::string> pkeyopt) {
 	LOGGER_FN();
 
-	RSA *rsa = NULL;
-	BIGNUM *bn = NULL;
-	EVP_PKEY *evpkey = NULL;
+	try {
+		EVP_PKEY *pkey = NULL;
+		EVP_PKEY_CTX *ctx = NULL;
+		const EVP_PKEY_ASN1_METHOD *ameth;
+		ENGINE *tmpeng = NULL;
+		int pkey_id;
 
-	try{
-		ENGINE *en = NULL;
-
-		LOGGER_OPENSSL(RSA_new_method);
-		rsa = RSA_new_method(en);
-		if (!rsa){
-			THROW_EXCEPTION(0, Key, NULL, "RSA_new_method");
+		if (algorithm.isEmpty() || !algorithm->length()) {
+			THROW_EXCEPTION(0, Key, NULL, "Parameter algorithm empty");
 		}
 
-		LOGGER_OPENSSL(BN_new);
-		bn = BN_new();
-		if (!bn){
-			THROW_EXCEPTION(0, Key, NULL, "BN_new");
+		LOGGER_OPENSSL(EVP_PKEY_asn1_find_str);
+		if (!(ameth = EVP_PKEY_asn1_find_str(&tmpeng, algorithm->c_str(), -1))) {
+			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "EVP_PKEY_asn1_find_str 'Algorithm not found'");
 		}
-		
-		LOGGER_OPENSSL(EVP_PKEY_new);
-		evpkey = EVP_PKEY_new();
-		if (!evpkey){
-			THROW_EXCEPTION(0, Key, NULL, "EVP_PKEY_new");
+
+		LOGGER_OPENSSL(EVP_PKEY_asn1_get0_info);
+		EVP_PKEY_asn1_get0_info(&pkey_id, NULL, NULL, NULL, NULL, ameth);
+#ifndef OPENSSL_NO_ENGINE
+		if (tmpeng) {
+			LOGGER_OPENSSL(ENGINE_finish);
+			ENGINE_finish(tmpeng);
 		}
-	
-		switch (pubEx){
-		case PublicExponent::peRSA_3:
-			LOGGER_OPENSSL(BN_set_word);
-			if (!BN_set_word(bn, RSA_3)){
-				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_3 to BIGNUM'");
+#endif
+		if (!(ctx = EVP_PKEY_CTX_new_id(pkey_id, NULL))) {
+			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "EVP_PKEY_CTX_new_id for %d", pkey_id);
+		}
+
+		if (!ctx) {
+			THROW_EXCEPTION(0, Key, NULL, "Can not keypair generate");
+		}
+
+		LOGGER_OPENSSL(EVP_PKEY_keygen_init);
+		if (EVP_PKEY_keygen_init(ctx) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "EVP_PKEY_keygen_init");
+		}
+
+		for (int i = 0; i < pkeyopt.size(); i++) {
+			const char *value = pkeyopt[i].c_str();
+			char *stmp, *vtmp = NULL;
+
+			stmp = BUF_strdup(value);
+			if (!stmp)
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BUF_strdup");
+			vtmp = strchr(stmp, ':');
+			if (vtmp) {
+				*vtmp = 0;
+				vtmp++;
 			}
-			break;
-		case PublicExponent::peRSA_F4:
-			LOGGER_OPENSSL(BN_set_word);
-			if (!BN_set_word(bn, RSA_F4)){
-				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "BN_set_word 'Unable set RSA_F4 to BIGNUM'");
-			}
-			break;
-		default:
-			THROW_EXCEPTION(0, Key, NULL, "Unknown public exponent");
-		}	
-		
-		if (keySize == NULL){
-			keySize = 1024;
-		}
-		else{
-			if (keySize < 1024){
-				THROW_EXCEPTION(0, Key, NULL, "Key sizes should num > 1024 (else insecure)");
+			
+			LOGGER_OPENSSL(EVP_PKEY_CTX_ctrl_str);
+			if (EVP_PKEY_CTX_ctrl_str(ctx, stmp, vtmp) <= 0) {
+				THROW_OPENSSL_EXCEPTION(0, Key, NULL, "parameter setting error");
 			}
 		}
 
-		LOGGER_OPENSSL(RSA_generate_key_ex);
-		if (!RSA_generate_key_ex(rsa, keySize, bn, NULL)){
-			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "RSA_generate_key_ex 'Unable  generates a key pair'");
+		LOGGER_OPENSSL(EVP_PKEY_keygen);
+		if (EVP_PKEY_keygen(ctx, &pkey) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "Error generating key");
 		}
 
-		LOGGER_OPENSSL(EVP_PKEY_set1_RSA);
-		EVP_PKEY_set1_RSA(evpkey, rsa);
-	}
-	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, Key, e, "Can not keypair generate and save to file");
-	}
+		if (ctx) {
+			LOGGER_OPENSSL(EVP_PKEY_CTX_free);
+			EVP_PKEY_CTX_free(ctx);
+		}
 
-	if (rsa){
-		LOGGER_OPENSSL(RSA_free);
-		RSA_free(rsa);
+		return new Key(pkey);
 	}
-
-	if (bn){
-		LOGGER_OPENSSL(BN_free)
-			BN_free(bn);
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Key, e, "Can not keypair generate");
 	}
-
-	return new Key(evpkey);
 }
 
 int Key::compare(Handle<Key> key) {

@@ -53,7 +53,7 @@ declare namespace trusted {
 declare namespace native {
     namespace PKI {
         class Key {
-            generate(format: trusted.DataFormat, pubExp: trusted.PublicExponent, keySize: number): Key;
+            generate(algorithm: string, pkeyopts?: string[]): Key;
             readPrivateKey(filename: string, format: trusted.DataFormat, password: string): any;
             readPublicKey(filename: string, format: trusted.DataFormat): any;
             writePrivateKey(filename: string, format: trusted.DataFormat, password: string): any;
@@ -1045,15 +1045,12 @@ declare namespace trusted.pki {
         /**
          * Generate key
          *
-         * @param {DataFormat} format
-         * @param {PublicExponent} pubExp
-         * @param {number} keySize
-         * @param {string} password
+         * @param {string} algorithm
+         * @param {string[]} [pkeyopts]
          * @returns {Key}
-         *
-         * @memberOf Key
+         * @memberof Key
          */
-        generate(format: DataFormat, pubExp: PublicExponent, keySize: number, password: string): Key;
+        generate(algorithm: string, pkeyopts?: string[]): Key;
         /**
          * Load private key from file
          *

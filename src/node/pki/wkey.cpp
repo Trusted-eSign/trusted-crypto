@@ -50,18 +50,29 @@ NAN_METHOD(WKey::Generate){
 	METHOD_BEGIN();
 
 	try{
-		LOGGER_ARG("format");
-		int format = info[0]->ToNumber()->Int32Value();
+		LOGGER_ARG("algorithm");
+		v8::String::Utf8Value v8Algorithm(info[0]->ToString());
+		char *algorithm = *v8Algorithm;
 
-		LOGGER_ARG("pubExp");
-		int pubExp = info[1]->ToNumber()->Int32Value();
+		if (!info[1]->IsUndefined() && !info[1]->IsArray())
+		{
+			Nan::ThrowTypeError("Argument must be array");
+			info.GetReturnValue().SetUndefined();
+		}
 
-		LOGGER_ARG("keySize");
-		int keySize = info[2]->ToNumber()->Int32Value();
+		std::vector<std::string> vpkeyopts;
+		v8::Local<v8::Array> pkeyopts = v8::Local<v8::Array>::Cast(info[1]);
+
+		for (unsigned int i = 0; i < pkeyopts->Length(); i++) {
+			if (Nan::Has(pkeyopts, i).FromJust()) {
+				v8::String::Utf8Value v8Value(Nan::Get(pkeyopts, i).ToLocalChecked()->ToString());
+				vpkeyopts.push_back(std::string(*v8Value));
+			}
+		}
 
 		UNWRAP_DATA(Key);
 
-		Handle<Key> key = _this->generate(DataFormat::get(format), PublicExponent::get(pubExp), keySize);
+		Handle<Key> key = _this->generate(new std::string(algorithm), vpkeyopts);
 		v8::Local<v8::Object> v8Key = WKey::NewInstance(key);
 		info.GetReturnValue().Set(v8Key);
 
