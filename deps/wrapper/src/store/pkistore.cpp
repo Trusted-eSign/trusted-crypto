@@ -313,6 +313,45 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 				THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Modulus=unavailable", NULL);
 			}
 
+			#ifndef OPENSSL_NO_ECDSA
+			if (pkey->type == EVP_PKEY_EC) {
+				EC_KEY *tkey;
+				const EC_POINT *pubkey = NULL;
+				LOGGER_OPENSSL(BN_CTX_new);
+				BN_CTX *ctx = BN_CTX_new();
+				if (!ctx) {
+					THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Allocating memory failed", NULL);
+				}
+				BIGNUM *X = NULL, *Y = NULL;
+				const EC_GROUP *group = NULL;
+				EC_POINT *pub_key;
+
+				LOGGER_OPENSSL(BN_CTX_start);
+				BN_CTX_start(ctx);
+				LOGGER_OPENSSL(BN_CTX_get);
+				X = BN_CTX_get(ctx);
+				LOGGER_OPENSSL(BN_CTX_get);
+				Y = BN_CTX_get(ctx);
+
+				tkey = pkey->pkey.ec;
+				LOGGER_OPENSSL(EC_KEY_get0_public_key);
+				pubkey = EC_KEY_get0_public_key(tkey);
+				LOGGER_OPENSSL(EC_KEY_get0_group);
+				group = EC_KEY_get0_group(tkey);
+				LOGGER_OPENSSL(EC_POINT_get_affine_coordinates_GFp);
+				if (!EC_POINT_get_affine_coordinates_GFp(group, pubkey, X, Y, ctx)) {
+					THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Key is absent(not set)", NULL);
+				}
+				LOGGER_OPENSSL(BN_print);
+				BN_print(bioBN, X);
+				LOGGER_OPENSSL(BN_print);
+				BN_print(bioBN, Y);
+
+				LOGGER_OPENSSL(BN_CTX_end);
+				BN_CTX_end(ctx);
+			}
+			else
+			#endif
 			#ifndef OPENSSL_NO_RSA
 			if (pkey->type == EVP_PKEY_RSA)
 				BN_print(bioBN, pkey->pkey.rsa->n);
