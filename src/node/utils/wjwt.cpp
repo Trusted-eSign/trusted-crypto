@@ -14,6 +14,9 @@ void WJwt::Init(v8::Handle<v8::Object> exports) {
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
 	Nan::SetPrototypeMethod(tpl, "checkLicense", CheckLicense);
+	Nan::SetPrototypeMethod(tpl, "checkTrialLicense", CheckTrialLicense);
+	Nan::SetPrototypeMethod(tpl, "getExpirationTime", GetExpirationTime);
+	Nan::SetPrototypeMethod(tpl, "getTrialExpirationTime", GetTrialExpirationTime);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -53,6 +56,41 @@ NAN_METHOD(WJwt::CheckLicense) {
 			info.GetReturnValue().Set(_this->checkLicense(new std::string(lic)));
 		}
 		
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WJwt::GetExpirationTime) {
+	METHOD_BEGIN();
+	try {
+		UNWRAP_DATA(Jwt);
+		LOGGER_ARG("lic");
+		v8::String::Utf8Value v8Lic(info[0]->ToString());
+		char *lic = *v8Lic;
+		info.GetReturnValue().Set(_this->getExpirationTime(new std::string(lic)));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WJwt::GetTrialExpirationTime) {
+	METHOD_BEGIN();
+	try {
+		UNWRAP_DATA(Jwt);
+		LOGGER_ARG("lic");
+		info.GetReturnValue().Set(_this->getTrialExpirationTime());
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WJwt::CheckTrialLicense) {
+	METHOD_BEGIN();
+	try {
+		UNWRAP_DATA(Jwt);
+		LOGGER_ARG("lic");
+		info.GetReturnValue().Set(_this->checkTrialLicense());
 		return;
 	}
 	TRY_END();

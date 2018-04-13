@@ -515,6 +515,9 @@ declare namespace native {
 
         class Jwt {
             public checkLicense(data?: string): number;
+            public checkTrialLicense(): number;       
+            public getExpirationTime(data?: string): number;
+            public getTrialExpirationTime(): number;
         }
 
         class Cerber {
