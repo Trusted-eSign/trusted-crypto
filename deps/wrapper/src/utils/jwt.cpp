@@ -49,3 +49,60 @@ int Jwt::checkLicense(Handle<std::string> lic) {
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
+
+int Jwt::getExpirationTime(Handle<std::string> lic) {
+	LOGGER_FN();
+
+	try {
+		int errorCode;
+		int res = 0;
+
+#ifndef JWT_NO_LICENSE
+		res = getExpTime((char *)lic->c_str(), &errorCode);
+		return res;
+#else
+		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
+#endif
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Jwt, e, "Error check license");
+	}
+}
+
+int Jwt::getTrialExpirationTime() {
+	LOGGER_FN();
+
+	try {
+		int errorCode;
+		int res = 0;
+
+#ifndef JWT_NO_LICENSE
+		res = getTrialExpTime(&errorCode);
+		return res;
+#else
+		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
+#endif
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Jwt, e, "Error check license");
+	}
+}
+
+int Jwt::checkTrialLicense() {
+	LOGGER_FN();
+
+	try {
+		int errorCode;
+		int res = 0;
+
+#ifndef JWT_NO_LICENSE
+		res = ctlic_validateTrial(&errorCode);
+		return res;
+#else
+		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
+#endif
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Jwt, e, "Error check license");
+	}
+}

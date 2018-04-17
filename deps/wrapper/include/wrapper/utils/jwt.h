@@ -14,6 +14,9 @@ public:
 
 	int checkLicense();
 	int checkLicense(Handle<std::string> lic);
+	int checkTrialLicense();
+	int getExpirationTime(Handle<std::string> lic);
+	int getTrialExpirationTime();
 };
 
 #endif //!UTIL_JWT_INCLUDED 
