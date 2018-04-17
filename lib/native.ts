@@ -515,7 +515,7 @@ declare namespace native {
 
         class Jwt {
             public checkLicense(data?: string): number;
-            public checkTrialLicense(): number;       
+            public checkTrialLicense(): number;
             public getExpirationTime(data?: string): number;
             public getTrialExpirationTime(): number;
         }
@@ -546,6 +546,8 @@ declare namespace native {
             public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
             public getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
             public installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
+            // tslint:disable-next-line:max-line-length
+            public installCertifiacteToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
             public deleteContainer(contName: string, provType: number, provName?: string): void;
             public buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             public verifyCertificateChain(cert: PKI.Certificate): boolean;

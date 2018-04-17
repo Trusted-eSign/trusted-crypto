@@ -45,6 +45,7 @@ public:
 	Handle<Certificate> getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 	Handle<std::string> getContainerNameByCertificate(Handle<Certificate> cert, Handle<std::string> category);
 	void installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
+	void installCertifiacteToContainer(Handle<Certificate> cert, Handle<std::string> contName, int provType, Handle<std::string> provName);
 	void deleteContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 
 	static Handle<CertificateCollection> buildChain(Handle<Certificate> cert);

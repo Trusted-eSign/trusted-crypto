@@ -956,6 +956,103 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 	}
 }
 
+void Csp::installCertifiacteToContainer(Handle<Certificate> cert, Handle<std::string> contName, int provType, Handle<std::string> provName) {
+	LOGGER_FN();
+
+#ifdef CSP_ENABLE
+	HCRYPTPROV hProv = NULL;
+	HCRYPTKEY hKey = NULL;
+#endif
+
+	try {
+#ifdef CSP_ENABLE
+		DWORD dwKeySpec;
+		PCCERT_CONTEXT pCertContext;
+
+		if (contName.isEmpty()) {
+			THROW_EXCEPTION(0, Csp, NULL, "container name epmty");
+		}
+
+		if (!provType) {
+			THROW_EXCEPTION(0, Csp, NULL, "provider type not set");
+		}
+
+		if (cert.isEmpty()) {
+			THROW_EXCEPTION(0, Csp, NULL, "cert empty");
+		}
+
+		if (!CryptAcquireContext(
+			&hProv,
+			contName->c_str(),
+			!provName.isEmpty() && provName->length() ? (LPCSTR)provName->c_str() : NULL,
+			provType,
+			0))
+		{
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+		}
+
+		if (!CryptGetUserKey(hProv, AT_SIGNATURE, &hKey)) {
+			CryptDestroyKey(hKey);
+
+			if (!CryptGetUserKey(hProv, AT_KEYEXCHANGE, &hKey)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptGetUserKey. Error: 0x%08x", GetLastError());
+			}
+			else {
+				dwKeySpec = AT_KEYEXCHANGE;
+			}
+		}
+		else {
+			dwKeySpec = AT_SIGNATURE;
+		}
+
+		pCertContext = createCertificateContext(cert);
+
+		if (!CryptSetKeyParam(hKey, KP_CERTIFICATE, pCertContext->pbCertEncoded, 0)) {
+			DWORD ee = GetLastError();
+			THROW_EXCEPTION(0, Csp, NULL, "CryptSetKeyParam. Error: 0x%08x", GetLastError());
+		}
+
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+
+		return;
+#else
+		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
+#endif
+	}
+	catch (Handle<Exception> e){
+#ifdef CSP_ENABLE
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+#endif
+
+		THROW_EXCEPTION(0, Csp, e, "Error install certificate from container");
+	}
+}
+
 void Csp::deleteContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
@@ -1164,7 +1261,7 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 		}
 #endif
 
-		THROW_EXCEPTION(0, Csp, e, "Error delete contaiener");
+		THROW_EXCEPTION(0, Csp, e, "Error get containerName by Certificate");
 	}
 }
 

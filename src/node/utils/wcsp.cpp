@@ -32,6 +32,7 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "enumContainers", EnumContainers);
 	Nan::SetPrototypeMethod(tpl, "getCertifiacteFromContainer", GetCertifiacteFromContainer);
 	Nan::SetPrototypeMethod(tpl, "installCertifiacteFromContainer", InstallCertifiacteFromContainer);
+	Nan::SetPrototypeMethod(tpl, "installCertifiacteToContainer", InstallCertifiacteToContainer);
 	Nan::SetPrototypeMethod(tpl, "getContainerNameByCertificate", GetContainerNameByCertificate);
 	Nan::SetPrototypeMethod(tpl, "deleteContainer", DeleteContainer);
 
@@ -332,6 +333,39 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		char *provName = *v8Prov;
 
 		_this->installCertifiacteFromContainer(new std::string(wcContainerName), type, new std::string(provName));
+
+		info.GetReturnValue().Set(info.This());
+		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::InstallCertifiacteToContainer)
+{
+	METHOD_BEGIN();
+
+	try{
+#ifdef CSP_ENABLE
+		UNWRAP_DATA(Csp);
+
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		LOGGER_ARG("container");
+		v8::String::Utf8Value v8Cont(info[1]->ToString());
+		char *wcContainerName = *v8Cont;
+
+		LOGGER_ARG("type");
+		int type = info[2]->ToNumber()->Int32Value();
+
+		LOGGER_ARG("provider");
+		v8::String::Utf8Value v8Prov(info[3]->ToString());
+		char *provName = *v8Prov;
+
+		_this->installCertifiacteToContainer(wCert->data_, new std::string(wcContainerName), type, new std::string(provName));
 
 		info.GetReturnValue().Set(info.This());
 		return;

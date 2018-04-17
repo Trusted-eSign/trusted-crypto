@@ -149,6 +149,13 @@ namespace trusted.utils {
             return;
         }
 
+        public static installCertifiacteToContainer(cert: pki.Certificate, contName: string,
+                                                    provType: number, provName = ""): void {
+            const csp = new native.UTILS.Csp();
+            csp.installCertifiacteToContainer(cert.handle, contName, provType, provName);
+            return;
+        }
+
         public static deleteContainer(contName: string, provType: number, provName = ""): void {
             const csp = new native.UTILS.Csp();
             csp.deleteContainer(contName, provType, provName);
