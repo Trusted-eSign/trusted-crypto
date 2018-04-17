@@ -118,7 +118,5 @@ namespace trusted.utils {
         public getTrialExpirationTime(): number {
             return this.handle.getTrialExpirationTime();
         }
-
-
     }
 }
