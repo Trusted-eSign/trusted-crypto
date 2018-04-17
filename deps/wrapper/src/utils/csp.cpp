@@ -112,7 +112,7 @@ bool Csp::checkCPCSPLicense() {
 		bool res = false;
 
 		if (!isGost2001CSPAvailable()) {
-			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
+			THROW_EXCEPTION(0, Csp, NULL, "GOST 2001 provaider not available");
 		}
 
 		if (!CryptAcquireContext(
@@ -122,7 +122,7 @@ bool Csp::checkCPCSPLicense() {
 			PROV_GOST_2001_DH,
 			CRYPT_VERIFYCONTEXT))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
 		}
 
 		if (!CryptGetProvParam(
@@ -132,7 +132,7 @@ bool Csp::checkCPCSPLicense() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		pbData = (LPBYTE)malloc(cbData);
@@ -177,7 +177,7 @@ Handle<std::string> Csp::getCPCSPLicense() {
 		Handle<std::string> license;
 
 		if (!isGost2001CSPAvailable()) {
-			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
+			THROW_EXCEPTION(0, Csp, NULL, "GOST 2001 provaider not available");
 		}
 
 		if (!CryptAcquireContext(
@@ -197,7 +197,7 @@ Handle<std::string> Csp::getCPCSPLicense() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		pbData = (LPBYTE)malloc(cbData);
@@ -209,7 +209,7 @@ Handle<std::string> Csp::getCPCSPLicense() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		license = new std::string((char *)pbData);
@@ -258,7 +258,7 @@ Handle<std::string> Csp::getCPCSPVersion() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		res = new std::string(std::to_string(((pbData >> 8) & 0xFF)) + "." + std::to_string((0xFF & pbData)));
@@ -303,7 +303,7 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		pbData = (LPBYTE)malloc(cbData);
@@ -315,7 +315,7 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		exVersion = (PROV_PP_VERSION_EX *)pbData;
@@ -367,7 +367,7 @@ Handle<std::string> Csp::getCPCSPVersionSKZI() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		pbData = (LPBYTE)malloc(cbData);
@@ -379,7 +379,7 @@ Handle<std::string> Csp::getCPCSPVersionSKZI() {
 			&cbData,
 			0))
 		{
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		exVersion = (PROV_PP_VERSION_EX *)pbData;
@@ -421,7 +421,7 @@ Handle<std::string> Csp::getCPCSPSecurityLvl() {
 		DWORD dwDataLength = (DWORD)sizeof(dwVersion);
 
 		if (!isGost2001CSPAvailable()) {
-			THROW_EXCEPTION(0, Key, NULL, "GOST 2001 provaider not available");
+			THROW_EXCEPTION(0, Csp, NULL, "GOST 2001 provaider not available");
 		}
 
 		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
@@ -429,7 +429,7 @@ Handle<std::string> Csp::getCPCSPSecurityLvl() {
 		}
 
 		if (!CryptGetProvParam(hCryptProv, PP_SECURITY_LEVEL, (BYTE*)&dwVersion, &dwDataLength, 0)){
-			THROW_EXCEPTION(0, Key, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
+			THROW_EXCEPTION(0, Csp, NULL, "CryptGetProvParam. Error: 0x%08x", GetLastError());
 		}
 
 		version = new std::string(secureLvl[dwVersion[0] - 1]);
