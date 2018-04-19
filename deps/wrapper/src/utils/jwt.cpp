@@ -59,6 +59,7 @@ int Jwt::getExpirationTime(Handle<std::string> lic) {
 
 #ifndef JWT_NO_LICENSE
 		res = getExpTime((char *)lic->c_str(), &errorCode);
+		if (errorCode != 900) res = errorCode;
 		return res;
 #else
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
@@ -78,6 +79,7 @@ int Jwt::getTrialExpirationTime() {
 
 #ifndef JWT_NO_LICENSE
 		res = getTrialExpTime(&errorCode);
+		if (errorCode != 900) res = errorCode;
 		return res;
 #else
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
@@ -97,6 +99,7 @@ int Jwt::checkTrialLicense() {
 
 #ifndef JWT_NO_LICENSE
 		res = ctlic_validateTrial(&errorCode);
+		if (errorCode != 900) res = errorCode;
 		return res;
 #else
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
