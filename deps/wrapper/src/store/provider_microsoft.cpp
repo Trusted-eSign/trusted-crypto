@@ -524,31 +524,6 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 			hCertStore = HCRYPT_NULL;
 		}
 
-		if (cert->isSelfSigned() && (strcmp(category->c_str(), "ROOT") != 0)) {
-			if (HCRYPT_NULL == (hCertStore = CertOpenStore(
-				CERT_STORE_PROV_SYSTEM,
-				X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
-				HCRYPT_NULL,
-				CERT_SYSTEM_STORE_CURRENT_USER,
-				L"ROOT")))
-			{
-				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore ROOT failed");
-			}
-
-			if (!CertAddCertificateContextToStore(
-				hCertStore,
-				pCertContext,
-				CERT_STORE_ADD_REPLACE_EXISTING,
-				NULL
-				))
-			{
-				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
-			}
-
-			CertCloseStore(hCertStore, 0);
-			hCertStore = HCRYPT_NULL;
-		}
-
 		if (pCertContext) {
 			CertFreeCertificateContext(pCertContext);
 			pCertContext = HCRYPT_NULL;
