@@ -1097,8 +1097,6 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 
 #ifdef CSP_ENABLE
 	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
-	PCCERT_CONTEXT pCertFound = HCRYPT_NULL;
-	HCERTSTORE hCertStore = HCRYPT_NULL;
 	HCRYPTPROV hCryptProv = HCRYPT_NULL;
 	HCRYPTKEY hPublicKey = HCRYPT_NULL;
 	LPBYTE pbContainerName = HCRYPT_NULL;
@@ -1117,20 +1115,6 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 
 		pCertContext = createCertificateContext(cert);
 
-		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
-			CERT_STORE_PROV_SYSTEM,
-			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
-			HCRYPT_NULL,
-			CERT_SYSTEM_STORE_CURRENT_USER,
-			wCategory.c_str())))
-		{
-			THROW_EXCEPTION(0, Csp, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
-		}
-
-		if (!findExistingCertificate(pCertFound, hCertStore, pCertContext)) {
-			THROW_EXCEPTION(0, Csp, NULL, "Cannot find existing certificate");
-		}
-
 		if (!CryptAcquireContext(
 			&hCryptProv,
 			NULL,
@@ -1143,8 +1127,8 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 
 		if (!CryptImportPublicKeyInfo(
 			hCryptProv,
-			pCertFound->dwCertEncodingType,
-			&pCertFound->pCertInfo->SubjectPublicKeyInfo,
+			pCertContext->dwCertEncodingType,
+			&pCertContext->pCertInfo->SubjectPublicKeyInfo,
 			&hPublicKey))
 		{
 			THROW_EXCEPTION(0, Csp, NULL, "Error during CryptImportPublicKeyInfo. Error: 0x%08x", GetLastError());
@@ -1195,16 +1179,8 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 			pCertContext = HCRYPT_NULL;
 		}
 
-		if (pCertFound) {
-			CertFreeCertificateContext(pCertFound);
-			pCertFound = HCRYPT_NULL;
-		}
-
 		free(pbContainerName);
 		free(pbFPCert);
-
-		CertCloseStore(hCertStore, 0);
-		hCertStore = HCRYPT_NULL;
 
 		if (hPublicKey)
 		{
@@ -1233,18 +1209,8 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 			pCertContext = HCRYPT_NULL;
 		}
 
-		if (pCertFound) {
-			CertFreeCertificateContext(pCertFound);
-			pCertFound = HCRYPT_NULL;
-		}
-
 		free(pbContainerName);
 		free(pbFPCert);
-
-		if (hCertStore) {
-			CertCloseStore(hCertStore, 0);
-			hCertStore = HCRYPT_NULL;
-		}
 
 		if (hPublicKey)
 		{
