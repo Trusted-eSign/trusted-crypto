@@ -17,6 +17,7 @@ public:
 	int checkTrialLicense();
 	int getExpirationTime(Handle<std::string> lic);
 	int getTrialExpirationTime();
+	int createTrialLicense();
 };
 
 #endif //!UTIL_JWT_INCLUDED 

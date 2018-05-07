@@ -19,6 +19,8 @@ public:
 	static NAN_METHOD(CheckTrialLicense);
 	static NAN_METHOD(GetExpirationTime);
 	static NAN_METHOD(GetTrialExpirationTime);
+	static NAN_METHOD(CreateTrialLicense);
+
 };
 
 #endif //!UTIL_WJWT_INCLUDED 

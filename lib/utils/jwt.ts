@@ -61,6 +61,17 @@ namespace trusted.utils {
             const jwt = new native.UTILS.Jwt();
             return jwt.getTrialExpirationTime();
         }
+        /**
+         * Create Trial License
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        public static createTrialLicense(): number {
+            const jwt = new native.UTILS.Jwt();
+            return jwt.createTrialLicense();
+        }
 
         /**
          * Creates an instance of Jwt.
@@ -117,6 +128,17 @@ namespace trusted.utils {
          */
         public getTrialExpirationTime(): number {
             return this.handle.getTrialExpirationTime();
+        }
+
+        /**
+         * Create Trial License
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        public createTrialLicense(): number {
+            return this.handle.createTrialLicense();
         }
     }
 }

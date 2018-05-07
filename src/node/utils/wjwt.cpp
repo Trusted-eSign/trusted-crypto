@@ -17,6 +17,7 @@ void WJwt::Init(v8::Handle<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "checkTrialLicense", CheckTrialLicense);
 	Nan::SetPrototypeMethod(tpl, "getExpirationTime", GetExpirationTime);
 	Nan::SetPrototypeMethod(tpl, "getTrialExpirationTime", GetTrialExpirationTime);
+	Nan::SetPrototypeMethod(tpl, "createTrialLicense", CreateTrialLicense);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -95,3 +96,16 @@ NAN_METHOD(WJwt::CheckTrialLicense) {
 	}
 	TRY_END();
 }
+
+NAN_METHOD(WJwt::CreateTrialLicense) {
+	METHOD_BEGIN();
+	try {
+		UNWRAP_DATA(Jwt);
+		LOGGER_ARG("lic");
+		info.GetReturnValue().Set(_this->createTrialLicense());
+		return;
+	}
+	TRY_END();
+}
+
+
