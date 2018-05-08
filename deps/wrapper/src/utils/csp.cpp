@@ -1485,10 +1485,10 @@ bool Csp::isHaveExportablePrivateKey(Handle<Certificate> cert) {
 
 		if (CertAddCertificateContextToStore(hTempStore, pCertFound, CERT_STORE_ADD_NEW, NULL)) {
 			CRYPT_DATA_BLOB bDataBlob = { 0, NULL };
-			if (PFXExportCertStoreEx(hTempStore, &bDataBlob, NULL, NULL, EXPORT_PRIVATE_KEYS | REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY)) {
+			if (PFXExportCertStore(hTempStore, &bDataBlob, NULL, EXPORT_PRIVATE_KEYS | REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY)) {
 				bDataBlob.pbData = (BYTE *)malloc(bDataBlob.cbData);
 
-				if (PFXExportCertStoreEx(hTempStore, &bDataBlob, NULL, NULL, EXPORT_PRIVATE_KEYS | REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY)) {
+				if (PFXExportCertStore(hTempStore, &bDataBlob, NULL, EXPORT_PRIVATE_KEYS | REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY)) {
 					res = true;
 				}
 
@@ -1587,10 +1587,10 @@ Handle<Pkcs12> Csp::certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey
 
 		if (CertAddCertificateContextToStore(hTempStore, pCertFound, CERT_STORE_ADD_NEW, NULL)) {
 			CRYPT_DATA_BLOB bDataBlob = { 0, NULL };
-			if (PFXExportCertStoreEx(hTempStore, &bDataBlob, wPassword, NULL, dwFlags)) {
+			if (PFXExportCertStore(hTempStore, &bDataBlob, wPassword, dwFlags)) {
 				bDataBlob.pbData = (BYTE *)malloc(bDataBlob.cbData);
 
-				if (PFXExportCertStoreEx(hTempStore, &bDataBlob, wPassword, NULL, dwFlags)) {
+				if (PFXExportCertStore(hTempStore, &bDataBlob, wPassword, dwFlags)) {
 					const unsigned char *p = bDataBlob.pbData;
 					
 					LOGGER_OPENSSL(d2i_PKCS12);
