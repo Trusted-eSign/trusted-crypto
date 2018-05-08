@@ -518,6 +518,7 @@ declare namespace native {
             public checkTrialLicense(): number;
             public getExpirationTime(data?: string): number;
             public getTrialExpirationTime(): number;
+            public createTrialLicense(): number;
         }
 
         class Cerber {

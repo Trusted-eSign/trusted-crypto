@@ -109,3 +109,25 @@ int Jwt::checkTrialLicense() {
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
+
+int Jwt::createTrialLicense() {
+	LOGGER_FN();
+
+	try {
+		int errorCode;
+		int res = 0;
+
+#ifndef JWT_NO_LICENSE
+		res = ctlic_generateTrial(&errorCode);
+		if (errorCode != 900) res = errorCode;
+		return res;
+#else
+		THROW_EXCEPTION(0, Jwt, NULL, "Don't create trial license");
+#endif
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Jwt, e, "Error create trial license");
+	}
+}
+
+
