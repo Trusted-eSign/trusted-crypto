@@ -510,12 +510,12 @@ NAN_METHOD(WCsp::CertToPkcs12) {
 		LOGGER_ARG("encrypted");
 		v8::Local<v8::Boolean> v8ExportPK = info[1]->ToBoolean();
 
-		Handle<std::wstring> hpass;
+		Handle<std::string> hpass;
 
 		LOGGER_ARG("password");
-		if (!info[2]->IsUndefined()) {
-			LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[2]->ToString());
-			hpass = new std::wstring(wCont);
+		if (!info[2]->IsUndefined()){
+			v8::String::Utf8Value v8Pass(info[2]->ToString());
+			hpass = new std::string(*v8Pass);
 		}
 
 		UNWRAP_DATA(Csp);

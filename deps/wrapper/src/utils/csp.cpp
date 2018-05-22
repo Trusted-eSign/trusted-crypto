@@ -1543,7 +1543,7 @@ bool Csp::isHaveExportablePrivateKey(Handle<Certificate> cert) {
 	}
 }
 
-Handle<Pkcs12> Csp::certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey, Handle<std::wstring> password) {
+Handle<Pkcs12> Csp::certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey, Handle<std::string> password) {
 	LOGGER_FN();
 
 	HCERTSTORE hTempStore = HCRYPT_NULL;
@@ -1555,14 +1555,16 @@ Handle<Pkcs12> Csp::certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey
 		DWORD dwFlags = NULL;
 		PKCS12 *p12 = NULL;
 		Handle<Pkcs12> resP12;
-		wchar_t *wPassword = NULL;
+		WCHAR wPassword[MAX_PATH];
 
 		if (exportPrivateKey) {
 			dwFlags = EXPORT_PRIVATE_KEYS | REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY;
 		}
 
 		if (!password.isEmpty()) {
-			wPassword = (wchar_t *)password->c_str();
+			if (mbstowcs(wPassword, password->c_str(), MAX_PATH) <= 0) {
+				THROW_EXCEPTION(0, Csp, NULL, "mbstowcs failed");
+			}
 		}
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
