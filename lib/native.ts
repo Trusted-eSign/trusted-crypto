@@ -554,6 +554,7 @@ declare namespace native {
             public verifyCertificateChain(cert: PKI.Certificate): boolean;
             public isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
             public certToPkcs12(cert: PKI.Certificate, exportPrivateKey: boolean, password?: string): PKI.Pkcs12;
+            public importPkcs12(p12: PKI.Pkcs12, password?: string): void;
         }
     }
 

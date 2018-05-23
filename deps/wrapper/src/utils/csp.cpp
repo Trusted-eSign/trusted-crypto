@@ -1651,6 +1651,139 @@ Handle<Pkcs12> Csp::certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey
 	}
 }
 
+void Csp::importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password) {
+	LOGGER_FN();
+
+	HCERTSTORE hCertStore = HCRYPT_NULL;
+	HCERTSTORE hImportCertStore = HCRYPT_NULL;
+	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+
+	try {	
+		CRYPT_DATA_BLOB bDataBlob = { 0, NULL };
+		WCHAR wPassword[MAX_PATH];
+		DWORD dwSize = 0;
+		unsigned char *pData = NULL, *p = NULL;
+		const unsigned char *pCert;
+		int iData;
+		X509 *xcert = NULL;
+		wchar_t *storeName = L"MY";
+
+		if (p12->isEmpty()) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "p12 cannot be empty");
+		}
+
+		if (!password.isEmpty()) {
+			if (mbstowcs(wPassword, password->c_str(), MAX_PATH) <= 0) {
+				THROW_EXCEPTION(0, Csp, NULL, "mbstowcs failed");
+			}
+		}
+
+		LOGGER_OPENSSL(i2d_PKCS12);
+		if ((iData = i2d_PKCS12(p12->internal(), NULL)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error i2d_PKCS12");
+		}
+
+		LOGGER_OPENSSL(OPENSSL_malloc);
+		if (NULL == (pData = (unsigned char*)OPENSSL_malloc(iData))) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error malloc");
+		}
+
+		p = pData;
+		LOGGER_OPENSSL(i2d_PKCS12);
+		if ((iData = i2d_PKCS12(p12->internal(), &p)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error i2d_PKCS12");
+		}
+
+		bDataBlob.cbData = iData;
+		bDataBlob.pbData = pData;
+
+		if (!(hImportCertStore = PFXImportCertStore(&bDataBlob, wPassword, CRYPT_USER_KEYSET | PKCS12_ALLOW_OVERWRITE_KEY))) {
+			THROW_EXCEPTION(0, Csp, NULL, "PFXImportCertStore failed. Code: %d", GetLastError());
+		}
+
+		while (pCertContext = CertEnumCertificatesInStore(hImportCertStore, pCertContext)) {
+			pCert = pCertContext->pbCertEncoded;
+
+			LOGGER_OPENSSL(d2i_X509);
+			if (!(xcert = d2i_X509(NULL, &pCert, pCertContext->cbCertEncoded))) {
+				THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "'d2i_X509' Error decode len bytes");
+			}
+
+			Handle<Certificate> hcert = new Certificate(xcert);
+
+			if (CertGetCertificateContextProperty(pCertContext,
+				CERT_KEY_PROV_INFO_PROP_ID,
+				NULL,
+				&dwSize)
+				)
+			{
+				storeName = L"MY";
+			}
+			else if (hcert->isCA()) {
+				if (hcert->isSelfSigned()) {
+					storeName = L"ROOT";
+				}
+				else {
+					storeName = L"CA";
+				}
+			}
+			else {
+				storeName = L"AddressBook";
+			}
+
+			if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+				CERT_STORE_PROV_SYSTEM,
+				X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+				HCRYPT_NULL,
+				CERT_SYSTEM_STORE_CURRENT_USER,
+				storeName)))
+			{
+				THROW_EXCEPTION(0, Csp, NULL, "CertOpenStore failed: Code: %d", GetLastError());
+			}
+
+			if (!CertAddCertificateContextToStore(
+				hCertStore,
+				pCertContext,
+				CERT_STORE_ADD_REPLACE_EXISTING,
+				NULL
+				))
+			{
+				THROW_EXCEPTION(0, Csp, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
+			}
+
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		OPENSSL_free(pData);
+
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
+
+		if (hImportCertStore) {
+			CertCloseStore(hImportCertStore, 0);
+			hImportCertStore = HCRYPT_NULL;
+		}
+	}
+	catch (Handle<Exception> e) {
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+		}
+
+		if (hImportCertStore) {
+			CertCloseStore(hImportCertStore, 0);
+			hImportCertStore = HCRYPT_NULL;
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		THROW_EXCEPTION(0, Csp, e, "Error import pfx");
+	}
+}
+
 CRYPT_KEY_PROV_INFO * Csp::getCertificateContextProperty(
 	IN PCCERT_CONTEXT pCertContext,
 	IN DWORD dwPropId) {

@@ -222,6 +222,22 @@ namespace trusted.utils {
         }
 
         /**
+         * Import PFX to store
+         *
+         * @static
+         * @param {pki.Pkcs12} p12
+         * @param {string} [password]
+         * @returns {void}
+         * @memberof Csp
+         */
+        public static importPkcs12(p12: pki.Pkcs12, password?: string): void {
+            const csp = new native.UTILS.Csp();
+
+            csp.importPkcs12(p12.handle, password);
+            return;
+        }
+
+        /**
          * Creates an instance of Csp.
          *
          *

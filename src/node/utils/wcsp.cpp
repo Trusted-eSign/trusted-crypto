@@ -41,6 +41,7 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 
 	Nan::SetPrototypeMethod(tpl, "isHaveExportablePrivateKey", IsHaveExportablePrivateKey);
 	Nan::SetPrototypeMethod(tpl, "certToPkcs12", CertToPkcs12);
+	Nan::SetPrototypeMethod(tpl, "importPkcs12", ImportPkcs12);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -524,6 +525,35 @@ NAN_METHOD(WCsp::CertToPkcs12) {
 		v8::Local<v8::Object> v8P12 = WPkcs12::NewInstance(p12);
 
 		info.GetReturnValue().Set(v8P12);
+		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::ImportPkcs12) {
+	METHOD_BEGIN();
+
+	try {
+#ifdef CSP_ENABLE
+		LOGGER_ARG("p12");
+		WPkcs12 * wP12 = WPkcs12::Unwrap<WPkcs12>(info[0]->ToObject());
+
+		Handle<std::string> hpass;
+
+		LOGGER_ARG("password");
+		if (!info[1]->IsUndefined()){
+			v8::String::Utf8Value v8Pass(info[1]->ToString());
+			hpass = new std::string(*v8Pass);
+		}
+
+		UNWRAP_DATA(Csp);
+
+		_this->importPkcs12(wP12->data_, hpass);
+
+		info.GetReturnValue().Set(info.This());
 		return;
 #else
 		Nan::ThrowError("Only if CSP_ENABLE");

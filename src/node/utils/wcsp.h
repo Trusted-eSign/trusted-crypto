@@ -39,6 +39,7 @@ public:
 
 	static NAN_METHOD(IsHaveExportablePrivateKey);
 	static NAN_METHOD(CertToPkcs12);
+	static NAN_METHOD(ImportPkcs12);
 };
 
 #endif //!UTIL_WCSP_INCLUDED 
