@@ -502,6 +502,10 @@ declare namespace native {
         }
         class Jwt {
             checkLicense(data?: string): number;
+            checkTrialLicense(): number;
+            getExpirationTime(data?: string): number;
+            getTrialExpirationTime(): number;
+            createTrialLicense(): number;
         }
         class Cerber {
             sign(modulePath: string, cert: PKI.Certificate, key: PKI.Key): void;
@@ -527,11 +531,13 @@ declare namespace native {
             getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
             getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
             installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
+            installCertifiacteToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
             deleteContainer(contName: string, provType: number, provName?: string): void;
             buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             verifyCertificateChain(cert: PKI.Certificate): boolean;
             isHaveExportablePrivateKey(cert: PKI.Certificate): boolean;
             certToPkcs12(cert: PKI.Certificate, exportPrivateKey: boolean, password?: string): PKI.Pkcs12;
+            importPkcs12(p12: PKI.Pkcs12, password?: string): void;
         }
     }
     namespace COMMON {
@@ -672,6 +678,40 @@ declare namespace trusted.utils {
          */
         static checkLicense(data?: string): number;
         /**
+         * Verify jwt license file
+         * Return 0 if license correct
+         *
+         * @static
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        static checkTrialLicense(): number;
+        /**
+         * Get time Expiration
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        static getExpirationTime(data: string): number;
+        /**
+         * Get time Expiration
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        static getTrialExpirationTime(): number;
+        /**
+         * Create Trial License
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        static createTrialLicense(): number;
+        /**
          * Creates an instance of Jwt.
          *
          *
@@ -687,6 +727,39 @@ declare namespace trusted.utils {
          * @memberOf Jwt
          */
         checkLicense(data?: string): number;
+        /**
+         * Verify jwt license file
+         * Return 0 if license correct
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        checkTrialLicense(): number;
+        /**
+         * Get time Expiration
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        getExpirationTime(data: string): number;
+        /**
+         * Get time Expiration
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        getTrialExpirationTime(): number;
+        /**
+         * Create Trial License
+         *
+         * @returns {number}
+         *
+         * @memberOf Jwt
+         */
+        createTrialLicense(): number;
     }
 }
 declare namespace trusted.utils {
@@ -941,6 +1014,7 @@ declare namespace trusted.utils {
          */
         static getCertifiacteFromContainer(contName: string, provType: number, provName?: string): pki.Certificate;
         static installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
+        static installCertifiacteToContainer(cert: pki.Certificate, contName: string, provType: number, provName?: string): void;
         static deleteContainer(contName: string, provType: number, provName?: string): void;
         /**
          * Get container name by certificate
@@ -975,6 +1049,16 @@ declare namespace trusted.utils {
          * @memberof Csp
          */
         static certToPkcs12(cert: pki.Certificate, exportPrivateKey: boolean, password?: string): pki.Pkcs12;
+        /**
+         * Import PFX to store
+         *
+         * @static
+         * @param {pki.Pkcs12} p12
+         * @param {string} [password]
+         * @returns {void}
+         * @memberof Csp
+         */
+        static importPkcs12(p12: pki.Pkcs12, password?: string): void;
         /**
          * Creates an instance of Csp.
          *
