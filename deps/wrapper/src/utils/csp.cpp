@@ -1720,6 +1720,9 @@ void Csp::importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password) {
 				storeName = L"MY";
 			}
 			else if (hcert->isCA()) {
+#ifndef OPENSSL_SYS_WINDOWS
+				continue;
+#endif
 				if (hcert->isSelfSigned()) {
 					storeName = L"ROOT";
 				}
