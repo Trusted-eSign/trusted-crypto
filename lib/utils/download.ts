@@ -35,7 +35,10 @@ namespace trusted.utils {
         });
 
         sendReq.on("error", (err) => {
-            fs.unlink(path);
+            if (fs.existsSync(path)) {
+                fs.unlink(path);
+            }
+
             done(err);
         });
     }
