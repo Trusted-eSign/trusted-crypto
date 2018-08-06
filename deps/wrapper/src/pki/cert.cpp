@@ -411,7 +411,8 @@ Handle<std::string> Certificate::getSignatureDigestAlgorithm() {
 	LOGGER_OPENSSL("X509_get_signature_nid");
 	signature_nid = X509_get_signature_nid(this->internal());
 	if (!signature_nid){
-		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown signature nid");
+		//THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown signature nid");
+		return new std::string("");
 	}
 
 	LOGGER_OPENSSL("OBJ_find_sigid_algs");
