@@ -69,12 +69,16 @@ NAN_METHOD(WCsp::IsGost2001CSPAvailable) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		bool res = _this->isGost2001CSPAvailable();
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -83,12 +87,16 @@ NAN_METHOD(WCsp::IsGost2012_256CSPAvailable) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		bool res = _this->isGost2012_256CSPAvailable();
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -97,12 +105,16 @@ NAN_METHOD(WCsp::IsGost2012_512CSPAvailable) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		bool res = _this->isGost2012_512CSPAvailable();
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -111,12 +123,16 @@ NAN_METHOD(WCsp::CheckCPCSPLicense) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		bool res = _this->checkCPCSPLicense();
 
 		info.GetReturnValue().Set(Nan::New<v8::Boolean>(res));
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -125,6 +141,7 @@ NAN_METHOD(WCsp::GetCPCSPLicense) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		Handle<std::string> lic = _this->getCPCSPLicense();
@@ -133,6 +150,9 @@ NAN_METHOD(WCsp::GetCPCSPLicense) {
 
 		info.GetReturnValue().Set(v8Lic);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -141,6 +161,7 @@ NAN_METHOD(WCsp::GetCPCSPVersion) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		Handle<std::string> ver = _this->getCPCSPVersion();
@@ -149,6 +170,9 @@ NAN_METHOD(WCsp::GetCPCSPVersion) {
 
 		info.GetReturnValue().Set(v8Ver);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -157,6 +181,7 @@ NAN_METHOD(WCsp::GetCPCSPVersionPKZI) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		Handle<std::string> ver = _this->getCPCSPVersionPKZI();
@@ -165,6 +190,9 @@ NAN_METHOD(WCsp::GetCPCSPVersionPKZI) {
 
 		info.GetReturnValue().Set(v8Ver);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -173,6 +201,7 @@ NAN_METHOD(WCsp::GetCPCSPVersionSKZI) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		Handle<std::string> ver = _this->getCPCSPVersionSKZI();
@@ -181,6 +210,9 @@ NAN_METHOD(WCsp::GetCPCSPVersionSKZI) {
 
 		info.GetReturnValue().Set(v8Ver);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -189,6 +221,7 @@ NAN_METHOD(WCsp::GetCPCSPSecurityLvl) {
 	METHOD_BEGIN();
 
 	try {
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		Handle<std::string> lic = _this->getCPCSPSecurityLvl();
@@ -197,6 +230,9 @@ NAN_METHOD(WCsp::GetCPCSPSecurityLvl) {
 
 		info.GetReturnValue().Set(v8Lic);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -206,6 +242,7 @@ NAN_METHOD(WCsp::EnumProviders)
 	METHOD_BEGIN();
 
 	try{
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		std::vector<ProviderProps> res = _this->enumProviders();
@@ -224,6 +261,9 @@ NAN_METHOD(WCsp::EnumProviders)
 
 		info.GetReturnValue().Set(array8);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -233,6 +273,7 @@ NAN_METHOD(WCsp::EnumContainers)
 	METHOD_BEGIN();
 
 	try{
+#ifdef CSP_ENABLE
 		UNWRAP_DATA(Csp);
 
 		int type = NULL;
@@ -281,6 +322,9 @@ NAN_METHOD(WCsp::EnumContainers)
 
 		info.GetReturnValue().Set(array8);
 		return;
+#else
+		Nan::ThrowError("Only if CSP_ENABLE");
+#endif // CSP_ENABLE
 	}
 	TRY_END();
 }
@@ -342,7 +386,7 @@ NAN_METHOD(WCsp::InstallCertificateFromCloud)
 		info.GetReturnValue().Set(info.This());
 		return;
 #else
-		Nan::ThrowError("Only for CryptoPro CSP 5");
+		Nan::ThrowError("Only if CSP_ENABLE and for CryptoPro CSP 5");
 #endif // CSP_ENABLE
 	}
 	TRY_END();

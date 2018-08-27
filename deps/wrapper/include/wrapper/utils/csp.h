@@ -32,6 +32,7 @@ public:
 	Csp(){};
 	~Csp(){};
 
+#ifdef CSP_ENABLE
 	bool isGost2001CSPAvailable();
 	bool isGost2012_256CSPAvailable();
 	bool isGost2012_512CSPAvailable();
@@ -65,7 +66,6 @@ public:
 	Handle<Pkcs12> certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey, Handle<std::string> password);
 	void importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password);
 
-#ifdef CSP_ENABLE
 	PCCERT_CONTEXT static createCertificateContext(Handle<Certificate> cert);
 
 	bool static findExistingCertificate(

@@ -2,11 +2,12 @@
 
 #include "wrapper/utils/csp.h"
 
+#ifdef CSP_ENABLE
+
 bool Csp::isGost2001CSPAvailable() {
 	LOGGER_FN();
 
 	try {
-#ifdef CSP_ENABLE
 		static HCRYPTPROV hCryptProv = 0;
 		bool res;
 
@@ -26,9 +27,6 @@ bool Csp::isGost2001CSPAvailable() {
 		hCryptProv = 0;
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Csp, e, "Error check GOST 2001 provaider");
@@ -39,7 +37,6 @@ bool Csp::isGost2012_256CSPAvailable() {
 	LOGGER_FN();
 
 	try {
-#ifdef CSP_ENABLE
 		static HCRYPTPROV hCryptProv = 0;
 		bool res;
 
@@ -59,9 +56,6 @@ bool Csp::isGost2012_256CSPAvailable() {
 		hCryptProv = 0;
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Csp, e, "Error check GOST 2001 provaider");
@@ -72,7 +66,6 @@ bool Csp::isGost2012_512CSPAvailable() {
 	LOGGER_FN();
 
 	try {
-#ifdef CSP_ENABLE
 		static HCRYPTPROV hCryptProv = 0;
 		bool res;
 
@@ -92,9 +85,6 @@ bool Csp::isGost2012_512CSPAvailable() {
 		hCryptProv = 0;
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Csp, e, "Error check GOST 2001 provaider");
@@ -104,11 +94,11 @@ bool Csp::isGost2012_512CSPAvailable() {
 bool Csp::checkCPCSPLicense() {
 	LOGGER_FN();
 
+	static HCRYPTPROV hCryptProv = 0;
+	LPBYTE pbData;
+
 	try {
-#ifdef CSP_ENABLE
-		static HCRYPTPROV hCryptProv = 0;
 		DWORD cbData = 0;
-		LPBYTE pbData;
 		bool res = false;
 
 		if (!isGost2001CSPAvailable()) {
@@ -157,11 +147,17 @@ bool Csp::checkCPCSPLicense() {
 		}
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
+		if (hCryptProv) {
+			CryptReleaseContext(hCryptProv, 0);
+			hCryptProv = 0;
+		}
+
+		if (pbData) {
+			free((BYTE*)pbData);
+		}
+
 		THROW_EXCEPTION(0, Csp, e, "Error check cpcsp license");
 	}
 }
@@ -169,11 +165,11 @@ bool Csp::checkCPCSPLicense() {
 Handle<std::string> Csp::getCPCSPLicense() {
 	LOGGER_FN();
 
+	static HCRYPTPROV hCryptProv = 0;
+	LPBYTE pbData;
+
 	try {
-#ifdef CSP_ENABLE
-		static HCRYPTPROV hCryptProv = 0;
 		DWORD cbData = 0;
-		LPBYTE pbData;
 		Handle<std::string> license;
 
 		if (!isGost2001CSPAvailable()) {
@@ -227,11 +223,17 @@ Handle<std::string> Csp::getCPCSPLicense() {
 		}
 
 		return license;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
+		if (hCryptProv) {
+			CryptReleaseContext(hCryptProv, 0);
+			hCryptProv = 0;
+		}
+
+		if (pbData) {
+			free((BYTE*)pbData);
+		}
+
 		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp license");
 	}
 }
@@ -239,9 +241,9 @@ Handle<std::string> Csp::getCPCSPLicense() {
 Handle<std::string> Csp::getCPCSPVersion() {
 	LOGGER_FN();
 
+	static HCRYPTPROV hCryptProv = 0;
+
 	try {
-#ifdef CSP_ENABLE
-		static HCRYPTPROV hCryptProv = 0;
 		DWORD pbData = 0;
 		DWORD cbData = (DWORD)sizeof(pbData);
 
@@ -272,11 +274,13 @@ Handle<std::string> Csp::getCPCSPVersion() {
 		hCryptProv = 0;
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
+		if (hCryptProv) {
+			CryptReleaseContext(hCryptProv, 0);
+			hCryptProv = 0;
+		}
+
 		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp version");
 	}
 }
@@ -284,12 +288,12 @@ Handle<std::string> Csp::getCPCSPVersion() {
 Handle<std::string> Csp::getCPCSPVersionPKZI() {
 	LOGGER_FN();
 
+	static HCRYPTPROV hCryptProv = 0;
+	LPBYTE pbData;
+
 	try {
-#ifdef CSP_ENABLE
-		static HCRYPTPROV hCryptProv = 0;
 		PROV_PP_VERSION_EX *exVersion = NULL;
 		DWORD cbData = 0;
-		LPBYTE pbData;
 		Handle<std::string> res;
 
 		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
@@ -336,11 +340,17 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 		}
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
+		if (hCryptProv) {
+			CryptReleaseContext(hCryptProv, 0);
+			hCryptProv = 0;
+		}
+
+		if (pbData) {
+			free((BYTE*)pbData);
+		}
+
 		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp version");
 	}
 }
@@ -348,12 +358,12 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 Handle<std::string> Csp::getCPCSPVersionSKZI() {
 	LOGGER_FN();
 
+	static HCRYPTPROV hCryptProv = 0;
+	LPBYTE pbData;
+
 	try {
-#ifdef CSP_ENABLE
-		static HCRYPTPROV hCryptProv = 0;
 		PROV_PP_VERSION_EX *exVersion = NULL;
 		DWORD cbData = 0;
-		LPBYTE pbData;
 		Handle<std::string> res;
 
 		if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_GOST_2001_DH, CRYPT_VERIFYCONTEXT)){
@@ -400,11 +410,17 @@ Handle<std::string> Csp::getCPCSPVersionSKZI() {
 		}
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
+		if (hCryptProv) {
+			CryptReleaseContext(hCryptProv, 0);
+			hCryptProv = 0;
+		}
+
+		if (pbData) {
+			free((BYTE*)pbData);
+		}
+
 		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp version");
 	}
 }
@@ -412,10 +428,10 @@ Handle<std::string> Csp::getCPCSPVersionSKZI() {
 Handle<std::string> Csp::getCPCSPSecurityLvl() {
 	LOGGER_FN();
 
+	static HCRYPTPROV hCryptProv = 0;
+
 	try {
-#ifdef CSP_ENABLE
 		std::vector<std::string> secureLvl = { { "KC1" }, { "KC2" }, { "KC3" }, { "KB1" }, { "KB2" }, { "KA1" } };
-		static HCRYPTPROV hCryptProv = 0;
 		Handle<std::string> version;
 		DWORD dwVersion[20];
 		DWORD dwDataLength = (DWORD)sizeof(dwVersion);
@@ -443,11 +459,13 @@ Handle<std::string> Csp::getCPCSPSecurityLvl() {
 		hCryptProv = 0;
 
 		return version;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
+		if (hCryptProv) {
+			CryptReleaseContext(hCryptProv, 0);
+			hCryptProv = 0;
+		}
+
 		THROW_EXCEPTION(0, Csp, e, "Error get cpcsp version");
 	}
 }
@@ -455,13 +473,13 @@ Handle<std::string> Csp::getCPCSPSecurityLvl() {
 std::vector<ProviderProps> Csp::enumProviders() {
 	LOGGER_FN();
 
+	LPTSTR pszName;
+
 	try {
-#ifdef CSP_ENABLE
 		std::vector<ProviderProps> res;
 		DWORD dwIndex = 0;
 		DWORD dwType;
 		DWORD cbName;
-		LPTSTR pszName;
 
 		while (CryptEnumProviders(dwIndex, NULL, 0, &dwType, NULL, &cbName))
 		{
@@ -480,11 +498,12 @@ std::vector<ProviderProps> Csp::enumProviders() {
 		}
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
+		if (pszName) {
+			free(pszName);
+		}
+
 		THROW_EXCEPTION(0, Csp, e, "Error enum providers");
 	}
 }
@@ -493,7 +512,6 @@ std::vector<Handle<ContainerName>> Csp::enumContainers(int provType, Handle<std:
 	LOGGER_FN();
 
 	try {
-#ifdef CSP_ENABLE
 		std::vector<Handle<ContainerName>> res;
 		std::vector<ProviderProps> providers;
 		HCRYPTPROV hProv = 0;
@@ -637,9 +655,6 @@ std::vector<Handle<ContainerName>> Csp::enumContainers(int provType, Handle<std:
 		}
 
 		return res;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Csp, e, "Error enum containers");
@@ -649,14 +664,11 @@ std::vector<Handle<ContainerName>> Csp::enumContainers(int provType, Handle<std:
 Handle<Certificate> Csp::getCertificateFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
-#ifdef CSP_ENABLE
 	HCRYPTPROV hProv = NULL;
 	HCRYPTKEY hKey = NULL;
 	BYTE* pbCertificate = NULL;
-#endif
 
 	try {
-#ifdef CSP_ENABLE
 		DWORD cbName;
 		DWORD dwKeySpec;
 		PCCERT_CONTEXT pCertContext;
@@ -734,12 +746,8 @@ Handle<Certificate> Csp::getCertificateFromContainer(Handle<std::string> contNam
 		}
 
 		return new Certificate(hcert);
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
-#ifdef CSP_ENABLE
 		free(pbCertificate);
 
 		if (hKey) {
@@ -754,7 +762,6 @@ Handle<Certificate> Csp::getCertificateFromContainer(Handle<std::string> contNam
 
 			hProv = NULL;
 		}
-#endif
 
 		THROW_EXCEPTION(0, Csp, e, "Error get certificate from container");
 	}
@@ -763,14 +770,11 @@ Handle<Certificate> Csp::getCertificateFromContainer(Handle<std::string> contNam
 void Csp::installCertificateFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
-#ifdef CSP_ENABLE
 	HCRYPTPROV hProv = NULL;
 	HCRYPTKEY hKey = NULL;
 	BYTE* pbCertificate = NULL;
-#endif
 
 	try {
-#ifdef CSP_ENABLE
 		DWORD cbName;
 		DWORD dwKeySpec, dwSize;
 		PCCERT_CONTEXT pCertContext;
@@ -930,12 +934,8 @@ void Csp::installCertificateFromContainer(Handle<std::string> contName, int prov
 		}
 
 		return;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
-#ifdef CSP_ENABLE
 		free(pbCertificate);
 
 		if (hKey) {
@@ -950,7 +950,6 @@ void Csp::installCertificateFromContainer(Handle<std::string> contName, int prov
 
 			hProv = NULL;
 		}
-#endif
 
 		THROW_EXCEPTION(0, Csp, e, "Error install certificate from container");
 	}
@@ -959,13 +958,10 @@ void Csp::installCertificateFromContainer(Handle<std::string> contName, int prov
 void Csp::installCertificateToContainer(Handle<Certificate> cert, Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
-#ifdef CSP_ENABLE
 	HCRYPTPROV hProv = NULL;
 	HCRYPTKEY hKey = NULL;
-#endif
 
 	try {
-#ifdef CSP_ENABLE
 		DWORD dwKeySpec;
 		PCCERT_CONTEXT pCertContext;
 
@@ -1029,12 +1025,8 @@ void Csp::installCertificateToContainer(Handle<Certificate> cert, Handle<std::st
 		}
 
 		return;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
-#ifdef CSP_ENABLE
 		if (hKey) {
 			CryptDestroyKey(hKey);
 			hKey = NULL;
@@ -1047,7 +1039,6 @@ void Csp::installCertificateToContainer(Handle<Certificate> cert, Handle<std::st
 
 			hProv = NULL;
 		}
-#endif
 
 		THROW_EXCEPTION(0, Csp, e, "Error install certificate from container");
 	}
@@ -1056,12 +1047,9 @@ void Csp::installCertificateToContainer(Handle<Certificate> cert, Handle<std::st
 void Csp::deleteContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
-#ifdef CSP_ENABLE
 	HCRYPTPROV hProv = NULL;
-#endif
 
 	try {
-#ifdef CSP_ENABLE
 		if (contName.isEmpty()) {
 			THROW_EXCEPTION(0, Csp, NULL, "container name epmty");
 		}
@@ -1083,9 +1071,6 @@ void Csp::deleteContainer(Handle<std::string> contName, int provType, Handle<std
 		hProv = NULL;
 
 		return;
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, Csp, e, "Error install certificate from container");
@@ -1095,16 +1080,13 @@ void Csp::deleteContainer(Handle<std::string> contName, int provType, Handle<std
 Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert, Handle<std::string> category){
 	LOGGER_FN();
 
-#ifdef CSP_ENABLE
 	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
 	HCRYPTPROV hCryptProv = HCRYPT_NULL;
 	HCRYPTKEY hPublicKey = HCRYPT_NULL;
 	LPBYTE pbContainerName = HCRYPT_NULL;
 	LPBYTE pbFPCert = HCRYPT_NULL;
-#endif
 
 	try {
-#ifdef CSP_ENABLE
 		DWORD cbFPCert;
 		DWORD cbContainerName;
 		DWORD dwFlags;
@@ -1197,13 +1179,8 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 		}
 
 		return res;
-
-#else
-		THROW_EXCEPTION(0, Csp, NULL, "Only if defined CSP_ENABLE");
-#endif
 	}
 	catch (Handle<Exception> e) {
-#ifdef CSP_ENABLE
 		if (pCertContext) {
 			CertFreeCertificateContext(pCertContext);
 			pCertContext = HCRYPT_NULL;
@@ -1225,13 +1202,10 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 				THROW_EXCEPTION(0, Csp, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
 			}
 		}
-#endif
 
 		THROW_EXCEPTION(0, Csp, e, "Error get containerName by Certificate");
 	}
 }
-
-#ifdef CSP_ENABLE
 
 PCCERT_CONTEXT Csp::createCertificateContext(Handle<Certificate> cert) {
 	LOGGER_FN();
@@ -2129,7 +2103,7 @@ static DWORD set_certificate_to_store_internal(
 	return err;
 }
 
-void Csp::installCertificateFromCloud (
+void Csp::installCertificateFromCloud(
 	Handle<Certificate> hcert,
 	const std::string & szAuthURL,
 	const std::string & szRestURL,
