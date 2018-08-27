@@ -67,7 +67,7 @@ Certificate::Certificate(Handle<CertificationRequest> csr) :SSLObject<X509>(X509
 			}
 		}
 
-		if (req->req_info->version >= 0) {
+		if (req->req_info->version != nullptr) {
 			LOGGER_OPENSSL(X509_set_version);
 			if (!X509_set_version(x, csr->getVersion())) {
 				THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_set_version");
