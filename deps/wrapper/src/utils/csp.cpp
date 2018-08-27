@@ -2075,8 +2075,9 @@ static DWORD set_certificate_to_store_internal(
 	stProvInfo.pwszContainerName = wzContName;
 	stProvInfo.dwFlags = isLM ? CRYPT_MACHINE_KEYSET : 0;
 	stProvInfo.dwKeySpec = AT_KEYEXCHANGE;
-	if (!pCertContext || !pCertContext->pCertInfo)
-		throw "The certificate context is not inited";
+	if (!pCertContext || !pCertContext->pCertInfo) {
+		THROW_EXCEPTION(0, Csp, NULL, "The certificate context is not inited");
+	}
 
 	std::wstring provider_name;
 	getProviderByOID(pCertContext->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId, &stProvInfo.dwProvType, provider_name);
@@ -2097,10 +2098,12 @@ static DWORD set_certificate_to_store_internal(
 	HCERTSTORE hStore = HCRYPT_NULL;
 
 	DWORD dwFlags = 0;
-	if (isLM)
+	if (isLM) {
 		dwFlags |= CERT_SYSTEM_STORE_LOCAL_MACHINE;
-	else
+	}
+	else {
 		dwFlags |= CERT_SYSTEM_STORE_CURRENT_USER;
+	}
 
 	dwFlags |= CERT_STORE_OPEN_EXISTING_FLAG;
 
@@ -2110,14 +2113,18 @@ static DWORD set_certificate_to_store_internal(
 		return GetLastError();
 
 	if (!CertAddCertificateContextToStore(hStore, pCertContext, CERT_STORE_ADD_REPLACE_EXISTING, NULL)) {
-		if (hStore)
+		if (hStore) {
 			CertCloseStore(hStore, 0);
+			hStore = HCRYPT_NULL;
+		}
 
 		return GetLastError();
 	}
 
-	if (hStore)
+	if (hStore) {
 		CertCloseStore(hStore, 0);
+		hStore = HCRYPT_NULL;
+	}
 
 	return err;
 }
@@ -2132,16 +2139,35 @@ void Csp::installCertificateFromCloud (
 {
 	LOGGER_FN();
 
-	const std::string contName = Csp::formContainerNameForDSS(szRestURL, certificate_id);
-	PCCERT_CONTEXT pCertContext = createCertificateContext(hcert);
-	std::list<CRYPT_CONTAINER_PARAM*> contParams = create_container_params(szAuthURL, szRestURL, pCertContext, certificate_id, isLM);
-	DWORD err = set_certificate_to_store_internal(pCertContext, contName, contParams, isLM);
+	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+	std::list<CRYPT_CONTAINER_PARAM*> contParams;
 
-	destroy_container_params(contParams);
+	try {
+		const std::string contName = Csp::formContainerNameForDSS(szRestURL, certificate_id);
+		pCertContext = createCertificateContext(hcert);
+		contParams = create_container_params(szAuthURL, szRestURL, pCertContext, certificate_id, isLM);
+		DWORD err = set_certificate_to_store_internal(pCertContext, contName, contParams, isLM);
 
-	if (pCertContext) {
-		CertFreeCertificateContext(pCertContext);
-		pCertContext = HCRYPT_NULL;
+		destroy_container_params(contParams);
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (err) {
+			THROW_EXCEPTION(0, Csp, NULL, "set_certificate_to_store_internal return code: 0x%08x", err);
+		}
+	}
+	catch (Handle<Exception> e) {
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		destroy_container_params(contParams);
+
+		THROW_EXCEPTION(0, Csp, e, "Error install certificate from cloud");
 	}
 
 	return;
