@@ -136,23 +136,43 @@ namespace trusted.utils {
          * @returns {pki.Certificate}
          * @memberof Csp
          */
-        public static getCertifiacteFromContainer(contName: string, provType: number, provName = ""): pki.Certificate {
+        // tslint:disable-next-line:max-line-length
+        public static getCertificateFromContainer(contName: string, provType: number, provName: string = ""): pki.Certificate {
             const cert: pki.Certificate = new pki.Certificate();
             const csp = new native.UTILS.Csp();
-            cert.handle = csp.getCertifiacteFromContainer(contName, provType, provName);
+            cert.handle = csp.getCertificateFromContainer(contName, provType, provName);
             return cert;
         }
 
-        public static installCertifiacteFromContainer(contName: string, provType: number, provName = ""): void {
+        /**
+         * Set cloud certificate to store
+         * Only for CryptoPro CSP 5
+         *
+         * @static
+         * @param {pki.Certificate} cert
+         * @param {string} authURL Authorization server
+         * @param {string} restURL DSS server
+         * @param {number} certificateID Certificate ID on DSS
+         * @returns {void}
+         * @memberof Csp
+         */
+        public static installCertificateFromCloud(cert: pki.Certificate, authURL: string,
+                                                  restURL: string, certificateID: number): void {
             const csp = new native.UTILS.Csp();
-            csp.installCertifiacteFromContainer(contName, provType, provName);
+            csp.installCertificateFromCloud(cert.handle, authURL, restURL, certificateID);
             return;
         }
 
-        public static installCertifiacteToContainer(cert: pki.Certificate, contName: string,
+        public static installCertificateFromContainer(contName: string, provType: number, provName = ""): void {
+            const csp = new native.UTILS.Csp();
+            csp.installCertificateFromContainer(contName, provType, provName);
+            return;
+        }
+
+        public static installCertificateToContainer(cert: pki.Certificate, contName: string,
                                                     provType: number, provName = ""): void {
             const csp = new native.UTILS.Csp();
-            csp.installCertifiacteToContainer(cert.handle, contName, provType, provName);
+            csp.installCertificateToContainer(cert.handle, contName, provType, provName);
             return;
         }
 

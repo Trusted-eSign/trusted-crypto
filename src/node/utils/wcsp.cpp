@@ -30,9 +30,10 @@ void WCsp::Init(v8::Handle<v8::Object> exports) {
 
 	Nan::SetPrototypeMethod(tpl, "enumProviders", EnumProviders);
 	Nan::SetPrototypeMethod(tpl, "enumContainers", EnumContainers);
-	Nan::SetPrototypeMethod(tpl, "getCertifiacteFromContainer", GetCertifiacteFromContainer);
-	Nan::SetPrototypeMethod(tpl, "installCertifiacteFromContainer", InstallCertifiacteFromContainer);
-	Nan::SetPrototypeMethod(tpl, "installCertifiacteToContainer", InstallCertifiacteToContainer);
+	Nan::SetPrototypeMethod(tpl, "getCertificateFromContainer", GetCertificateFromContainer);
+	Nan::SetPrototypeMethod(tpl, "installCertificateFromCloud", InstallCertificateFromCloud);
+	Nan::SetPrototypeMethod(tpl, "installCertificateFromContainer", InstallCertificateFromContainer);
+	Nan::SetPrototypeMethod(tpl, "installCertificateToContainer", InstallCertificateToContainer);
 	Nan::SetPrototypeMethod(tpl, "getContainerNameByCertificate", GetContainerNameByCertificate);
 	Nan::SetPrototypeMethod(tpl, "deleteContainer", DeleteContainer);
 
@@ -267,7 +268,7 @@ NAN_METHOD(WCsp::EnumContainers)
 
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "container"),
 				v8::String::NewFromTwoByte(isolate, (const uint16_t *)item->container->c_str(), v8::String::kNormalString, item->container->size()));
-#else 
+#else
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "fqcnW"),
 				v8::String::NewFromTwoByte(isolate, (const uint16_t *)item->fqcnW->c_str(), v8::String::kNormalString, 2 * item->fqcnW->size()));
 
@@ -284,7 +285,7 @@ NAN_METHOD(WCsp::EnumContainers)
 	TRY_END();
 }
 
-NAN_METHOD(WCsp::GetCertifiacteFromContainer)
+NAN_METHOD(WCsp::GetCertificateFromContainer)
 {
 	METHOD_BEGIN();
 
@@ -303,7 +304,7 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 		v8::String::Utf8Value v8Prov(info[2]->ToString());
 		char *provName = *v8Prov;
 
-		Handle<Certificate> cert = _this->getCertifiacteFromContainer(new std::string(wcContainerName), type, new std::string(provName));
+		Handle<Certificate> cert = _this->getCertificateFromContainer(new std::string(wcContainerName), type, new std::string(provName));
 		v8::Local<v8::Object> v8Cert = WCertificate::NewInstance(cert);
 		info.GetReturnValue().Set(v8Cert);
 		return;
@@ -314,7 +315,40 @@ NAN_METHOD(WCsp::GetCertifiacteFromContainer)
 	TRY_END();
 }
 
-NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
+NAN_METHOD(WCsp::InstallCertificateFromCloud)
+{
+	METHOD_BEGIN();
+
+	try{
+#if defined CSP_ENABLE && (CPCSP_VER && CPCSP_VER >= 50000)
+		UNWRAP_DATA(Csp);
+
+		LOGGER_ARG("cert");
+		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[0]->ToObject());
+
+		LOGGER_ARG("authURL");
+		v8::String::Utf8Value v8AuthUrl(info[1]->ToString());
+		char *authUrl = *v8AuthUrl;
+
+		LOGGER_ARG("restURL");
+		v8::String::Utf8Value v8RestUrl(info[2]->ToString());
+		char *resrUrl = *v8RestUrl;
+
+		LOGGER_ARG("certificateID");
+		int certificateID = info[3]->ToNumber()->Int32Value();
+
+		_this->installCertificateFromCloud(wCert->data_, std::string(authUrl), std::string(resrUrl), certificateID);
+
+		info.GetReturnValue().Set(info.This());
+		return;
+#else
+		Nan::ThrowError("Only for CryptoPro CSP 5");
+#endif // CSP_ENABLE
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCsp::InstallCertificateFromContainer)
 {
 	METHOD_BEGIN();
 
@@ -333,7 +367,7 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 		v8::String::Utf8Value v8Prov(info[2]->ToString());
 		char *provName = *v8Prov;
 
-		_this->installCertifiacteFromContainer(new std::string(wcContainerName), type, new std::string(provName));
+		_this->installCertificateFromContainer(new std::string(wcContainerName), type, new std::string(provName));
 
 		info.GetReturnValue().Set(info.This());
 		return;
@@ -344,7 +378,7 @@ NAN_METHOD(WCsp::InstallCertifiacteFromContainer)
 	TRY_END();
 }
 
-NAN_METHOD(WCsp::InstallCertifiacteToContainer)
+NAN_METHOD(WCsp::InstallCertificateToContainer)
 {
 	METHOD_BEGIN();
 
@@ -366,7 +400,7 @@ NAN_METHOD(WCsp::InstallCertifiacteToContainer)
 		v8::String::Utf8Value v8Prov(info[3]->ToString());
 		char *provName = *v8Prov;
 
-		_this->installCertifiacteToContainer(wCert->data_, new std::string(wcContainerName), type, new std::string(provName));
+		_this->installCertificateToContainer(wCert->data_, new std::string(wcContainerName), type, new std::string(provName));
 
 		info.GetReturnValue().Set(info.This());
 		return;

@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <sstream>
+#include <list>
+#include <iterator>
+#include <numeric>
 
 #include "../common/common.h"
 #include "../pki/cert.h"
@@ -42,10 +45,17 @@ public:
 
 	std::vector<ProviderProps> enumProviders();
 	std::vector<Handle<ContainerName>> enumContainers(int provType, Handle<std::string> provName);
-	Handle<Certificate> getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
+	Handle<Certificate> getCertificateFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 	Handle<std::string> getContainerNameByCertificate(Handle<Certificate> cert, Handle<std::string> category);
-	void installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
-	void installCertifiacteToContainer(Handle<Certificate> cert, Handle<std::string> contName, int provType, Handle<std::string> provName);
+	void installCertificateFromCloud(
+		Handle<Certificate> hcert,
+		const std::string & szAuthURL,
+		const std::string & szRestURL,
+		unsigned certificate_id,
+		bool isLM = false
+		);
+	void installCertificateFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
+	void installCertificateToContainer(Handle<Certificate> cert, Handle<std::string> contName, int provType, Handle<std::string> provName);
 	void deleteContainer(Handle<std::string> contName, int provType, Handle<std::string> provName);
 
 	static Handle<CertificateCollection> buildChain(Handle<Certificate> cert);
@@ -75,7 +85,9 @@ private:
 		);
 
 	LPCWSTR provTypeToProvNameW(DWORD dwProvType);
+
+	static std::string formContainerNameForDSS(const std::string & restPath, unsigned certificateID);
 #endif //CSP_ENABLE
 };
 
-#endif //!UTIL_CSP_INCLUDED 
+#endif //!UTIL_CSP_INCLUDED

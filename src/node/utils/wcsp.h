@@ -28,9 +28,10 @@ public:
 
 	static NAN_METHOD(EnumProviders);
 	static NAN_METHOD(EnumContainers);
-	static NAN_METHOD(GetCertifiacteFromContainer);
-	static NAN_METHOD(InstallCertifiacteFromContainer);
-	static NAN_METHOD(InstallCertifiacteToContainer);
+	static NAN_METHOD(GetCertificateFromContainer);
+	static NAN_METHOD(InstallCertificateFromCloud);
+	static NAN_METHOD(InstallCertificateFromContainer);
+	static NAN_METHOD(InstallCertificateToContainer);
 	static NAN_METHOD(GetContainerNameByCertificate);
 	static NAN_METHOD(DeleteContainer);
 

@@ -646,7 +646,7 @@ std::vector<Handle<ContainerName>> Csp::enumContainers(int provType, Handle<std:
 	}
 }
 
-Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
+Handle<Certificate> Csp::getCertificateFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
 #ifdef CSP_ENABLE
@@ -760,7 +760,7 @@ Handle<Certificate> Csp::getCertifiacteFromContainer(Handle<std::string> contNam
 	}
 }
 
-void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
+void Csp::installCertificateFromContainer(Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
 #ifdef CSP_ENABLE
@@ -956,7 +956,7 @@ void Csp::installCertifiacteFromContainer(Handle<std::string> contName, int prov
 	}
 }
 
-void Csp::installCertifiacteToContainer(Handle<Certificate> cert, Handle<std::string> contName, int provType, Handle<std::string> provName) {
+void Csp::installCertificateToContainer(Handle<Certificate> cert, Handle<std::string> contName, int provType, Handle<std::string> provName) {
 	LOGGER_FN();
 
 #ifdef CSP_ENABLE
@@ -1594,7 +1594,7 @@ Handle<Pkcs12> Csp::certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey
 
 				if (PFXExportCertStoreEx(hTempStore, &bDataBlob, wPassword, NULL, dwFlags)) {
 					const unsigned char *p = bDataBlob.pbData;
-					
+
 					LOGGER_OPENSSL(d2i_PKCS12);
 					p12 = d2i_PKCS12(NULL, &p, bDataBlob.cbData);
 					resP12 = new Pkcs12(p12);
@@ -1658,7 +1658,7 @@ void Csp::importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password) {
 	HCERTSTORE hImportCertStore = HCRYPT_NULL;
 	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
 
-	try {	
+	try {
 		CRYPT_DATA_BLOB bDataBlob = { 0, NULL };
 		WCHAR wPassword[MAX_PATH];
 		DWORD dwSize = 0;
@@ -1895,6 +1895,290 @@ LPCWSTR Csp::provTypeToProvNameW(DWORD dwProvType) {
 		return NULL;
 	}
 }
+
+#if defined(CPCSP_VER) && (CPCSP_VER >= 50000)
+static void add_single_param_to_param_list(const BYTE * param, size_t param_length, TContainerParamType param_type, std::list<CRYPT_CONTAINER_PARAM*> & param_list) {
+	LOGGER_FN();
+
+	CRYPT_CONTAINER_PARAM * contParam;
+	DWORD param_len = static_cast<DWORD>(param_length);
+	contParam = reinterpret_cast<CRYPT_CONTAINER_PARAM *>(new BYTE[offsetof(CRYPT_CONTAINER_PARAM, pbData) + param_len]);
+	contParam->param_type = param_type;
+	contParam->cbData = param_len;
+
+	std::copy(param, param + param_length, reinterpret_cast<BYTE*>(contParam->pbData));
+
+	param_list.push_back(contParam);
+}
+
+static std::list <CRYPT_CONTAINER_PARAM*> create_container_params(
+	const std::string & szAuthURL,
+	const std::string & szRestURL,
+	const PCCERT_CONTEXT pCertContext,
+	unsigned certificate_id,
+	bool isLM
+	)
+{
+	LOGGER_FN();
+
+	std::list<CRYPT_CONTAINER_PARAM*> param_list;
+
+	add_single_param_to_param_list(reinterpret_cast<const BYTE*>(szAuthURL.c_str()), szAuthURL.length() + 1, TContainerParamType_AuthServer, param_list);
+	add_single_param_to_param_list(reinterpret_cast<const BYTE*>(szRestURL.c_str()), szRestURL.length() + 1, TContainerParamType_SignServer, param_list);
+	add_single_param_to_param_list(pCertContext->pbCertEncoded, pCertContext->cbCertEncoded, TContainerParamType_Certificate, param_list);
+
+	DWORD cert_id = static_cast<DWORD>(certificate_id);
+	add_single_param_to_param_list(reinterpret_cast<const BYTE*>(&cert_id), sizeof(DWORD), TContainerParamType_CertificateID, param_list);
+
+	return param_list;
+}
+
+static void destroy_container_params(std::list<CRYPT_CONTAINER_PARAM*> contParams)
+{
+	LOGGER_FN();
+
+	for (std::list<CRYPT_CONTAINER_PARAM*>::iterator it = contParams.begin(); it != contParams.end(); ++it) {
+		CRYPT_CONTAINER_PARAM* param = *it;
+		delete[] param;
+	}
+}
+
+static void destroy_key_prov_params(CRYPT_KEY_PROV_PARAM * provParams)
+{
+	LOGGER_FN();
+
+	if (!provParams)
+		return;
+	delete[](provParams);
+}
+
+static void create_key_prov_params(const std::list<CRYPT_CONTAINER_PARAM*> & contParams, CRYPT_KEY_PROV_PARAM ** provParamsOut, DWORD * provParamsCount)
+{
+	LOGGER_FN();
+
+	CRYPT_KEY_PROV_PARAM * provParams = new CRYPT_KEY_PROV_PARAM[contParams.size()];
+
+	DWORD paramNum = 0;
+	for (std::list<CRYPT_CONTAINER_PARAM*>::const_iterator it = contParams.begin(); it != contParams.end(); ++it) {
+		CRYPT_CONTAINER_PARAM* param = *it;
+		provParams[paramNum].dwParam = PP_CONTAINER_PARAM;
+		provParams[paramNum].dwFlags = 0;
+		provParams[paramNum].cbData = offsetof(CRYPT_CONTAINER_PARAM, pbData) + param->cbData;
+		provParams[paramNum].pbData = (LPBYTE)param;
+		paramNum++;
+	}
+	*provParamsOut = provParams;
+	*provParamsCount = paramNum;
+}
+
+static bool hasCloudReader(const WCHAR * provName, DWORD dwProvType)
+{
+	LOGGER_FN();
+
+	HCRYPTPROV hProv;
+	bool res = false;
+	if (!CryptAcquireContextW(&hProv, NULL, provName, dwProvType, CRYPT_VERIFYCONTEXT)) {
+		return res;
+	}
+	DWORD dwMaxLen = 0;
+	DWORD dwFlags = CRYPT_FIRST;
+	if (!CryptGetProvParam(hProv, PP_ENUMREADERS, NULL, &dwMaxLen, dwFlags)) {
+		CryptReleaseContext(hProv, 0);
+		return res;
+	}
+
+	std::vector<BYTE> reader_info;
+	reader_info.resize(dwMaxLen);
+	DWORD dwLen = dwMaxLen;
+	while (CryptGetProvParam(hProv, PP_ENUMREADERS, &reader_info[0], &dwLen, dwFlags)) {
+		dwLen = dwMaxLen;
+		dwFlags &= ~CRYPT_FIRST;
+		const char * reader_str = (const char*)&reader_info[0];
+		reader_str += (std::string(reader_str).length() + 1);
+		std::string reader_name = reader_str;
+		if (reader_name == "CLOUD") {
+			res = true;
+			break;
+		}
+	}
+	CryptReleaseContext(hProv, 0);
+	return res;
+}
+
+#define MAX_PROVIDER_NAME_LEN 260
+static std::wstring GetProviderWithCloud(DWORD dwProvType)
+{
+	LOGGER_FN();
+
+	DWORD dwIndex = 0;
+	DWORD dwInnerType = 0;
+	WCHAR provName[MAX_PROVIDER_NAME_LEN + 1];
+	DWORD dwProvNameSize = sizeof(provName);
+	std::wstring res = std::wstring();
+	while (CryptEnumProvidersW(dwIndex++, NULL, 0, &dwInnerType, provName, &dwProvNameSize)) {
+		dwProvNameSize = sizeof(provName);
+		if ((dwInnerType == dwProvType) && hasCloudReader(provName, dwProvType)) {
+			res = std::wstring(provName);
+			break;
+		}
+	}
+	return res;
+}
+
+static void getProviderByOID(const std::string & szPubKeyOID, DWORD * dwProvType, std::wstring & provider_name)
+{
+	LOGGER_FN();
+
+	std::wstring def_prov;
+	if (szPubKeyOID == szOID_CP_GOST_R3410EL) {
+		*dwProvType = PROV_GOST_2001_DH;
+		def_prov = CP_GR3410_2001_PROV_W;
+	}
+	else if (szPubKeyOID == szOID_CP_GOST_R3410_12_256) {
+		*dwProvType = PROV_GOST_2012_256;
+		def_prov = CAT_L(CP_GR3410_2012_PROV_A);
+	}
+	else if (szPubKeyOID == szOID_CP_GOST_R3410_12_512) {
+		*dwProvType = PROV_GOST_2012_512;
+		def_prov = CAT_L(CP_GR3410_2012_STRONG_PROV_A);
+	}
+	else if (szPubKeyOID == szOID_RSA_RSA) {
+		*dwProvType = PROV_RSA_AES;
+		def_prov = CAT_L(CP_RSA_AES_ENH_PROV_A);
+	}
+	else if (szPubKeyOID == szOID_ECC_PUBLIC_KEY) {
+		*dwProvType = PROV_EC_ECDSA_FULL;
+		def_prov = CAT_L(CP_ECDSA_AES_PROV_A);
+	}
+	else {
+		*dwProvType = PROV_GOST_2001_DH;
+		def_prov = CP_GR3410_2001_PROV_W;
+	}
+	provider_name = GetProviderWithCloud(*dwProvType);
+	if (provider_name.empty())
+		provider_name = def_prov;
+}
+
+static DWORD set_certificate_to_store_internal(
+	const PCCERT_CONTEXT pCertContext,
+	const std::string & contName,
+	const std::list<CRYPT_CONTAINER_PARAM*> & contParams,
+	bool isLM
+	)
+{
+	LOGGER_FN();
+
+	DWORD err = ERROR_SUCCESS;
+	CRYPT_KEY_PROV_INFO	stProvInfo;
+	WCHAR wzContName[MAX_CONTAINER_NAME_LEN];
+	mbstowcs(wzContName, ("CLOUD\\\\" + contName).c_str(), MAX_CONTAINER_NAME_LEN);
+	stProvInfo.pwszContainerName = wzContName;
+	stProvInfo.dwFlags = isLM ? CRYPT_MACHINE_KEYSET : 0;
+	stProvInfo.dwKeySpec = AT_KEYEXCHANGE;
+	if (!pCertContext || !pCertContext->pCertInfo)
+		throw "The certificate context is not inited";
+
+	std::wstring provider_name;
+	getProviderByOID(pCertContext->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId, &stProvInfo.dwProvType, provider_name);
+	stProvInfo.pwszProvName = (LPWSTR)provider_name.c_str();
+
+	CRYPT_KEY_PROV_PARAM * rgProvParam = NULL;
+	DWORD cProvParam = 0;
+	if (contParams.size())
+		create_key_prov_params(contParams, &rgProvParam, &cProvParam);
+	stProvInfo.cProvParam = cProvParam;
+	stProvInfo.rgProvParam = rgProvParam;
+	if (!CertSetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, 0, &stProvInfo)) {
+		destroy_key_prov_params(rgProvParam);
+		return GetLastError();
+	}
+	destroy_key_prov_params(rgProvParam);
+
+	HCERTSTORE hStore = HCRYPT_NULL;
+
+	DWORD dwFlags = 0;
+	if (isLM)
+		dwFlags |= CERT_SYSTEM_STORE_LOCAL_MACHINE;
+	else
+		dwFlags |= CERT_SYSTEM_STORE_CURRENT_USER;
+
+	dwFlags |= CERT_STORE_OPEN_EXISTING_FLAG;
+
+	hStore = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, 0, dwFlags, L"My");
+
+	if (!hStore)
+		return GetLastError();
+
+	if (!CertAddCertificateContextToStore(hStore, pCertContext, CERT_STORE_ADD_REPLACE_EXISTING, NULL)) {
+		if (hStore)
+			CertCloseStore(hStore, 0);
+
+		return GetLastError();
+	}
+
+	if (hStore)
+		CertCloseStore(hStore, 0);
+
+	return err;
+}
+
+void Csp::installCertificateFromCloud (
+	Handle<Certificate> hcert,
+	const std::string & szAuthURL,
+	const std::string & szRestURL,
+	unsigned certificate_id,
+	bool isLM
+	)
+{
+	LOGGER_FN();
+
+	const std::string contName = Csp::formContainerNameForDSS(szRestURL, certificate_id);
+	PCCERT_CONTEXT pCertContext = createCertificateContext(hcert);
+	std::list<CRYPT_CONTAINER_PARAM*> contParams = create_container_params(szAuthURL, szRestURL, pCertContext, certificate_id, isLM);
+	DWORD err = set_certificate_to_store_internal(pCertContext, contName, contParams, isLM);
+
+	destroy_container_params(contParams);
+
+	if (pCertContext) {
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
+	}
+
+	return;
+}
+
+static unsigned get_random_seed(const std::string & server_name, unsigned cert_id)
+{
+	return std::accumulate(server_name.begin(), server_name.end(), 0) + cert_id;
+}
+
+static const std::string get_random_uuid(unsigned seed)
+{
+	std::string uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
+	const char * hex = "0123456789abcdef";
+	srand(seed);
+	for (std::string::iterator it = uuid.begin(); it != uuid.end(); ++it) {
+		size_t num = rand() % 16;
+		switch (*it) {
+		case '-':
+		case '4':
+			break;
+		case 'y':
+			num &= (0x03 | 0x08);
+		case 'x':
+			*it = hex[num];
+			break;
+		}
+	}
+	return uuid;
+}
+
+std::string Csp::formContainerNameForDSS(const std::string & restPath, unsigned certificateID)
+{
+	return "DSS-" + get_random_uuid(get_random_seed(restPath, certificateID));
+}
+
+#endif // defined(CPCSP_VER) && (CPCSP_VER >= 50000)
 
 #endif //CSP_ENABLE
 

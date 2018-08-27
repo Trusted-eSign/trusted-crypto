@@ -7,7 +7,7 @@ declare namespace trusted {
      */
     enum DataFormat {
         DER = 0,
-        PEM = 1,
+        PEM = 1
     }
 }
 declare namespace trusted {
@@ -18,7 +18,7 @@ declare namespace trusted {
      */
     enum CryptoMethod {
         SYMMETRIC = 0,
-        ASSYMETRIC = 1,
+        ASSYMETRIC = 1
     }
 }
 declare namespace trusted {
@@ -30,7 +30,7 @@ declare namespace trusted {
      */
     enum PublicExponent {
         RSA_3 = 0,
-        RSA_F4 = 1,
+        RSA_F4 = 1
     }
 }
 declare namespace trusted {
@@ -47,7 +47,7 @@ declare namespace trusted {
         DEBUG = 8,
         TRACE = 16,
         OPENSSL = 32,
-        ALL = 63,
+        ALL = 63
     }
 }
 declare namespace native {
@@ -528,10 +528,11 @@ declare namespace native {
             getCPCSPSecurityLvl(): string;
             enumProviders(): object[];
             enumContainers(type?: number, provName?: string): IContainerName[];
-            getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
+            getCertificateFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
             getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
-            installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
-            installCertifiacteToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
+            installCertificateFromCloud(cert: PKI.Certificate, authURL: string, restURL: string, certificateID: number): void;
+            installCertificateFromContainer(contName: string, provType: number, provName?: string): void;
+            installCertificateToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
             deleteContainer(contName: string, provType: number, provName?: string): void;
             buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             verifyCertificateChain(cert: PKI.Certificate): boolean;
@@ -918,7 +919,7 @@ declare namespace trusted.utils {
          *
          * @memberOf Cerber
          */
-        private rehash(dir, relative?);
+        private rehash;
     }
 }
 declare namespace trusted.utils {
@@ -1012,9 +1013,22 @@ declare namespace trusted.utils {
          * @returns {pki.Certificate}
          * @memberof Csp
          */
-        static getCertifiacteFromContainer(contName: string, provType: number, provName?: string): pki.Certificate;
-        static installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
-        static installCertifiacteToContainer(cert: pki.Certificate, contName: string, provType: number, provName?: string): void;
+        static getCertificateFromContainer(contName: string, provType: number, provName?: string): pki.Certificate;
+        /**
+         * Set cloud certificate to store
+         * Only for CryptoPro CSP 5
+         *
+         * @static
+         * @param {pki.Certificate} cert
+         * @param {string} authURL Authorization server
+         * @param {string} restURL DSS server
+         * @param {number} certificateID Certificate ID on DSS
+         * @returns {void}
+         * @memberof Csp
+         */
+        static installCertificateFromCloud(cert: pki.Certificate, authURL: string, restURL: string, certificateID: number): void;
+        static installCertificateFromContainer(contName: string, provType: number, provName?: string): void;
+        static installCertificateToContainer(cert: pki.Certificate, contName: string, provType: number, provName?: string): void;
         static deleteContainer(contName: string, provType: number, provName?: string): void;
         /**
          * Get container name by certificate
@@ -1084,7 +1098,7 @@ declare namespace trusted.pki {
         KeyCertSign = 4,
         CrlSign = 2,
         EncipherOnly = 1,
-        DecipherOnly = 32768,
+        DecipherOnly = 32768
     }
 }
 declare namespace trusted.pki {
@@ -1303,12 +1317,12 @@ declare namespace trusted.pki {
          * @memberOf Attribute
          */
         /**
-         * Set ASN1 type
-         *
-         * @param {number} value ASN1 type
-         *
-         * @memberOf Attribute
-         */
+        * Set ASN1 type
+        *
+        * @param {number} value ASN1 type
+        *
+        * @memberOf Attribute
+        */
         asnType: number;
         /**
          * Return attribute OID
@@ -1317,12 +1331,12 @@ declare namespace trusted.pki {
          * @memberOf Attribute
          */
         /**
-         * Set attribute OID
-         *
-         * @param {Oid} oid
-         *
-         * @memberOf Attribute
-         */
+        * Set attribute OID
+        *
+        * @param {Oid} oid
+        *
+        * @memberOf Attribute
+        */
         typeId: Oid;
         /**
          * Return attribute duplicat
@@ -1443,10 +1457,10 @@ declare namespace trusted.pki {
          * @memberof Extension
          */
         /**
-         * Set extension oid
-         *
-         * @memberof Extension
-         */
+        * Set extension oid
+        *
+        * @memberof Extension
+        */
         typeId: Oid;
         /**
          * Get critical
@@ -1455,10 +1469,10 @@ declare namespace trusted.pki {
          * @memberof Extension
          */
         /**
-         * Set critical
-         *
-         * @memberof Extension
-         */
+        * Set critical
+        *
+        * @memberof Extension
+        */
         critical: boolean;
     }
 }
@@ -1573,12 +1587,12 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         /**
-         * Set version certificate
-         *
-         * @param {number} version
-         *
-         * @memberof Certificate
-         */
+        * Set version certificate
+        *
+        * @param {number} version
+        *
+        * @memberof Certificate
+        */
         version: number;
         /**
          * Return serial number of certificate
@@ -1588,12 +1602,12 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         /**
-         * Set serial number
-         *
-         * if serial empty generate random
-         *
-         * @memberof Certificate
-         */
+        * Set serial number
+        *
+        * if serial empty generate random
+        *
+        * @memberof Certificate
+        */
         serialNumber: string;
         /**
          * Return type of certificate
@@ -1627,12 +1641,12 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         /**
-         * Sets the issuer
-         *
-         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
-         *
-         * @memberof Certificate
-         */
+        * Sets the issuer
+        *
+        * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
+        *
+        * @memberof Certificate
+        */
         issuerName: string | native.PKI.INameField[];
         /**
          * Return CN from subject name
@@ -1650,12 +1664,12 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         /**
-         * Sets the subject
-         *
-         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
-         *
-         * @memberof Certificate
-         */
+        * Sets the subject
+        *
+        * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
+        *
+        * @memberof Certificate
+        */
         subjectName: string | native.PKI.INameField[];
         /**
          * Return Not Before date
@@ -1665,10 +1679,10 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         /**
-         * Set not before. Use offset in sec
-         *
-         * @memberof Certificate
-         */
+        * Set not before. Use offset in sec
+        *
+        * @memberof Certificate
+        */
         notBefore: Date;
         /**
          * Return Not After date
@@ -1678,10 +1692,10 @@ declare namespace trusted.pki {
          * @memberOf Certificate
          */
         /**
-         * Set not before. Use offset in sec
-         *
-         * @memberof Certificate
-         */
+        * Set not before. Use offset in sec
+        *
+        * @memberof Certificate
+        */
         notAfter: Date;
         /**
          * Return SHA-1 thumbprint
@@ -1747,12 +1761,12 @@ declare namespace trusted.pki {
          * @memberof Certificate
          */
         /**
-         * Set extensions
-         *
-         * @param {ExtensionCollection} exts
-         *
-         * @memberof Certificate
-         */
+        * Set extensions
+        *
+        * @param {ExtensionCollection} exts
+        *
+        * @memberof Certificate
+        */
         extensions: pki.ExtensionCollection;
         /**
          * Return true is a certificate is self signed
@@ -1962,12 +1976,12 @@ declare namespace trusted.pki {
          * @memberof CertificationRequest
          */
         /**
-         * Sets the subject of this certification request.
-         *
-         * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
-         *
-         * @memberOf CertificationRequest
-         */
+        * Sets the subject of this certification request.
+        *
+        * @param {string | native.PKI.INameField[]} x509name Example "/C=US/O=Test/CN=example.com"
+        *
+        * @memberOf CertificationRequest
+        */
         subject: string | native.PKI.INameField[];
         /**
          * Rerutn subject public key
@@ -1977,12 +1991,12 @@ declare namespace trusted.pki {
          * @memberof CertificationRequest
          */
         /**
-         *  Set public key
-         *
-         *  @param {Key} pubkey Public key
-         *
-         * @memberOf CertificationRequest
-         */
+        *  Set public key
+        *
+        *  @param {Key} pubkey Public key
+        *
+        * @memberOf CertificationRequest
+        */
         publicKey: Key;
         /**
          * Rerutn version
@@ -1992,12 +2006,12 @@ declare namespace trusted.pki {
          * @memberof CertificationRequest
          */
         /**
-         * Set version certificate
-         *
-         * @param {number} version
-         *
-         * @memberOf CertificationRequest
-         */
+        * Set version certificate
+        *
+        * @param {number} version
+        *
+        * @memberOf CertificationRequest
+        */
         version: number;
         /**
          * Rerutn extensions
@@ -2007,12 +2021,12 @@ declare namespace trusted.pki {
          * @memberof CertificationRequest
          */
         /**
-         * Set extensions
-         *
-         * @param {ExtensionCollection} exts
-         *
-         * @memberOf CertificationRequest
-         */
+        * Set extensions
+        *
+        * @param {ExtensionCollection} exts
+        *
+        * @memberOf CertificationRequest
+        */
         extensions: pki.ExtensionCollection;
         /**
          * Signs request using the given private key
@@ -2073,12 +2087,12 @@ declare namespace trusted.pki {
          * @memberof CertificationRequestInfo
          */
         /**
-         * Sets the subject of this certification request.
-         *
-         * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
-         *
-         * @memberOf CertificationRequestInfo
-         */
+        * Sets the subject of this certification request.
+        *
+        * @param {string} x509name Example "/C=US/O=Test/CN=example.com"
+        *
+        * @memberOf CertificationRequestInfo
+        */
         subject: string;
         /**
          * Rerutn subject public key
@@ -2088,12 +2102,12 @@ declare namespace trusted.pki {
          * @memberof CertificationRequestInfo
          */
         /**
-         *  Set public key
-         *
-         *  @param {Key} pubkey Public key
-         *
-         * @memberOf CertificationRequestInfo
-         */
+        *  Set public key
+        *
+        *  @param {Key} pubkey Public key
+        *
+        * @memberOf CertificationRequestInfo
+        */
         publicKey: Key;
         /**
          * Rerutn version
@@ -2103,12 +2117,12 @@ declare namespace trusted.pki {
          * @memberof CertificationRequestInfo
          */
         /**
-         * Set version certificate
-         *
-         * @param {number} version
-         *
-         * @memberOf CertificationRequestInfo
-         */
+        * Set version certificate
+        *
+        * @param {number} version
+        *
+        * @memberOf CertificationRequestInfo
+        */
         version: number;
     }
 }
@@ -2924,13 +2938,13 @@ declare namespace trusted.cms {
          * @memberOf Signer
          */
         /**
-         * Set signer certificate
-         * Error if cert no signer
-         *
-         * @param cert Certificate
-         *
-         * @memberOf Signer
-         */
+        * Set signer certificate
+        * Error if cert no signer
+        *
+        * @param cert Certificate
+        *
+        * @memberOf Signer
+        */
         certificate: pki.Certificate;
         /**
          * Return digest algorithm
@@ -3109,7 +3123,7 @@ declare namespace trusted.cms {
 declare namespace trusted.cms {
     enum SignedDataContentType {
         url = 0,
-        buffer = 1,
+        buffer = 1
     }
     interface ISignedDataContent {
         type: SignedDataContentType;
@@ -3160,11 +3174,11 @@ declare namespace trusted.cms {
          * @memberOf SignedData
          */
         /**
-         * Set content v to signed data
-         *
-         *
-         * @memberOf SignedData
-         */
+        * Set content v to signed data
+        *
+        *
+        * @memberOf SignedData
+        */
         content: ISignedDataContent;
         /**
          * Return sign policys
@@ -3173,11 +3187,11 @@ declare namespace trusted.cms {
          * @memberOf SignedData
          */
         /**
-         * Set sign policies
-         *
-         *
-         * @memberOf SignedData
-         */
+        * Set sign policies
+        *
+        *
+        * @memberOf SignedData
+        */
         policies: string[];
         /**
          *  Free signed content

@@ -544,11 +544,13 @@ declare namespace native {
             public getCPCSPSecurityLvl(): string;
             public enumProviders(): object[];
             public enumContainers(type?: number, provName?: string): IContainerName[];
-            public getCertifiacteFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
+            public getCertificateFromContainer(contName: string, provType: number, provName?: string): PKI.Certificate;
             public getContainerNameByCertificate(cert: PKI.Certificate, category: string): string;
-            public installCertifiacteFromContainer(contName: string, provType: number, provName?: string): void;
             // tslint:disable-next-line:max-line-length
-            public installCertifiacteToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
+            public installCertificateFromCloud(cert: PKI.Certificate, authURL: string, restURL: string, certificateID: number): void;
+            public installCertificateFromContainer(contName: string, provType: number, provName?: string): void;
+            // tslint:disable-next-line:max-line-length
+            public installCertificateToContainer(cert: PKI.Certificate, contName: string, provType: number, provName?: string): void;
             public deleteContainer(contName: string, provType: number, provName?: string): void;
             public buildChain(cert: PKI.Certificate): PKI.CertificateCollection;
             public verifyCertificateChain(cert: PKI.Certificate): boolean;
