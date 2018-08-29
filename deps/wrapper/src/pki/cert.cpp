@@ -217,7 +217,7 @@ void Certificate::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 	}
 
 	if (!cert) {
-		THROW_EXCEPTION(0, Certificate, NULL, "Can not read X509 data from BIO");
+		THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "Can not read X509 data from BIO");
 	}
 
 	this->setData(cert);
