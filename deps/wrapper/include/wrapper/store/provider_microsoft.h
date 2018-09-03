@@ -42,6 +42,8 @@ private:
 	Handle<PkiItem> objectToPKIItem(Handle<Certificate> cert);
 	Handle<PkiItem> objectToPKIItem(Handle<CRL> crl);
 
+	bool static hasPrivateKey(PCCERT_CONTEXT pCertContext);
+
 	int static char2int(char input);
 	void static hex2bin(const char* src, char* target);
 };

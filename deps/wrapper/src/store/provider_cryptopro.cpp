@@ -82,6 +82,7 @@ void ProviderCryptopro::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 				Handle<PkiItem> item = objectToPKIItem(hcert);
 				item->category = new std::string(*category);
 				item->certificate = hcert;
+				item->certKey = hasPrivateKey(pCertContext) ? new std::string("1") : new std::string("");
 
 				providerItemCollection->push(item);
 			}
@@ -167,7 +168,6 @@ Handle<PkiItem> ProviderCryptopro::objectToPKIItem(Handle<Certificate> cert){
 
 		item->certNotBefore = cert->getNotBefore();
 		item->certNotAfter = cert->getNotAfter();
-		item->certKey = hasPrivateKey(cert) ? new std::string("1") : new std::string("");
 
 		return item;
 	}
@@ -563,6 +563,24 @@ bool ProviderCryptopro::hasPrivateKey(Handle<Certificate> cert) {
 
 		CertCloseStore(hCertStore, 0);
 		hCertStore = HCRYPT_NULL;
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error check key existing");
+	}
+}
+
+bool ProviderCryptopro::hasPrivateKey(PCCERT_CONTEXT pCertContext) {
+	LOGGER_FN();
+
+	try {
+		DWORD dwSize = 0;
+		bool res = false;
+
+		if (CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwSize)) {
+			res = true;
+		}
 
 		return res;
 	}

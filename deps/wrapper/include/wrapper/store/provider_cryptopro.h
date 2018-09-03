@@ -38,4 +38,8 @@ private:
 
 	int static char2int(char input);
 	void static hex2bin(const char* src, char* target);
+
+#ifdef CSP_ENABLE
+	bool static hasPrivateKey(PCCERT_CONTEXT pCertContext);
+#endif //CSP_ENABLE
 };
