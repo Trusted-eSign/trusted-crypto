@@ -1692,7 +1692,7 @@ void Csp::importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password) {
 				)
 			{
 				storeName = L"MY";
-			}
+		}
 			else if (hcert->isCA()) {
 #ifndef OPENSSL_SYS_WINDOWS
 				continue;
@@ -1730,7 +1730,7 @@ void Csp::importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password) {
 
 			CertCloseStore(hCertStore, 0);
 			hCertStore = HCRYPT_NULL;
-		}
+	}
 
 		OPENSSL_free(pData);
 
@@ -1741,7 +1741,7 @@ void Csp::importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password) {
 			CertCloseStore(hImportCertStore, 0);
 			hImportCertStore = HCRYPT_NULL;
 		}
-	}
+}
 	catch (Handle<Exception> e) {
 		if (pCertContext) {
 			CertFreeCertificateContext(pCertContext);

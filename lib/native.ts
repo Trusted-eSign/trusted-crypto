@@ -447,7 +447,8 @@ declare namespace native {
 
             public addProvider(provider: Provider): void;
 
-            public addCert(provider: Provider, category: string, cert: PKI.Certificate): string;
+            public addCert(provider: Provider, category: string, cert: PKI.Certificate,
+                           contName?: string, provType?: number): string;
             public addCrl(provider: Provider, category: string, crl: PKI.CRL): string;
             public addKey(provider: Provider, key: PKI.Key, password: string): string;
             public addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;

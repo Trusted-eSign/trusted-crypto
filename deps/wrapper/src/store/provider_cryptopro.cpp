@@ -420,16 +420,111 @@ Handle<Key> ProviderCryptopro::getKey(Handle<Certificate> cert) {
 	if (pctx) EVP_PKEY_CTX_free(pctx);
 }
 
-void ProviderCryptopro::addPkiObject(Handle<Certificate> cert, Handle<std::string> category){
+void ProviderCryptopro::addPkiObject(Handle<Certificate> cert, Handle<std::string> category, Handle<std::string> contName, int provType){
 	LOGGER_FN();
 
+	PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
+	HCERTSTORE hCertStore = HCRYPT_NULL;
+	HCRYPTPROV hProv = NULL;
+	HCRYPTKEY hKey = NULL;
+
 	try{
-		PCCERT_CONTEXT pCertContext = HCRYPT_NULL;
-		HCERTSTORE hCertStore = HCRYPT_NULL;
+		DWORD dwKeySpec, dwSize;
+		ALG_ID dwAlgId = 0;
+		WCHAR wzContName[MAX_PATH];
+		DWORD dwNewProvType = 0;
+		CRYPT_KEY_PROV_INFO pKeyInfo = { 0 };
 
 		std::wstring wCategory = std::wstring(category->begin(), category->end());
 
 		pCertContext = Csp::createCertificateContext(cert);
+
+		if (!contName.isEmpty() && provType) {
+			if (!CryptAcquireContext(
+				&hProv,
+				contName->c_str(),
+				NULL,
+				provType,
+				0))
+			{
+				THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CryptAcquireContext. Error: 0x%08x", GetLastError());
+			}
+
+			if (!CryptGetUserKey(hProv, AT_SIGNATURE, &hKey)) {
+				CryptDestroyKey(hKey);
+
+				if (!CryptGetUserKey(hProv, AT_KEYEXCHANGE, &hKey)) {
+					THROW_EXCEPTION(0, Csp, NULL, "CryptGetUserKey. Error: 0x%08x", GetLastError());
+				}
+				else {
+					dwKeySpec = AT_KEYEXCHANGE;
+				}
+			}
+			else {
+				dwKeySpec = AT_SIGNATURE;
+			}
+
+			if (mbstowcs(wzContName, contName->c_str(), MAX_PATH) <= 0) {
+				THROW_EXCEPTION(0, Csp, NULL, "mbstowcs failed");
+			}
+
+			dwSize = sizeof(dwAlgId);
+			if (!CryptGetKeyParam(hKey, KP_ALGID, (LPBYTE)&dwAlgId, &dwSize, 0)) {
+				THROW_EXCEPTION(0, Csp, NULL, "CryptGetKeyParam. Error: 0x%08x", GetLastError());
+			}
+
+			switch (dwAlgId) {
+			case CALG_GR3410EL:
+			case CALG_DH_EL_SF:
+				dwNewProvType = PROV_GOST_2001_DH;
+				break;
+
+#if defined(PROV_GOST_2012_256)
+			case CALG_GR3410_12_256:
+			case CALG_DH_GR3410_12_256_SF:
+				dwNewProvType = PROV_GOST_2012_256;
+				break;
+
+			case CALG_GR3410_12_512:
+			case CALG_DH_GR3410_12_512_SF:
+				dwNewProvType = PROV_GOST_2012_512;
+				break;
+#endif // PROV_GOST_2012_256
+
+#if defined(CALG_ECDSA) && defined(CALG_ECDH)
+			case CALG_ECDSA:
+			case CALG_ECDH:
+				dwNewProvType = PROV_EC_ECDSA_FULL;
+				break;
+#endif // defined(CALG_ECDSA) && defined(CALG_ECDH)
+
+#if defined(CALG_RSA_SIGN) && defined(CALG_RSA_KEYX)
+			case CALG_RSA_SIGN:
+			case CALG_RSA_KEYX:
+				dwNewProvType = PROV_RSA_AES;
+				break;
+#endif // defined(CALG_ECDSA) && defined(CALG_ECDH)
+
+			default:
+				THROW_EXCEPTION(0, Csp, NULL, "Unsupported container key type", GetLastError());
+				break;
+			}
+
+			pKeyInfo.dwKeySpec = dwKeySpec;
+			pKeyInfo.dwProvType = dwNewProvType;
+			pKeyInfo.pwszContainerName = wzContName;
+			pKeyInfo.pwszProvName = (LPWSTR)Csp::provTypeToProvNameW(dwNewProvType);
+
+			if (!CertSetCertificateContextProperty(
+				pCertContext,
+				CERT_KEY_PROV_INFO_PROP_ID,
+				CERT_STORE_NO_CRYPT_RELEASE_FLAG,
+				&pKeyInfo
+				))
+			{
+				THROW_EXCEPTION(0, Csp, NULL, "CertSetCertificateContextProperty: Code: %d", GetLastError());
+			};
+		}
 
 		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
 			CERT_STORE_PROV_SYSTEM,
@@ -438,7 +533,7 @@ void ProviderCryptopro::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 			CERT_SYSTEM_STORE_CURRENT_USER,
 			wCategory.c_str())))
 		{
-			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
+			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
 		}
 
 		if (!CertAddCertificateContextToStore(
@@ -451,13 +546,53 @@ void ProviderCryptopro::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 			THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
 		}
 
-		CertCloseStore(hCertStore, 0);
-		hCertStore = HCRYPT_NULL;
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
 
-		CertFreeCertificateContext(pCertContext);
-		pCertContext = HCRYPT_NULL;
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+
+			hProv = NULL;
+		}
 	}
 	catch (Handle<Exception> e){
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (pCertContext) {
+			CertFreeCertificateContext(pCertContext);
+			pCertContext = HCRYPT_NULL;
+		}
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, ProviderCryptopro, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+
 		THROW_EXCEPTION(0, ProviderCryptopro, e, "Error add certificate to store");
 	}
 }

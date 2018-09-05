@@ -76,6 +76,8 @@ public:
 		IN DWORD dwCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING
 		);
 
+	LPCWSTR static provTypeToProvNameW(DWORD dwProvType);
+
 private:
 	bool static cmpCertAndContFP(LPCSTR szContainerName, LPBYTE pbFPCert, DWORD cbFPCert);
 
@@ -83,8 +85,6 @@ private:
 		IN PCCERT_CONTEXT pCertContext,
 		IN DWORD dwPropId
 		);
-
-	LPCWSTR provTypeToProvNameW(DWORD dwProvType);
 
 	static std::string formContainerNameForDSS(const std::string & restPath, unsigned certificateID);
 #endif //CSP_ENABLE

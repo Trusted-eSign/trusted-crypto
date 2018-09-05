@@ -24,7 +24,7 @@ public:
 	Handle<CRL> static getCRL(Handle<std::string> hash, Handle<std::string> category);
 	Handle<Key> static getKey(Handle<Certificate> cert);
 
-	static void addPkiObject(Handle<Certificate> cert, Handle<std::string> category);
+	static void addPkiObject(Handle<Certificate> cert, Handle<std::string> category, Handle<std::string> contName = new std::string(), int provType = NULL);
 	static void deletePkiObject(Handle<Certificate> cert, Handle<std::string> category);
 
 	bool static hasPrivateKey(Handle<Certificate> cert);

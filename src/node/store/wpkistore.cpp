@@ -92,9 +92,21 @@ NAN_METHOD(WPkiStore::AddCert){
 		LOGGER_ARG("cert");
 		WCertificate * wCert = WCertificate::Unwrap<WCertificate>(info[2]->ToObject());
 
+		Handle<std::string> hvalue;
+		int type = NULL;
+
+		if (!info[3]->IsUndefined() && !info[4]->IsUndefined()){
+			LOGGER_ARG("container");
+			v8::String::Utf8Value v8ValueString(info[3]->ToString());
+			hvalue = new std::string(*v8ValueString);
+
+			LOGGER_ARG("type");
+			type = info[4]->ToNumber()->Int32Value();
+		}
+
 		UNWRAP_DATA(PkiStore);	
 
-		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCert->data_);
+		Handle<std::string> uri = _this->addPkiObject(wProv->data_, new std::string(category), wCert->data_, hvalue, type);
 
 		v8::Local<v8::String> v8Uri = Nan::New<v8::String>(uri->c_str()).ToLocalChecked();
 

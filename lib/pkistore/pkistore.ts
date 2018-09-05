@@ -208,13 +208,15 @@ namespace trusted.pkistore {
          * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
          * @param {string} category MY, OTHERS, TRUST, CRL
          * @param {Certificate} cert Certificate
+         * @param {string} [contName] optional set container name
+         * @param {number} [provType]
          * @returns {string}
          *
          * @memberOf PkiStore
          */
         public addCert(provider: native.PKISTORE.Provider, category: string,
-                       cert: pki.Certificate): string {
-            return this.handle.addCert(provider, category, cert.handle);
+                       cert: pki.Certificate, contName?: string, provType?: number): string {
+            return this.handle.addCert(provider, category, cert.handle, contName, provType);
         }
 
         /**
@@ -249,7 +251,7 @@ namespace trusted.pkistore {
          * Import certificate request to local store
          *
          * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
-         * @param {string} category MY, OTHERS, TRUST, CRL
+         * @param {string} category REQUEST
          * @param {CertificationRequest} csr
          * @returns {string}
          *

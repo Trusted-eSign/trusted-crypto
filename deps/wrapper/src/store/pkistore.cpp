@@ -291,7 +291,7 @@ void PkiStore::addProvider(Handle<Provider> provider) {
 	}
 }
 
-Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert){
+Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert, Handle<std::string> contName, int provType){
 	LOGGER_FN();
 
 	try{
@@ -433,13 +433,13 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 		}
 #if defined(OPENSSL_SYS_WINDOWS)
 		else if (strcmp(provider->type->c_str(), "MICROSOFT") == 0){
-			ProviderMicrosoft::addPkiObject(cert, category);
+			ProviderMicrosoft::addPkiObject(cert, category, contName, provType);
 			return new std::string("");
 		}
 #endif
 #if defined(CPROCSP)
 		else if (strcmp(provider->type->c_str(), "CRYPTOPRO") == 0){
-			ProviderCryptopro::addPkiObject(cert, category);
+			ProviderCryptopro::addPkiObject(cert, category, contName, provType);
 			return new std::string("");
 		}
 #endif

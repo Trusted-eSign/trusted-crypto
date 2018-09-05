@@ -440,7 +440,7 @@ declare namespace native {
             getItem(item: PkiItem): any;
             getCerts(): PKI.CertificateCollection;
             addProvider(provider: Provider): void;
-            addCert(provider: Provider, category: string, cert: PKI.Certificate): string;
+            addCert(provider: Provider, category: string, cert: PKI.Certificate, contName?: string, provType?: number): string;
             addCrl(provider: Provider, category: string, crl: PKI.CRL): string;
             addKey(provider: Provider, key: PKI.Key, password: string): string;
             addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
@@ -3525,11 +3525,13 @@ declare namespace trusted.pkistore {
          * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
          * @param {string} category MY, OTHERS, TRUST, CRL
          * @param {Certificate} cert Certificate
+         * @param {string} [contName] optional set container name
+         * @param {number} [provType]
          * @returns {string}
          *
          * @memberOf PkiStore
          */
-        addCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate): string;
+        addCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate, contName?: string, provType?: number): string;
         /**
          * Import CRL to local store
          *
@@ -3556,7 +3558,7 @@ declare namespace trusted.pkistore {
          * Import certificate request to local store
          *
          * @param {native.PKISTORE.Provider} provider SYSTEM, MICROSOFT, CRYPTOPRO
-         * @param {string} category MY, OTHERS, TRUST, CRL
+         * @param {string} category REQUEST
          * @param {CertificationRequest} csr
          * @returns {string}
          *
