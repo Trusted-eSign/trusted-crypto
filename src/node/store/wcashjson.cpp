@@ -34,9 +34,14 @@ NAN_METHOD(WCashJson::New){
 			return;
 		}
 		else {
+#if defined(OPENSSL_SYS_WINDOWS)
+			wchar_t * wCont = (wchar_t *)* v8::String::Value(info[0]->ToString());
+			char json[MAX_PATH];
+			std::wcstombs(json, wCont, MAX_PATH);
+#else
 			v8::String::Utf8Value v8Str(info[0]->ToString());
 			char *json = *v8Str;
-
+#endif // OPENSSL_SYS_WINDOWS
 			obj->data_ = new CashJson(new std::string(json));
 
 			obj->Wrap(info.This());

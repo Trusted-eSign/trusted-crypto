@@ -46,12 +46,20 @@ NAN_METHOD(WLogger::Start) {
 		UNWRAP_DATA(Logger);
 
 		LOGGER_ARG("filename");
+#if defined(OPENSSL_SYS_WINDOWS)
+		wchar_t * wCont = (wchar_t *)* v8::String::Value(info[0]->ToString());
+		char filename[MAX_PATH];
+		std::wcstombs(filename, wCont, MAX_PATH);
+#else
+		v8::String::Utf8Value v8Filename(info[0]->ToString());
+		char *filename = *v8Filename;
+#endif // OPENSSL_SYS_WINDOWS
 		v8::String::Utf8Value v8Filename(info[0]->ToString());
 
 		LOGGER_ARG("level");
 		int level = info[1]->ToNumber()->Int32Value();
 
-		_this->start((const char *)*v8Filename, level);
+		_this->start((const char *)filename, level);
 
 		info.GetReturnValue().Set(info.This());
 	}

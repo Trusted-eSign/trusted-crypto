@@ -27,8 +27,14 @@ NAN_METHOD(WProvider_System::New){
 
 	try{
 		LOGGER_ARG("folder");
+#if defined(OPENSSL_SYS_WINDOWS)
+		wchar_t * wCont = (wchar_t *)* v8::String::Value(info[0]->ToString());
+		char folder[MAX_PATH];
+		std::wcstombs(folder, wCont, MAX_PATH);
+#else
 		v8::String::Utf8Value v8Folder(info[0]->ToString());
 		char *folder = *v8Folder;
+#endif // OPENSSL_SYS_WINDOWS
 
 		WProvider_System *obj = new WProvider_System();
 		Handle<std::string> str = new std::string(folder);
