@@ -54,8 +54,6 @@ NAN_METHOD(WLogger::Start) {
 		v8::String::Utf8Value v8Filename(info[0]->ToString());
 		char *filename = *v8Filename;
 #endif // OPENSSL_SYS_WINDOWS
-		v8::String::Utf8Value v8Filename(info[0]->ToString());
-
 		LOGGER_ARG("level");
 		int level = info[1]->ToNumber()->Int32Value();
 
