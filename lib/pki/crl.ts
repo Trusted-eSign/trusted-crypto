@@ -155,30 +155,19 @@ namespace trusted.pki {
          * @type {string}
          * @memberOf Crl
          */
-        get sigAlgName(): string {
-            return this.handle.getSigAlgName();
+        get signatureAlgorithm(): string {
+            return this.handle.getSignatureAlgorithm();
         }
 
         /**
-         * Return signature short algorithm
+         * Return signature digest algorithm
          *
          * @readonly
          * @type {string}
          * @memberOf Crl
          */
-        get sigAlgShortName(): string {
-            return this.handle.getSigAlgShortName();
-        }
-
-        /**
-         * Return signature algorithm OID
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf Crl
-         */
-        get sigAlgOID(): string {
-            return this.handle.getSigAlgOID();
+        get signatureDigestAlgorithm(): string {
+            return this.handle.getSignatureDigestAlgorithm();
         }
 
         /**

@@ -22,9 +22,8 @@ describe("CRL", function() {
         assert.equal(typeof (crl.signature), "object", "Bad signature value");
         assert.equal(typeof (crl.version), "number", "Bad version value");
         assert.equal(typeof (crl.thumbprint), "string", "Bad thumbprint value");
-        assert.equal(typeof (crl.sigAlgName), "string", "Bad sigAlgName value");
-        assert.equal(typeof (crl.sigAlgShortName), "string", "Bad sigAlgShortName value");
-        assert.equal(typeof (crl.sigAlgOID), "string", "Bad OID value");
+        assert.equal(typeof (crl.signatureAlgorithm), "string", "Bad signatureAlgorithme value");
+        assert.equal(typeof (crl.signatureDigestAlgorithm), "string", "Bad signatureDigestAlgorithm value");
         assert.equal(typeof (crl.issuerName), "string", "Bad issuerName value");
         assert.equal(typeof (crl.issuerFriendlyName), "string", "Bad issuerFriendlyName value");
         assert.equal(typeof (crl.lastUpdate), "object", "Bad lastUpdate value");

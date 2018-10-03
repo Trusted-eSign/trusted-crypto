@@ -30,9 +30,8 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getNextUpdate", GetNextUpdate);
 	Nan::SetPrototypeMethod(tpl, "getCertificate", GetCertificate);
 	Nan::SetPrototypeMethod(tpl, "getThumbprint", GetThumbprint);
-	Nan::SetPrototypeMethod(tpl, "getSigAlgName", GetSigAlgName);
-	Nan::SetPrototypeMethod(tpl, "getSigAlgShortName", GetSigAlgShortName);
-	Nan::SetPrototypeMethod(tpl, "getSigAlgOID", GetSigAlgOID);
+	Nan::SetPrototypeMethod(tpl, "getSignatureAlgorithm", GetSignatureAlgorithm);
+	Nan::SetPrototypeMethod(tpl, "getSignatureDigestAlgorithm", GetSignatureDigestAlgorithm);
 
 	Nan::SetPrototypeMethod(tpl, "getRevoked", GetRevoked);
 
@@ -407,13 +406,13 @@ NAN_METHOD(WCRL::GetSignature) {
 	TRY_END();
 }
 
-NAN_METHOD(WCRL::GetSigAlgName) {
+NAN_METHOD(WCRL::GetSignatureAlgorithm) {
 	METHOD_BEGIN();
 
 	try {
 		UNWRAP_DATA(CRL);
 
-		Handle<std::string> algName = _this->getSigAlgName();
+		Handle<std::string> algName = _this->getSignatureAlgorithm();
 
 		v8::Local<v8::String> v8algName = Nan::New<v8::String>(algName->c_str()).ToLocalChecked();
 
@@ -423,29 +422,13 @@ NAN_METHOD(WCRL::GetSigAlgName) {
 	TRY_END();
 }
 
-NAN_METHOD(WCRL::GetSigAlgShortName) {
+NAN_METHOD(WCRL::GetSignatureDigestAlgorithm) {
 	METHOD_BEGIN();
 
 	try {
 		UNWRAP_DATA(CRL);
 
-		Handle<std::string> algSN = _this->getSigAlgShortName();
-
-		v8::Local<v8::String> v8algSN = Nan::New<v8::String>(algSN->c_str()).ToLocalChecked();
-
-		info.GetReturnValue().Set(v8algSN);
-		return;
-	}
-	TRY_END();
-}
-
-NAN_METHOD(WCRL::GetSigAlgOID) {
-	METHOD_BEGIN();
-
-	try {
-		UNWRAP_DATA(CRL);
-
-		Handle<std::string> algSN = _this->getSigAlgOID();
+		Handle<std::string> algSN = _this->getSignatureDigestAlgorithm();
 
 		v8::Local<v8::String> v8algSN = Nan::New<v8::String>(algSN->c_str()).ToLocalChecked();
 

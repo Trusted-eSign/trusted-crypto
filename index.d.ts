@@ -174,9 +174,8 @@ declare namespace native {
             getNextUpdate(): string;
             getCertificate(): Certificate;
             getThumbprint(): Buffer;
-            getSigAlgName(): string;
-            getSigAlgShortName(): string;
-            getSigAlgOID(): string;
+            getSignatureAlgorithm(): string;
+            getSignatureDigestAlgorithm(): string;
             getRevoked(): RevokedCollection;
             load(filename: string, dataFormat: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
@@ -2291,23 +2290,15 @@ declare namespace trusted.pki {
          * @type {string}
          * @memberOf Crl
          */
-        readonly sigAlgName: string;
+        readonly signatureAlgorithm: string;
         /**
-         * Return signature short algorithm
+         * Return signature digest algorithm
          *
          * @readonly
          * @type {string}
          * @memberOf Crl
          */
-        readonly sigAlgShortName: string;
-        /**
-         * Return signature algorithm OID
-         *
-         * @readonly
-         * @type {string}
-         * @memberOf Crl
-         */
-        readonly sigAlgOID: string;
+        readonly signatureDigestAlgorithm: string;
         /**
          * Return revoced collection
          *

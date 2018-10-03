@@ -34,15 +34,14 @@ public:
 	Handle<std::string> hash(Handle<std::string> algorithm);
 
 	//Properties
+	long getVersion();
 	Handle<std::string> getThumbprint();
 	Handle<std::string> getEncoded();
 	Handle<std::string> getSignature();
 	Handle<std::string> getThisUpdate();
 	Handle<std::string> getNextUpdate();
-	Handle<std::string> getSigAlgName();
-	Handle<std::string> getSigAlgShortName();
-	Handle<std::string> getSigAlgOID();
-	long getVersion();
+	Handle<std::string> getSignatureAlgorithm();
+	Handle<std::string> getSignatureDigestAlgorithm();
 	Handle<RevokedCollection> getRevoked();
 public:
 	Handle<std::string> issuerName();

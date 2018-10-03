@@ -141,9 +141,8 @@ declare namespace native {
             public getNextUpdate(): string;
             public getCertificate(): Certificate;
             public getThumbprint(): Buffer;
-            public getSigAlgName(): string;
-            public getSigAlgShortName(): string;
-            public getSigAlgOID(): string;
+            public getSignatureAlgorithm(): string;
+            public getSignatureDigestAlgorithm(): string;
             public getRevoked(): RevokedCollection;
 
             public load(filename: string, dataFormat: trusted.DataFormat): void;

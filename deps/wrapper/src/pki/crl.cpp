@@ -153,70 +153,50 @@ long CRL::getVersion()
 	return ver;
 }
 
-Handle<std::string> CRL::getSigAlgName(){
+Handle<std::string> CRL::getSignatureAlgorithm(){
 	LOGGER_FN();
 
 	try{
-		LOGGER_OPENSSL(OBJ_obj2nid);
-		int pkey_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
+		X509_ALGOR *sigalg = this->internal()->sig_alg;
 
-		if (pkey_nid == NID_undef) {
-			THROW_EXCEPTION(0, CRL, NULL, "Can not get key nid");
+		LOGGER_OPENSSL(OBJ_obj2nid);
+		int sig_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
+
+		if (sig_nid != NID_undef) {
+			LOGGER_OPENSSL(OBJ_nid2ln);
+			return new std::string(OBJ_nid2ln(sig_nid));
 		}
 
-		LOGGER_OPENSSL(OBJ_nid2ln);
-		std::string sslbuf = OBJ_nid2ln(pkey_nid);
-
-		Handle<std::string> res = new std::string(sslbuf.c_str(), sslbuf.length());
-
-		return res;
+		return (new Algorithm(sigalg))->getName();
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature algorithm long name");
 	}	
 }
 
-Handle<std::string> CRL::getSigAlgShortName(){
+Handle<std::string> CRL::getSignatureDigestAlgorithm() {
 	LOGGER_FN();
 
-	try{
-		LOGGER_OPENSSL(OBJ_obj2nid);
-		int pkey_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
-		if (pkey_nid == NID_undef) {
-			THROW_EXCEPTION(0, CRL, NULL, "Can not get key nid");
-		}
+	int signature_nid = 0, md_nid = 0;
+	const EVP_MD *type;
 
-		LOGGER_OPENSSL(OBJ_nid2ln);
-		std::string sslbuf = OBJ_nid2sn(pkey_nid);
-
-		Handle<std::string> res = new std::string(sslbuf.c_str(), sslbuf.length());
-
-		return res;
+	signature_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
+	if (!signature_nid){
+		return new std::string("");
 	}
-	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature algorithm short name");
+
+	LOGGER_OPENSSL("OBJ_find_sigid_algs");
+	if (!OBJ_find_sigid_algs(signature_nid, &md_nid, NULL)) {
+		return new std::string("");
 	}
+
+	if (!md_nid){
+		THROW_OPENSSL_EXCEPTION(0, SignedData, NULL, "Unknown digest name");
+	}
+
+	return new std::string(OBJ_nid2ln(md_nid));
 }
 
-Handle<std::string> CRL::getSigAlgOID(){
-	LOGGER_FN();
-
-	try{
-		char buf[100];
-		LOGGER_OPENSSL(OBJ_obj2txt);
-		int bufLen = 0;
-		if ((bufLen = OBJ_obj2txt(buf, 100, this->internal()->sig_alg->algorithm, 1)) <= 0){
-			THROW_OPENSSL_EXCEPTION(0, Algorithm, NULL, "OBJ_obj2txt");
-		}
-			
-		std::string *res = new std::string(buf, bufLen);
-
-		return res;
-	}
-	catch (Handle<Exception> e){
-		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature OID");
-	}
-}
 Handle<std::string> CRL::issuerName()
 {
 	LOGGER_FN();
