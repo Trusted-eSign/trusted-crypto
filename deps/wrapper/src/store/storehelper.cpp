@@ -69,6 +69,8 @@ PkiItem::PkiItem(){
 	crlIssuerFriendlyName = new std::string("");
 	crlLastUpdate = new std::string("");
 	crlNextUpdate = new std::string("");
+	crlSignatureAlgorithm = new std::string("");
+	crlSignatureDigestAlgorithm = new std::string("");
 	crl = NULL;
 
 	keyEncrypted = false;
@@ -192,12 +194,14 @@ void PkiItem::setSignatureAlgorithm(Handle<std::string> signatureAlgorithm){
 	LOGGER_FN();
 
 	this->certSignatureAlgorithm = signatureAlgorithm;
+	this->crlSignatureAlgorithm = signatureAlgorithm;
 }
 
 void PkiItem::setSignatureDigestAlgorithm(Handle<std::string> signatureDigestAlgorithm){
 	LOGGER_FN();
 
 	this->certSignatureDigestAlgorithm = signatureDigestAlgorithm;
+	this->crlSignatureDigestAlgorithm = signatureDigestAlgorithm;
 }
 
 void PkiItem::setPublicKeyAlgorithm(Handle<std::string> publicKeyAlgorithm){

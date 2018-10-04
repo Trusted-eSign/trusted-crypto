@@ -199,6 +199,8 @@ Handle<PkiItem> ProviderMicrosoft::objectToPKIItem(Handle<CRL> crl){
 		item->crlIssuerFriendlyName = crl->issuerFriendlyName();
 		item->crlLastUpdate = crl->getThisUpdate();
 		item->crlNextUpdate = crl->getNextUpdate();
+		item->crlSignatureAlgorithm = crl->getSignatureAlgorithm();
+		item->crlSignatureDigestAlgorithm = crl->getSignatureDigestAlgorithm();
 
 		return item;
 	}

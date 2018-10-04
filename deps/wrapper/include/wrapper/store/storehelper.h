@@ -35,6 +35,8 @@ public:
 	Handle<std::string> crlIssuerFriendlyName;
 	Handle<std::string> crlLastUpdate;
 	Handle<std::string> crlNextUpdate;
+	Handle<std::string> crlSignatureAlgorithm;
+	Handle<std::string> crlSignatureDigestAlgorithm;
 public:
 	Handle<CRL> crl;
 };
