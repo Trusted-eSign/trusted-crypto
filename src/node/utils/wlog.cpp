@@ -47,9 +47,30 @@ NAN_METHOD(WLogger::Start) {
 
 		LOGGER_ARG("filename");
 #if defined(OPENSSL_SYS_WINDOWS)
-		wchar_t * wCont = (wchar_t *)* v8::String::Value(info[0]->ToString());
-		char filename[MAX_PATH];
-		std::wcstombs(filename, wCont, MAX_PATH);
+		LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
+
+		int string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, NULL, 0, NULL, NULL);
+		if (!string_len) {
+			Nan::ThrowError("Error WideCharToMultiByte");
+		}
+
+		char* converted = (char*)LocalAlloc(LMEM_ZEROINIT, string_len);
+		if (!converted) {
+			Nan::ThrowError("Error LocalAlloc");
+		}
+
+		string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, converted, string_len, NULL, NULL);
+		if (!string_len)
+		{
+			free(converted);
+			Nan::ThrowError("Error WideCharToMultiByte");
+		}
+
+		std::string result = converted;
+
+		LocalFree(converted);
+
+		const char * filename = result.c_str();
 #else
 		v8::String::Utf8Value v8Filename(info[0]->ToString());
 		char *filename = *v8Filename;
