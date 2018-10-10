@@ -35,6 +35,8 @@ public:
 	static NAN_METHOD(GetThumbprint);
 	static NAN_METHOD(GetSignatureAlgorithm);
 	static NAN_METHOD(GetSignatureDigestAlgorithm);
+	static NAN_METHOD(GetAuthorityKeyid);
+	static NAN_METHOD(GetCrlNumber);
 
 	static NAN_METHOD(GetRevoked);
 

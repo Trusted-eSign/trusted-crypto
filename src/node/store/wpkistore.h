@@ -87,6 +87,8 @@ public:
 	static NAN_METHOD(SetSignatureAlgorithm);
 	static NAN_METHOD(SetSignatureDigestAlgorithm);
 	static NAN_METHOD(SetPublicKeyAlgorithm);
+	static NAN_METHOD(SetAuthorityKeyid);
+	static NAN_METHOD(SetCrlNumber);
 };
 
 #endif //WPKISTORE_H_INCLUDED

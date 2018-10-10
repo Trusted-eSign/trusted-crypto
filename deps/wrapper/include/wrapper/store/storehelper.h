@@ -103,6 +103,8 @@ public:
 	void setNotAfter(Handle<std::string> notAfter);
 	void setLastUpdate(Handle<std::string> lastUpdate);
 	void setNextUpdate(Handle<std::string> nextUpdate);
+	void setAuthorityKeyid(Handle<std::string> keyid);
+	void setCrlNumber(Handle<std::string> crlNumber);
 	void setKey(Handle<std::string> keyid);
 	void setKeyEncypted(bool enc);
 	void setOrganizationName(Handle<std::string> organizationName);

@@ -173,6 +173,18 @@ void PkiItem::setNextUpdate(Handle<std::string> nextUpdate){
 	this->crlNextUpdate = nextUpdate;
 }
 
+void PkiItem::setAuthorityKeyid(Handle<std::string> keyid){
+	LOGGER_FN();
+
+	this->crlAuthorityKeyid = keyid;
+}
+
+void PkiItem::setCrlNumber(Handle<std::string> crlNumber){
+	LOGGER_FN();
+
+	this->crlCrlNumber = crlNumber;
+}
+
 void PkiItem::setKey(Handle<std::string> keyid){
 	LOGGER_FN();
 

@@ -700,6 +700,8 @@ void WPkiItem::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "setSignatureAlgorithm", SetSignatureAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "setSignatureDigestAlgorithm", SetSignatureDigestAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "setPublicKeyAlgorithm", SetPublicKeyAlgorithm);
+	Nan::SetPrototypeMethod(tpl, "setAuthorityKeyid", SetAuthorityKeyid);
+	Nan::SetPrototypeMethod(tpl, "setCrlNumber", SetCrlNumber);
 
 	// Store the constructor in the target bindings.
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -958,6 +960,38 @@ NAN_METHOD(WPkiItem::SetNextUpdate) {
 		char *next = *v8Next;
 
 		_this->setNextUpdate(new std::string(next));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WPkiItem::SetAuthorityKeyid) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(PkiItem);
+
+		LOGGER_ARG("keyid");
+		v8::String::Utf8Value v8Keyid(info[0]->ToString());
+		char *keyid = *v8Keyid;
+
+		_this->setAuthorityKeyid(new std::string(keyid));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WPkiItem::SetCrlNumber) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(PkiItem);
+
+		LOGGER_ARG("crlNumber");
+		v8::String::Utf8Value v8CrlNumber(info[0]->ToString());
+		char *crlNumber = *v8CrlNumber;
+
+		_this->setCrlNumber(new std::string(crlNumber));
 		return;
 	}
 	TRY_END();

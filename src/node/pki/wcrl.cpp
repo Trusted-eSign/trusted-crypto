@@ -32,6 +32,8 @@ void WCRL::Init(v8::Handle<v8::Object> exports){
 	Nan::SetPrototypeMethod(tpl, "getThumbprint", GetThumbprint);
 	Nan::SetPrototypeMethod(tpl, "getSignatureAlgorithm", GetSignatureAlgorithm);
 	Nan::SetPrototypeMethod(tpl, "getSignatureDigestAlgorithm", GetSignatureDigestAlgorithm);
+	Nan::SetPrototypeMethod(tpl, "getAuthorityKeyid", GetAuthorityKeyid);
+	Nan::SetPrototypeMethod(tpl, "getCrlNumber", GetCrlNumber);
 
 	Nan::SetPrototypeMethod(tpl, "getRevoked", GetRevoked);
 
@@ -433,6 +435,34 @@ NAN_METHOD(WCRL::GetSignatureDigestAlgorithm) {
 		v8::Local<v8::String> v8algSN = Nan::New<v8::String>(algSN->c_str()).ToLocalChecked();
 
 		info.GetReturnValue().Set(v8algSN);
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetAuthorityKeyid) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> keyid = _this->getAuthorityKeyid();
+
+		info.GetReturnValue().Set(stringToBuffer(keyid));
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WCRL::GetCrlNumber) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(CRL);
+
+		Handle<std::string> crlNumber = _this->getCrlNumber();
+
+		info.GetReturnValue().Set(stringToBuffer(crlNumber));
 		return;
 	}
 	TRY_END();
