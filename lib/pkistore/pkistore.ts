@@ -134,6 +134,14 @@ namespace trusted.pkistore {
             this.handle.setNextUpdate(nextUpdate);
         }
 
+        set authorityKeyid(authorityKeyid: string) {
+            this.handle.setAuthorityKeyid(authorityKeyid);
+        }
+
+        set crlNumber(crlNumber: string) {
+            this.handle.setCrlNumber(crlNumber);
+        }
+
         set key(key: string) {
             this.handle.setKey(key);
         }
@@ -434,6 +442,12 @@ namespace trusted.pkistore {
             }
             if (item.nextUpdate) {
                 pkiItem.nextUpdate = item.nextUpdate;
+            }
+            if (item.authorityKeyid) {
+                pkiItem.authorityKeyid = item.authorityKeyid;
+            }
+            if (item.crlNumber) {
+                pkiItem.crlNumber = item.crlNumber;
             }
             if (item.key) {
                 pkiItem.key = item.key;

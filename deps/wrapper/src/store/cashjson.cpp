@@ -88,6 +88,8 @@ Handle<PkiItemCollection> CashJson::exportJson(){
 					itemTemp->crlNextUpdate = new std::string(listPkiObj[i]["NextUpdate"].asString());
 					itemTemp->crlSignatureAlgorithm = new std::string(listPkiObj[i]["SignatureAlgorithm"].asString());
 					itemTemp->crlSignatureDigestAlgorithm = new std::string(listPkiObj[i]["SignatureDigestAlgorithm"].asString());
+					itemTemp->crlAuthorityKeyid = new std::string(listPkiObj[i]["AuthorityKeyid"].asString());
+					itemTemp->crlCrlNumber = new std::string(listPkiObj[i]["CrlNumber"].asString());
 				}
 				else if (strcmp(itemTemp->type->c_str(), "REQUEST") == 0){
 					itemTemp->csrSubjectName = new std::string(listPkiObj[i]["SubjectName"].asString());
@@ -159,6 +161,8 @@ void CashJson::importJson(Handle<PkiItem> item){
 			jsnBuf["NextUpdate"] = item->crlNextUpdate->c_str();
 			jsnBuf["SignatureAlgorithm"] = item->crlSignatureAlgorithm->c_str();
 			jsnBuf["SignatureDigestAlgorithm"] = item->crlSignatureDigestAlgorithm->c_str();
+			jsnBuf["AuthorityKeyid"] = item->crlAuthorityKeyid->c_str();
+			jsnBuf["CrlNumber"] = item->crlCrlNumber->c_str();
 		}
 		else if (strcmp(item->type->c_str(), "REQUEST") == 0){
 			jsnBuf["SubjectName"] = item->csrSubjectName->c_str();

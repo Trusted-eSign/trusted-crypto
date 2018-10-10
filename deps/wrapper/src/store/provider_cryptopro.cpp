@@ -201,6 +201,8 @@ Handle<PkiItem> ProviderCryptopro::objectToPKIItem(Handle<CRL> crl){
 		item->crlNextUpdate = crl->getNextUpdate();
 		item->crlSignatureAlgorithm = crl->getSignatureAlgorithm();
 		item->crlSignatureDigestAlgorithm = crl->getSignatureDigestAlgorithm();
+		item->crlAuthorityKeyid = crl->getAuthorityKeyid();
+		item->crlCrlNumber = crl->getCrlNumber();
 
 		return item;
 	}

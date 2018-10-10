@@ -176,6 +176,8 @@ declare namespace native {
             getThumbprint(): Buffer;
             getSignatureAlgorithm(): string;
             getSignatureDigestAlgorithm(): string;
+            getAuthorityKeyid(): string;
+            getCrlNumber(): string;
             getRevoked(): RevokedCollection;
             load(filename: string, dataFormat: trusted.DataFormat): void;
             import(raw: Buffer, dataFormat: trusted.DataFormat): void;
@@ -353,6 +355,8 @@ declare namespace native {
             encrypted?: boolean;
         }
         interface IPkiCrl {
+            authorityKeyid?: string;
+            crlNumber?: string;
             issuerName?: string;
             issuerFriendlyName?: string;
             lastUpdate?: string;
@@ -483,6 +487,8 @@ declare namespace native {
             setNotAfter(after: string): void;
             setLastUpdate(lastUpdate: string): void;
             setNextUpdate(nextUpdate: string): void;
+            setAuthorityKeyid(authorityKeyid: string): void;
+            setCrlNumber(crlNumber: string): void;
             setKey(key: string): void;
             setKeyEncrypted(enc: boolean): void;
             setOrganizationName(organizationName: string): void;
@@ -2300,6 +2306,22 @@ declare namespace trusted.pki {
          */
         readonly signatureDigestAlgorithm: string;
         /**
+         * Return authority keyid
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Crl
+         */
+        readonly authorityKeyid: string;
+        /**
+         * Return CRL number
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Crl
+         */
+        readonly crlNumber: string;
+        /**
          * Return revoced collection
          *
          * @readonly
@@ -3478,6 +3500,8 @@ declare namespace trusted.pkistore {
         notAfter: string;
         lastUpdate: string;
         nextUpdate: string;
+        authorityKeyid: string;
+        crlNumber: string;
         key: string;
         keyEnc: boolean;
         organizationName: string;

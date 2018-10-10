@@ -319,6 +319,12 @@ NAN_METHOD(WPkiStore::Find){
 				tempObj->Set(v8::String::NewFromUtf8(isolate, "signatureDigestAlgorithm"),
 					v8::String::NewFromUtf8(isolate, item->crlSignatureDigestAlgorithm->c_str()));
 
+				tempObj->Set(v8::String::NewFromUtf8(isolate, "authorityKeyid"),
+					v8::String::NewFromUtf8(isolate, item->crlAuthorityKeyid->c_str()));
+
+				tempObj->Set(v8::String::NewFromUtf8(isolate, "crlNumber"),
+					v8::String::NewFromUtf8(isolate, item->crlCrlNumber->c_str()));
+
 				array8->Set(i, tempObj);
 				continue;
 			}

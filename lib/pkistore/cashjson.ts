@@ -77,6 +77,12 @@ namespace trusted.pkistore {
                 if (item.nextUpdate) {
                     pkiItem.nextUpdate = item.nextUpdate;
                 }
+                if (item.authorityKeyid) {
+                    pkiItem.authorityKeyid = item.authorityKeyid;
+                }
+                if (item.crlNumber) {
+                    pkiItem.crlNumber = item.crlNumber;
+                }
                 if (item.key) {
                     pkiItem.key = item.key;
                 }

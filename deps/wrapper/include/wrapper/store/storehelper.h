@@ -37,6 +37,8 @@ public:
 	Handle<std::string> crlNextUpdate;
 	Handle<std::string> crlSignatureAlgorithm;
 	Handle<std::string> crlSignatureDigestAlgorithm;
+	Handle<std::string> crlAuthorityKeyid;
+	Handle<std::string> crlCrlNumber;
 public:
 	Handle<CRL> crl;
 };

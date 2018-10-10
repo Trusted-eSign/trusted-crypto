@@ -143,6 +143,8 @@ declare namespace native {
             public getThumbprint(): Buffer;
             public getSignatureAlgorithm(): string;
             public getSignatureDigestAlgorithm(): string;
+            public getAuthorityKeyid(): string;
+            public getCrlNumber(): string;
             public getRevoked(): RevokedCollection;
 
             public load(filename: string, dataFormat: trusted.DataFormat): void;
@@ -343,6 +345,8 @@ declare namespace native {
         }
 
         export interface IPkiCrl {
+            authorityKeyid?: string;
+            crlNumber?: string;
             issuerName?: string;
             issuerFriendlyName?: string;
             lastUpdate?: string;
@@ -495,6 +499,8 @@ declare namespace native {
             public setNotAfter(after: string): void;
             public setLastUpdate(lastUpdate: string): void;
             public setNextUpdate(nextUpdate: string): void;
+            public setAuthorityKeyid(authorityKeyid: string): void;
+            public setCrlNumber(crlNumber: string): void;
             public setKey(key: string): void;
             public setKeyEncrypted(enc: boolean): void;
             public setOrganizationName(organizationName: string): void;

@@ -383,6 +383,8 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 			item->crlNextUpdate = hcrl->getNextUpdate();
 			item->crlSignatureAlgorithm = hcrl->getSignatureAlgorithm();
 			item->crlSignatureDigestAlgorithm = hcrl->getSignatureDigestAlgorithm();
+			item->crlAuthorityKeyid = hcrl->getAuthorityKeyid();
+			item->crlCrlNumber = hcrl->getCrlNumber();
 
 			return item;
 		}

@@ -42,6 +42,8 @@ public:
 	Handle<std::string> getNextUpdate();
 	Handle<std::string> getSignatureAlgorithm();
 	Handle<std::string> getSignatureDigestAlgorithm();
+	Handle<std::string> getAuthorityKeyid();
+	Handle<std::string> getCrlNumber();
 	Handle<RevokedCollection> getRevoked();
 public:
 	Handle<std::string> issuerName();

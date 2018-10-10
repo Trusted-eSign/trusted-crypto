@@ -28,6 +28,8 @@ describe("CRL", function() {
         assert.equal(typeof (crl.issuerFriendlyName), "string", "Bad issuerFriendlyName value");
         assert.equal(typeof (crl.lastUpdate), "object", "Bad lastUpdate value");
         assert.equal(typeof (crl.nextUpdate), "object", "Bad nextUpdate value");
+        assert.equal(typeof (crl.authorityKeyid), "string", "Bad authorityKeyid value");
+        assert.equal(typeof (crl.crlNumber), "string", "Bad crlNumber value");
     });
 
     it("export", function() {

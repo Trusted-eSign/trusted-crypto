@@ -21,7 +21,9 @@ export interface IPkiKey{
     hash: string;
 }
 
-export interface IPkiCrl{
+export interface IPkiCrl {
+    authorityKeyid?: string;
+    crlNumber?: string;
     issuerName?: string;
     issuerFriendlyName?: string;
     lastUpdate?: Date;

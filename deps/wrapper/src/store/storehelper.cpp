@@ -71,6 +71,8 @@ PkiItem::PkiItem(){
 	crlNextUpdate = new std::string("");
 	crlSignatureAlgorithm = new std::string("");
 	crlSignatureDigestAlgorithm = new std::string("");
+	crlAuthorityKeyid = new std::string("");
+	crlCrlNumber = new std::string("");
 	crl = NULL;
 
 	keyEncrypted = false;

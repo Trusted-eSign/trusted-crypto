@@ -157,6 +157,12 @@ NAN_METHOD(WProvider_System::ObjectToPkiItem){
 
 			tempObj->Set(v8::String::NewFromUtf8(isolate, "signatureDigestAlgorithm"),
 				v8::String::NewFromUtf8(isolate, res->crlSignatureDigestAlgorithm->c_str()));
+
+			tempObj->Set(v8::String::NewFromUtf8(isolate, "authorityKeyid"),
+				v8::String::NewFromUtf8(isolate, res->crlAuthorityKeyid->c_str()));
+
+			tempObj->Set(v8::String::NewFromUtf8(isolate, "crlNumber"),
+				v8::String::NewFromUtf8(isolate, res->crlCrlNumber->c_str()));
 		}
 
 		if (strcmp(res->type->c_str(), "REQUEST") == 0){

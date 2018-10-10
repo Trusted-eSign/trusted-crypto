@@ -171,6 +171,28 @@ namespace trusted.pki {
         }
 
         /**
+         * Return authority keyid
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Crl
+         */
+        get authorityKeyid(): string {
+            return this.handle.getAuthorityKeyid();
+        }
+
+        /**
+         * Return CRL number
+         *
+         * @readonly
+         * @type {string}
+         * @memberOf Crl
+         */
+        get crlNumber(): string {
+            return this.handle.getCrlNumber();
+        }
+
+        /**
          * Return revoced collection
          *
          * @readonly

@@ -319,3 +319,66 @@ Handle<RevokedCollection> CRL::getRevoked(){
 	LOGGER_OPENSSL(X509_CRL_get_REVOKED);
 	return new RevokedCollection(X509_CRL_get_REVOKED(this->internal()), this->handle());
 }
+
+Handle<std::string> CRL::getAuthorityKeyid(){
+	LOGGER_FN();
+
+	const char *keyid = NULL;
+	AUTHORITY_KEYID *akid = NULL;
+
+	LOGGER_OPENSSL(X509_CRL_get_ext_d2i);
+	akid = (AUTHORITY_KEYID *) X509_CRL_get_ext_d2i(this->internal(), NID_authority_key_identifier, NULL, NULL);
+
+	if (!akid || !akid->keyid) {
+		return new std::string("");
+	}
+
+	LOGGER_OPENSSL(BIO_new);
+	BIO * bioKeyid = BIO_new(BIO_s_mem());
+	LOGGER_OPENSSL(i2a_ASN1_STRING);
+	if (i2a_ASN1_STRING(bioKeyid, akid->keyid, V_ASN1_OCTET_STRING) < 0){
+		THROW_OPENSSL_EXCEPTION(0, CRL, NULL, "i2a_ASN1_STRING", NULL);
+	}
+
+	int contlen;
+	char * cont;
+	LOGGER_OPENSSL(BIO_get_mem_data);
+	contlen = BIO_get_mem_data(bioKeyid, &cont);
+
+	Handle<std::string> res = new std::string(cont, contlen);
+
+	BIO_free(bioKeyid);
+	bioKeyid = NULL;
+
+	return res;
+}
+
+Handle<std::string> CRL::getCrlNumber(){
+	LOGGER_FN();
+
+	ASN1_INTEGER *crlnum;
+	LOGGER_OPENSSL(X509_CRL_get_ext_d2i);
+	crlnum = (ASN1_INTEGER *)X509_CRL_get_ext_d2i(this->internal(), NID_crl_number, NULL, NULL);
+
+	if (!crlnum) {
+		return new std::string("");
+	}
+
+	LOGGER_OPENSSL(BIO_new);
+	BIO * bioNum = BIO_new(BIO_s_mem());
+	LOGGER_OPENSSL(i2a_ASN1_INTEGER);
+	if (i2a_ASN1_INTEGER(bioNum, crlnum) < 0){
+		THROW_OPENSSL_EXCEPTION(0, CRL, NULL, "i2a_ASN1_INTEGER", NULL);
+	}
+
+	int contlen;
+	char * num;
+	LOGGER_OPENSSL(BIO_get_mem_data);
+	contlen = BIO_get_mem_data(bioNum, &num);
+
+	Handle<std::string> res = new std::string(num, contlen);
+
+	BIO_free(bioNum);
+
+	return res;
+}
