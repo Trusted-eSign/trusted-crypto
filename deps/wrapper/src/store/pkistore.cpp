@@ -131,6 +131,10 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 						cert = storeItemCollection->items(i)->certificate;
 						break;
 					}
+					else {
+						cert = ProviderMicrosoft::getCert(item->hash, item->category);
+						break;
+					}
 				}
 			}
 		}
@@ -152,6 +156,10 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 				if (result){
 					if (!storeItemCollection->items(i)->certificate->isEmpty()) {
 						cert = storeItemCollection->items(i)->certificate;
+						break;
+					}
+					else {
+						cert = ProviderMicrosoft::getCert(item->hash, item->category);
 						break;
 					}
 				}
@@ -184,12 +192,56 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 		}
 #if defined(OPENSSL_SYS_WINDOWS)
 		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0){
-			crl = ProviderMicrosoft::getCRL(item->hash, item->category);
+			for (int i = 0, c = storeItemCollection->length(); i < c; i++){
+				bool result = 1;
+
+				if ((strcmp(storeItemCollection->items(i)->hash->c_str(), item->hash->c_str()) == 0) &&
+					(strcmp(storeItemCollection->items(i)->provider->c_str(), item->provider->c_str()) == 0)){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+
+				if (result){
+					if (!storeItemCollection->items(i)->crl->isEmpty()) {
+						crl = storeItemCollection->items(i)->crl;
+						break;
+					}
+					else {
+						crl = ProviderMicrosoft::getCRL(item->hash, item->category);
+						break;
+					}
+				}
+			}
 		}
 #endif
 #if defined(CPROCSP)
 		else  if (strcmp(item->provider->c_str(), "CRYPTOPRO") == 0){
-			crl = ProviderCryptopro::getCRL(item->hash, item->category);
+			for (int i = 0, c = storeItemCollection->length(); i < c; i++){
+				bool result = 1;
+
+				if ((strcmp(storeItemCollection->items(i)->hash->c_str(), item->hash->c_str()) == 0) &&
+					(strcmp(storeItemCollection->items(i)->provider->c_str(), item->provider->c_str()) == 0)){
+					result = 1;
+				}
+				else{
+					result = 0;
+					continue;
+				}
+
+				if (result){
+					if (!storeItemCollection->items(i)->crl->isEmpty()) {
+						crl = storeItemCollection->items(i)->crl;
+						break;
+					}
+					else {
+						crl = ProviderCryptopro::getCRL(item->hash, item->category);
+						break;
+					}
+				}
+			}
 		}
 #endif
 		else{
