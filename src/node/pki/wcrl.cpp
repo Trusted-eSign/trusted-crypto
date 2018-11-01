@@ -236,26 +236,18 @@ NAN_METHOD(WCRL::Import)
 NAN_METHOD(WCRL::Save)
 {
 	try{
-		if (info[0]->IsUndefined()){
-			Nan::ThrowError("Parameter 1 is required (filename)");
-			info.GetReturnValue().SetUndefined();
-		}
+		LOGGER_ARG("filename");
+		v8::String::Utf8Value v8Filename(info[0]->ToString());
+		char *filename = *v8Filename;
 
-		v8::Local<v8::String> str = info[0].As<v8::String>();
-		char *filename = copyBufferToUtf8String(str);
-		if (filename == NULL) {
-			Nan::ThrowError("Wrong filename");
-			info.GetReturnValue().SetUndefined();
-		}
-
-		std::string fname(filename);
-		free(filename);
+		LOGGER_ARG("format");
+		int format = info[1]->ToNumber()->Int32Value();
 
 		UNWRAP_DATA(CRL);
 
 		try{
-			Handle<Bio> out = new Bio(BIO_TYPE_FILE, fname, "wb");
-			_this->write(out, DataFormat::DER);
+			Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
+			_this->write(out, DataFormat::get(format));
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError(e->what());
