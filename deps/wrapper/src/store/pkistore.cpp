@@ -521,6 +521,12 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 			Provider_System::addPkiObject(huri, crl);
 			return huri;
 		}
+#if defined(OPENSSL_SYS_WINDOWS)
+		else if (strcmp(provider->type->c_str(), "MICROSOFT") == 0){
+			ProviderMicrosoft::addPkiObject(crl, category);
+			return new std::string("");
+		}
+#endif
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}

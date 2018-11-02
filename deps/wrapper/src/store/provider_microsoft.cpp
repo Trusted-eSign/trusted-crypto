@@ -669,6 +669,96 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 	}
 }
 
+void ProviderMicrosoft::addPkiObject(Handle<CRL> crl, Handle<std::string> category){
+	LOGGER_FN();
+
+	PCCRL_CONTEXT pCrlContext = HCRYPT_NULL;
+	HCERTSTORE hCertStore = HCRYPT_NULL;
+	HCRYPTPROV hProv = NULL;
+	HCRYPTKEY hKey = NULL;
+
+	try{
+		DWORD dwKeySpec, dwSize;
+		ALG_ID dwAlgId = 0;
+		WCHAR wzContName[MAX_PATH];
+		DWORD dwNewProvType = 0;
+		CRYPT_KEY_PROV_INFO pKeyInfo = { 0 };
+
+		std::wstring wCategory = std::wstring(category->begin(), category->end());
+
+		pCrlContext = Csp::createCrlContext(crl);
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER,
+			wCategory.c_str())))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
+		}
+
+		if (!CertAddCRLContextToStore(
+			hCertStore,
+			pCrlContext,
+			CERT_STORE_ADD_REPLACE_EXISTING,
+			NULL
+			))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (pCrlContext) {
+			CertFreeCRLContext(pCrlContext);
+			pCrlContext = HCRYPT_NULL;
+		}
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+	}
+	catch (Handle<Exception> e){
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (pCrlContext) {
+			CertFreeCRLContext(pCrlContext);
+			pCrlContext = HCRYPT_NULL;
+		}
+
+		if (hKey) {
+			CryptDestroyKey(hKey);
+			hKey = NULL;
+		}
+
+		if (hProv) {
+			if (!CryptReleaseContext(hProv, 0)) {
+				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
+			}
+
+			hProv = NULL;
+		}
+
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error add certificate to store");
+	}
+}
+
 void ProviderMicrosoft::deletePkiObject(Handle<Certificate> cert, Handle<std::string> category){
 	LOGGER_FN();
 
