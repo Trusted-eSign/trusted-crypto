@@ -448,6 +448,7 @@ declare namespace native {
             addKey(provider: Provider, key: PKI.Key, password: string): string;
             addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
             deleteCert(provider: Provider, category: string, cert: PKI.Certificate): void;
+            deleteCrl(provider: Provider, category: string, crl: PKI.CRL): void;
         }
         class CashJson {
             filenName: string;
@@ -3591,6 +3592,16 @@ declare namespace trusted.pkistore {
          * @memberOf PkiStore
          */
         deleteCert(provider: native.PKISTORE.Provider, category: string, cert: pki.Certificate): void;
+        /**
+         * Delete CRL from store
+         *
+         * @param {native.PKISTORE.Provider} provider
+         * @param {string} category
+         * @param {pki.Crl} crl
+         * @returns {void}
+         * @memberof PkiStore
+         */
+        deleteCrl(provider: native.PKISTORE.Provider, category: string, crl: pki.Crl): void;
         /**
          * Find items in local store
          *

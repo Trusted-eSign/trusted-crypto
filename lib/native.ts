@@ -457,6 +457,7 @@ declare namespace native {
             public addCsr(provider: Provider, category: string, csr: PKI.CertificationRequest): string;
 
             public deleteCert(provider: Provider, category: string, cert: PKI.Certificate): void;
+            public deleteCrl(provider: Provider, category: string, crl: PKI.CRL): void;
         }
 
         class CashJson {

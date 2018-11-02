@@ -27,6 +27,8 @@ public:
 	static void addPkiObject(Handle<Certificate> cert, Handle<std::string> category, Handle<std::string> contName = new std::string(), int provType = NULL);
 	static void deletePkiObject(Handle<Certificate> cert, Handle<std::string> category);
 
+	static void deletePkiObject(Handle<CRL> crl, Handle<std::string> category);
+
 	bool static hasPrivateKey(Handle<Certificate> cert);
 
 private:

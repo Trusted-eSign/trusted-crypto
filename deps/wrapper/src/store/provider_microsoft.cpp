@@ -734,6 +734,70 @@ void ProviderMicrosoft::deletePkiObject(Handle<Certificate> cert, Handle<std::st
 	}
 }
 
+void ProviderMicrosoft::deletePkiObject(Handle<CRL> crl, Handle<std::string> category){
+	LOGGER_FN();
+
+	PCCRL_CONTEXT pCrlContext = HCRYPT_NULL;
+	PCCRL_CONTEXT pCrlFound = HCRYPT_NULL;
+	HCERTSTORE hCertStore = HCRYPT_NULL;
+
+	try{
+		std::wstring wCategory = std::wstring(category->begin(), category->end());
+
+		pCrlContext = Csp::createCrlContext(crl);
+
+		if (HCRYPT_NULL == (hCertStore = CertOpenStore(
+			CERT_STORE_PROV_SYSTEM,
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+			HCRYPT_NULL,
+			CERT_SYSTEM_STORE_CURRENT_USER,
+			wCategory.c_str())))
+		{
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertOpenStore failed: %s Code: %d", category->c_str(), GetLastError());
+		}
+
+		if (!Csp::findExistingCrl(pCrlFound, hCertStore, pCrlContext)) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Cannot find existing certificate");
+		}
+
+		if (!CertDeleteCRLFromStore(pCrlFound)) {
+			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertDeleteCRLFromStore failed: Code: %d", GetLastError());
+		}
+
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (pCrlContext) {
+			CertFreeCRLContext(pCrlContext);
+			pCrlContext = HCRYPT_NULL;
+		}
+
+		if (pCrlFound) {
+			CertFreeCRLContext(pCrlFound);
+			pCrlFound = HCRYPT_NULL;
+		}
+	}
+	catch (Handle<Exception> e){
+		if (hCertStore) {
+			CertCloseStore(hCertStore, 0);
+			hCertStore = HCRYPT_NULL;
+		}
+
+		if (pCrlContext) {
+			CertFreeCRLContext(pCrlContext);
+			pCrlContext = HCRYPT_NULL;
+		}
+
+		if (pCrlFound) {
+			CertFreeCRLContext(pCrlFound);
+			pCrlFound = HCRYPT_NULL;
+		}
+
+		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error add CRL to store");
+	}
+}
 
 bool ProviderMicrosoft::hasPrivateKey(Handle<Certificate> cert) {
 	LOGGER_FN();

@@ -42,6 +42,7 @@ public:
 	Handle<std::string> addPkiObject(Handle<Provider> provider, Handle<Key> key, Handle<std::string> password);
 
 	void deletePkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<Certificate> cert);
+	void deletePkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl);
 
 	static void bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result);
 

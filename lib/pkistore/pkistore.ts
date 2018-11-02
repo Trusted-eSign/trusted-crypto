@@ -284,6 +284,19 @@ namespace trusted.pkistore {
         }
 
         /**
+         * Delete CRL from store
+         *
+         * @param {native.PKISTORE.Provider} provider
+         * @param {string} category
+         * @param {pki.Crl} crl
+         * @returns {void}
+         * @memberof PkiStore
+         */
+        public deleteCrl(provider: native.PKISTORE.Provider, category: string, crl: pki.Crl): void {
+            return this.handle.deleteCrl(provider, category, crl.handle);
+        }
+
+        /**
          * Find items in local store
          *
          * @param {native.PKISTORE.IFilter} [ifilter]

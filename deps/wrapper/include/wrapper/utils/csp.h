@@ -67,11 +67,20 @@ public:
 	void importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password);
 
 	PCCERT_CONTEXT static createCertificateContext(Handle<Certificate> cert);
+	PCCRL_CONTEXT static createCrlContext(Handle<CRL> crl);
 
 	bool static findExistingCertificate(
 		OUT PCCERT_CONTEXT &pOutCertContext,
 		IN HCERTSTORE hCertStore,
 		IN PCCERT_CONTEXT pCertContext,
+		IN DWORD dwFindFlags = 0,
+		IN DWORD dwCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING
+		);
+
+	bool static findExistingCrl(
+		OUT PCCRL_CONTEXT &pOutCrlContext,
+		IN HCERTSTORE hCertStore,
+		IN PCCRL_CONTEXT pCrlContext,
 		IN DWORD dwFindFlags = 0,
 		IN DWORD dwCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING
 		);

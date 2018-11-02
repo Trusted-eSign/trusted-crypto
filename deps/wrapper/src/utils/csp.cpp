@@ -1250,6 +1250,57 @@ PCCERT_CONTEXT Csp::createCertificateContext(Handle<Certificate> cert) {
 	}
 }
 
+PCCRL_CONTEXT Csp::createCrlContext(Handle<CRL> crl) {
+	LOGGER_FN();
+
+	unsigned char *pData = NULL;
+
+	try {
+		PCCRL_CONTEXT pCrlContext = HCRYPT_NULL;
+		unsigned char *p = NULL;
+		int iData;
+
+		if (crl->isEmpty()) {
+			THROW_EXCEPTION(0, Csp, NULL, "crl cannot be empty");
+		}
+
+		LOGGER_OPENSSL(i2d_X509_CRL);
+		if ((iData = i2d_X509_CRL(crl->internal(), NULL)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error i2d_X509_CRL");
+		}
+
+		LOGGER_OPENSSL(OPENSSL_malloc);
+		if (NULL == (pData = (unsigned char*)OPENSSL_malloc(iData))) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error malloc");
+		}
+
+		p = pData;
+		LOGGER_OPENSSL(i2d_X509_CRL);
+		if ((iData = i2d_X509_CRL(crl->internal(), &p)) <= 0) {
+			THROW_OPENSSL_EXCEPTION(0, Csp, NULL, "Error i2d_X509_CRL");
+		}
+
+		LOGGER_TRACE("CertCreateCRLContext");
+		if (NULL == (pCrlContext = CertCreateCRLContext(
+			X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, pData, iData))) {
+			THROW_EXCEPTION(0, Csp, NULL, "CertCreateCRLContext() failed");
+		}
+
+		OPENSSL_free(pData);
+		pData = NULL;
+
+		return pCrlContext;
+	}
+	catch (Handle<Exception> e) {
+		if (pData) {
+			OPENSSL_free(pData);
+			pData = NULL;
+		}
+
+		THROW_EXCEPTION(0, Csp, e, "Error create CRL context from X509_CRL");
+	}
+}
+
 bool Csp::findExistingCertificate(
 	OUT PCCERT_CONTEXT &pOutCertContext,
 	IN HCERTSTORE hCertStore,
@@ -1289,6 +1340,48 @@ bool Csp::findExistingCertificate(
 	}
 	catch (Handle<Exception> e) {
 		THROW_EXCEPTION(0, Csp, e, "Error find certificate in store. Code: %d", GetLastError());
+	}
+}
+
+bool Csp::findExistingCrl(
+	OUT PCCRL_CONTEXT &pOutCrlContext,
+	IN HCERTSTORE hCertStore,
+	IN PCCRL_CONTEXT pCrlContext,
+	IN DWORD dwFindFlags,
+	IN DWORD dwCertEncodingType
+	) {
+
+	LOGGER_FN();
+
+	bool res = false;
+
+	try {
+		if (!hCertStore) {
+			THROW_EXCEPTION(0, Csp, NULL, "certificate store cannot be empty");
+		}
+
+		if (!pCrlContext) {
+			THROW_EXCEPTION(0, Csp, NULL, "CRL context cannot be empty");
+		}
+
+		LOGGER_TRACE("CertFindCRLInStore");
+		pOutCrlContext = CertFindCRLInStore(
+			hCertStore,
+			dwCertEncodingType,
+			dwFindFlags,
+			CRL_FIND_EXISTING,
+			pCrlContext,
+			NULL
+			);
+
+		if (pOutCrlContext) {
+			res = true;
+		}
+
+		return res;
+	}
+	catch (Handle<Exception> e) {
+		THROW_EXCEPTION(0, Csp, e, "Error find CRL in store. Code: %d", GetLastError());
 	}
 }
 
