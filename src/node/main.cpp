@@ -66,8 +66,6 @@ void init(v8::Handle<v8::Object> target) {
 
 	// LOGGER_TRACE("OpenSSL init");
 
-	std::setlocale(LC_ALL, "");
-
 	OpenSSL::run();
 
 	v8::Local<v8::Object> OpenSSL = Nan::New<v8::Object>();
