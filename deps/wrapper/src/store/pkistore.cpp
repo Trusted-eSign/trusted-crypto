@@ -159,7 +159,7 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 						break;
 					}
 					else {
-						cert = ProviderMicrosoft::getCert(item->hash, item->category);
+						cert = ProviderCryptopro::getCert(item->hash, item->category);
 						break;
 					}
 				}
