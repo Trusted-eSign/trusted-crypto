@@ -35,7 +35,7 @@ NAN_METHOD(WProvider_System::New){
 			Nan::ThrowError("Error WideCharToMultiByte");
 		}
 
-		char* converted = (char*)LocalAlloc(LMEM_ZEROINIT, string_len);
+		char* converted = new char[string_len];
 		if (!converted) {
 			Nan::ThrowError("Error LocalAlloc");
 		}
@@ -48,6 +48,8 @@ NAN_METHOD(WProvider_System::New){
 		}
 
 		std::string result = converted;
+
+		delete[] converted;
 
 		const char * folder = result.c_str();
 #else

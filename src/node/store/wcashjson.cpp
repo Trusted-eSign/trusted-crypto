@@ -42,7 +42,7 @@ NAN_METHOD(WCashJson::New){
 				Nan::ThrowError("Error WideCharToMultiByte");
 			}
 
-			char* converted = (char*)LocalAlloc(LMEM_ZEROINIT, string_len);
+			char* converted = new char[string_len];
 			if (!converted) {
 				Nan::ThrowError("Error LocalAlloc");
 			}
@@ -56,7 +56,7 @@ NAN_METHOD(WCashJson::New){
 
 			std::string result = converted;
 
-			LocalFree(converted);
+			delete[] converted;
 
 			const char *json = result.c_str();
 #else

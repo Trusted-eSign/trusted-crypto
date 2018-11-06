@@ -54,7 +54,7 @@ NAN_METHOD(WLogger::Start) {
 			Nan::ThrowError("Error WideCharToMultiByte");
 		}
 
-		char* converted = (char*)LocalAlloc(LMEM_ZEROINIT, string_len);
+		char* converted = new char[string_len];
 		if (!converted) {
 			Nan::ThrowError("Error LocalAlloc");
 		}
@@ -68,7 +68,7 @@ NAN_METHOD(WLogger::Start) {
 
 		std::string result = converted;
 
-		LocalFree(converted);
+		delete[] converted;
 
 		const char * filename = result.c_str();
 #else
