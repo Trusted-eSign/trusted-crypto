@@ -1093,8 +1093,6 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 		DWORD cbData = 0;
 		Handle<std::string> res = new std::string("");
 
-		std::wstring wCategory = std::wstring(category->begin(), category->end());
-
 		pCertContext = createCertificateContext(cert);
 
 		if (!CryptAcquireContext(
