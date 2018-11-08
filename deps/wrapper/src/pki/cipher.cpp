@@ -625,7 +625,7 @@ Handle<std::string> Cipher::getMode(){
 			temp = "cfb";
 		}
 		else if (EVP_CIPH_OFB_MODE == EVP_CIPHER_mode(cipher)){
-			temp == "ofb";
+			temp = "ofb";
 		}
 
 		Handle<std::string> res = new std::string(temp);
