@@ -251,7 +251,7 @@ NAN_METHOD(WCsp::EnumProviders)
 
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
-		for (int i = 0; i < res.size(); i++){
+		for (size_t i = 0; i < res.size(); i++){
 			v8::Local<v8::Object> obj = Nan::New<v8::Object>();
 			obj->Set(Nan::New("type").ToLocalChecked(), Nan::New<v8::Number>(res[i].type));
 			obj->Set(Nan::New("name").ToLocalChecked(), Nan::New<v8::String>(res[i].name->c_str()).ToLocalChecked());
@@ -293,7 +293,7 @@ NAN_METHOD(WCsp::EnumContainers)
 
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
-		for (int i = 0; i < res.size(); i++) {
+		for (size_t i = 0; i < res.size(); i++) {
 			v8::Local<v8::Object> tempObj = v8::Object::New(isolate);
 			Handle<ContainerName> item = res[i];
 

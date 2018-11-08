@@ -186,7 +186,7 @@ Handle<Key> Key::generate(Handle<std::string> algorithm, std::vector<std::string
 			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "EVP_PKEY_keygen_init");
 		}
 
-		for (int i = 0; i < pkeyopt.size(); i++) {
+		for (size_t i = 0; i < pkeyopt.size(); i++) {
 			const char *value = pkeyopt[i].c_str();
 			char *stmp, *vtmp = NULL;
 

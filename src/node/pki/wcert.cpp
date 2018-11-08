@@ -505,7 +505,7 @@ NAN_METHOD(WCertificate::GetOCSPUrls)
 
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
-		for (int i = 0; i < res.size(); i++){
+		for (size_t i = 0; i < res.size(); i++){
 			v8::Local<v8::String> v8Str = Nan::New<v8::String>(res[i]).ToLocalChecked();
 			array8->Set(i, v8Str);
 		}
@@ -529,7 +529,7 @@ NAN_METHOD(WCertificate::GetCAIssuersUrls)
 
 		v8::Local<v8::Array> array8 = v8::Array::New(isolate, res.size());
 
-		for (int i = 0; i < res.size(); i++){
+		for (size_t i = 0; i < res.size(); i++){
 			v8::Local<v8::String> v8Str = Nan::New<v8::String>(res[i]).ToLocalChecked();
 			array8->Set(i, v8Str);
 		}
