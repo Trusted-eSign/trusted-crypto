@@ -87,10 +87,6 @@ void ProviderMicrosoft::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 				providerItemCollection->push(item);
 			}
 		} while (pCertContext != NULL);
-
-		if (pCertContext){
-			CertFreeCertificateContext(pCertContext);
-		}
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error enum certificates in store");
@@ -127,10 +123,6 @@ void ProviderMicrosoft::enumCrls(HCERTSTORE hCertStore, std::string *category){
 				providerItemCollection->push(item);
 			}
 		} while (pCrlContext != NULL);
-
-		if (pCrlContext){
-			CertFreeCRLContext(pCrlContext);
-		}
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error enum CRLs in store");
@@ -320,10 +312,6 @@ Handle<CRL> ProviderMicrosoft::getCRL(Handle<std::string> hash, Handle<std::stri
 				}
 			}
 		} while (pCrlContext != NULL);
-
-		if (pCrlContext){
-			CertFreeCRLContext(pCrlContext);
-		}
 
 		CertCloseStore(hCertStore, 0);
 
@@ -618,10 +606,8 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
 		}
 
-		if (hCertStore) {
-			CertCloseStore(hCertStore, 0);
-			hCertStore = HCRYPT_NULL;
-		}
+		CertCloseStore(hCertStore, 0);
+		hCertStore = HCRYPT_NULL;
 
 		if (pCertContext) {
 			CertFreeCertificateContext(pCertContext);
@@ -675,7 +661,6 @@ void ProviderMicrosoft::addPkiObject(Handle<CRL> crl, Handle<std::string> catego
 	PCCRL_CONTEXT pCrlContext = HCRYPT_NULL;
 	HCERTSTORE hCertStore = HCRYPT_NULL;
 	HCRYPTPROV hProv = NULL;
-	HCRYPTKEY hKey = NULL;
 
 	try{
 		DWORD dwKeySpec, dwSize;
@@ -708,19 +693,12 @@ void ProviderMicrosoft::addPkiObject(Handle<CRL> crl, Handle<std::string> catego
 			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CertAddCertificateContextToStore failed. Code: %d", GetLastError())
 		}
 
-		if (hCertStore) {
-			CertCloseStore(hCertStore, 0);
-			hCertStore = HCRYPT_NULL;
-		}
+		CertCloseStore(hCertStore, 0);
+		hCertStore = HCRYPT_NULL;
 
 		if (pCrlContext) {
 			CertFreeCRLContext(pCrlContext);
 			pCrlContext = HCRYPT_NULL;
-		}
-
-		if (hKey) {
-			CryptDestroyKey(hKey);
-			hKey = NULL;
 		}
 
 		if (hProv) {
@@ -740,11 +718,6 @@ void ProviderMicrosoft::addPkiObject(Handle<CRL> crl, Handle<std::string> catego
 		if (pCrlContext) {
 			CertFreeCRLContext(pCrlContext);
 			pCrlContext = HCRYPT_NULL;
-		}
-
-		if (hKey) {
-			CryptDestroyKey(hKey);
-			hKey = NULL;
 		}
 
 		if (hProv) {

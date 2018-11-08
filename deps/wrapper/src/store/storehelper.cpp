@@ -370,9 +370,7 @@ Handle<PkiItemCollection> PkiItemCollection::find(Handle<Filter> filter) {
 				}
 			}
 
-			if (result){
-				filteredItems->push(this->items(i));
-			}
+			filteredItems->push(this->items(i));
 		}
 
 		return filteredItems;

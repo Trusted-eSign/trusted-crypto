@@ -177,10 +177,6 @@ Handle<Key> Key::generate(Handle<std::string> algorithm, std::vector<std::string
 			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "EVP_PKEY_CTX_new_id for %d", pkey_id);
 		}
 
-		if (!ctx) {
-			THROW_EXCEPTION(0, Key, NULL, "Can not keypair generate");
-		}
-
 		LOGGER_OPENSSL(EVP_PKEY_keygen_init);
 		if (EVP_PKEY_keygen_init(ctx) <= 0) {
 			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "EVP_PKEY_keygen_init");
@@ -210,10 +206,8 @@ Handle<Key> Key::generate(Handle<std::string> algorithm, std::vector<std::string
 			THROW_OPENSSL_EXCEPTION(0, Key, NULL, "Error generating key");
 		}
 
-		if (ctx) {
-			LOGGER_OPENSSL(EVP_PKEY_CTX_free);
-			EVP_PKEY_CTX_free(ctx);
-		}
+		LOGGER_OPENSSL(EVP_PKEY_CTX_free);
+		EVP_PKEY_CTX_free(ctx);
 
 		return new Key(pkey);
 	}

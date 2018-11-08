@@ -4,26 +4,26 @@
 
 #include "wrapper/store/provider_system.h"
 #if defined(OPENSSL_SYS_WINDOWS)
-	#include "wrapper/store/provider_microsoft.h"
+#include "wrapper/store/provider_microsoft.h"
 #endif
 #if defined(CPROCSP)
-	#include "wrapper/store/provider_cryptopro.h"
+#include "wrapper/store/provider_cryptopro.h"
 #endif
 
 PkiStore::PkiStore(Handle<std::string> json){
 	LOGGER_FN();
-	
+
 	try{
 		if (json.isEmpty()){
 			THROW_EXCEPTION(0, PkiStore, NULL, "json empty");
 		}
-		
+
 		providers = new ProviderCollection();
 		storeItemCollection = new PkiItemCollection();
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, PkiStore, e, "Cannot be constructed PkiStore(Handle<std::string> json)");
-	}	
+	}
 }
 
 Handle<PkiItemCollection> PkiStore::find(Handle<Filter> filter){
@@ -56,17 +56,7 @@ Handle<PkiItem> PkiStore::findKey(Handle<Filter> filter){
 		Handle<PkiItem> key = new PkiItem();
 
 		for (int i = 0, c = storeItemCollection->length(); i < c; i++){
-			bool result = 1;
-
 			if (strcmp(storeItemCollection->items(i)->hash->c_str(), filter->hash->c_str()) == 0){
-				result = 1;				
-			}
-			else{
-				result = 0;
-				continue;
-			}
-
-			if (result){
 				Handle<std::string> keyHash;
 
 				if (!(storeItemCollection->items(i)->certKey.isEmpty())){
@@ -88,6 +78,9 @@ Handle<PkiItem> PkiStore::findKey(Handle<Filter> filter){
 				}
 
 				break;
+			}
+			else{
+				continue;
 			}
 		}
 
@@ -115,18 +108,8 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 #if defined(OPENSSL_SYS_WINDOWS)
 		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0) {
 			for (int i = 0, c = storeItemCollection->length(); i < c; i++){
-				bool result = 1;
-
 				if ((strcmp(storeItemCollection->items(i)->hash->c_str(), item->hash->c_str()) == 0) &&
 					(strcmp(storeItemCollection->items(i)->provider->c_str(), item->provider->c_str()) == 0)){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-
-				if (result){
 					if (!storeItemCollection->items(i)->certificate->isEmpty()) {
 						cert = storeItemCollection->items(i)->certificate;
 						break;
@@ -135,6 +118,9 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 						cert = ProviderMicrosoft::getCert(item->hash, item->category);
 						break;
 					}
+				}
+				else{
+					continue;
 				}
 			}
 		}
@@ -178,7 +164,7 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error get cert from store");
-	}	
+	}
 }
 
 Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
@@ -193,18 +179,8 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 #if defined(OPENSSL_SYS_WINDOWS)
 		else  if (strcmp(item->provider->c_str(), "MICROSOFT") == 0){
 			for (int i = 0, c = storeItemCollection->length(); i < c; i++){
-				bool result = 1;
-
 				if ((strcmp(storeItemCollection->items(i)->hash->c_str(), item->hash->c_str()) == 0) &&
 					(strcmp(storeItemCollection->items(i)->provider->c_str(), item->provider->c_str()) == 0)){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-
-				if (result){
 					if (!storeItemCollection->items(i)->crl->isEmpty()) {
 						crl = storeItemCollection->items(i)->crl;
 						break;
@@ -214,24 +190,17 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 						break;
 					}
 				}
+				else{
+					continue;
+				}
 			}
 		}
 #endif
 #if defined(CPROCSP)
 		else  if (strcmp(item->provider->c_str(), "CRYPTOPRO") == 0){
 			for (int i = 0, c = storeItemCollection->length(); i < c; i++){
-				bool result = 1;
-
 				if ((strcmp(storeItemCollection->items(i)->hash->c_str(), item->hash->c_str()) == 0) &&
 					(strcmp(storeItemCollection->items(i)->provider->c_str(), item->provider->c_str()) == 0)){
-					result = 1;
-				}
-				else{
-					result = 0;
-					continue;
-				}
-
-				if (result){
 					if (!storeItemCollection->items(i)->crl->isEmpty()) {
 						crl = storeItemCollection->items(i)->crl;
 						break;
@@ -240,6 +209,9 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 						crl = ProviderCryptopro::getCRL(item->hash, item->category);
 						break;
 					}
+				}
+				else{
+					continue;
 				}
 			}
 		}
@@ -253,7 +225,7 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error get crl from store");
 	}
-}
+	}
 
 Handle<CertificationRequest> PkiStore::getItemReq(Handle<PkiItem> item){
 	LOGGER_FN();
@@ -299,7 +271,7 @@ Handle<Key> PkiStore::getItemKey(Handle<PkiItem> item){
 Handle<PkiItemCollection> PkiStore::getItems(){
 	LOGGER_FN();
 
-	return this->storeItemCollection;	
+	return this->storeItemCollection;
 }
 
 Handle<CertificateCollection> PkiStore::getCerts(){
@@ -334,7 +306,7 @@ Handle<CertificateCollection> PkiStore::getCerts(){
 
 void PkiStore::addProvider(Handle<Provider> provider) {
 	LOGGER_FN();
-	
+
 	providers->push(provider);
 
 	Handle<PkiItemCollection> tempColl = provider->getProviderItemCollection();
@@ -365,7 +337,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 				THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Modulus=unavailable", NULL);
 			}
 
-			#ifndef OPENSSL_NO_ECDSA
+#ifndef OPENSSL_NO_ECDSA
 			if (pkey->type == EVP_PKEY_EC) {
 				EC_KEY *tkey;
 				const EC_POINT *pubkey = NULL;
@@ -403,85 +375,85 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 				BN_CTX_end(ctx);
 			}
 			else
-			#endif
-			#ifndef OPENSSL_NO_RSA
-			if (pkey->type == EVP_PKEY_RSA)
-				BN_print(bioBN, pkey->pkey.rsa->n);
-			else
-			#endif
-			#ifndef OPENSSL_NO_DSA
-				if (pkey->type == EVP_PKEY_DSA)
-					BN_print(bioBN, pkey->pkey.dsa->pub_key);
+#endif
+#ifndef OPENSSL_NO_RSA
+				if (pkey->type == EVP_PKEY_RSA)
+					BN_print(bioBN, pkey->pkey.rsa->n);
 				else
+#endif
+#ifndef OPENSSL_NO_DSA
+					if (pkey->type == EVP_PKEY_DSA)
+						BN_print(bioBN, pkey->pkey.dsa->pub_key);
+					else
 #ifndef OPENSSL_NO_CTGOSTCP
-					if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001
-						|| pkey->type == NID_id_tc26_gost3410_12_256 || pkey->type == NID_id_tc26_gost3410_12_512)
-					{
-						EC_KEY *tkey;
-						const EC_POINT *pubkey = NULL;
-						LOGGER_OPENSSL(BN_CTX_new);
-						BN_CTX *ctx = BN_CTX_new();
-						if (!ctx) {
-							THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Allocating memory failed", NULL);
+						if (pkey->type == NID_id_GostR3410_94 || pkey->type == NID_id_GostR3410_2001
+							|| pkey->type == NID_id_tc26_gost3410_12_256 || pkey->type == NID_id_tc26_gost3410_12_512)
+						{
+							EC_KEY *tkey;
+							const EC_POINT *pubkey = NULL;
+							LOGGER_OPENSSL(BN_CTX_new);
+							BN_CTX *ctx = BN_CTX_new();
+							if (!ctx) {
+								THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Allocating memory failed", NULL);
+							}
+							BIGNUM *X = NULL, *Y = NULL;
+							const EC_GROUP *group = NULL;
+							EC_POINT *pub_key;
+
+							LOGGER_OPENSSL(BN_CTX_start);
+							BN_CTX_start(ctx);
+							LOGGER_OPENSSL(BN_CTX_get);
+							X = BN_CTX_get(ctx);
+							LOGGER_OPENSSL(BN_CTX_get);
+							Y = BN_CTX_get(ctx);
+
+							tkey = pkey->pkey.ec;
+							LOGGER_OPENSSL(EC_KEY_get0_public_key);
+							pubkey = EC_KEY_get0_public_key(tkey);
+							LOGGER_OPENSSL(EC_KEY_get0_group);
+							group = EC_KEY_get0_group(tkey);
+							LOGGER_OPENSSL(EC_POINT_get_affine_coordinates_GFp);
+							if (!EC_POINT_get_affine_coordinates_GFp(group, pubkey, X, Y, ctx)) {
+								THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Key is absent(not set)", NULL);
+							}
+							LOGGER_OPENSSL(BN_print);
+							BN_print(bioBN, X);
+							LOGGER_OPENSSL(BN_print);
+							BN_print(bioBN, Y);
+
+							LOGGER_OPENSSL(BN_CTX_end);
+							BN_CTX_end(ctx);
 						}
-						BIGNUM *X = NULL, *Y = NULL;
-						const EC_GROUP *group = NULL;
-						EC_POINT *pub_key;
-
-						LOGGER_OPENSSL(BN_CTX_start);
-						BN_CTX_start(ctx);
-						LOGGER_OPENSSL(BN_CTX_get);
-						X = BN_CTX_get(ctx);
-						LOGGER_OPENSSL(BN_CTX_get);
-						Y = BN_CTX_get(ctx);
-
-						tkey = pkey->pkey.ec;
-						LOGGER_OPENSSL(EC_KEY_get0_public_key);
-						pubkey = EC_KEY_get0_public_key(tkey);
-						LOGGER_OPENSSL(EC_KEY_get0_group);
-						group = EC_KEY_get0_group(tkey);
-						LOGGER_OPENSSL(EC_POINT_get_affine_coordinates_GFp);
-						if (!EC_POINT_get_affine_coordinates_GFp(group, pubkey, X, Y, ctx)) {
-							THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Key is absent(not set)", NULL); 
+						else{
+							THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
 						}
-						LOGGER_OPENSSL(BN_print);
-						BN_print(bioBN, X);
-						LOGGER_OPENSSL(BN_print);
-						BN_print(bioBN, Y);
-
-						LOGGER_OPENSSL(BN_CTX_end);
-						BN_CTX_end(ctx);
-					}
-					else{
-						THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
-					}
 #endif
 #ifdef OPENSSL_NO_CTGOSTCP
-			THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
+						THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
 #endif
 #endif
-			LOGGER_OPENSSL(EVP_PKEY_free);
-			EVP_PKEY_free(pkey);
-			
-			int contlen;
-			char * cont;
-			LOGGER_OPENSSL(BIO_get_mem_data);
-			contlen = BIO_get_mem_data(bioBN, &cont);
+						LOGGER_OPENSSL(EVP_PKEY_free);
+						EVP_PKEY_free(pkey);
 
-			unsigned char tmphash[SHA_DIGEST_LENGTH];
-			LOGGER_OPENSSL(SHA1);
-			SHA1((const unsigned char *)cont, contlen, tmphash);
-			bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+						int contlen;
+						char * cont;
+						LOGGER_OPENSSL(BIO_get_mem_data);
+						contlen = BIO_get_mem_data(bioBN, &cont);
 
-			uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".crt";
+						unsigned char tmphash[SHA_DIGEST_LENGTH];
+						LOGGER_OPENSSL(SHA1);
+						SHA1((const unsigned char *)cont, contlen, tmphash);
+						bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
 
-			Handle<std::string> huri = new std::string(uri);
+						uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".crt";
 
-			LOGGER_OPENSSL(BIO_free_all);
-			BIO_free_all(bioBN);
+						Handle<std::string> huri = new std::string(uri);
 
- 			Provider_System::addPkiObject(huri, cert);
-			return huri;
+						LOGGER_OPENSSL(BIO_free_all);
+						BIO_free_all(bioBN);
+
+						Provider_System::addPkiObject(huri, cert);
+						return huri;
 		}
 #if defined(OPENSSL_SYS_WINDOWS)
 		else if (strcmp(provider->type->c_str(), "MICROSOFT") == 0){
@@ -501,8 +473,8 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 	}
 	catch (Handle<Exception> e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error add certificate to store");
+		}
 	}
-}
 
 Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl){
 	LOGGER_FN();
@@ -565,18 +537,18 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 				THROW_OPENSSL_EXCEPTION(0, PkiStore, NULL, "Modulus=unavailable", NULL);
 			}
 
-			#ifndef OPENSSL_NO_RSA
+#ifndef OPENSSL_NO_RSA
 			if (pkey->type == EVP_PKEY_RSA)
 				BN_print(bioBN, pkey->pkey.rsa->n);
 			else
-				#endif
-			#ifndef OPENSSL_NO_DSA
+#endif
+#ifndef OPENSSL_NO_DSA
 				if (pkey->type == EVP_PKEY_DSA)
 					BN_print(bioBN, pkey->pkey.dsa->pub_key);
 				else
-			#endif
+#endif
 
-			LOGGER_OPENSSL(EVP_PKEY_free);
+					LOGGER_OPENSSL(EVP_PKEY_free);
 			EVP_PKEY_free(pkey);
 
 			int contlen;
@@ -685,31 +657,31 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key
 						THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
 					}
 
-					
+
 #endif
 #ifdef OPENSSL_NO_CTGOSTCP
-				THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
+					THROW_EXCEPTION(0, PkiStore, NULL, "Wrong Algorithm type");
 #endif
 #endif
-				LOGGER_OPENSSL(BIO_get_mem_data);
-				contlen = BIO_get_mem_data(bioBN, &cont);
+					LOGGER_OPENSSL(BIO_get_mem_data);
+					contlen = BIO_get_mem_data(bioBN, &cont);
 
-				unsigned char tmphash[SHA_DIGEST_LENGTH];
-				LOGGER_OPENSSL(SHA1);
-				SHA1((const unsigned char *)cont, contlen, tmphash);
-				bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
+					unsigned char tmphash[SHA_DIGEST_LENGTH];
+					LOGGER_OPENSSL(SHA1);
+					SHA1((const unsigned char *)cont, contlen, tmphash);
+					bin_to_strhex(tmphash, SHA_DIGEST_LENGTH, &hexHash);
 
-				Handle<std::string> res = new std::string(reinterpret_cast<char*>(hexHash));
+					Handle<std::string> res = new std::string(reinterpret_cast<char*>(hexHash));
 
-				LOGGER_OPENSSL(BIO_free_all);
-				BIO_free_all(bioBN);
+					LOGGER_OPENSSL(BIO_free_all);
+					BIO_free_all(bioBN);
 
-				uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".key";
+					uri = uri + std::string(reinterpret_cast<char*>(hexHash)) + ".key";
 
-				Handle<std::string> huri = new std::string(uri);
+					Handle<std::string> huri = new std::string(uri);
 
-				Provider_System::addPkiObject(huri, key, password);
-				return huri;
+					Provider_System::addPkiObject(huri, key, password);
+					return huri;
 		}
 		else{
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
@@ -743,8 +715,8 @@ void PkiStore::deletePkiObject(Handle<Provider> provider, Handle<std::string> ca
 	}
 	catch (Handle<Exception> e) {
 		THROW_EXCEPTION(0, PkiStore, e, "Error delete certificate from store");
+		}
 	}
-}
 
 void PkiStore::deletePkiObject(Handle<Provider> provider, Handle<std::string> category, Handle<CRL> crl){
 	LOGGER_FN();
@@ -773,8 +745,8 @@ void PkiStore::deletePkiObject(Handle<Provider> provider, Handle<std::string> ca
 	}
 	catch (Handle<Exception> e) {
 		THROW_EXCEPTION(0, PkiStore, e, "Error delete certificate from store");
+		}
 	}
-}
 
 void PkiStore::bin_to_strhex(unsigned char *bin, unsigned int binsz, char **result){
 	LOGGER_FN();
