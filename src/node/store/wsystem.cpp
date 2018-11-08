@@ -43,7 +43,7 @@ NAN_METHOD(WProvider_System::New){
 		string_len = WideCharToMultiByte(CP_ACP, 0, wCont, -1, converted, string_len, NULL, NULL);
 		if (!string_len)
 		{
-			free(converted);
+			delete[] converted;
 			Nan::ThrowError("Error WideCharToMultiByte");
 		}
 
