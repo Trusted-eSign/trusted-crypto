@@ -180,7 +180,13 @@ namespace trusted.pkistore {
             super();
             if (typeof (param) === "string") {
                 this.handle = new native.PKISTORE.PkiStore(param);
-                this.cashJson = new CashJson(param);
+
+                try {
+                    this.cashJson = new CashJson(param);
+                } catch (e) {
+                    //
+                }
+
             } else if (param instanceof native.PKISTORE.PkiStore) {
                 this.handle = param;
             } else {

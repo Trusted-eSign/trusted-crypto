@@ -131,8 +131,12 @@ describe("Store", function() {
         var exportPKI;
 
         items = store.find();
-        store.cash.import(items);
-        exportPKI = store.cash.export();
+
+        if (store.cash) {
+            store.cash.import(items);
+            exportPKI = store.cash.export();
+        }
+
         assert.equal(exportPKI.length > 0, true);
     });
 
