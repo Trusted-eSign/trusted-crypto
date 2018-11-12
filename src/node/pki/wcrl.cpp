@@ -174,6 +174,9 @@ NAN_METHOD(WCRL::Load)
 		std::string fname(filename);
 		free(filename);
 
+		LOGGER_ARG("format");
+		int format = info[1]->ToNumber()->Int32Value();
+
 		UNWRAP_DATA(CRL);
 
 		Handle<Bio> _in = NULL;
@@ -187,7 +190,7 @@ NAN_METHOD(WCRL::Load)
 		}
 
 		try{
-			_this->read(_in, DataFormat::DER);
+			_this->read(_in, DataFormat::get(format));
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError(e->what());
