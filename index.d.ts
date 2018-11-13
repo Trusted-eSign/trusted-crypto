@@ -507,6 +507,8 @@ declare namespace native {
             fqcnW: string;
         }
         class Jwt {
+            addLicense(data: string): boolean;
+            deleteLicense(data: string): boolean;
             checkLicense(data?: string): number;
             checkTrialLicense(): number;
             getExpirationTime(data?: string): number;
@@ -674,6 +676,25 @@ declare namespace trusted.utils {
      * @extends {BaseObject<native.JWT.Jwt>}
      */
     class Jwt extends BaseObject<native.UTILS.Jwt> {
+        /**
+         * Add jwt license to store
+         * License must be correct
+         *
+         * @static
+         * @param {string} license license token in JWT format
+         * @returns {boolean}
+         * @memberof Jwt
+         */
+        static addLicense(license: string): boolean;
+        /**
+         * Delete jwt license from store
+         *
+         * @static
+         * @param {string} license license token
+         * @returns {boolean}
+         * @memberof Jwt
+         */
+        static deleteLicense(license: string): boolean;
         /**
          * Verify jwt license file
          * Return 0 if license correct

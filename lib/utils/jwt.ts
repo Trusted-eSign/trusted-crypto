@@ -12,6 +12,33 @@ namespace trusted.utils {
      */
     export class Jwt extends BaseObject<native.UTILS.Jwt> {
         /**
+         * Add jwt license to store
+         * License must be correct
+         *
+         * @static
+         * @param {string} license license token in JWT format
+         * @returns {boolean}
+         * @memberof Jwt
+         */
+        public static addLicense(license: string): boolean {
+            const jwt = new native.UTILS.Jwt();
+            return jwt.addLicense(license);
+        }
+
+        /**
+         * Delete jwt license from store
+         *
+         * @static
+         * @param {string} license license token
+         * @returns {boolean}
+         * @memberof Jwt
+         */
+        public static deleteLicense(license: string): boolean {
+            const jwt = new native.UTILS.Jwt();
+            return jwt.deleteLicense(license);
+        }
+
+        /**
          * Verify jwt license file
          * Return 0 if license correct
          *

@@ -15,6 +15,8 @@ public:
 	static void Init(v8::Handle<v8::Object>);
 	static NAN_METHOD(New);
 
+	static NAN_METHOD(AddLicense);
+	static NAN_METHOD(DeleteLicense);
 	static NAN_METHOD(CheckLicense);
 	static NAN_METHOD(CheckTrialLicense);
 	static NAN_METHOD(GetExpirationTime);

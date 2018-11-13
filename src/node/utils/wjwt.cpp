@@ -13,6 +13,8 @@ void WJwt::Init(v8::Handle<v8::Object> exports) {
 	tpl->SetClassName(className);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1); // req'd by ObjectWrap
 
+	Nan::SetPrototypeMethod(tpl, "addLicense", AddLicense);
+	Nan::SetPrototypeMethod(tpl, "deleteLicense", DeleteLicense);
 	Nan::SetPrototypeMethod(tpl, "checkLicense", CheckLicense);
 	Nan::SetPrototypeMethod(tpl, "checkTrialLicense", CheckTrialLicense);
 	Nan::SetPrototypeMethod(tpl, "getExpirationTime", GetExpirationTime);
@@ -40,6 +42,40 @@ NAN_METHOD(WJwt::New) {
 	TRY_END();
 }
 
+NAN_METHOD(WJwt::AddLicense) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Jwt);
+
+		LOGGER_ARG("lic");
+		v8::String::Utf8Value v8Lic(info[0]->ToString());
+		char *lic = *v8Lic;
+
+		info.GetReturnValue().Set(_this->addLicense(new std::string(lic)));
+
+		return;
+	}
+	TRY_END();
+}
+
+NAN_METHOD(WJwt::DeleteLicense) {
+	METHOD_BEGIN();
+
+	try {
+		UNWRAP_DATA(Jwt);
+
+		LOGGER_ARG("lic");
+		v8::String::Utf8Value v8Lic(info[0]->ToString());
+		char *lic = *v8Lic;
+
+		info.GetReturnValue().Set(_this->deleteLicense(new std::string(lic)));
+
+		return;
+	}
+	TRY_END();
+}
+
 NAN_METHOD(WJwt::CheckLicense) {
 	METHOD_BEGIN();
 
@@ -56,7 +92,7 @@ NAN_METHOD(WJwt::CheckLicense) {
 
 			info.GetReturnValue().Set(_this->checkLicense(new std::string(lic)));
 		}
-		
+
 		return;
 	}
 	TRY_END();

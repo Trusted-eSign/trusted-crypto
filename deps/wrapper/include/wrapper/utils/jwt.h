@@ -12,6 +12,8 @@ public:
 	Jwt(){};
 	~Jwt(){};
 
+	bool addLicense(Handle<std::string> lic);
+	bool deleteLicense(Handle<std::string> lic);
 	int checkLicense();
 	int checkLicense(Handle<std::string> lic);
 	int checkTrialLicense();

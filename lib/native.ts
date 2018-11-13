@@ -521,6 +521,8 @@ declare namespace native {
         }
 
         class Jwt {
+            public addLicense(data: string): boolean;
+            public deleteLicense(data: string): boolean;
             public checkLicense(data?: string): number;
             public checkTrialLicense(): number;
             public getExpirationTime(data?: string): number;
