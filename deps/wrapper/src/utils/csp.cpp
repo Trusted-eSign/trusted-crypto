@@ -95,7 +95,7 @@ bool Csp::checkCPCSPLicense() {
 	LOGGER_FN();
 
 	static HCRYPTPROV hCryptProv = 0;
-	LPBYTE pbData;
+	LPBYTE pbData = HCRYPT_NULL;
 
 	try {
 		DWORD cbData = 0;
@@ -166,7 +166,7 @@ Handle<std::string> Csp::getCPCSPLicense() {
 	LOGGER_FN();
 
 	static HCRYPTPROV hCryptProv = 0;
-	LPBYTE pbData;
+	LPBYTE pbData = HCRYPT_NULL;
 
 	try {
 		DWORD cbData = 0;
@@ -289,7 +289,7 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 	LOGGER_FN();
 
 	static HCRYPTPROV hCryptProv = 0;
-	LPBYTE pbData;
+	LPBYTE pbData = HCRYPT_NULL;
 
 	try {
 		PROV_PP_VERSION_EX *exVersion = NULL;
@@ -359,7 +359,7 @@ Handle<std::string> Csp::getCPCSPVersionSKZI() {
 	LOGGER_FN();
 
 	static HCRYPTPROV hCryptProv = 0;
-	LPBYTE pbData;
+	LPBYTE pbData = HCRYPT_NULL;
 
 	try {
 		PROV_PP_VERSION_EX *exVersion = NULL;
@@ -473,7 +473,7 @@ Handle<std::string> Csp::getCPCSPSecurityLvl() {
 std::vector<ProviderProps> Csp::enumProviders() {
 	LOGGER_FN();
 
-	LPTSTR pszName;
+	LPTSTR pszName = HCRYPT_NULL;
 
 	try {
 		std::vector<ProviderProps> res;
@@ -1878,7 +1878,7 @@ bool Csp::cmpCertAndContFP(LPCSTR szContainerName, LPBYTE pbFPCert, DWORD cbFPCe
 
 	try {
 		HCRYPTPROV hProvCont = HCRYPT_NULL;
-		LPBYTE pbFPCont;
+		LPBYTE pbFPCont = HCRYPT_NULL;
 		DWORD cbFPCont;
 		BOOL result = FALSE;
 
