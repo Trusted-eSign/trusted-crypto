@@ -70,7 +70,7 @@ Handle<std::string> getBuffer(v8::Local<v8::Value> v8Value)
 	return buffer;
 }
 
-Handle<std::string> getErrorText(Handle<Exception> &e)
+Handle<std::string> getErrorText(Handle<Exception> e)
 {
 	LOGGER_FN();
 
