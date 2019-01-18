@@ -222,7 +222,7 @@ private:
 	struct CountHolder : public RCObject {
 
 		~CountHolder() {
-			if (pointee) delete pointee;
+			delete pointee;
 		}
 		T *pointee;
 	};

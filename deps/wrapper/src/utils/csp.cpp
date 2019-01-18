@@ -500,9 +500,7 @@ std::vector<ProviderProps> Csp::enumProviders() {
 		return res;
 	}
 	catch (Handle<Exception> e){
-		if (pszName) {
-			free(pszName);
-		}
+		free(pszName);
 
 		THROW_EXCEPTION(0, Csp, e, "Error enum providers");
 	}
