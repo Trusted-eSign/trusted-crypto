@@ -348,7 +348,6 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 				}
 				BIGNUM *X = NULL, *Y = NULL;
 				const EC_GROUP *group = NULL;
-				EC_POINT *pub_key;
 
 				LOGGER_OPENSSL(BN_CTX_start);
 				BN_CTX_start(ctx);
@@ -398,7 +397,6 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 							}
 							BIGNUM *X = NULL, *Y = NULL;
 							const EC_GROUP *group = NULL;
-							EC_POINT *pub_key;
 
 							LOGGER_OPENSSL(BN_CTX_start);
 							BN_CTX_start(ctx);

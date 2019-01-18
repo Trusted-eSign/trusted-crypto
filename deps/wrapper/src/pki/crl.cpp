@@ -178,7 +178,6 @@ Handle<std::string> CRL::getSignatureDigestAlgorithm() {
 	LOGGER_FN();
 
 	int signature_nid = 0, md_nid = 0;
-	const EVP_MD *type;
 
 	signature_nid = OBJ_obj2nid(this->internal()->sig_alg->algorithm);
 	if (!signature_nid){
@@ -323,7 +322,6 @@ Handle<RevokedCollection> CRL::getRevoked(){
 Handle<std::string> CRL::getAuthorityKeyid(){
 	LOGGER_FN();
 
-	const char *keyid = NULL;
 	AUTHORITY_KEYID *akid = NULL;
 
 	LOGGER_OPENSSL(X509_CRL_get_ext_d2i);

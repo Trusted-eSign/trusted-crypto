@@ -10,9 +10,9 @@ Certificate::Certificate(Handle<CertificationRequest> csr) :SSLObject<X509>(X509
 		X509_REQ *req = NULL;
 		EVP_PKEY *pkey;
 		STACK_OF(X509_EXTENSION) *exts = NULL;
-		X509_EXTENSION *ext, *tmpext;
+		X509_EXTENSION *ext;
 		ASN1_OBJECT *obj;
-		int i, idx, ret = 0;
+		int i, idx;
 		int verResult;
 
 		if (csr->isEmpty()){
@@ -406,7 +406,6 @@ Handle<std::string> Certificate::getSignatureDigestAlgorithm() {
 	LOGGER_FN();
 
 	int signature_nid = 0, md_nid = 0;
-	const EVP_MD *type;
 
 	LOGGER_OPENSSL("X509_get_signature_nid");
 	signature_nid = X509_get_signature_nid(this->internal());

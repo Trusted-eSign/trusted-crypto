@@ -61,7 +61,6 @@ NAN_METHOD(WSigner::VerifyContent) {
 
 		Handle<Bio> buffer;
 		bool res;
-		WSignedData *wSd = NULL;
 
 		if (info[0]->IsString()){
 			LOGGER_INFO("Set content from file");
