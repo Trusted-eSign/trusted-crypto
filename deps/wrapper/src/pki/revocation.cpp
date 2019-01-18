@@ -15,7 +15,7 @@ Handle<CRL> Revocation::getCrlLocal(Handle<Certificate> cert, Handle<PkiStore> p
 		STACK_OF(X509_CRL) *skCRL = NULL;
 
 		LOGGER_OPENSSL(sk_X509_CRL_new_null);
-		if (skCRL == NULL && (skCRL = sk_X509_CRL_new_null()) == NULL){
+		if ((skCRL = sk_X509_CRL_new_null()) == NULL){
 			THROW_OPENSSL_EXCEPTION(0, Revocation, NULL, "Error init stack of X509_CRL");
 		}
 

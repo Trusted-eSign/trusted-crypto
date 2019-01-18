@@ -520,7 +520,7 @@ void Cipher::setKey(Handle<std::string> keyP){
 		if (hkey == NULL) {
 			THROW_EXCEPTION(0, Cipher, NULL, "key undefined");
 		}
-		if ((hkey != NULL) && !setHex(hkey, key, EVP_CIPHER_key_length(cipher))) {
+		if (!setHex(hkey, key, EVP_CIPHER_key_length(cipher))) {
 			THROW_EXCEPTION(0, Cipher, NULL, "Invalid hex key value");
 		}
 	}

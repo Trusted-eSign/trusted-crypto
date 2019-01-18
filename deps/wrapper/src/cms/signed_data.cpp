@@ -67,7 +67,7 @@ void SignedData::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 			}
 
 			LOGGER_OPENSSL(CMS_is_detached);
-			if (ci && !CMS_is_detached(ci)){
+			if (!CMS_is_detached(ci)){
 				LOGGER_INFO("Get content from DER file");
 
 				LOGGER_OPENSSL(CMS_get0_content);
@@ -94,7 +94,7 @@ void SignedData::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 			};
 
 			LOGGER_OPENSSL(CMS_is_detached);
-			if (ci && !CMS_is_detached(ci)){
+			if (!CMS_is_detached(ci)){
 				LOGGER_INFO("Get content from DER file");
 
 				ASN1_OCTET_STRING *asn = (*CMS_get0_content(ci));
