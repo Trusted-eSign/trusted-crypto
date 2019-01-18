@@ -27,13 +27,13 @@ NAN_METHOD(WCashJson::New){
 	METHOD_BEGIN();
 
 	try{
-		WCashJson *obj = new WCashJson();
-
 		if (info[0]->IsUndefined()){
 			Nan::ThrowError("Parameter 1 is required");
 			return;
 		}
 		else {
+			WCashJson *obj = new WCashJson();
+
 #if defined(OPENSSL_SYS_WINDOWS)
 			LPCWSTR wCont = (LPCWSTR)* v8::String::Value(info[0]->ToString());
 
