@@ -663,12 +663,6 @@ void ProviderMicrosoft::addPkiObject(Handle<CRL> crl, Handle<std::string> catego
 	HCRYPTPROV hProv = NULL;
 
 	try{
-		DWORD dwKeySpec, dwSize;
-		ALG_ID dwAlgId = 0;
-		WCHAR wzContName[MAX_PATH];
-		DWORD dwNewProvType = 0;
-		CRYPT_KEY_PROV_INFO pKeyInfo = { 0 };
-
 		std::wstring wCategory = std::wstring(category->begin(), category->end());
 
 		pCrlContext = Csp::createCrlContext(crl);

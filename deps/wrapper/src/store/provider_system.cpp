@@ -89,7 +89,6 @@ void Provider_System::init(Handle<std::string> folder){
 	try{
 		HANDLE dir;
 		WIN32_FIND_DATA file_data;
-		TCHAR szDir[MAX_PATH];
 		BIO *bioFile;
 
 		if ((dir = FindFirstFile(folder->c_str(), &file_data)) == INVALID_HANDLE_VALUE){
