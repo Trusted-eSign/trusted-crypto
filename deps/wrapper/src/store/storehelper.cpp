@@ -375,7 +375,7 @@ Handle<PkiItemCollection> PkiItemCollection::find(Handle<Filter> filter) {
 
 		return filteredItems;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiItemCollection, e, "Error search object");
 	}
 }

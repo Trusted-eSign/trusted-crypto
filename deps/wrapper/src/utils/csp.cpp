@@ -28,7 +28,7 @@ bool Csp::isGost2001CSPAvailable() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Csp, e, "Error check GOST 2001 provaider");
 	}
 }
@@ -57,7 +57,7 @@ bool Csp::isGost2012_256CSPAvailable() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Csp, e, "Error check GOST 2001 provaider");
 	}
 }
@@ -86,7 +86,7 @@ bool Csp::isGost2012_512CSPAvailable() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Csp, e, "Error check GOST 2001 provaider");
 	}
 }
@@ -148,7 +148,7 @@ bool Csp::checkCPCSPLicense() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCryptProv) {
 			CryptReleaseContext(hCryptProv, 0);
 			hCryptProv = 0;
@@ -224,7 +224,7 @@ Handle<std::string> Csp::getCPCSPLicense() {
 
 		return license;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCryptProv) {
 			CryptReleaseContext(hCryptProv, 0);
 			hCryptProv = 0;
@@ -275,7 +275,7 @@ Handle<std::string> Csp::getCPCSPVersion() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCryptProv) {
 			CryptReleaseContext(hCryptProv, 0);
 			hCryptProv = 0;
@@ -341,7 +341,7 @@ Handle<std::string> Csp::getCPCSPVersionPKZI() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCryptProv) {
 			CryptReleaseContext(hCryptProv, 0);
 			hCryptProv = 0;
@@ -411,7 +411,7 @@ Handle<std::string> Csp::getCPCSPVersionSKZI() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCryptProv) {
 			CryptReleaseContext(hCryptProv, 0);
 			hCryptProv = 0;
@@ -460,7 +460,7 @@ Handle<std::string> Csp::getCPCSPSecurityLvl() {
 
 		return version;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCryptProv) {
 			CryptReleaseContext(hCryptProv, 0);
 			hCryptProv = 0;
@@ -499,7 +499,7 @@ std::vector<ProviderProps> Csp::enumProviders() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		free(pszName);
 
 		THROW_EXCEPTION(0, Csp, e, "Error enum providers");
@@ -654,7 +654,7 @@ std::vector<Handle<ContainerName>> Csp::enumContainers(int provType, Handle<std:
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Csp, e, "Error enum containers");
 	}
 }
@@ -745,7 +745,7 @@ Handle<Certificate> Csp::getCertificateFromContainer(Handle<std::string> contNam
 
 		return new Certificate(hcert);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		free(pbCertificate);
 
 		if (hKey) {
@@ -933,7 +933,7 @@ void Csp::installCertificateFromContainer(Handle<std::string> contName, int prov
 
 		return;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		free(pbCertificate);
 
 		if (hKey) {
@@ -1024,7 +1024,7 @@ void Csp::installCertificateToContainer(Handle<Certificate> cert, Handle<std::st
 
 		return;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hKey) {
 			CryptDestroyKey(hKey);
 			hKey = NULL;
@@ -1070,7 +1070,7 @@ void Csp::deleteContainer(Handle<std::string> contName, int provType, Handle<std
 
 		return;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Csp, e, "Error install certificate from container");
 	}
 }
@@ -1176,7 +1176,7 @@ Handle<std::string> Csp::getContainerNameByCertificate(Handle<Certificate> cert,
 
 		return res;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		if (pCertContext) {
 			CertFreeCertificateContext(pCertContext);
 			pCertContext = HCRYPT_NULL;
@@ -1241,7 +1241,7 @@ PCCERT_CONTEXT Csp::createCertificateContext(Handle<Certificate> cert) {
 
 		return pCertContext;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Csp, e, "Error create cert context from X509");
 	}
 }
@@ -1287,7 +1287,7 @@ PCCRL_CONTEXT Csp::createCrlContext(Handle<CRL> crl) {
 
 		return pCrlContext;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		if (pData) {
 			OPENSSL_free(pData);
 			pData = NULL;
@@ -1334,7 +1334,7 @@ bool Csp::findExistingCertificate(
 
 		return res;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Csp, e, "Error find certificate in store. Code: %d", GetLastError());
 	}
 }
@@ -1376,7 +1376,7 @@ bool Csp::findExistingCrl(
 
 		return res;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Csp, e, "Error find CRL in store. Code: %d", GetLastError());
 	}
 }
@@ -1444,7 +1444,7 @@ Handle<CertificateCollection> Csp::buildChain(Handle<Certificate> cert){
 
 		return chain;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Csp, e, "Error build chain (certificate collection)");
 	}
 }
@@ -1506,7 +1506,7 @@ bool Csp::verifyCertificateChain(Handle<Certificate> cert){
 
 		return bResult;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Csp, e, "Error verify chain (provider store)");
 	}
 }
@@ -1573,7 +1573,7 @@ bool Csp::isHaveExportablePrivateKey(Handle<Certificate> cert) {
 
 		return res;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		if (pCertFound) {
 			CertFreeCertificateContext(pCertFound);
 		}
@@ -1675,7 +1675,7 @@ Handle<Pkcs12> Csp::certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey
 
 		return resP12;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		if (pCertFound) {
 			CertFreeCertificateContext(pCertFound);
 		}
@@ -1813,7 +1813,7 @@ void Csp::importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password) {
 		CertCloseStore(hImportCertStore, 0);
 		hImportCertStore = HCRYPT_NULL;
 }
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		if (pCertContext) {
 			CertFreeCertificateContext(pCertContext);
 		}
@@ -1856,7 +1856,7 @@ CRYPT_KEY_PROV_INFO * Csp::getCertificateContextProperty(
 
 		return pinfo;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Csp, e, "Error get certificate context property");
 	}
 }
@@ -1914,7 +1914,7 @@ bool Csp::cmpCertAndContFP(LPCSTR szContainerName, LPBYTE pbFPCert, DWORD cbFPCe
 
 		return result;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Csp, e, "Error compare cert and container FP");
 	}
 }
@@ -2202,7 +2202,7 @@ void Csp::installCertificateFromCloud(
 			THROW_EXCEPTION(0, Csp, NULL, "set_certificate_to_store_internal return code: 0x%08x", err);
 		}
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		if (pCertContext) {
 			CertFreeCertificateContext(pCertContext);
 			pCertContext = HCRYPT_NULL;

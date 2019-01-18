@@ -21,7 +21,7 @@ PkiStore::PkiStore(Handle<std::string> json){
 		providers = new ProviderCollection();
 		storeItemCollection = new PkiItemCollection();
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Cannot be constructed PkiStore(Handle<std::string> json)");
 	}
 }
@@ -36,7 +36,7 @@ Handle<PkiItemCollection> PkiStore::find(Handle<Filter> filter){
 
 		return storeItemCollection->find(filter);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error search object");
 	}
 }
@@ -86,7 +86,7 @@ Handle<PkiItem> PkiStore::findKey(Handle<Filter> filter){
 
 		return key;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error search key");
 	}
 }
@@ -162,7 +162,7 @@ Handle<Certificate> PkiStore::getItemCert(Handle<PkiItem> item){
 
 		return cert;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error get cert from store");
 	}
 }
@@ -222,7 +222,7 @@ Handle<CRL> PkiStore::getItemCrl(Handle<PkiItem> item){
 
 		return crl;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error get crl from store");
 	}
 	}
@@ -242,7 +242,7 @@ Handle<CertificationRequest> PkiStore::getItemReq(Handle<PkiItem> item){
 
 		return csr;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error get crl from store");
 	}
 }
@@ -262,7 +262,7 @@ Handle<Key> PkiStore::getItemKey(Handle<PkiItem> item){
 
 		return key;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error get key from store");
 	}
 }
@@ -299,7 +299,7 @@ Handle<CertificateCollection> PkiStore::getCerts(){
 
 		return result;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error get certs from store");
 	}
 }
@@ -471,7 +471,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error add certificate to store");
 		}
 	}
@@ -503,7 +503,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error add crl to store");
 	}
 }
@@ -575,7 +575,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<std
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error add csr to store");
 	}
 }
@@ -687,7 +687,7 @@ Handle<std::string> PkiStore::addPkiObject(Handle<Provider> provider, Handle<Key
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, PkiStore, e, "Error add key to store");
 	}
 }
@@ -713,7 +713,7 @@ void PkiStore::deletePkiObject(Handle<Provider> provider, Handle<std::string> ca
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, PkiStore, e, "Error delete certificate from store");
 		}
 	}
@@ -743,7 +743,7 @@ void PkiStore::deletePkiObject(Handle<Provider> provider, Handle<std::string> ca
 			THROW_EXCEPTION(0, PkiStore, NULL, "Provider type unsoported")
 		}
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, PkiStore, e, "Error delete certificate from store");
 		}
 	}

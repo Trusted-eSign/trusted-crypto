@@ -32,7 +32,7 @@ void CRL::read(Handle<Bio> in, DataFormat::DATA_FORMAT format) {
 		}
 		this->setData(crl);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CRL, e, "Error read CRL");
 	}	
 }
@@ -61,7 +61,7 @@ void CRL::write(Handle<Bio> out, DataFormat::DATA_FORMAT format) {
 		}
 		out->flush();
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CRL, e, "Error write CRL to file");
 	}
 	
@@ -78,7 +78,7 @@ Handle<CRL> CRL::duplicate(){
 		}
 		return new CRL(crl);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CRL, e, "Eror duplicate CRL");
 	}	
 }
@@ -94,7 +94,7 @@ int CRL::equals(Handle<CRL> crl){
 			return -1;
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CRL, e, "Error compare CRL");
 	}	
 }
@@ -169,7 +169,7 @@ Handle<std::string> CRL::getSignatureAlgorithm(){
 
 		return (new Algorithm(sigalg))->getName();
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CRL, e, "Error get CRL signature algorithm long name");
 	}	
 }
@@ -278,7 +278,7 @@ Handle<std::string> CRL::getEncoded(){
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CRL, e, "Error get encoded CRL");
 	}	
 }
@@ -292,7 +292,7 @@ Handle<std::string> CRL::getSignature(){
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CRL, e, "Error get signature CRL");
 	}
 }

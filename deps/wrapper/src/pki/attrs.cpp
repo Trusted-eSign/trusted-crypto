@@ -63,7 +63,7 @@ Handle<Attribute> AttributeCollection::items(const std::string &txtOID) {
 	try{
 		 oid = new OID(txtOID);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, AttributeCollection, e, "Can not create OID");
 	}
 	return this->items(oid);
@@ -76,7 +76,7 @@ Handle<Attribute> AttributeCollection::items(const char* oid) {
 	try{
 		hoid = new OID(std::string(oid));
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, AttributeCollection, e, "Can not create OID");
 	}
 	return this->items(hoid);

@@ -67,7 +67,7 @@ Handle<CRL> Revocation::getCrlLocal(Handle<Certificate> cert, Handle<PkiStore> p
 
 		return new CRL();
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Revocation, e, "Error get CRL local");
 	}
 }
@@ -113,7 +113,7 @@ bool Revocation::checkCrlTime(Handle<CRL> hcrl) {
 			}
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		return 0;
 	}
 
@@ -158,7 +158,7 @@ std::vector<std::string> Revocation::getCrlDistPoints(Handle<Certificate> cert){
 			sk_DIST_POINT_free(pStack);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Revocation, e, "Error get DP");
 	}
 

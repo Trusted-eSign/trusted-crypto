@@ -13,7 +13,7 @@ CertificationRequest::CertificationRequest(Handle<CertificationRequestInfo> csri
 
 		this->internal()->req_info = csrinfo->internal();		
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CertificationRequest, e, "Error create certification request");
 	}
 }
@@ -53,7 +53,7 @@ void CertificationRequest::sign(Handle<Key> key, const char* digest){
 		}
 
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CertificationRequest, e, "Error sign csr");
 	}
 }
@@ -104,7 +104,7 @@ Handle<std::string> CertificationRequest::getPEMString(){
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CertificationRequest, e, "Error get pem CSR");
 	}
 }
@@ -224,7 +224,7 @@ void CertificationRequest::setSubject(Handle<std::string> xName) {
 			X509_NAME_free(name);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CertificationRequest, e, "Error set subject to X509_REQ_info");
 	}
 }
@@ -273,7 +273,7 @@ void CertificationRequest::setExtensions(Handle<ExtensionCollection> exts) {
 
 		return;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, CertificationRequest, e, "Error set extensions");
 	}
 }

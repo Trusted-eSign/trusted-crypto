@@ -33,7 +33,7 @@ void Key::readPrivateKey(Handle<Bio> in, DataFormat::DATA_FORMAT format, Handle<
 
 		this->setData(key);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Key, e, "Error read private key");
 	}
 }
@@ -67,7 +67,7 @@ void Key::readPublicKey(Handle<Bio> in, DataFormat::DATA_FORMAT format) {
 
 		this->setData(key);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Key, e, "Error read pubkey key");
 	}
 }
@@ -111,7 +111,7 @@ void Key::writePrivateKey(Handle<Bio> out, DataFormat::DATA_FORMAT format, Handl
 			THROW_EXCEPTION(0, Key, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Key, e, "Error write private key");
 	}
 }
@@ -141,7 +141,7 @@ void Key::writePublicKey(Handle<Bio> out, DataFormat::DATA_FORMAT format) {
 			THROW_EXCEPTION(0, Key, NULL, ERROR_DATA_FORMAT_UNKNOWN_FORMAT, format);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Key, e, "Error write pubkey key to BIO");
 	}
 }
@@ -211,7 +211,7 @@ Handle<Key> Key::generate(Handle<std::string> algorithm, std::vector<std::string
 
 		return new Key(pkey);
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Key, e, "Can not keypair generate");
 	}
 }

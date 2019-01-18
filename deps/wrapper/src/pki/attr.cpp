@@ -69,7 +69,7 @@ void Attribute::setTypeId(std::string oid) {
 		Handle<OID> _oid = new OID(oid);
 		this->setTypeId(_oid);
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Attribute, e, "No comment");
 	}
 }

@@ -46,7 +46,7 @@ void CertificationRequestInfo::setSubject(Handle<std::string> xName) {
 			X509_NAME_free(name);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CertificationRequestInfo, e, "Error set subject to X509_REQ_info");
 	}
 }

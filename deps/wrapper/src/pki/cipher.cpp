@@ -25,7 +25,7 @@ Cipher::Cipher(){
 			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Invalid generate pseudo rand");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error init cipher");
 	}
 }
@@ -45,7 +45,7 @@ void Cipher::setCryptoMethod(CryptoMethod::Crypto_Method method){
 			THROW_EXCEPTION(0, Cipher, NULL, "Unknown crypto method");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error set crypto method");
 	}	
 }
@@ -64,7 +64,7 @@ void Cipher::addRecipientsCerts(Handle<CertificateCollection> certs){
 			sk_X509_push(encerts, (certs->items(i))->internal());
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error add recipients certs");
 	}	
 }
@@ -244,7 +244,7 @@ void Cipher::encrypt(Handle<Bio> inSource, Handle<Bio> outEnc, DataFormat::DATA_
 
 		
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error encrypt");
 	}	
 }
@@ -384,7 +384,7 @@ void Cipher::decrypt(Handle<Bio> inEnc, Handle<Bio> outDec, DataFormat::DATA_FOR
 
 		
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error decrypt");
 	}
 }
@@ -425,7 +425,7 @@ Handle<CmsRecipientInfoCollection> Cipher::getRecipientInfos(Handle<Bio> inEnc, 
 			return new  CmsRecipientInfoCollection(ris);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error get recipients");
 	}
 }
@@ -439,7 +439,7 @@ void Cipher::setDigest(Handle<std::string> md){
 			THROW_OPENSSL_EXCEPTION(0, Cipher, NULL, "Error digest name");
 		}		
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error set digest");
 	}
 	
@@ -481,7 +481,7 @@ void Cipher::setSalt(Handle<std::string> saltP){
 			THROW_EXCEPTION(0, Cipher, NULL, "Salt cannot be null");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error set salt");
 	}
 }
@@ -506,7 +506,7 @@ void Cipher::setIV(Handle<std::string> ivP){
 			THROW_EXCEPTION(0, Cipher, NULL, "iv undefined");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error set iv");
 	}
 }
@@ -524,7 +524,7 @@ void Cipher::setKey(Handle<std::string> keyP){
 			THROW_EXCEPTION(0, Cipher, NULL, "Invalid hex key value");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Cipher, e, "Error set key");
 	}
 }

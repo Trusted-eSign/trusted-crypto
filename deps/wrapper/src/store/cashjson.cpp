@@ -24,7 +24,7 @@ CashJson::CashJson(Handle<std::string> fileName){
 			cashStore.close();
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CashJson, e, "Cannot create new json file");
 	}
 }
@@ -109,7 +109,7 @@ Handle<PkiItemCollection> CashJson::exportJson(){
 
 		return items;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CashJson, e, "Error export json");
 	}	
 }
@@ -186,7 +186,7 @@ void CashJson::importJson(Handle<PkiItem> item){
 
 		cashStore.close();
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CashJson, e, "Error import json");
 	}
 }

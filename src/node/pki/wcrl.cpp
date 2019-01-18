@@ -75,7 +75,7 @@ NAN_METHOD(WCRL::GetIssuerName)
 		try{
 			name = _this->issuerName();
 		}
-		catch (Handle<Exception> e){
+		catch (Handle<Exception> &e){
 			Nan::ThrowError(e->what());
 			return;
 		}
@@ -115,7 +115,7 @@ NAN_METHOD(WCRL::GetLastUpdate)
 		try{
 			time = _this->getThisUpdate();
 		}
-		catch (Handle<Exception> e){
+		catch (Handle<Exception> &e){
 			Nan::ThrowError(e->what());
 		}
 
@@ -137,7 +137,7 @@ NAN_METHOD(WCRL::GetNextUpdate)
 		try{
 			time = _this->getNextUpdate();
 		}
-		catch (Handle<Exception> e){
+		catch (Handle<Exception> &e){
 			Nan::ThrowError(e->what());
 		}
 
@@ -182,7 +182,7 @@ NAN_METHOD(WCRL::Load)
 		try{
 			_in = new Bio(BIO_TYPE_FILE, fname, "rb");
 		}
-		catch (Handle<Exception> e){
+		catch (Handle<Exception> &e){
 			Nan::ThrowError("File not found");
 			return;
 		}
@@ -190,7 +190,7 @@ NAN_METHOD(WCRL::Load)
 		try{
 			_this->read(_in, DataFormat::get(format));
 		}
-		catch (Handle<Exception> e){
+		catch (Handle<Exception> &e){
 			Nan::ThrowError(e->what());
 			return;
 		}
@@ -223,7 +223,7 @@ NAN_METHOD(WCRL::Import)
 
 			_this->read(in, DataFormat::DER);
 		}
-		catch (Handle<Exception> e){
+		catch (Handle<Exception> &e){
 			Nan::ThrowError(e->what());
 			return;
 		}
@@ -250,7 +250,7 @@ NAN_METHOD(WCRL::Save)
 			Handle<Bio> out = new Bio(BIO_TYPE_FILE, filename, "wb");
 			_this->write(out, DataFormat::get(format));
 		}
-		catch (Handle<Exception> e){
+		catch (Handle<Exception> &e){
 			Nan::ThrowError(e->what());
 			return;
 		}

@@ -133,7 +133,7 @@ bool Signer::verify(){
 
 		return res == 1;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Signer, e, "Error verify signer info");
 	}
 }
@@ -232,7 +232,7 @@ if (pctx) {
 
 return res == 1;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Signer, e, "Error verify signer content");
 	}
 }
@@ -287,7 +287,7 @@ Handle<SignerId> Signer::getSignerId(){
 
 		return certId;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Signer, e, "Error get signer identifier information");
 	}
 }

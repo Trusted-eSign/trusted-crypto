@@ -8,7 +8,7 @@ Algorithm::Algorithm(const char* alg_name)
 		init(alg_name);
 
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Algorithm, e, "Can not init Algorithm");
 	}
 }
@@ -24,7 +24,7 @@ Algorithm::Algorithm(Handle<OID> alg_oid)
 		Handle<std::string> sn = alg_oid->getShortName();
 		init(sn->c_str());
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Algorithm, e, "Can not init Algorithm");
 	}
 }

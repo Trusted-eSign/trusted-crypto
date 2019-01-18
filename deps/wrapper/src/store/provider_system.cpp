@@ -17,7 +17,7 @@ Provider_System::Provider_System(Handle<std::string> folder){
 			init(folder);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Cannot be constructed Provider_System");
 	}	
 }
@@ -148,7 +148,7 @@ void Provider_System::init(Handle<std::string> folder){
 			FindClose(dir);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error init system store");
 	}
 
@@ -389,7 +389,7 @@ Handle<PkiItem> Provider_System::objectToPKIItem(Handle<std::string> uri){
 			return item;
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Object type not supported");
 	}
 
@@ -434,7 +434,7 @@ Handle<Certificate> Provider_System::getCertFromURI(Handle<std::string> uri, Han
 			return new Certificate(hcert);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error get certificate from URI");
 	}
 }
@@ -475,7 +475,7 @@ Handle<CRL> Provider_System::getCRLFromURI(Handle<std::string> uri, Handle<std::
 			return new CRL(hcrl);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "getCRLFromURI");
 	}
 }
@@ -517,7 +517,7 @@ Handle<CertificationRequest> Provider_System::getCSRFromURI(Handle<std::string> 
 			return new CertificationRequest(hreq);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "getCSRFromURI");
 	}
 }
@@ -562,7 +562,7 @@ Handle<Key> Provider_System::getKeyFromURI(Handle<std::string> uri, Handle<std::
 			return new Key(hkey);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "getCSRFromURI");
 	}
 }
@@ -578,7 +578,7 @@ void Provider_System::addPkiObject(Handle<std::string> uri, Handle<Certificate> 
 			THROW_OPENSSL_EXCEPTION(0, Provider_System, NULL, "PEM_write_bio_X509", NULL);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error add certificate to store");
 	}	
 }
@@ -594,7 +594,7 @@ void Provider_System::addPkiObject(Handle<std::string> uri, Handle<CRL> crl){
 			THROW_OPENSSL_EXCEPTION(0, CRL, NULL, "i2d_X509_CRL_bio");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error add crl to store");
 	}
 }
@@ -606,7 +606,7 @@ void Provider_System::addPkiObject(Handle<std::string> huri, Handle<Key> key, Ha
 		Handle<Bio> out = new Bio(BIO_TYPE_FILE, huri->c_str(), "wb");
 		key->writePrivateKey(out, DataFormat::BASE64, password);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error add key to store");
 	}
 }
@@ -622,7 +622,7 @@ void Provider_System::addPkiObject(Handle<std::string> uri, Handle<Certification
 			THROW_OPENSSL_EXCEPTION(0, Provider_System, NULL, "PEM_write_bio_X509_REQ", NULL);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error add csr to store");
 	}
 }
@@ -681,7 +681,7 @@ Handle<std::string> Provider_System::getKey(Handle<std::string> objectPatch){
 			return new std::string("");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Provider_System, e, "Error search key file");
 	}	
 }

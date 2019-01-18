@@ -19,7 +19,7 @@ Extension::Extension(Handle<OID> oid, Handle<std::string> value)
 
 		this->setData(ex);
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Extension, e, "Error Extension constructor");
 	}	
 }
@@ -50,7 +50,7 @@ void Extension::setTypeId(std::string oid) {
 		Handle<OID> _oid = new OID(oid);
 		this->setTypeId(_oid);
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Extension, e, "Error set typeId");
 	}
 }

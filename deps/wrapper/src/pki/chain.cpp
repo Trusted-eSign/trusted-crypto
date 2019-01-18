@@ -34,7 +34,7 @@ Handle<CertificateCollection> Chain::buildChain(Handle<Certificate> cert, Handle
 
 		return chain;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Chain, e, "Error build chain (certificate collection)");
 	}
 }
@@ -93,7 +93,7 @@ bool Chain::verifyChain(Handle<CertificateCollection> chain, Handle<CrlCollectio
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Chain, e, "Error verify chain (provider store)");
 	}	
 }
@@ -110,7 +110,7 @@ Handle<Certificate> Chain::getIssued(Handle<CertificateCollection> certs, Handle
 
 		return NULL;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Chain, e, "Error get issued");
 	}
 }
@@ -138,7 +138,7 @@ bool Chain::checkIssued(Handle<Certificate> issuer, Handle<Certificate> cert){
 			return 0;
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Chain, e, "checkIssued");
 	}	
 }

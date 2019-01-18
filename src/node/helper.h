@@ -40,7 +40,7 @@ DataFormat::DATA_FORMAT getCmsFileType(Handle<Bio> in);
 	info.GetReturnValue().SetUndefined();
 
 #define TRY_END_HANDLE_EXCEPTION()\
-	catch(Handle<Exception> e){ \
+	catch(Handle<Exception> &e){ \
 		Nan::ThrowError(getErrorText(e)->c_str()); \
 		return;}
 

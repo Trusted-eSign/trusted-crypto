@@ -49,7 +49,7 @@ Handle<Pkcs12> Pkcs12::create(Handle<Certificate> cert, Handle<Key> key, Handle<
 
 		return new Pkcs12(p12, this->handle());
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Pkcs12, e, "Error create pkcs12");
 	}
 }
@@ -74,7 +74,7 @@ Handle<Certificate> Pkcs12::getCertificate(const char *pass) {
 		}
 		
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Pkcs12, e, "Error get certificate from pkcs12");
 	}
 }
@@ -99,7 +99,7 @@ Handle<Key> Pkcs12::getKey(const char *pass) {
 		}
 		
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Pkcs12, e, "Error get key from pkcs12");
 	}
 }
@@ -124,7 +124,7 @@ Handle<CertificateCollection> Pkcs12::getCACertificates(const char *pass) {
 		}
 
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Pkcs12, e, "Error get ca from pkcs12");
 	}
 }

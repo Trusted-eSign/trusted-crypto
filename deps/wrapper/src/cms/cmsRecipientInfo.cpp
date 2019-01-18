@@ -13,7 +13,7 @@ void CmsRecipientInfo::setValue(CMS_RecipientInfo *ri) {
 		}
 		this->ri = ri;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CmsRecipientInfo, e, "Cannot be constructed CmsRecipientInfo(CMS_RecipientInfo *ri)");
 	}	
 }
@@ -40,7 +40,7 @@ Handle<std::string> CmsRecipientInfo::getIssuerName() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CmsRecipientInfo, e, "Error get issuer name");
 	}
 }
@@ -78,7 +78,7 @@ Handle<std::string> CmsRecipientInfo::getSerialNumber() {
 
 		return res;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, CmsRecipientInfo, e, "Error get serial number");
 	}	
 }

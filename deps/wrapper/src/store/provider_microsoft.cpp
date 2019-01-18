@@ -11,7 +11,7 @@ ProviderMicrosoft::ProviderMicrosoft(){
 
 		init();
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Cannot be constructed ProviderMicrosoft");
 	}
 }
@@ -51,7 +51,7 @@ void ProviderMicrosoft::init(){
 			CertCloseStore(hCertStore, 0);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error init microsoft provider");
 	}
 }
@@ -88,7 +88,7 @@ void ProviderMicrosoft::enumCertificates(HCERTSTORE hCertStore, std::string *cat
 			}
 		} while (pCertContext != NULL);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error enum certificates in store");
 	}
 }
@@ -124,7 +124,7 @@ void ProviderMicrosoft::enumCrls(HCERTSTORE hCertStore, std::string *category){
 			}
 		} while (pCrlContext != NULL);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error enum CRLs in store");
 	}
 }
@@ -163,7 +163,7 @@ Handle<PkiItem> ProviderMicrosoft::objectToPKIItem(Handle<Certificate> cert){
 
 		return item;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error create PkiItem from certificate");
 	}
 }
@@ -198,7 +198,7 @@ Handle<PkiItem> ProviderMicrosoft::objectToPKIItem(Handle<CRL> crl){
 
 		return item;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error create PkiItem from crl");
 	}
 }
@@ -261,7 +261,7 @@ Handle<Certificate> ProviderMicrosoft::getCert(Handle<std::string> hash, Handle<
 			THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Cannot find certificate in store");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error get certificate");
 	}
 }
@@ -317,7 +317,7 @@ Handle<CRL> ProviderMicrosoft::getCRL(Handle<std::string> hash, Handle<std::stri
 
 		THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Cannot find CRL in store");
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error get CRL");
 	}
 }
@@ -469,7 +469,7 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 		return new Key(pkey);
 #endif //OPENSSL_NO_CTGOSTCP
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error get key");
 	}
 
@@ -627,7 +627,7 @@ void ProviderMicrosoft::addPkiObject(Handle<Certificate> cert, Handle<std::strin
 			hProv = NULL;
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCertStore) {
 			CertCloseStore(hCertStore, 0);
 			hCertStore = HCRYPT_NULL;
@@ -701,7 +701,7 @@ void ProviderMicrosoft::addPkiObject(Handle<CRL> crl, Handle<std::string> catego
 			pCrlContext = HCRYPT_NULL;
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCertStore) {
 			CertCloseStore(hCertStore, 0);
 			hCertStore = HCRYPT_NULL;
@@ -761,7 +761,7 @@ void ProviderMicrosoft::deletePkiObject(Handle<Certificate> cert, Handle<std::st
 			pCertFound = HCRYPT_NULL;
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCertStore) {
 			CertCloseStore(hCertStore, 0);
 			hCertStore = HCRYPT_NULL;
@@ -826,7 +826,7 @@ void ProviderMicrosoft::deletePkiObject(Handle<CRL> crl, Handle<std::string> cat
 			pCrlFound = HCRYPT_NULL;
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		if (hCertStore) {
 			CertCloseStore(hCertStore, 0);
 			hCertStore = HCRYPT_NULL;
@@ -885,7 +885,7 @@ bool ProviderMicrosoft::hasPrivateKey(Handle<Certificate> cert) {
 
 		return res;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error check key existing");
 	}
 }
@@ -903,7 +903,7 @@ bool ProviderMicrosoft::hasPrivateKey(PCCERT_CONTEXT pCertContext) {
 
 		return res;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error check key existing");
 	}
 }
@@ -950,7 +950,7 @@ Handle<std::string> ProviderMicrosoft::nameToStr(
 
 		return res;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error convert name to string");
 	}
 }
@@ -973,7 +973,7 @@ int ProviderMicrosoft::char2int(char input) {
 
 		THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "Invalid input string");
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error char to int");
 	}
 

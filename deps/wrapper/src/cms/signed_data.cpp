@@ -118,7 +118,7 @@ void SignedData::read(Handle<Bio> in, DataFormat::DATA_FORMAT format){
 
 		this->setData(ci);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, SignedData, e, "Error read cms");
 	}
 }
@@ -236,7 +236,7 @@ bool SignedData::verify(Handle<CertificateCollection> certs){
 		
 		return res == 1;
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, SignedData, e, "Error CMS verify");
 	}
 }

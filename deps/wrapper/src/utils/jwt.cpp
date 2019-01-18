@@ -14,7 +14,7 @@ bool Jwt::addLicense(Handle<std::string> lic) {
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
@@ -29,7 +29,7 @@ bool Jwt::deleteLicense(Handle<std::string> lic) {
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
@@ -53,7 +53,7 @@ int Jwt::checkLicense() {
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
@@ -77,7 +77,7 @@ int Jwt::checkLicense(Handle<std::string> lic) {
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
@@ -97,7 +97,7 @@ int Jwt::getExpirationTime(Handle<std::string> lic) {
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
@@ -117,7 +117,7 @@ int Jwt::getTrialExpirationTime() {
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
@@ -137,7 +137,7 @@ int Jwt::checkTrialLicense() {
 		THROW_EXCEPTION(0, Jwt, NULL, "Only if undefined JWT_NO_LICENSE");
 #endif
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Jwt, e, "Error check license");
 	}
 }
@@ -157,7 +157,7 @@ int Jwt::createTrialLicense() {
 		THROW_EXCEPTION(0, Jwt, NULL, "Don't create trial license");
 #endif
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, Jwt, e, "Error create trial license");
 	}
 }

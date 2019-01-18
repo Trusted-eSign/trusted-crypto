@@ -127,7 +127,7 @@ Certificate::Certificate(Handle<CertificationRequest> csr) :SSLObject<X509>(X509
 
 		this->setData(x);
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Certificate, e, "Error create certificate from request");
 	}
 }
@@ -188,7 +188,7 @@ void Certificate::sign(Handle<Key> key, const char* digest){
 			THROW_OPENSSL_EXCEPTION(0, Certificate, NULL, "X509_sign 'Error sign X509_REQ'");
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Certificate, e, "Error sign csr");
 	}
 }
@@ -547,7 +547,7 @@ std::vector<std::string> Certificate::getOCSPUrls() {
 			sk_ACCESS_DESCRIPTION_free(pStack);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Certificate, e, "Error get OCSP urls");
 	}
 
@@ -583,7 +583,7 @@ std::vector<std::string> Certificate::getCAIssuersUrls() {
 			sk_ACCESS_DESCRIPTION_free(pStack);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Certificate, e, "Error get CA issuers urls");
 	}
 
@@ -653,7 +653,7 @@ void Certificate::setSubject(Handle<std::string> xName) {
 			X509_NAME_free(name);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Certificate, e, "Error set subject to X509");
 	}
 }
@@ -706,7 +706,7 @@ void Certificate::setIssuer(Handle<std::string> xName) {
 			X509_NAME_free(name);
 		}
 	}
-	catch (Handle<Exception> e){
+	catch (Handle<Exception> &e){
 		THROW_EXCEPTION(0, Certificate, e, "Error set issuer to X509");
 	}
 }
@@ -775,7 +775,7 @@ void Certificate::setExtensions(Handle<ExtensionCollection> exts) {
 
 		return;
 	}
-	catch (Handle<Exception> e) {
+	catch (Handle<Exception> &e) {
 		THROW_EXCEPTION(0, CertificationRequest, e, "Error set extensions");
 	}
 }
