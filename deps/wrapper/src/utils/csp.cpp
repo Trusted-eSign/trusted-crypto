@@ -1438,9 +1438,7 @@ Handle<CertificateCollection> Csp::buildChain(Handle<Certificate> cert){
 			}
 		}
 
-		if (pCertCtx) {
-			CertFreeCertificateContext(pCertCtx);
-		}
+		CertFreeCertificateContext(pCertCtx);
 
 		if (pChainContext) {
 			CertFreeCertificateChain(pChainContext);
@@ -1506,9 +1504,7 @@ bool Csp::verifyCertificateChain(Handle<Certificate> cert){
 			CertFreeCertificateChain(pChainContext);
 		}
 
-		if (pCertCtx) {
-			CertFreeCertificateContext(pCertCtx);
-		}
+		CertFreeCertificateContext(pCertCtx);
 
 		return bResult;
 	}
@@ -1568,10 +1564,8 @@ bool Csp::isHaveExportablePrivateKey(Handle<Certificate> cert) {
 			pCertFound = HCRYPT_NULL;
 		}
 
-		if (pCertContext) {
-			CertFreeCertificateContext(pCertContext);
-			pCertContext = HCRYPT_NULL;
-		}
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
 
 		CertCloseStore(hTempStore, 0);
 		hTempStore = HCRYPT_NULL;
@@ -1672,10 +1666,8 @@ Handle<Pkcs12> Csp::certToPkcs12(Handle<Certificate> cert, bool exportPrivateKey
 			pCertFound = HCRYPT_NULL;
 		}
 
-		if (pCertContext) {
-			CertFreeCertificateContext(pCertContext);
-			pCertContext = HCRYPT_NULL;
-		}
+		CertFreeCertificateContext(pCertContext);
+		pCertContext = HCRYPT_NULL;
 
 		CertCloseStore(hTempStore, 0);
 		hTempStore = HCRYPT_NULL;
@@ -1820,10 +1812,8 @@ void Csp::importPkcs12(Handle<Pkcs12> p12, Handle<std::string> password) {
 		CertFreeCertificateContext(pCertContext);
 		pCertContext = HCRYPT_NULL;
 
-		if (hImportCertStore) {
-			CertCloseStore(hImportCertStore, 0);
-			hImportCertStore = HCRYPT_NULL;
-		}
+		CertCloseStore(hImportCertStore, 0);
+		hImportCertStore = HCRYPT_NULL;
 }
 	catch (Handle<Exception> e) {
 		if (pCertContext) {

@@ -700,14 +700,6 @@ void ProviderMicrosoft::addPkiObject(Handle<CRL> crl, Handle<std::string> catego
 			CertFreeCRLContext(pCrlContext);
 			pCrlContext = HCRYPT_NULL;
 		}
-
-		if (hProv) {
-			if (!CryptReleaseContext(hProv, 0)) {
-				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
-			}
-
-			hProv = NULL;
-		}
 	}
 	catch (Handle<Exception> e){
 		if (hCertStore) {
@@ -718,14 +710,6 @@ void ProviderMicrosoft::addPkiObject(Handle<CRL> crl, Handle<std::string> catego
 		if (pCrlContext) {
 			CertFreeCRLContext(pCrlContext);
 			pCrlContext = HCRYPT_NULL;
-		}
-
-		if (hProv) {
-			if (!CryptReleaseContext(hProv, 0)) {
-				THROW_EXCEPTION(0, ProviderMicrosoft, NULL, "CryptReleaseContext. Error: 0x%08x", GetLastError());
-			}
-
-			hProv = NULL;
 		}
 
 		THROW_EXCEPTION(0, ProviderMicrosoft, e, "Error add certificate to store");
