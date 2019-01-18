@@ -117,7 +117,6 @@ NAN_METHOD(WCRL::GetLastUpdate)
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError(e->what());
-			info.GetReturnValue().SetUndefined();
 		}
 
 		v8::Local<v8::String> v8Time = Nan::New<v8::String>(time->c_str()).ToLocalChecked();
@@ -140,7 +139,6 @@ NAN_METHOD(WCRL::GetNextUpdate)
 		}
 		catch (Handle<Exception> e){
 			Nan::ThrowError(e->what());
-			info.GetReturnValue().SetUndefined();
 		}
 
 		v8::Local<v8::String> v8Time = Nan::New<v8::String>(time->c_str()).ToLocalChecked();
@@ -330,7 +328,6 @@ NAN_METHOD(WCRL::Duplicate)
 
 		Handle<CRL> crl = _this->duplicate();
 		v8::Local<v8::Object> v8CRL = WCRL::NewInstance(crl);
-		info.GetReturnValue().Set(v8CRL);
 
 		info.GetReturnValue().Set(v8CRL);
 		return;

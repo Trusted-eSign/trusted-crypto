@@ -43,7 +43,6 @@ NAN_METHOD(WRevoked::Duplicate)
 		v8::Local<v8::Object> v8Rv = WRevoked::NewInstance(rv);
 		info.GetReturnValue().Set(v8Rv);
 
-		info.GetReturnValue().Set(v8Rv);
 		return;
 	}
 	TRY_END();
