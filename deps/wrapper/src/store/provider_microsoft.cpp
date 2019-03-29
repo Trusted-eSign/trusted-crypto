@@ -401,9 +401,6 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 
 #ifndef OPENSSL_NO_CTGOSTCP
 #define MAX_SIGNATURE_LEN 128
-		size_t len;
-		unsigned char buf[MAX_SIGNATURE_LEN];
-
 		ENGINE *e = ENGINE_by_id("ctgostcp");
 		if (e == NULL) {
 			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "CTGSOTCP is not loaded");
@@ -456,14 +453,6 @@ Handle<Key> ProviderMicrosoft::getKey(Handle<Certificate> cert) {
 		LOGGER_OPENSSL(EVP_MD_CTX_create);
 		if (!(mctx = EVP_MD_CTX_create())) {
 			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error creating digest context");
-		}
-
-		len = sizeof(buf);
-		LOGGER_OPENSSL(EVP_DigestSignInit);
-		if (!EVP_DigestSignInit(mctx, NULL, md, e, pkey)
-			|| (EVP_DigestSignUpdate(mctx, "123", 3) <= 0)
-			|| !EVP_DigestSignFinal(mctx, buf, &len)) {
-			THROW_OPENSSL_EXCEPTION(0, ProviderMicrosoft, NULL, "Error testing private key (via signing data)");
 		}
 
 		return new Key(pkey);
